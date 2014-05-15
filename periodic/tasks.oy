@@ -1,0 +1,50 @@
+root = "production/periodic/"
+
+place daily
+  protocol: root + "tasks.pl"
+  argument
+    type: "Daily"
+  end
+  group: "technicians"
+  marked: true
+  window: hours(24)
+end
+
+place weekly
+  protocol: root + "tasks.pl"
+  argument
+    type: "Weekly"
+  end
+  group: "technicians"
+  marked: true
+  window: hours(24)
+end
+
+place daily_wait
+  marked: true
+end
+
+place weekly_wait
+  marked: true
+end
+
+transition [daily]        => [daily]  when completed(0) && length(tasks("Daily","ready"))  > 0 end
+transition [weekly]       => [weekly] when completed(0) && length(tasks("Weekly","ready")) > 0 end
+
+last_daily_update = -1
+
+transition [daily_wait]   => [daily_wait] when time()[:day] != last_daily_update
+  do
+    last_daily_update = time()[:day]
+    dummy = set_task_status(tasks("Daily","done"),"ready")
+  end
+end
+
+last_weekly_update = -1
+
+transition [weekly_wait]   => [weekly_wait] when time()[:day] == "Sunday" && time()[:day] != last_weekly_update
+  do
+    last_weekly_update = time()[:day]
+    dummy = set_task_status(tasks("Weekly","done"),"ready")
+  end
+end
