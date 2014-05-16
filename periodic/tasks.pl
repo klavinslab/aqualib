@@ -1,4 +1,4 @@
-require "production/lib/util.pl"
+require "lib/util.pl"
 
 argument
    type: string
