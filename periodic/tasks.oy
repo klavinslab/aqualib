@@ -1,4 +1,4 @@
-root = "production/periodic/"
+root = "periodic/"
 
 place daily
   protocol: root + "tasks.pl"
