@@ -1,4 +1,4 @@
-require "production/lib/util.pl"
+require "lib/util.pl"
 
 information "Use this protocol to rehydrate any number of lyophilized primers that have just been received. 
              A primer stock and an initial primer aliquot will be made."
