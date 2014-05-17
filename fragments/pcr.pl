@@ -7,15 +7,10 @@ function fragment_info(fid)
   local fwds = find(:item,{ sample: { name: frag[:field4] }, object_type: { name: "Primer Aliquot" } } )
   local revs = find(:item,{ sample: { name: frag[:field4] }, object_type: { name: "Primer Aliquot" } } )
 
+  print("Info",fwds)
+
   if length(fwds) == 0 || length(revs) == 0 
-   
-    step 
-      description: "Error"
-      warning: "Primer stock(s) missing for fragment %{fid}"
-    end
-
-    stop
-
+    die("Primer stock(s) missing for fragment %{fid}")
   end
 
   return {
@@ -25,8 +20,8 @@ function fragment_info(fid)
     template_name: temp[:name],
     forward_primer_id:   fwds[0][:id],
     forward_primer_name: fwds[0][:name],
-    reverse_primer_id:   fwds[0][:id],
-    reverse_primer_name: fwds[0][:name]
+    reverse_primer_id:   revs[0][:id],
+    reverse_primer_name: revs[0][:name]
   }
 
 end

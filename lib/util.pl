@@ -93,3 +93,15 @@ function print(description, message)
   end
 
 end
+
+function die(message)
+
+  step
+    description: "Error!"
+    warning: message
+  end
+
+  stop
+
+end
+
