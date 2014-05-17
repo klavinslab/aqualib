@@ -6,6 +6,8 @@ end
 
 print("Input",input)
 
+output = input
+
 log
    return: output
 end
