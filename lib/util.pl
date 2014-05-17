@@ -80,3 +80,16 @@ function produce_multiple(container,sample_names)
   return result
 
 end
+
+#############################################################################################
+# Convenience 
+#
+
+function print(description, message)
+
+  step
+    description: description
+    note: message
+  end
+
+end
