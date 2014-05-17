@@ -1,3 +1,5 @@
+require "lib/util.pl"
+
 argument
   input: generic
 end
