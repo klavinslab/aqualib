@@ -18,7 +18,7 @@ while more_primers == "Yes"
      end
   end
 
-  primer_info = find(:sample,{id: id})
+  primer_info = find(:sample,{id: id})[0]
 
   if primer_info != [] && primer_info[:sample_type][:name] == "Primer"
 
