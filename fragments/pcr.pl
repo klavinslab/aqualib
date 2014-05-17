@@ -1,4 +1,4 @@
-require "lib/util.pl"
+require "aqualib:lib/util.pl"
 
 argument
   input: generic
