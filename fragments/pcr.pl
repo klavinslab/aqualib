@@ -1,49 +1,69 @@
 require "aqualib:lib/util.pl"
+require "aqualib:lib/cloning.pl"
 
-function fragment_info(fid)
 
-  local frag = find(:sample,{id: fid})
-  local temp = find(:sample,{name: frag[:field3]})
-  local fwds = find(:item,{ sample: { name: frag[:field4] }, object_type: { name: "Primer Aliquot" } } )
-  local revs = find(:item,{ sample: { name: frag[:field4] }, object_type: { name: "Primer Aliquot" } } )
+fragment_list = [ 21, 22 ]
 
-  print("Info",fwds)
+######################################################################################
+# make fragement object
+#
 
-  if length(fwds) == 0 || length(revs) == 0 
-    die("Primer stock(s) missing for fragment %{fid}")
-  end
-
-  return {
-    fragment_id: fid,
-    fragment_name: frag[:name],
-    template_id:   temp[:id],
-    template_name: temp[:name],
-    forward_primer_id:   fwds[0][:id],
-    forward_primer_name: fwds[0][:name],
-    reverse_primer_id:   revs[0][:id],
-    reverse_primer_name: revs[0][:name]
-  }
-
-end
-
-argument
-  fragment_list: number array
-end
-
-FO = { fragments: [] }
+FO = { fragments: [], stripwells: [] }
 
 foreach f in fragment_list
   FO[:fragments] = append(FO[:fragments], fragment_info(f))
 end
 
-print("Fragment Info", FO)
-
+tem = ha_select(FO[:fragments],:template_id)
 fwd = ha_select(FO[:fragments],:forward_primer_id)
 rev = ha_select(FO[:fragments],:reverse_primer_id)
 
+######################################################################################
+# take primers
+#
+
 take
-  primers = item concat(fwd,rev)
+  templates_and_primers = item unique(concat(tem,concat(fwd,rev)))
 end
 
-print("Primers",primers)
+######################################################################################
+# take reagents
+#
+
+  # TODO
+
+######################################################################################
+# produce stripwell (may need to make multiple stripwells)
+#
+
+produce silently
+  stripwell = 1 "Stripwell"
+  data
+    matrix: [ fragment_list ]
+  end
+end
+
+append(FO[:stripwells],stripwell)
+
+######################################################################################
+# set up reactions
+#
+
+  # TODO
+
+######################################################################################
+# put stripwell in thermocycler
+#
+
+  # TODO (may want to ask technician which thermocycler was used)
+
+######################################################################################
+# return everything
+#
+
+release(templates_and_primers)
+
+log
+  return: FO
+end
 

@@ -14,5 +14,6 @@ All protocols, except pcr.pl, in the fragment build pipeline take a fragements o
 				fragment_stock_id: 0
 			},
 			...
-		]
+		],
+                "stripwells": [ 0, ... ]
 	}
