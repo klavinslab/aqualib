@@ -27,7 +27,7 @@ place run_gel
 end
 
 place wait_for_gel
-  marked:L false
+  marked: false
 end
 
 place image_gel
