@@ -1,0 +1,74 @@
+place pcr
+  protocol: "aqualib:fragments/pcr.pl"
+  group: technicans
+  marked: true
+  start: now()
+  window hours(1)
+end
+
+place wait_for_pcr
+  marked: false
+end
+
+place pour_gel
+  protocol: "aqualib:fragments/pour_gel.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+place run_gel
+  protocol: "aqualib:fragments/run_gel.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+place wait_for_gel
+  marked:L false
+end
+
+place image_gel
+  protocol: "aqualib:fragments/image_gel.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+place cut_gel
+  protocol: "aqualib:fragments/cut_gel.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+place purify
+  protocol: "aqualib:fragments/purify.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+place quantify
+  protocol: "aqualib:fragments/quantify.pl"
+  group: technicans
+  marked: false
+  start: now()
+  window hours(1)
+end
+
+wire ( pcr, "FO" ) => ( pour_gel, "FO" )
+
+transition [ pcr ] => [ wait_for_pcr, pour_gel ] when complete(0) end
+transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when minutes_elapsed(0,60) && complete(1) end
+transition [ run_gel ] => [ wait_for_gel ] when complete(0) end
+transition [ wait_for_gel ] => [ cut_gel ] when minutes_elapsed(0,30) end
+transition [ cut_gel ] => [ purify ] when complete(0) end
+transition [ purify ] => [ quantify ] when complete(0) end
+
+

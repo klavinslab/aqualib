@@ -64,6 +64,6 @@ append(FO[:stripwells],stripwell)
 release(templates_and_primers)
 
 log
-  return: FO
+  return: { FO: FO }
 end
 
