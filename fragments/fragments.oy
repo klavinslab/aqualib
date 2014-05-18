@@ -3,7 +3,7 @@ place pcr
   group: technicans
   marked: true
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place wait_for_pcr
@@ -15,7 +15,7 @@ place pour_gel
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place run_gel
