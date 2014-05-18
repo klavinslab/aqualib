@@ -23,7 +23,7 @@ place run_gel
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place wait_for_gel
@@ -35,7 +35,7 @@ place image_gel
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place cut_gel
@@ -43,7 +43,7 @@ place cut_gel
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place purify
@@ -51,7 +51,7 @@ place purify
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 place quantify
@@ -59,7 +59,7 @@ place quantify
   group: technicans
   marked: false
   start: now()
-  window hours(1)
+  window: hours(1)
 end
 
 wire ( pcr, "FO" ) => ( pour_gel, "FO" )
