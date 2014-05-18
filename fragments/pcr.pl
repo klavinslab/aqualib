@@ -1,7 +1,6 @@
 require "aqualib:lib/util.pl"
 require "aqualib:lib/cloning.pl"
 
-
 fragment_list = [ 21, 22 ]
 
 ######################################################################################
