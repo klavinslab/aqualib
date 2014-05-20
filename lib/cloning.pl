@@ -26,9 +26,9 @@ function fragment_info(fid)
     template_id:   temp[0][:id],
     template_name: temp[0][:name],
     forward_primer_id:   fwds[0][:id],
-    forward_primer_name: fwds[0][:name],
+    forward_primer_name: fwds[0][:sample][:name],
     reverse_primer_id:   revs[0][:id],
-    reverse_primer_name: revs[0][:name]
+    reverse_primer_name: revs[0][:sample][:name]
   }
 
 end
