@@ -9,7 +9,7 @@ fragments_per_gel = 10.0
 num_fragments = length(FO[:fragments])
 num_gels = ceil(num_fragments / fragments_per_gel)
 
-print("Number of gels to pour",[fragments_per_gel,num_fragments,num_gels])
+print("Pour %{num_gels} gel(s)","")
 
 i=0
 gels = []
@@ -19,4 +19,9 @@ while i<num_gels
   i = i+1
 end
 
-print("Gel IDs",gels)
+FO[:gels] = ha_select(gels,:id)
+
+log
+  return: { FO: FO }
+end
+
