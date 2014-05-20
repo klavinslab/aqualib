@@ -32,3 +32,18 @@ function fragment_info(fid)
   }
 
 end
+
+function new_gel()
+
+  # makes a new 12 lane gel
+
+  produce silently
+    gel = 1 "Gel"
+    data
+      matrix: [array_same(-1,12)]
+    end  
+  end
+
+  return gel
+
+end

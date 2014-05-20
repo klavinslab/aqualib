@@ -15,13 +15,7 @@ i=0
 gels = []
 
 while i<num_gels
-  produce silently
-    gel = 1 "Gel"
-    data
-      matrix: array_same(-1,12)
-    end  
-  end
-  gels = append(gels,gel)
+  gels = append(gels,new_gel())
   i = i+1
 end
 
