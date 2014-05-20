@@ -1,0 +1,6 @@
+Academic License Agreement ("Agreement")
+
+
+The University of Washington(UW) hereby grants, and Licensee accepts, a limited, non-exclusive license under UW’s copyright in the Software to use, run, display, copy, and modify the Aqualib Protocols Software Library (Software) at, and for the use of researchers at, the Site. The license grant herein is limited to Licensee’s use at the Site and does not authorize distribution of the Software or use by third parties at the Site or by anyone not located at the Licensee's site via the Internet or any other means.
+
+To use Software for any commercial purposes, including fee-based service projects, Licensee must execute a separate licensing agreement with UW and pay a fee. In that case please contact: license@u.washington.edu

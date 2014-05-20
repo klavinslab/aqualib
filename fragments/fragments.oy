@@ -1,4 +1,6 @@
 place pcr
+  # IN: Fragment IDs
+  # OUT: Fragment Object with Fragement Details and Stripwell IDs added
   protocol: "aqualib:fragments/pcr.pl"
   group: "technicians"
   marked: true
@@ -11,6 +13,8 @@ place wait_for_pcr
 end
 
 place pour_gel
+  # IN: Fragment Object, from which the number of gels to pour is obtained
+  # OUT: Fragment Object with gel IDs added.
   protocol: "aqualib:fragments/pour_gel.pl"
   group: "technicians"
   marked: false
@@ -19,6 +23,8 @@ place pour_gel
 end
 
 place run_gel
+  # IN: Fragement Object
+  # OUT: Gels in Fragment Object are populated with Fragment sample IDs
   protocol: "aqualib:fragments/run_gel.pl"
   group: "technicians"
   marked: false
