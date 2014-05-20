@@ -68,7 +68,8 @@ place quantify
   window: hours(1)
 end
 
-wire ( pcr, "FO" ) => ( run_gel, "FO" )
+wire ( pcr, "FO" ) => ( pour_gel, "FO" )
+wire ( pour_gel, "FO" ) => ( run_gel, "FO" )
 
 transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when minutes_elapsed(0,1) && completed(1) end

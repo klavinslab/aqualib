@@ -7,7 +7,7 @@ end
 
 fragments_per_gel = 10
 num_fragments = length(FO[:fragments])
-num_gels = floor(num_fragments / fragments_per_gel)
+num_gels = ceil(num_fragments / fragments_per_gel)
 
 print("Number of gels to pour",num_gels)
 
