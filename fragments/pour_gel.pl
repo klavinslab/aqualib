@@ -5,7 +5,7 @@ argument
   FO: generic
 end
 
-fragments_per_gel = 10
+fragments_per_gel = 10.0
 num_fragments = length(FO[:fragments])
 num_gels = ceil(num_fragments / fragments_per_gel)
 
