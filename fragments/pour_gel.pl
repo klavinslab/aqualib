@@ -9,7 +9,7 @@ fragments_per_gel = 10
 num_fragments = length(FO[:fragments])
 num_gels = ceil(num_fragments / fragments_per_gel)
 
-print("Number of gels to pour",num_gels)
+print("Number of gels to pour",[fragments_per_gel,num_fragments,num_gels])
 
 i=0
 gels = []
