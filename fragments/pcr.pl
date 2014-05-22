@@ -35,6 +35,8 @@ end
 # produce stripwell (may need to make multiple stripwells)
 #
 
+  # TODO: Produce num_fragments / 12 stripwells
+
 produce silently
   stripwell = 1 "Stripwell"
   data
@@ -42,7 +44,7 @@ produce silently
   end
 end
 
-append(FO[:stripwells],stripwell)
+FO[:stripwells] = [ stripwell ]
 
 ######################################################################################
 # set up reactions
@@ -50,11 +52,21 @@ append(FO[:stripwells],stripwell)
 
   # TODO
 
+swid = stripwell[:id]
+
+step
+  description: "Label the a new stripwell %{swid} and set up reactions"
+end
+
 ######################################################################################
 # put stripwell in thermocycler
 #
 
   # TODO (may want to ask technician which thermocycler was used)
+
+step
+  description: "Put stripwell %{swid} in the Thermocycler"
+end
 
 ######################################################################################
 # return everything
