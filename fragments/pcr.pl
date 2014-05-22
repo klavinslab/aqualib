@@ -1,7 +1,7 @@
 require "aqualib:lib/util.pl"
 require "aqualib:lib/cloning.pl"
 
-fragment_list = [ 21, 22 ]
+fragment_list = [ 21, 22, 23, 24, 25, 26, 27, 28, 72, 73, 120, 121, 122, 123, 124 ]
 
 ######################################################################################
 # make fragement object
@@ -44,7 +44,7 @@ produce silently
   end
 end
 
-FO[:stripwells] = [ stripwell ]
+FO[:stripwells] = [ stripwell[:id] ]
 
 ######################################################################################
 # set up reactions
