@@ -37,14 +37,29 @@ end
 
   # TODO: Produce num_fragments / 12 stripwells
 
-produce silently
-  stripwell = 1 "Stripwell"
-  data
-    matrix: [ fragment_list ]
+num_stripwells = ceil( length(FO[:fragments]) / 12.0)
+
+i=0
+stripwells = []
+
+print("Number of stripwells",num_stripwells)
+
+while i < num_stripwells
+
+  produce silently
+    stripwell = 1 "Stripwell"
+    data
+      matrix: [ take(fragment_list,12*i,12) ]
+    end
   end
+
+  stripwells = append ( stripwells, stripwell[:id] )
+
+  i = i + 1
+
 end
 
-FO[:stripwells] = [ stripwell[:id] ]
+FO[:stripwells] = stripwells
 
 ######################################################################################
 # set up reactions
@@ -52,10 +67,8 @@ FO[:stripwells] = [ stripwell[:id] ]
 
   # TODO
 
-swid = stripwell[:id]
-
 step
-  description: "Label the a new stripwell %{swid} and set up reactions"
+  description: "Label new stripwells %{stripwells} and set up reactions"
 end
 
 ######################################################################################
@@ -65,7 +78,7 @@ end
   # TODO (may want to ask technician which thermocycler was used)
 
 step
-  description: "Put stripwell %{swid} in the Thermocycler"
+  description: "Put stripwells %{stripwells} in the Thermocycler"
 end
 
 ######################################################################################
