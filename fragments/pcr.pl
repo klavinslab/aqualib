@@ -14,7 +14,7 @@ foreach f in fragment_list
   if info[:error]
     FO[:errors] = append(FO[:errors], info[:error])
   else
-   FO[:fragments] = append(FO[:fragments], info)
+    FO[:fragments] = append(FO[:fragments], info)
   end
 end
 
@@ -25,6 +25,8 @@ if length(FO[:errors]) > 0
     foreach e in FO[:errors]
       warning: e
     end
+    note: "Number of fragments requested: " + to_string(length(fragment_list))
+    note: "Number fragments to be built: " + to_string(length(FO[:fragments]))
   end
 
 end
