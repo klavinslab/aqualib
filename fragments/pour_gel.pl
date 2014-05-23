@@ -9,8 +9,6 @@ fragments_per_gel = 10.0
 num_fragments = length(FO[:fragments])
 num_gels = ceil(num_fragments / fragments_per_gel)
 
-
-
 i=0
 gels = []
 
@@ -21,7 +19,7 @@ end
 
 FO[:gels] = ha_select(gels,:id)
 
-print("Pour %{num_gels} gel(s)","Label it(them) with the item number(s) " + gels)
+print("Pour %{num_gels} gel(s)","Label it(them) with the item number(s) %{gels}");
 
 log
   return: { FO: FO }
