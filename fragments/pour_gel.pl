@@ -19,7 +19,7 @@ end
 
 FO[:gels] = ha_select(gels,:id)
 
-print("Pour %{num_gels} gel(s)","Label it(them) with the item number(s) %{gels}");
+print("Pour %{num_gels} gel(s)","Label it(them) with the item number(s) " + to_string(FO[:gels]))
 
 log
   return: { FO: FO }
