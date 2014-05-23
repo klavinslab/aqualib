@@ -1,7 +1,7 @@
 require "aqualib:lib/util.pl"
 require "aqualib:lib/cloning.pl"
 
-fragment_list = [ 21, 22, 23, 24, 25, 26, 27, 28, 72, 73, 120, 121, 122, 123, 124 ]
+fragment_list = [ 21, 22, 23, 24, 25, 26, 27, 28, 72, 73, 120, 121, 122, 123, 124, 125, 126, 127, 128 ]
 
 ######################################################################################
 # make fragement object
@@ -39,13 +39,6 @@ rev = ha_select(FO[:fragments],:reverse_primer_id)
 # take primers
 #
 
-step
- note: template
- note: fwd
- note: rev
- note: unique(concat(template,concat(fwd,rev)))
-end
-
 take
   templates_and_primers = item unique(concat(template,concat(fwd,rev)))
 end
@@ -59,8 +52,6 @@ end
 ######################################################################################
 # produce stripwell (may need to make multiple stripwells)
 #
-
-  # TODO: Produce num_fragments / 12 stripwells
 
 num_stripwells = ceil( length(FO[:fragments]) / 12.0)
 
@@ -92,19 +83,35 @@ FO[:stripwells] = stripwells
 
   # TODO
 
-step
-  description: "Label new stripwells %{stripwells} and set up reactions"
+i=0
+while i < num_stripwells
+
+  frags = take(FO[:fragments],12*i,12)
+
+  step
+    description: "Prepare stripwell no. " + to_string(i+1)
+    note: "Label a new stripwell with the the item number " + to_string(stripwells[i])
+    check: "TODO: Add reagents"
+    table: concat(
+      [ [ "Well", "Template", "Forward Primer", "Reverse Primer" ] ],
+      transpose([
+        range(1,length(frags),1),
+        ha_select(frags,:template_id),
+        ha_select(frags,:forward_primer_id),
+        ha_select(frags,:reverse_primer_id)
+      ] ) )
+  end
+
+  i = i+1
+
 end
+
 
 ######################################################################################
 # put stripwell in thermocycler
 #
 
   # TODO (may want to ask technician which thermocycler was used)
-
-step
-  description: "Put stripwells %{stripwells} in the Thermocycler"
-end
 
 ######################################################################################
 # return everything
