@@ -11,6 +11,9 @@ FO = { fragments: [], stripwells: [], errors: [] }
 
 foreach f in fragment_list
   info = fragment_info(f)
+  step
+    note: info
+  end
   if info[:error]
     FO[:errors] = append(FO[:errors], info[:error])
   else
@@ -31,7 +34,7 @@ if length(FO[:errors]) > 0
 
 end
 
-tem = ha_select(FO[:fragments],:template_id)
+template = ha_select(FO[:fragments],:template_id)
 fwd = ha_select(FO[:fragments],:forward_primer_id)
 rev = ha_select(FO[:fragments],:reverse_primer_id)
 
@@ -39,8 +42,15 @@ rev = ha_select(FO[:fragments],:reverse_primer_id)
 # take primers
 #
 
+step
+ note: template
+ note: fwd
+ note: rev
+ note: unique(concat(template,concat(fwd,rev)))
+end
+
 take
-  templates_and_primers = item unique(concat(tem,concat(fwd,rev)))
+  templates_and_primers = item unique(concat(template,concat(fwd,rev)))
 end
 
 ######################################################################################

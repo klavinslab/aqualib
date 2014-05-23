@@ -24,6 +24,10 @@ function fragment_info(fid)
     return { error: "Primer stock(s) missing for fragment %{fid}: " + frag[0][:field5] }
   end
 
+  step
+    note: "Fragment " + to_string(fid) + " ok."
+  end
+
   return {
     fragment_id: fid,
     fragment_name: frag[0][:name],
