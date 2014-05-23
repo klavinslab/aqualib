@@ -11,9 +11,6 @@ FO = { fragments: [], stripwells: [], errors: [] }
 
 foreach f in fragment_list
   info = fragment_info(f)
-  step
-    note: info
-  end
   if info[:error]
     FO[:errors] = append(FO[:errors], info[:error])
   else

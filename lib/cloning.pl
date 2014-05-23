@@ -14,14 +14,23 @@ function fragment_info(fid)
 
   if length(temp) == 0 
     return { errror: "Template stock(s) missing for fragment %{fid}: " + frag[0][:field3] }
+    step
+      note: "Fragment " + to_string(fid) + " bad."
+    end
   end
 
   if length(fwds) == 0 
     return { error: "Primer stock(s) missing for fragment %{fid}: " + frag[0][:field4] }
+    step
+      note: "Fragment " + to_string(fid) + " bad."
+    end
   end
 
   if length(revs) == 0 
     return { error: "Primer stock(s) missing for fragment %{fid}: " + frag[0][:field5] }
+    step
+      note: "Fragment " + to_string(fid) + " bad."
+    end
   end
 
   step
