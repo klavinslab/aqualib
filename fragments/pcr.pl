@@ -58,8 +58,6 @@ num_stripwells = ceil( length(FO[:fragments]) / 12.0)
 i=0
 stripwells = []
 
-print("Number of stripwells",num_stripwells)
-
 while i < num_stripwells
 
   produce silently
