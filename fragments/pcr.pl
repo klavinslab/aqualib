@@ -7,10 +7,26 @@ fragment_list = [ 21, 22, 23, 24, 25, 26, 27, 28, 72, 73, 120, 121, 122, 123, 12
 # make fragement object
 #
 
-FO = { fragments: [], stripwells: [] }
+FO = { fragments: [], stripwells: [], errors: [] }
 
 foreach f in fragment_list
-  FO[:fragments] = append(FO[:fragments], fragment_info(f))
+  info = fragment_info(f)
+  if info[:error]
+    FO[:errors] = append(FO[:errors], info[:error])
+  else
+   FO[:fragments] = append(FO[:fragments], info)
+  end
+end
+
+if length(FO[:errors]) > 0 
+
+  step
+    description: "Some fragments will be skipped."
+    foreach e in FO[:errors]
+      warning: e
+    end
+  end
+
 end
 
 tem = ha_select(FO[:fragments],:template_id)

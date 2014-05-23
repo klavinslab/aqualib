@@ -5,19 +5,19 @@ function fragment_info(fid)
   local frag = find(:sample,{id: fid})
 
   if frag == [] || frag[0][:sample_type][:name] != "Fragment"
-    die("Could not find fragment with id ${fid}")
+    return { error: "Could not find fragment with id ${fid}" }
   end
 
-  local temp = find(:item,{ sample: { name: frag[0][:field3]}, object_type: { name: "Plasmid Stock" } } )
+  local temp = find(:item,{ sample: { name: frag[0][:field3]},  object_type: { name: "Plasmid Stock" }  } )
   local fwds = find(:item,{ sample: { name: frag[0][:field4] }, object_type: { name: "Primer Aliquot" } } )
   local revs = find(:item,{ sample: { name: frag[0][:field5] }, object_type: { name: "Primer Aliquot" } } )
 
   if length(temp) == 0 
-    die("Template stock(s) missing for fragment %{fid}")
+    return { errror: "Template stock(s) missing for fragment %{fid}" }
   end
 
   if length(fwds) == 0 || length(revs) == 0 
-    die("Primer stock(s) missing for fragment %{fid}")
+    return { error: "Primer stock(s) missing for fragment %{fid}" }
   end
 
   return {
