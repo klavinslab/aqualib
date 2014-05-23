@@ -13,15 +13,15 @@ function fragment_info(fid)
   local revs = find(:item,{ sample: { name: frag[0][:field5] }, object_type: { name: "Primer Aliquot" } } )
 
   if length(temp) == 0 
-    return { error: "Template stock(s) missing for fragment %{fid}: " + frag[0][:field3] }
+    return { error: "Template stock(s) " + frag[0][:field3] +  " missing for fragment %{fid}." }
   end
 
   if length(fwds) == 0 
-    return { error: "Primer stock(s) missing for fragment %{fid}: " + frag[0][:field4] }
+    return { error: "Forward primer stock(s) " + frag[0][:field4] + " missing for fragment %{fid}."  }
   end
 
   if length(revs) == 0 
-    return { error: "Primer stock(s) missing for fragment %{fid}: " + frag[0][:field5] }
+    return { error: "Reverse primer stock(s) " + frag[0][:field4] + " missing for fragment %{fid}." }
   end
 
   return {
