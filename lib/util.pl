@@ -23,8 +23,8 @@ function range(n)
   local a = []
 
   while i < n
-    a = append(a,i)
-    i += 1
+    a=append(a,i)
+    i=i+1
   end
 
   return a
