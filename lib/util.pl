@@ -15,6 +15,22 @@ function array_same ( x, n )
   end 
 end
 
+function range(n)
+
+  # builds the array [ 0, ..., n-1 ]
+
+  local i = 0
+  local a = []
+
+  while i < n
+    a = append(a,i)
+    i += 1
+  end
+
+  return a
+
+end
+
 #########################################################################################
 # Arrays of hashes
 #
