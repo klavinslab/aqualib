@@ -33,9 +33,9 @@ end
 foreach g in FO[:gels]
 
   # TODO REMOVE THIS CLEAR -- it's only here so I can test this protocol over and over
-  foreach i in range(0,11,1)
-    col_set(g,0,i,-1)
-  end
+  # foreach i in range(0,11,1)
+  #   col_set(g,0,i,-1)
+  # end
 
   col_set(g,0,0,ladder_sample_id)
   col_set(g,0,6,ladder_sample_id)
@@ -43,26 +43,31 @@ foreach g in FO[:gels]
 end
 
 t = col_transfer ( FO[:stripwells], FO[:gels] )
+t_clean = drop_column(drop_column(t,4),1)
 
-function drop_column ( m, j )
+i = 0
 
-  # returns a matrix m' that is the same as m but with column j removed
+while i < length(t_clean)
 
-  local a = transpose(m)
+  msg = "Transfer PCR products from the stripwells into the gels according the the table below."
 
-  return transpose(concat(take(a,0,j),take(a,j+1,length(a)-j-1)))
+  if i != 0
+    msg = "Continue to transfer PCR products into the gels."
+  end
 
-end
+  step
 
-tp = drop_column(drop_column(t,4),1)
+    description: "Load gel(s)"
 
-step
+    note: msg
 
-  note: "Transfer PCR products from stripwells into the gels according the the table below."
+    table: concat( 
+       [ [ "Stripwell", "Well", "Gel", "Lane" ] ],
+       take(t_clean,i,10) )
 
-  table: concat( 
-     [ [ "Stripwell", "Well", "Gel", "Lane" ] ],
-     tp )
+  end
+
+  i = i + 10
 
 end
 
