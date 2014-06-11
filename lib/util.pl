@@ -15,6 +15,15 @@ function array_same ( x, n )
   end 
 end
 
+function drop_column ( m, j )
+
+  # returns a matrix m' that is the same as m but with column j removed
+
+  local a = transpose(m)
+  return transpose(concat(take(a,0,j),take(a,j+1,length(a)-j-1)))
+
+end
+
 #########################################################################################
 # Arrays of hashes
 #

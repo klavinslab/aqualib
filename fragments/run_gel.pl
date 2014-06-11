@@ -31,22 +31,39 @@ step
 end
 
 foreach g in FO[:gels]
-  # TODO REMOVE CLEAR
-  foreach i in range(12)
+
+  # TODO REMOVE THIS CLEAR -- it's only here so I can test this protocol over and over
+  foreach i in range(0,11,1)
     col_set(g,0,i,-1)
   end
+
   col_set(g,0,0,ladder_sample_id)
   col_set(g,0,6,ladder_sample_id)
+
 end
 
 t = col_transfer ( FO[:stripwells], FO[:gels] )
 
+function drop_column ( m, j )
+
+  # returns a matrix m' that is the same as m but with column j removed
+
+  local a = transpose(m)
+
+  return transpose(concat(take(a,0,j),take(a,j+1,length(a)-j-1)))
+
+end
+
+tp = drop_column(drop_column(t,4),1)
+
 step
+
   note: "Transfer PCR products from stripwells into the gels according the the table below."
-  table: t
+
   table: concat( 
-     [ [ "Stripwell", "Row", "Column", "Gel", "Row", "Lane" ] ],
-     t )
+     [ [ "Stripwell", "Well", "Gel", "Lane" ] ],
+     tp )
+
 end
 
 release concat(concat(stripwells,gels),ladder)
