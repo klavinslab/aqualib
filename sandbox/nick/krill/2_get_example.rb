@@ -3,7 +3,7 @@ class Protocol
     data = show {
       title "An input example"
       get "text", var: "y", label: "Enter a string", default: "Hello World 1"
-      get("text", var="z", label="Enter a string", default="Hello World 2")
+      get("text", var: "z", label: "Enter a string", default: "Hello World 2")
     }
 
     y = data[:x]
