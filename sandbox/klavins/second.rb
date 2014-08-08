@@ -8,9 +8,11 @@ class Protocol
 
     (1..5).each do |i|
 
+      j = f i
+
       data = show {
         title "Step #{i}" 
-        note "#{i} squared is #{f i}"
+        note "#{i} squared is #{j}"
         input type: "number", var: "z#{i}", label: "Enter a number"
         select choices: [ "A", "B" ], var: "x", label: "Choose something"
       }
