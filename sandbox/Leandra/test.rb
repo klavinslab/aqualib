@@ -5,7 +5,6 @@ class Protocol
     }
     show {
       title "Thanks :-)"
-      note data["g3".to_sym]
     }
   end
 end
