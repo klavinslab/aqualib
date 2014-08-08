@@ -1,5 +1,5 @@
-needs "Krill/lib/standard"
-needs "Krill/lib/cloning"
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
 
