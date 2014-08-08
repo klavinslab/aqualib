@@ -3,7 +3,7 @@ class Protocol
     show {
       title "Hello World!" 
       (1..10).each { |i|
-        note "i = #{i}"
+        get "number",  var: "g#{i}"
       }
     }
     show {
