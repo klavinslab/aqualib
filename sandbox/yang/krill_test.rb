@@ -1,12 +1,14 @@
 class Protocol
   
   def arguments
-    {x: 1, y:"name"}
+    {x: 1379, y:"name"}
   end
 
   def main
     x = input[:x]
     y = input[:name]
+    plasmid_x1 = find(:item, id: 123)
+    take plasmid_x1
     data = show {
     title "An input example"
     get "text", var: "y_data", label: "Enter a string", default: "Hello World"
