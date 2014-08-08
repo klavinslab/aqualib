@@ -67,7 +67,7 @@ class Protocol
     end
 
     transfer( stripwells, gels ) {
-      title "Using a 100 µL pipetter, pipet #{fragment_volume} µL of the PCR result into the gel lane."
+      title "Using a 100 µL pipetter, pipet #{volume} µL of the PCR result into the gel lane."
       note "Make sure each stripwell has the leftmost well labeled with an 'A'. 
             This well contains the first sample. The well to its right contains the second sample, etc."
       image "gel_begin_loading"
