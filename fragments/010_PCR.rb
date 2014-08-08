@@ -1,5 +1,5 @@
-needs "aqualib/lib/standard"
-needs "aqualib/lib/cloning"
+needs "Krill/lib/standard"
+needs "Krill/lib/cloning"
 
 class Protocol
 
@@ -7,13 +7,13 @@ class Protocol
   include Cloning
 
   def debug
-    false
+    true
   end
 
   def arguments
     {
       # For testing purposes, choose a random set of 10 fragments
-      fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id }).sample(20)
+      fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id }).sample(30)
     }
   end
 
@@ -55,32 +55,32 @@ class Protocol
     phusion_stock_item = choose_sample "Phusion HF Master Mix"
 
     # Set up stripwells
-    stripwells = produce spread fragments, "Stripwell", 1, 3
+    stripwells = produce spread fragments, "Stripwell", 1, 12
 
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
         check "Label a new stripwell with the id #{sw}."
-        check "Pipette 19 µL of molecular grade water into wells " + sw.non_empty + "."
+        check "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
         separator
       end
       # TODO: Put an image of a labeled stripwell here
     }
 
     # Set up reactions
-    transfer( [ "Template, 1 µL", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
+    load_samples( [ "Template, 1 µL", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
         templates,
         forward_primers,
         reverse_primers
       ], stripwells ) {
-        note "Transfer templates first, then forward primers, then reverse primers."
+        note "Load templates first, then forward primers, then reverse primers."
         warning "Use a fresh pipette tip for each transfer."
       }
 
     show {
       title "Add Master Mix"
       stripwells.each do |sw|
-        check "Pipette 25 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty + " of stripwell #{sw}."
+        check "Pipette 25 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       separator
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
@@ -110,6 +110,8 @@ class Protocol
 
     # Release the stripwells silently, since they should stay in the thermocycler
     release stripwells
+
+    return { stripwell_ids: stripwells.collect { |s| s.id } }
 
   end
 
