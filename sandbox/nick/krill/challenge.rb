@@ -1,6 +1,6 @@
 class Protocol
   def main
-    all_plasmids = find(:item, object_type: { name: "Plasmid Stocks" })
+    all_plasmids = find(:item, sample: { object_type: { name: "Plasmid Stock" } })
     plasmids_1_6 = all_plasmids[0..5]
     show {
       note plasmids_1_6
