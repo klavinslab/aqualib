@@ -6,7 +6,9 @@ class Protocol
 
   def main
 
-    show { title name }
+    n = name
+
+    show { title n }
 
   end
 
