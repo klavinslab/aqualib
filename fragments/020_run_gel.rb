@@ -67,10 +67,17 @@ class Protocol
     end
 
     transfer( stripwells, gels ) {
-      description: "Using a 100 µL pipetter, pipet %{fragment_volume} µL of the first five PCR results with loading dye into the gel."
+      description: "Using a 100 µL pipetter, pipet #{fragment_volume} µL of the PCR result into the gel lane."
       note "Make sure each stripwell has the leftmost well labeled with an 'A'. 
-            This well with contains the first sample, the well to its right contains the second sample, etc."
+            This well contains the first sample. The well to its right contains the second sample, etc."
       image "gel_begin_loading"
+    }
+    
+    show {
+      title "Start electrophoresis"
+      note "Carefully attach the gel box lid(s) to the gel box(es), being careful not to bump the samples out of the wells. Attach the red electrode to the red terminal of the power supply, and the black electrode to the neighboring black terminal. Hit the start button on the gel boxes - usually a small running person icon."
+      note "Make sure the power supply is not erroring (no E* messages) and that there are bubbles emerging from the platinum wires in the bottom corners of the gel box."
+      image "gel_check_for_bubbles"
     }
 
     release stripwells # TODO throw these away
@@ -81,22 +88,5 @@ class Protocol
 
 end
 
-# step
-#   description: "Start electrophoresis"
-#   note: "Carefully attach the gel box lid(s) to the gel box(es), being careful not to bump the samples out of the wells. Attach the red electrode to the red terminal of the power supply, and the black electrode to the neighboring black terminal. Hit the start button on the gel boxes - usually a small running person icon."
-#   warning: "Make sure the power supply is not erroring (no E* messages) and that there are bubbles emerging from the platinum wires in the bottom corners of the gel box."
-#   image: "gel_check_for_bubbles"
-# end
 
-# x=0
-# while x < num
-#   produce
-#     gel_lane = 1 "Gel Lane" from fragment[x]
-#   end
-#   x=x+1
-# end
 
-# release ladder
-# release fragment
-# release gel
-# end
