@@ -13,7 +13,7 @@ class Protocol
       data = show {
         title "Step #{i}" 
         note "#{i} squared is #{j}"
-        input type: "number", var: "z#{i}", label: "Enter a number"
+        get type: "number", var: "z#{i}", label: "Enter a number"
         select choices: [ "A", "B" ], var: "x", label: "Choose something"
       }
       
