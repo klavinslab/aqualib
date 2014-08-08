@@ -7,10 +7,10 @@ class Protocol
       [ { content: 1, check: true }, 2, 3, 4 ]
     ]
 
-    display([
-             { title: "A Table" },
-             { table: m }
-    ]);
+    show {
+             title "A Table"
+             table m
+    }
 
   end
 
