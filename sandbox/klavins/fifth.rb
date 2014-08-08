@@ -1,5 +1,5 @@
 
-needs "Krill/test_lib"
+needs "aqualib/sandbox/klavins/test_lib"
 
 class Protocol
 
@@ -8,12 +8,13 @@ class Protocol
   def main
 
     t = Thing.new 0
+    y f 2
    
-    show(
-            { title: "It's working" },
-            { note: t.get },
-            { note: (f 2) }
-    )
+    show {
+            title "It's working"
+            note t.get
+            note y
+    }
 
   end
 
