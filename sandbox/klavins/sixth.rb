@@ -1,4 +1,4 @@
-needs "Krill/sixth_lib"
+needs "aqualib/sandbox/klavins/sixth_lib"
 
 class Protocol
 
@@ -6,7 +6,7 @@ class Protocol
 
   def main
 
-    show({title: name })
+    show { title name }
 
   end
 
