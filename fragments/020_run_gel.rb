@@ -1,4 +1,4 @@
-needs "Krill/lib/standard"
+needs "aqualib/lib/standard"
 
 class Protocol
 
