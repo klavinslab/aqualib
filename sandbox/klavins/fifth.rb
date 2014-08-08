@@ -8,7 +8,7 @@ class Protocol
   def main
 
     t = Thing.new 0
-    y f 2
+    y = f 2
    
     show {
             title "It's working"
