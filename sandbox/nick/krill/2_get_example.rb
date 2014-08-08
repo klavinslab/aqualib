@@ -6,7 +6,7 @@ class Protocol
       get("text", var: "z", label: "Enter a string", default: "Hello World 2")
     }
 
-    y = data[:x]
+    y = data[:y]
     z = data[:z]
 
     show {
