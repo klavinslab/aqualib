@@ -1,6 +1,6 @@
 class Protocol
   def main
-    show {
+    data = show {
       title "Hello World!" 
       (1..10).each { |i|
         get "number",  var: "g#{i}"
@@ -8,6 +8,7 @@ class Protocol
     }
     show {
       title "Thanks :-)"
+      note data["g3".to_sym]
     }
   end
 end
