@@ -5,7 +5,7 @@ class Protocol
 		#samples = SampleType.where("name='Fragment'")[0].samples
 		samples = find(:sample,sample_type: {name: 'Fragment'})
 
-		x = (produce spread samples[0,25], "Stripwell", 1, 12)[0]
+		x = produce spread samples[0,25], "Stripwell", 1, 12
 		y = produce new_collection "Gel", 2, 6
 
 		routing = [
@@ -19,10 +19,10 @@ class Protocol
 
 		show do
 			title "Transfer"
-			transfer x, y, routing
+			transfer x[0], y, routing
 		end
 
-		release [x, y]
+		release x +[y]
 
 	end
 
