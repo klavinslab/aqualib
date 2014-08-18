@@ -18,7 +18,7 @@ class Protocol
     z_data = data[:z]
     show {
       title "Hello World!"
-      note "y is #{y} and z is #{z}"
+      note "y is #{y} and x is #{x}"
       note "y_data is #{y_data} and z_data is #{z_data}"
     }
   end
