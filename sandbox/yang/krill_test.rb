@@ -6,7 +6,7 @@ class Protocol
 
   def main
     x = input[:x]
-    y = input[:name]
+    y = input[:y]
     plasmid_x1 = find(:item, id: 123)
     take plasmid_x1
     data = show {
@@ -19,6 +19,7 @@ class Protocol
     show {
       title "Hello World!"
       note "y is #{y} and z is #{z}"
+      note "y_data is #{y_data} and z_data is #{z_data}"
     }
   end
   
