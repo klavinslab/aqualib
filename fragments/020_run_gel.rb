@@ -63,7 +63,7 @@ class Protocol
 
     gels.each do |gel|
       gel.set 0, 0, ladder
-      gel.set 1, 0, ladder.sample
+      gel.set 1, 0, ladder
     end
 
     transfer( stripwells, gels ) {
@@ -83,6 +83,8 @@ class Protocol
     release stripwells # TODO throw these away
 
     release gels + [ ladder, dye ]
+
+    return input
 
   end
 
