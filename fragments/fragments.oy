@@ -1,7 +1,7 @@
 place pcr
   # IN: Fragment IDs
   # OUT: Fragment Object with Fragement Details and Stripwell IDs added
-  protocol: "aqualib:fragments/pcr.pl"
+  protocol: "aqualib:fragments/010_PCR.rb"
   group: "technicians"
   marked: true
   start: now()
@@ -15,7 +15,7 @@ end
 place pour_gel
   # IN: Fragment Object, from which the number of gels to pour is obtained
   # OUT: Fragment Object with gel IDs added.
-  protocol: "aqualib:fragments/pour_gel.pl"
+  protocol: "aqualib:fragments/015_pour_gel.rb"
   group: "technicians"
   marked: false
   start: now()
@@ -25,7 +25,7 @@ end
 place run_gel
   # IN: Fragement Object
   # OUT: Gels in Fragment Object are populated with Fragment sample IDs
-  protocol: "aqualib:fragments/run_gel.pl"
+  protocol: "aqualib:fragments/020_run_gel.rb"
   group: "technicians"
   marked: false
   start: now()
@@ -37,31 +37,7 @@ place wait_for_gel
 end
 
 place image_gel
-  protocol: "aqualib:fragments/image_gel.pl"
-  group: "technicians"
-  marked: false
-  start: now()
-  window: hours(1)
-end
-
-place cut_gel
-  protocol: "aqualib:fragments/cut_gel.pl"
-  group: "technicians"
-  marked: false
-  start: now()
-  window: hours(1)
-end
-
-place purify
-  protocol: "aqualib:fragments/purify.pl"
-  group: "technicians"
-  marked: false
-  start: now()
-  window: hours(1)
-end
-
-place quantify
-  protocol: "aqualib:fragments/quantify.pl"
+  protocol: "aqualib:fragments/025_image_gel.rb"
   group: "technicians"
   marked: false
   start: now()
@@ -75,8 +51,5 @@ transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when minutes_elapsed(0,1) && completed(1) end
 transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
 transition [ wait_for_gel ] => [ image_gel ] when minutes_elapsed(0,1) end
-transition [ image_gel ] => [ cut_gel ] when completed(0) end
-transition [ cut_gel ] => [ purify ] when completed(0) end
-transition [ purify ] => [ quantify ] when completed(0) end
 
 
