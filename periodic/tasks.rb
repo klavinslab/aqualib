@@ -62,7 +62,7 @@ class Protocol
         else
 
           show {
-            title "Thank you! 
+            title "Thank you!"
             note "Done with daily tasks."
             note "There are no more #{type} tasks."
           }
