@@ -8,7 +8,9 @@ class Protocol
 
   def main
 
-    tasks = find(:task,{task_prototype: {name: input[:type]},status: "ready"})
+    type = input[:type]
+
+    tasks = find(:task,{task_prototype: {name: type},status: "ready"})
 
     if tasks.length == 0
 
@@ -22,15 +24,30 @@ class Protocol
       while tasks.length > 0
 
         data = show {
-          title "Available %{type} Tasks"
+          title "Available #{type} Tasks"
           note "The following tasks have not been completed today."
           select tasks.collect { |t| t.name }, var: "choice", label: "Choose a task", default: 1
+        }
+
+        task = (tasks.select { |t| t.name == data[:choice] }).first
+
+        task.status = "working"
+        task.save
+
+        spec = JSON.parse task.specification, symbolize_names: true
+
+        data = show {
+          title task.name
+          spec[:notes].map    { |n| note n }
+          spec[:checks].map   { |c| check c }
+          spec[:warnings].map { |w| warning w }
+          spec[:images].map   { |i| image i }
+          select [ "Yes", "No" ], var: "done", label: "Did you complete the task?", default: 1
         }
 
       end
 
     end
-
 
   end
 
