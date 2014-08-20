@@ -34,7 +34,7 @@ class Protocol
         task.status = "working"
         task.save
 
-        spec = JSON.parse task.specification, symbolize_names: true
+        spec = task.spec 
 
         data = show {
           title task.name
