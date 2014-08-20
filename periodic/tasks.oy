@@ -1,7 +1,7 @@
 root = "periodic/"
 
 place daily
-  protocol: root + "tasks.pl"
+  protocol: root + "tasks.rb"
   argument
     type: "Daily"
   end
@@ -11,7 +11,7 @@ place daily
 end
 
 place weekly
-  protocol: root + "tasks.pl"
+  protocol: root + "tasks.rb"
   argument
     type: "Weekly"
   end
