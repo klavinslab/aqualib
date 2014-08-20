@@ -8,7 +8,7 @@ class Protocol
 
   def main
 
-    tasks = find(:task,{name: input[:type], status: "ready"})
+    tasks = find(:task,{task_prototype: {name: input[:type]},status: "ready"})
 
     show {
       title "Tasks"
