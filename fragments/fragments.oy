@@ -47,7 +47,7 @@ end
 
 wire ( pcr, "stripwell_ids" ) => ( pour_gel, "stripwell_ids" )
 
-wire pour_gel => run_gel
+# wire pour_gel => run_gel
 
 wire ( run_gel, "stripwell_ids" ) => ( image_gel, "stripwell_ids" )
 wire ( run_gel, "gel_ids" ) => ( image_gel, "gel_ids" )
