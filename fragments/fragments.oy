@@ -45,8 +45,7 @@ place image_gel
   window: hours(1)
 end
 
-wire ( pcr, "stripwell_ids" ) => ( pour_gel, "stripwell_ids" )
-
+wire pcr => pour_gel
 wire pour_gel => run_gel
 
 wire ( run_gel, "stripwell_ids" ) => ( image_gel, "stripwell_ids" )
