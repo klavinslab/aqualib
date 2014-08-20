@@ -63,12 +63,12 @@ class Protocol
 
         if data[:done] == "No" || tasks.length > 1
 
-          show {
+          data = show {
             title "Another task?"
             select ["Yes","No"], var: "choice", label: "Do you have time for another #{type} task?", default: 1
           }
 
-          if more == "Yes"
+          if data[:choice] == "Yes"
             tasks = find(:task,{task_prototype: {name: type},status: "ready"})
           else
             tasks = []
