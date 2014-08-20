@@ -12,7 +12,7 @@ class Protocol
 
     show {
       title "Tasks"
-      note: tasks
+      note tasks
     }
 
   end
