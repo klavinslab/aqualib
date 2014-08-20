@@ -30,41 +30,26 @@ class Protocol
         }
 
         task = (tasks.select { |t| t.name == data[:choice] }).first
-
         task.status = "working"
         task.save
 
-        spec = task.spec 
-
         data = show {
           title task.name
-          spec[:notes].map    { |n| note n }
-          spec[:checks].map   { |c| check c }
-          spec[:warnings].map { |w| warning w }
-          spec[:images].map   { |i| image i }
+          task.spec[:notes].map    { |n| note n }
+          task.spec[:checks].map   { |c| check c }
+          task.spec[:warnings].map { |w| warning w }
+          task.spec[:images].map   { |i| image i }
           select [ "Yes", "No" ], var: "done", label: "Did you complete the task?", default: 1
         }
 
-        if data[:done] == "Yes"
-
-          task.status = "done"
-          task.save
-          show {
-            title "Thank you!"
-            note "Aquarium has made a note of your efforts"
-          }
-
-        else
-
-          task.status = "ready"
-          task.save
-
-        end
+        task.status = data[:done] == "Yes" ? "done" : "ready"
+        task.save
 
         if data[:done] == "No" || tasks.length > 1
 
           data = show {
-            title "Another task?"
+            title "Thank you!"
+            note "Aquarium has made a note of your efforts"
             select ["Yes","No"], var: "choice", label: "Do you have time for another #{type} task?", default: 1
           }
 
@@ -77,7 +62,8 @@ class Protocol
         else
 
           show {
-            title "Done with daily tasks."
+            title "Thank you! 
+            note "Done with daily tasks."
             note "There are no more #{type} tasks."
           }
 
