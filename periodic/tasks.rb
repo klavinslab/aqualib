@@ -10,10 +10,27 @@ class Protocol
 
     tasks = find(:task,{task_prototype: {name: input[:type]},status: "ready"})
 
-    show {
-      title "Tasks"
-      note tasks
-    }
+    if tasks.length == 0
+
+      show {
+        title "All %{type} tasks have been completed or are in progress."
+        note "Thanks for checking!"
+      }
+
+    else
+
+      while tasks.length > 0
+
+        data = show {
+          title "Available %{type} Tasks"
+          note "The following tasks have not been completed today."
+          select tasks.collect { |t| t.name }, var: "choice", label: "Choose a task", default: 1
+        }
+
+      end
+
+    end
+
 
   end
 
