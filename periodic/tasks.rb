@@ -15,7 +15,7 @@ class Protocol
     if tasks.length == 0
 
       show {
-        title "All %{type} tasks have been completed or are in progress."
+        title "All #{type} tasks have been completed or are in progress."
         note "Thanks for checking!"
       }
 
