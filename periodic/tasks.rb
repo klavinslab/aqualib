@@ -79,6 +79,3 @@ class Protocol
 
 end
 
-
-
-# end

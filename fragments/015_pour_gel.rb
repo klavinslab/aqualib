@@ -5,7 +5,7 @@ class Protocol
   include Standard
 
   def debug
-    true
+    false
   end
 
   def arguments

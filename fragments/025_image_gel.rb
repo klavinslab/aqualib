@@ -7,6 +7,8 @@ class Protocol
 			note "Todo: Write this protocol"
 		}
 
+		return input
+
 	end
 
 end
