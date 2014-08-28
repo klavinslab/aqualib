@@ -13,10 +13,10 @@ class Protocol
         	}
         }
 
-		show 
+		show {
 			title "Fragments Required for Current Gibson Assmebly Tasks"
 			table tasks.collect { |t| [ t[:id], t[:fragments].collect { |f| f.id } ] }
-		end
+		}
 
 	end
 
