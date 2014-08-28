@@ -10,7 +10,7 @@ class Protocol
 
 		show {
 			title "Tasks"
-			note: tasks
+			note tasks
 		}
 
 		task_details = tasks.collect { |t| 
