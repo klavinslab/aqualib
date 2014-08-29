@@ -43,7 +43,55 @@ module Cloning
 
     end
 
-  end
+  end # # # # # # # 
+
+  def gibson_assembly_status
+
+  	# find all un done gibson assembly tasks 
+	tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }}).select { |t| 
+		t.status == "ready" || t.status == "running" || t.status == "out for sequencing" 
+	}
+
+	# look up all fragments needed to 
+	(tasks.select { |t| t.status == "ready" }).each do |t|
+
+		t[:fragments] = {
+			ready_to_use: [],
+			ready_to_build: [],
+			not_ready_to_build: []
+		}
+
+		t.simple_spec[:fragments].each do |fid|
+
+			info = fragment_info fid
+
+			if !info
+				t[:fragments][:not_ready_to_build].push fid
+			elsif info[:stocks].length > 0
+				t[:fragments][:ready_to_use].push fid
+			else
+				t[:fragments][:ready_to_build].push fid
+			end
+
+		end
+
+	end
+
+	return {
+
+		fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
+			.inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
+
+		assemblies: {
+			under_construction: (tasks.select { |t| t.status == "running" }).collect { |t| t.id },
+			waiting_for_ingredients: (tasks.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
+			ready_to_build: (tasks.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },,
+	    	out_for_sequencing: (tasks.select { |t| t.status == "out for sequencing" }).collect { |t| t.id }
+	    }
+
+	}
+
+  end # # # # # # # 
 
 end
 
@@ -53,65 +101,14 @@ class Protocol
 
 	def main
 
-		show {
-			title "Gibson Todo List"
-			note "This protocol determines the set of all fragments that need to be made
-                  for the current list of Gibson Assemblies."
-        }
+	  gas = gibson_assembly_status
 
-		tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+	  show {
+	  	title "Status"
+	  	note gas
+	  }
 
-		tasks.each { |t| t[:target] = Sample.find(t.simple_spec[:target]) }
-
-		show {
-			title "Gibson Assemblies"
-			table(
-			  [ [ "Task ID", "Name", "Status", "Target ID", "Target Name" ] ]
-			  .concat tasks
-			    .collect { |t| [ t.id, t.name, t.status, t[:target].id, t[:target].name ] }
-			)
-		}
-
-		(tasks.select { |t| t.status == "ready" }).each do |t|
-
-			t[:fragments] = {
-				ready_to_use: [],
-				ready_to_build: [],
-				not_ready_to_build: []
-			}
-
-			t.simple_spec[:fragments].each do |fid|
-				info = fragment_info fid
-				if !info
-					t[:fragments][:not_ready_to_build].push fid
-				elsif info[:stocks].length > 0
-					t[:fragments][:ready_to_use].push fid
-				else
-					t[:fragments][:ready_to_build].push fid
-				end
-			end
-
-		end
-
-		return {
-
-			fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
-				.inject { |all,part| 
-					all.each { |k,v|
-						puts "all = #{all}"
-						all[k].concat part[k] 
-					} 
-				},
-
-			assemblies: {
-				under_construction: [],
-				waiting_for_ingredients: [],
-				ready_to_build: [],
-            	out_for_sequencing: [],
-            	sequencing_done: []
-	        }
-
-		}
+	  return gas
 
 	end
 
