@@ -49,6 +49,8 @@ end
 
 class Protocol
 
+	include Cloning
+
 	def main
 
 		show {
@@ -77,7 +79,7 @@ class Protocol
 				not_ready_to_build: []
 			}
 			t.simple_spec[:fragments].each do |fid|
-				info = fragement_info fid
+				info = fragment_info fid
 				if !info
 					t[:fragments][:not_ready_to_build].push fid
 				elsif info[:stocks].length > 0
