@@ -95,7 +95,7 @@ class Protocol
 
 		return {
 
-			fragments: (tasks.collect { |t| t[:fragments] })
+			fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
 				.inject { |all,part| 
 					all.each { |k,v|
 						puts "all = #{all}"
