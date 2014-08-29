@@ -10,10 +10,12 @@ class Protocol
 
 	  show {
 	  	title "Gibson Assemblies in the Pipeline"
-	  	note "Under Construction: #{gas[:assemblies][:under_construction]}"
-		note "Waiting for Ingredients: #{gas[:assemblies][:waiting_for_ingredients]}"
-	  	note "Ready to Build: #{gas[:assemblies][:ready_to_build]}"		
-	  	note "Out for Sequencing: #{gas[:assemblies][:out_for_sequencing]}"		
+	  	table [ 
+	  		[ "Under Construction", gas[:assemblies][:under_construction].to_s ], 
+			[ "Waiting for Ingredients", gas[:assemblies][:waiting_for_ingredients].to_s ],
+	  	 	[ "Ready to Build", gas[:assemblies][:ready_to_build].to_s ],		
+	  		[ "Out for Sequencing", gas[:assemblies][:out_for_sequencing].to_s ]
+	  	]	
 	  	separator
 	  	note "Fragments Ready To Use: #{gas[:fragments][:ready_to_use]}"
 	  	note "Fragments Ready To Build: #{gas[:fragments][:ready_to_build]}"
