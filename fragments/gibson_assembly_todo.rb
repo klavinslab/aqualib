@@ -10,7 +10,7 @@ class Protocol
         }
 
 		tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-		tasks.each do { |t| t[:target] = Sample.find(t.simple_spec[:target]) }
+		tasks.each { |t| t[:target] = Sample.find(t.simple_spec[:target]) }
 
 		show {
 			title "Tasks"
