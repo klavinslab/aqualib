@@ -15,8 +15,8 @@ class Protocol
 		show {
 			title "Tasks"
 			table(
-			  [ [ "Task ID", "Name", "Target ID", "Target Name" ] ]
-			  .concat tasks.collect { |t| [ t.id, t.name, t[:target].id, t[:target].name ] }
+			  [ [ "Task ID", "Name", "Status", "Target ID", "Target Name" ] ]
+			  .concat tasks.collect { |t| [ t.id, t.name, t.status, t[:target].id, t[:target].name ] }
 			)
 		}
 
