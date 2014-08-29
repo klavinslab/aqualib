@@ -73,11 +73,13 @@ class Protocol
 		}
 
 		(tasks.select { |t| t.status == "ready" }).each do |t|
+
 			t[:fragments] = {
 				ready_to_use: [],
 				ready_to_build: [],
 				not_ready_to_build: []
 			}
+
 			t.simple_spec[:fragments].each do |fid|
 				info = fragment_info fid
 				if !info
@@ -88,10 +90,18 @@ class Protocol
 					t[:fragments][:ready_to_build].push fid
 				end
 			end
+
 		end
 
 		return {
-			fragments: (tasks.collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
+
+			fragments: (tasks.collect { |t| t[:fragments] })
+				.inject { |all,part| 
+					all.each { |k,v| 
+						all[k].concat part[k] 
+					} 
+				},
+
 			assemblies: {
 				under_construction: [],
 				waiting_for_ingredients: [],
@@ -99,6 +109,7 @@ class Protocol
             	out_for_sequencing: [],
             	sequencing_done: []
 	        }
+
 		}
 
 	end
