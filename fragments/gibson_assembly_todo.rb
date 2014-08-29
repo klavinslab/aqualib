@@ -10,20 +10,23 @@ class Protocol
         }
 
 		tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+
 		tasks.each { |t| t[:target] = Sample.find(t.simple_spec[:target]) }
 
 		show {
-			title "Tasks"
+			title "Ready Gibson Assemblies"
 			table(
 			  [ [ "Task ID", "Name", "Status", "Target ID", "Target Name" ] ]
-			  .concat tasks.collect { |t| [ t.id, t.name, t.status, t[:target].id, t[:target].name ] }
+			  .concat (tasks
+			    .select { |t| t.status == "ready" })
+			    .collect { |t| [ t.id, t.name, t.status, t[:target].id, t[:target].name ] }
 			)
 		}
 
 		fragments = (tasks.collect { |t| t.simple_spec[:fragments] }).flatten
 
 		show {
-			title "Fragments"
+			title "Fragments to be made"
 			note fragments.to_s
 		}
 
