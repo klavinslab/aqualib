@@ -97,7 +97,8 @@ class Protocol
 
 			fragments: (tasks.collect { |t| t[:fragments] })
 				.inject { |all,part| 
-					all.each { |k,v| 
+					all.each { |k,v|
+						puts all
 						all[k].concat part[k] 
 					} 
 				},
