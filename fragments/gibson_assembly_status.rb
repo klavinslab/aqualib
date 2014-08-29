@@ -16,10 +16,12 @@ class Protocol
 	  	 	[ "Ready to Build", gas[:assemblies][:ready_to_build].to_s ],		
 	  		[ "Out for Sequencing", gas[:assemblies][:out_for_sequencing].to_s ]
 	  	]	
-	  	separator
-	  	note "Fragments Ready To Use: #{gas[:fragments][:ready_to_use]}"
-	  	note "Fragments Ready To Build: #{gas[:fragments][:ready_to_build]}"
-	  	note "Fragments Not Ready To Build: #{gas[:fragments][:not_ready_to_build]}"	  	
+	  	
+	  	table [
+	  		[ "Fragments Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
+	  	 	[ "Fragments Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
+	  	 	[ "Fragments Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
+	  	]	  	
 	  }
 
 	  return gas
