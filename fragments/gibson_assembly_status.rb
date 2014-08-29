@@ -1,4 +1,4 @@
-include "aqualib/lib/cloning"
+needs "aqualib/lib/cloning"
 
 class Protocol
 
