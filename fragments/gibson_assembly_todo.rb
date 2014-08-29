@@ -48,12 +48,22 @@ module Cloning
   def gibson_assembly_status
 
   	# find all un done gibson assembly tasks 
-	tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }}).select { |t| 
-		t.status == "ready" || t.status == "running" || t.status == "out for sequencing" 
+	tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+
+	ready = tasks.select { |t| 
+		t.status == "ready" 
+	}
+
+	running = tasks.select { |t| 
+		t.status == "running"
+	}
+
+	out = tasks.select { |t| 
+		t.status == "out for sequencing" 
 	}
 
 	# look up all fragments needed to 
-	(tasks.select { |t| t.status == "ready" }).each do |t|
+	ready.each do |t|
 
 		t[:fragments] = {
 			ready_to_use: [],
@@ -83,10 +93,10 @@ module Cloning
 			.inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
 		assemblies: {
-			under_construction: (tasks.select { |t| t.status == "running" }).collect { |t| t.id },
-			waiting_for_ingredients: (tasks.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-			ready_to_build: (tasks.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-	    	out_for_sequencing: (tasks.select { |t| t.status == "out for sequencing" }).collect { |t| t.id }
+			under_construction: running.collect { |t| t.id },
+			waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
+			ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
+	    	out_for_sequencing: out.collect { |t| t.id }
 	    }
 
 	}
