@@ -7,7 +7,7 @@ class Protocol
 		# for the current list of Gibson Assemblies. 
 
 		tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-		fragments = (tasks.collect { |t| t.spec["fragments Fragment"] }).flatten
+		fragments = (tasks.collect { |t| t.spec }).flatten
 
 		show {
 			title "Tasks"
@@ -16,7 +16,7 @@ class Protocol
 
 		show {
 			title "Fragments"
-			note fragments
+			note fragments.to_s
 		}
 
 		#show {
