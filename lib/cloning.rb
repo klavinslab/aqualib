@@ -2,9 +2,15 @@ module Cloning
 
   def fragment_info fid
 
-    fragment = find(:sample,{id: fid})[0]# Sample.find(fid)
+    # This method returns information about the ingredients needed to make the fragment with id fid.
+    # It returns a hash containing a list of stocks of the fragment, as well item numbers for forward,
+    # reverse primers and plasmid template. It also computes the annealing temperature.
+
+    # find the fragment and get its properties
+    fragment = find(:sample,{id: fid})[0]
     props = fragment.properties
 
+    # get sample ids for primers and template
     fwd = props["Forward Primer"]
     rev = props["Reverse Primer"]
     template = props["Template"]
@@ -15,6 +21,7 @@ module Cloning
 
     else
 
+      # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
       rev_items = rev.in "Primer Aliquot"
       template_items = template.in "Plasmid Stock"
@@ -25,9 +32,11 @@ module Cloning
 
       else
 
+        # compute the annealing temperature
         t1 = fwd_items[0].sample.properties["Tm Anneal"] || 70.0
         t2 = rev_items[0].sample.properties["Tm Anneal"] || 70.0
 
+        # find stocks of this fragment, if any
         stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" }
 
         return {
@@ -47,59 +56,47 @@ module Cloning
 
   def gibson_assembly_status
 
-    # find all un done gibson assembly tasks 
-  tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    # find all un done gibson assembly tasks ans arrange them into lists by status
+    tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    ready = tasks.select { |t| t.status == "ready" }
+    running = tasks.select { |t| t.status == "running" }
+    out = tasks.select { |t| t.status == "out for sequencing"  }
 
-  ready = tasks.select { |t| 
-    t.status == "ready" 
-  }
+    # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
+    ready.each do |t|
 
-  running = tasks.select { |t| 
-    t.status == "running"
-  }
+      t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
-  out = tasks.select { |t| 
-    t.status == "out for sequencing" 
-  }
+      t.simple_spec[:fragments].each do |fid|
 
-  # look up all fragments needed to 
-  ready.each do |t|
+        info = fragment_info fid
 
-    t[:fragments] = {
-      ready_to_use: [],
-      ready_to_build: [],
-      not_ready_to_build: []
-    }
+        if !info
+          t[:fragments][:not_ready_to_build].push fid
+        elsif info[:stocks].length > 0
+          t[:fragments][:ready_to_use].push fid
+        else
+          t[:fragments][:ready_to_build].push fid
+        end
 
-    t.simple_spec[:fragments].each do |fid|
-
-      info = fragment_info fid
-
-      if !info
-        t[:fragments][:not_ready_to_build].push fid
-      elsif info[:stocks].length > 0
-        t[:fragments][:ready_to_use].push fid
-      else
-        t[:fragments][:ready_to_build].push fid
       end
 
     end
 
-  end
+    # return a big hash describing the status of all un-done assemblies
+    return {
 
-  return {
+      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
+        .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
-    fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
-      .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
+      assemblies: {
+        under_construction: running.collect { |t| t.id },
+        waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
+        ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
+          out_for_sequencing: out.collect { |t| t.id }
+        }
 
-    assemblies: {
-      under_construction: running.collect { |t| t.id },
-      waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-      ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-        out_for_sequencing: out.collect { |t| t.id }
-      }
-
-  }
+    }
 
   end # # # # # # # 
 
