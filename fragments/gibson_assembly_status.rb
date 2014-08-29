@@ -10,6 +10,8 @@ class Protocol
 
 	  show {
 	  	title "Gibson Assemblies in the Pipeline"
+
+	  	note "Assemblies"
 	  	table [ 
 	  		[ "Under Construction", gas[:assemblies][:under_construction].to_s ], 
 			[ "Waiting for Ingredients", gas[:assemblies][:waiting_for_ingredients].to_s ],
@@ -17,10 +19,11 @@ class Protocol
 	  		[ "Out for Sequencing", gas[:assemblies][:out_for_sequencing].to_s ]
 	  	]	
 	  	
+	  	note "Fragments"
 	  	table [
-	  		[ "Fragments Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
-	  	 	[ "Fragments Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
-	  	 	[ "Fragments Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
+	  		[ "Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
+	  	 	[ "Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
+	  	 	[ "Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
 	  	]	  	
 	  }
 
