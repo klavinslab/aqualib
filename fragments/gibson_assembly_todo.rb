@@ -19,14 +19,6 @@ class Protocol
 			table fragments.collect { |f| [ f.id, f.name ] }
 		}
 
-
-		task_details = tasks.collect { |t| 
-        	{
-        		id: t.id,
-        		fragments: t.spec[:fragments].collect { |fid| find(:sample, { id: fid } ) }
-        	}
-        }
-
 		#show {
 		#	title "Fragments Required for Current Gibson Assmebly Tasks"
 		#	table tasks.collect { |t| [ t[:id], t[:fragments] }
