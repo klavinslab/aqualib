@@ -89,7 +89,7 @@ class Protocol
 		end
 
 		return {
-			fragments: (tasks.collect { |t| t.fragments }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } }
+			fragments: (tasks.collect { |t| t.fragments }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 			assemblies: {
 				under_construction: [],
 				waiting_for_ingredients: [],
