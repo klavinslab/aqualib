@@ -85,7 +85,7 @@ module Cloning
 		assemblies: {
 			under_construction: (tasks.select { |t| t.status == "running" }).collect { |t| t.id },
 			waiting_for_ingredients: (tasks.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-			ready_to_build: (tasks.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },,
+			ready_to_build: (tasks.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
 	    	out_for_sequencing: (tasks.select { |t| t.status == "out for sequencing" }).collect { |t| t.id }
 	    }
 
