@@ -115,7 +115,7 @@ class Protocol
 
 	  show {
 	  	title "Status"
-	  	note gas
+	  	note gas.to_s
 	  }
 
 	  return gas
