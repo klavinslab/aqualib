@@ -3,16 +3,24 @@ class Protocol
 
 	def main
 
-		# This protocol determines the set of all fragments that need to be made
-		# for the current list of Gibson Assemblies. 
+		show {
+			title "Gibson Todo List"
+			note "This protocol determines the set of all fragments that need to be made
+                  for the current list of Gibson Assemblies."
+        }
 
 		tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-		fragments = (tasks.collect { |t| t.simple_spec[:fragments] }).flatten
+		tasks.each do { |t| t[:target] = Sample.find(t.simple_spec[:target]) }
 
 		show {
 			title "Tasks"
-			table tasks.collect { |t| [ t.id, t.name ] }
+			table(
+			  [ [ "Task ID", "Name", "Target ID", "Target Name" ] ]
+			  .concat tasks.collect { |t| [ t.id, t.name, t[:target].id, t[:target].name ] }
+			)
 		}
+
+		fragments = (tasks.collect { |t| t.simple_spec[:fragments] }).flatten
 
 		show {
 			title "Fragments"
