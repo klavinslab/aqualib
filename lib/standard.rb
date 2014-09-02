@@ -6,7 +6,7 @@ module Standard
 
 	def choose_sample sample_name
 
-		options = find(:item, sample: {name: sample_name}).reject { |i| location == 'deleted' }
+		options = find(:item, sample: {name: sample_name}).reject { |i| i.location == 'deleted' }
 
 		raise "No choices found for #{sample_name}" if options.length == 0
 
@@ -29,7 +29,7 @@ module Standard
 
     def choose_object object_name
 
-		options = find(:item, object_type: {name: object_name}).reject { |i| location == 'deleted' }
+		options = find(:item, object_type: {name: object_name}).reject { |i| i.location == 'deleted' }
 
 		raise "No choices found for #{object_name}" if options.length == 0
 
