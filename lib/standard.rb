@@ -29,7 +29,7 @@ module Standard
 
     def choose_object object_name
 
-		options = find(:item, object_type: {name: object_name})
+		options = find(:item, object_type: {name: object_name}).select { |i| i.location != 'deleted' }
 
 		raise "No choices found for #{object_name}" if options.length == 0
 
