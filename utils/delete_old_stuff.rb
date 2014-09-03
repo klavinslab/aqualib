@@ -30,7 +30,7 @@ class Protocol
 				select items.collect { |i| "#{i.id}: #{i.sample.name} at #{i.location}" }, var: "item_list", label: "Select Items", multiple: true
 			}
 
-			item_ids = data[:item_list]
+			item_ids = data[:item_list].collect { |i| i.split(':').to_i }
 
 			show {
 				title "Your choices"
