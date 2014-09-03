@@ -31,7 +31,7 @@ class Protocol
 
 		show {
 			title "Put the gel slices #{slices} away"
-			table [ [ "Gel Slice Id", "Location" ] ].concat( slices.each { |s| [ s.id, s.location ] } )
+			table [ [ "Gel Slice Id", "Location" ] ].concat( slices.collect { |s| [ s.id, s.location ] } )
 		}
 
 		release slices
