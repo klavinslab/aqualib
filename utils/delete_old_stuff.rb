@@ -12,7 +12,7 @@ class Protocol
         }
 
         project 	= data[:project]
-        sample_type = find(:sample_type,{name: data[:sample_type]})
+        sample_type = find(:sample_type,{name: data[:sample_type]})[0]
 
 		data = show {
 			title "Choose container type"
