@@ -25,7 +25,7 @@ class Protocol
 
 		data = show {
 			title "Choose items"
-			select items.collect { |i| i.id, var: "item_list", label: "Select Items"
+			select items.collect { |i| i.id }, var: "item_list", label: "Select Items"
 		}
 
 	end
