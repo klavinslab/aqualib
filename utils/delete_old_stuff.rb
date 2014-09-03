@@ -23,10 +23,21 @@ class Protocol
 
 		items = find( :item, { sample: { project: project }, object_type: { name: data[:object_type_name] } } )
 
-		data = show {
-			title "Choose items"
-			select items.collect { |i| "#{i.id}: #{i.sample.name} at #{i.location}" }, var: "item_list", label: "Select Items"
-		}
+		if items.length > 0
+
+			data = show {
+				title "Choose items"
+				select items.collect { |i| "#{i.id}: #{i.sample.name} at #{i.location}" }, var: "item_list", label: "Select Items"
+			}
+
+		else 
+
+			show {
+				title "No items"
+				note "There are no items with container type #{object_type_name} associated with #{project}"
+			}
+
+		end
 
 	end
 
