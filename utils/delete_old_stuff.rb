@@ -30,6 +30,13 @@ class Protocol
 				select items.collect { |i| "#{i.id}: #{i.sample.name} at #{i.location}" }, var: "item_list", label: "Select Items", multiple: true
 			}
 
+			item_ids = data[:item_list]
+
+			show {
+				title "Your choices"
+				note item_ids
+			}
+
 		else 
 
 			show {
