@@ -14,15 +14,26 @@ class Protocol
 			note "Describe how to slice the gels here"
 		}
 
+		slices = []
+
 		gels.each do |gel|
 
-			slices = distribute( gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true ) {
+			s = distribute( gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true ) {
 				title "Cut gel slices and place them in new 1.5 mL tubes"
 				note "Label the tubes with the id shown"
 			}
-			produce slices
+
+			produce s
+
+			slices = slices.concat s
 
 		end
+
+		show {
+			"Put the gel slices away"
+			table [ [ "Gel Slice Id", "Location" ] ].concat
+		      slices.each { |s| [ s.id, s.location ] }
+		}
 
 	end
 
