@@ -9,6 +9,18 @@ class Protocol
 			note "Get the gels with ids #{gels.collect { |g| g.id }}"
 		}
 
+		show {
+			title "TODO"
+			note "Describe how to slice the gels here"
+		}
+
+		gels.each do |gel|
+
+			slices = distribute gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true
+			produce slices
+
+		end
+
 	end
 
 end
