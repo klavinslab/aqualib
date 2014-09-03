@@ -15,7 +15,7 @@ class Protocol
         sample_type = find(:sample_type,{name: data[:sample_type]})
 
 		data = show {
-			title "Choose container type for #{project} #{pluralize sample_type.name, 2}"
+			title "Choose container type for #{project} #{pluralize 2, sample_type.name}"
 			select sample_type.object_types.collect { |ot| ot.name }, var: "sample_type", label: "Select Object Type"
 		}
 
