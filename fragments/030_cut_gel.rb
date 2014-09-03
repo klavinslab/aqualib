@@ -16,7 +16,7 @@ class Protocol
 
 		gels.each do |gel|
 
-			slices = distribute gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true {
+			slices = distribute( gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true ) {
 				title "Cut gel slices and place them in new 1.5 mL tubes"
 				note "Label the tubes with the id shown"
 			}
