@@ -37,7 +37,11 @@ class Protocol
 				note item_ids
 			}
 
-			item_ids.each { |iid| find(:item,{id: iid})[0].delete }
+			item_ids.each { |iid| 
+				i = find(:item,{id: iid})[0]
+				touch i
+				i.mark_as_deleted 
+			}
 
 		else 
 
