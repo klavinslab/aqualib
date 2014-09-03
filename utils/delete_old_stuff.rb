@@ -16,12 +16,17 @@ class Protocol
 
 		data = show {
 			title "Choose container type"
-			select sample_type.object_types.collect { |ot| ot.name }, var: "object_type", label: "Select Object Type"
+			select sample_type.object_types.collect { |ot| ot.name }, var: "object_type_name", label: "Select Object Type"
 		}
 
-		object_type_name = data[:object_type]
+		object_type_name = data[:object_type_name]
 
 		items = find( :item, { sample: { project: project }, object_type: { name: data[:object_type_name] } } )
+
+		data = show {
+			title "Choose items"
+			select items.collect { |i| i.id, var: "item_list", label: "Select Items"
+		}
 
 	end
 
