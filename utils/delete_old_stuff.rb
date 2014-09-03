@@ -59,7 +59,7 @@ class Protocol
 					select [ "Yes", "No" ], var: "more", label: "Delete more items?"
 				}
 
-				another = data[:more] == "Yes"
+				another = (data[:more] == "Yes")
 
 			end
 
