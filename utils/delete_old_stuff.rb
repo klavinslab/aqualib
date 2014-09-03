@@ -33,9 +33,11 @@ class Protocol
 			item_ids = data[:item_list].collect { |i| i.split(':')[0].to_i }
 
 			show {
-				title "Your choices"
+				title "Deleted!"
 				note item_ids
 			}
+
+			item_ids.each { |iid| find(:item,{id: iid})[0].delete }
 
 		else 
 
