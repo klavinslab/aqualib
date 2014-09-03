@@ -4,14 +4,20 @@ class Protocol
 
 		projects = find :project, {}
 		sample_types = find(:sample_type,{})
-		object_types = find(:object_type,{})
 
 		data = show {
-			title "Choose item types to delete"
+			title "Choose project and sample type"
 			select projects, var: "project", label: "Select Project Name"
 			select sample_types.collect { |st| st.name }, var: "sample_type", label: "Select Sample Type"
-			select object_types.collect { |ot| ot.name }, var: "sample_type", label: "Select Object Type"
         }
+
+        project 	= data[:project]
+        sample_type = find(:sample_type,{name: data[:sample_type]})
+
+		data = show {
+			title "Choose container type for #{project} #{pluralize sample_type.name, 2}"
+			select sample_type.object_types.collect { |ot| ot.name }, var: "sample_type", label: "Select Object Type"
+		}
 
 
 	end
