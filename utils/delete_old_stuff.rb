@@ -21,7 +21,7 @@ class Protocol
 
 		object_type_name = data[:object_type]
 
-		items = find( :item, { sample: { project: project }, object_type: { name: data[:object_type_name] })
+		items = find( :item, { sample: { project: project }, object_type: { name: data[:object_type_name] } } )
 
 	end
 
