@@ -40,7 +40,7 @@ class Protocol
       show {
         title "No fragments ready to build"
       }
-      return stripwell_ids: []
+      return { stripwell_ids: [] }
     end
 
     # find the average annealing temperature
