@@ -13,7 +13,7 @@ class Protocol
 
 		sample_type = (show {
 			title "Choose a sample type"
-			select projects, var: "sample_type", label: "Select Sample Type"
+			select sample_types, var: "sample_type", label: "Select Sample Type"
 		})[:sample_type]
 
 
