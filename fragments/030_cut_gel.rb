@@ -29,12 +29,7 @@ class Protocol
 
 		end
 
-		show {
-			title "Put the gel slices #{slices} away"
-			table [ [ "Gel Slice Id", "Location" ] ].concat( slices.collect { |s| [ s.id, s.location ] } )
-		}
-
-		release slices
+		release slices, interactive: true, method: "boxes"
 
 	end
 
