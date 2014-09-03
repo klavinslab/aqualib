@@ -49,19 +49,17 @@ class Protocol
 
 			end 
 
-				data = show {
-					if items.length == 0
-						title "No items"
-						note "There are no items with container type #{object_type_name} associated with #{project}" 
-					else
-						title "More?"
-					end
-					select [ "Yes", "No" ], var: "more", label: "Delete more items?"
-				}
+			data = show {
+				if items.length == 0
+					title "No items"
+					note "There are no items with container type #{object_type_name} associated with #{project}" 
+				else
+					title "More?"
+				end
+				select [ "Yes", "No" ], var: "more", label: "Delete more items?"
+			}
 
-				another = (data[:more] == "Yes")
-
-			end
+			another = (data[:more] == "Yes")
 
 		end
 
