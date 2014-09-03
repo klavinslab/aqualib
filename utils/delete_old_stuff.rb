@@ -2,7 +2,7 @@ class Protocol
 
 	def main
 
-		projects = find(:project)
+		projects = find :project, {}
 
 		show {
 			title "Choose a project"
