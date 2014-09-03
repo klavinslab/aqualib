@@ -9,6 +9,7 @@ class Protocol
 	  gas = gibson_assembly_status
 
 	  show {
+
 	  	title "Gibson Assemblies in the Pipeline"
 
 	  	note "Assemblies"
@@ -24,7 +25,8 @@ class Protocol
 	  		[ "Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
 	  	 	[ "Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
 	  	 	[ "Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
-	  	]	  	
+	  	]	
+	  	  	
 	  }
 
 	  return gas
