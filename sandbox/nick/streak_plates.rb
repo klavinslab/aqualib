@@ -40,11 +40,12 @@ class Protocol
       }
     end
 
-    # DEBUG: find all E coli Plates
-    ecoli_plates = find(:item, object_type: "E coli Plate")
+    # DEBUG: find all markers
+    all_plasmids = find(:sample, name: "Plasmid")
+    # DEBUG: find all e coli plates
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     show {
-      note ecoli_plates
+      note all_plasmids
     }
 
     # Take out the right number of each plate type (array -> counter hash)
