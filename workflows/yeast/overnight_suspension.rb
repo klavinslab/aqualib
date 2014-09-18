@@ -30,7 +30,7 @@ class Protocol
   	end
 
   	show {
-  		note (yeast_items.collect {|x| x.id}
+  		note(yeast_items.collect {|x| x.id})
   	}
 
   	# take yeast_items, interactive: true
