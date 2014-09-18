@@ -71,7 +71,7 @@ module Standard
 
 	end
 
-  def choose_object object_name
+  def choose_object object_name, p={}
 
     if block_given?
       user_shows = ShowBlock.new.run(&Proc.new) 
@@ -115,7 +115,7 @@ module Standard
   	if params[:quantity] == 1
 			user_input[:x] = [ user_input[:x] ]
 		end
-		
+
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
 		if params[:take]
