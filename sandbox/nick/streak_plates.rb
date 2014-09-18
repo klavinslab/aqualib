@@ -12,6 +12,29 @@ class Protocol
     # Figure out the types / number of media needed for each plate (media = array)
     plate_ids.each do |pid|
       plate_sample = find(:item, id: pid)[0].sample
+      resistance_raw = plate_sample.properties["Bacterial Marker"]
+      if resistance_raw.downcase.include? "amp"
+        resistance = "amp"
+      elif resistance_raw.downcase.include? "kan"
+        resistance = "kan"
+      elif resistance_raw.downcase.include? "chlor"
+        resistance = "chlor"
+      else
+        # For now, catching a wrong/empty value does the same thing
+        if y.length = 0
+          show {
+            title "Bacterial marker undefined"
+            note "Aquarium couldn't figure out the bacterial resistance associated with one of the input plates. This sample will not be plated."
+          }
+        else
+          show {
+            title "Unrecognized bacterial marker"
+            note "Aquarium couldn't figure out the bacterial resistance associated with one of the input plates. This sample will not be plated."
+            # Figure out a way to prompt for the right value / notify the scheduler. This affects the length of the output
+          }
+        end
+      end
+
       show {
         note plate_sample.properties["Bacterial Marker"]
       }
