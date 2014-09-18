@@ -12,7 +12,7 @@ class Protocol
   
   def arguments
     {
-    initials: "First and last initial"
+    initials: "First and last initial",
     plasmid_item_ids: [9976, 10575, 10576],
     primer_ids: [2064, 2064, 2064]
     }  
