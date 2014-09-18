@@ -45,7 +45,7 @@ def main
 		s=*(1..slice_number)
 		slices=input[:gelslice_ids]
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Tube", "Number"],[[slices], [s]]]
+		table [["Tube", "Number"],[slices, s]]
 	}
 	
 	data = show{
