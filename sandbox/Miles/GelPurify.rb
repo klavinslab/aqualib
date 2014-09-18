@@ -37,10 +37,10 @@ def main
 	}
 	
 	data = show{
-		title: "Weigh the gel slices."
-		check: "Zero the scale"
-		check: "Weigh each slice and record it's weight on the side of the tube in grams."
-		note: "Enter the recorded weights below."
+		title "Weigh the gel slices."
+		check "Zero the scale"
+		check "Weigh each slice and record it's weight on the side of the tube in grams."
+		note "Enter the recorded weights below."
 		slices.each{
 			get "number", var: "w#{slices.id}"
 		}
@@ -50,4 +50,4 @@ def main
 	
 end
 
-end
+
