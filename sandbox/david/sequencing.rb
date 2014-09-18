@@ -46,6 +46,8 @@ class Protocol
     concentrations = []
     lengths = []
     length_bins = []
+    plasmid_volume = []
+    water_volume = []
     
 
     plasmid_ids.each_with_index do |pid, index|
@@ -53,14 +55,23 @@ class Protocol
       concentrations.push info[:conc]
       lengths.push info[:length]
       
+      #Bin the plasmid lengths according to genewiz specifications
       if info[:length] <6000
         length_bins.push 0
+        plasmid_volume.push 500/info[:conc]
+        water_volume.push 12.5-500/info[:conc]
+        
       elsif info[:length] >10000
         length_bins.push 2
+        plasmid_volume.push 1000/info[:conc]
+        water_volume.push 12.5-1000/info[:conc]
+        
       else
         length_bins.push 1
+        plasmid_volume.push 800/info[:conc]
+        water_volume.push 12.5-800/info[:conc]
+        
       end
-      
     end
 
 
@@ -70,6 +81,8 @@ class Protocol
       note "#{concentrations}"
       note "#{lengths}"
       note "#{length_bins}"
+      note "#{plasmid_volume}"
+      note "#{water_volume}"
     }
 
   
