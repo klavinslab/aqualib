@@ -93,7 +93,7 @@ class Protocol
           primer = find(:sample,{id: prid})[0]
           primer_aliquot = primer.in "Primer Aliquot"
           primer_aliquots.push primer_aliquot[0] if primer_aliquot[0]
-#        end
+        end
         
         primer_aliquots_unique = []
         primer_uniq.each do |prid|
@@ -107,7 +107,7 @@ class Protocol
 
     plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
     water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
-    primer_with_volume = primer_aliquots_unique.map {|j| "2.5 ul of " + j.id.to_s}
+    primer_with_volume = primer_aliquots.map {|j| "2.5 ul of " + j.id.to_s}
       
     tab = []
     tab.push water_with_volume
