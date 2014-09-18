@@ -99,10 +99,12 @@ class Protocol
 
     plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
     water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
+    primer_with_volume = primer_aliquots.map {|j| "2.5 ul of " + j.id.to_s}
       
     tab = []
-    tab.push plasmid_item_with_volume
     tab.push water_with_volume
+    tab.push plasmid_item_with_volume
+    tab.push primer_with_volume
       
     show {
       title "Add the following to the stripwell tubes"
