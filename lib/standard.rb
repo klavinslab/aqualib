@@ -24,6 +24,7 @@ module Standard
 		choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
 
 		quantity = -1
+
 		while quantity != params[:quantity]
 
 			user_input = show {
@@ -39,10 +40,18 @@ module Standard
 			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
 			}
 
-			quantity = user_input[:x].length
+			if params[:quantity] != 1
+				quantity = user_input[:x].length
+			else
+				quantity = 1
+			end
 
 		end
 
+		if params[:quantity] == 1
+			user_input[:x] = [ user_input[:x] ]
+		end
+		
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
 		take items, interactive: true
