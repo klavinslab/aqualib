@@ -45,7 +45,6 @@ class Protocol
 
     concentrations = []
     lengths = []
-    length_bins = []
     plasmid_volume = []
     water_volume = []
     
@@ -57,32 +56,46 @@ class Protocol
       
       #Bin the plasmid lengths according to genewiz specifications
       if info[:length] <6000
-        length_bins.push 0
-        plasmid_volume.push (500/info[:conc]).round(2)
-        water_volume.push 12.5-(500/info[:conc]).round(2)
-        
+        plasmid_volume.push (500/info[:conc]).round(1)
+        water_volume.push 12.5-(500/info[:conc]).round(1)
       elsif info[:length] >10000
-        length_bins.push 2
-        plasmid_volume.push (1000/info[:conc]).round(2)
-        water_volume.push 12.5-(1000/info[:conc]).round(2)
-        
+        plasmid_volume.push (1000/info[:conc]).round(1)
+        water_volume.push 12.5-(1000/info[:conc]).round(1)
       else
-        length_bins.push 1
-        plasmid_volume.push (800/info[:conc]).round(2)
-        water_volume.push 12.5-(800/info[:conc]).round(2)
-        
+        plasmid_volume.push (800/info[:conc]).round(1)
+        water_volume.push 12.5-(800/info[:conc]).round(1)
       end
+   
     end
 
+
+    # initilize plasmid and primer stocks array
+        plasmid_stocks = []
+        plasmid_uniq.each do |fid|
+          plasmid = find(:sample,{id: pid})[0]
+          plasmid_stock = plasmid.in "Plasmid Stock"
+          plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
+        end
+    
+        primer_aliquots = []
+        primer_uniq.each do |prid|
+          primer = find(:sample,{id: prid})[0]
+          primer_stock = primer.in "Primer Aliquot"
+          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
+        end
 
 
 
     show {
       note "#{concentrations}"
       note "#{lengths}"
-      note "#{length_bins}"
       note "#{plasmid_volume}"
       note "#{water_volume}"
+    }
+    
+   show {
+      note "#{plasmid_stocks}"
+      note "#{primer_aliquots}"
     }
 
   
