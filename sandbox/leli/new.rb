@@ -4,4 +4,5 @@ class Protocol
     show {
       title "Hello World!"
     }
+  end
 end
