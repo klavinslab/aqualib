@@ -46,18 +46,18 @@ def main
 		
 		title "Lable the gel slice tubes with the following numbers."
 		table [["Tube", "Number"]].concat(slices.zip s)
-		note s
-		note slices
 	}
 	
+	weights=[]
 	data = show{
 		title "Weigh the gel slices."
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
-		slices_full.each{
-			get "number", var: "w"
-		}
+		for i in 1..slice_number
+			get "number", var: "w", tube: "Tube #{i}"
+			weights[i]=w
+		end
 	}	
 	
 	weights = slices.collect{ |slice_number| data[w.to_sym]}
