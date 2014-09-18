@@ -21,12 +21,7 @@ class Protocol
   def plasmid_info fid
     plasmid = find(:sample,{id: fid})[0]# Sample.find(fid)
     length = plasmid.properties["Length"]
-    stock = plasmid.in "Fragment Stock"
-    
-    show {
-     note "#{stock}" 
-    }
-    
+    stock = plasmid.in "Plasmid Stock"
     conc = stock[0].datum[:concentration]
     return {
       plasmid: plasmid,
