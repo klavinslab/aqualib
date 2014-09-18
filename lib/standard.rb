@@ -6,8 +6,13 @@ module Standard
 
 	def choose_sample sample_name, p={}
 
-		params = ({ multiple: false, quantity: 1 }).merge p
+    if block_given?
+      user_shows = ShowBlock.new.run(&Proc.new) 
+    else
+      user_shows = []
+    end
 
+		params = ({ multiple: false, quantity: 1 }).merge p
 		params[:multiple] = true if params[:quantity] > 1
 
 		options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
@@ -16,11 +21,17 @@ module Standard
 
 		choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
 
-		user_input = show {
-		  title "Choose #{sample_name} to use"
-		  note "There may be several of these items in stock. Choose the oldest one. If there are any that are empty or expired, please discard them and edit the inventory appropriately."
-		  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
-		}
+		while ! quantity || quantity != params[:quantity]
+
+			user_input = show {
+			  title "Choose #{params[:quantity]} #{sample_name} to use"
+			  raw user_shows
+			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
+			}
+
+			quantity = data[:x].length
+
+		end
 
 		item = options[choices.index(user_input[:x])]
 
