@@ -19,7 +19,7 @@ module Standard
 		user_input = show {
 		  title "Choose #{sample_name} to use"
 		  note "There may be several of these items in stock. Choose the oldest one. If there are any that are empty or expired, please discard them and edit the inventory appropriately."
-		  select choices, var: "x", label: "Choose #{sample_name}", multiple: true
+		  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
 		}
 
 		item = options[choices.index(user_input[:x])]
