@@ -54,7 +54,7 @@ def main
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
 		slices_full.each{
-			get "number", var: "w#{slices_full.id}"
+			get "number", var: "w"
 		}
 	}	
 	
