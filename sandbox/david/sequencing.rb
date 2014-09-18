@@ -20,14 +20,14 @@ class Protocol
   
   def main
    
-   x = input[:x]
+    x = input[:x]
     y = input[:name]
 
-    show 
-      {
+    show {
         title "Arguments"
         note "x = #{x}, y = #{y}"
       }
   
   end
+  
 end
