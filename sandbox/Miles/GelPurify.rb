@@ -45,7 +45,7 @@ def main
 		s=*(1..slice_number)
 		
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Tube", "Number"],[slices, s]]
+		table [["Tube", "Number"].concat(slices.zip s)]
 		note s
 		note slices
 	}
