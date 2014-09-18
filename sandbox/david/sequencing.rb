@@ -95,8 +95,9 @@ class Protocol
     take plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
 
 
-    sequencing_reactions = []
 
+
+plasmid_item_with_volume = plasmid_stock.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
 
 
 
@@ -104,7 +105,8 @@ class Protocol
 
 
     show {
-      note "#{plasmid_ids}"
+      note "#{plasmid_item_with_volume}"
+      note "#{plasmid_stock}"
       note "#{primer_aliquots}"
       note "#{plasmid_volume}"
       note "#{water_volume}"
