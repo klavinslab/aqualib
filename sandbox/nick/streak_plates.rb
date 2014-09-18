@@ -41,15 +41,13 @@ class Protocol
     end
 
     # DEBUG: find all markers
-    plasmid_type_id = find(:sample_type, name: "Plasmid")
-    show { note plasmid_type_id[0].id }
-#    all_plasmids = find(:sample, sample_type: "Plasmid")
-    all_plasmids = Sample.where("id=4")
-    #all_plasmids = Sample.where("sample_type='Plasmid'")
+    plasmid_type_id = find(:sample_type, name: "Plasmid")[0].id
+    all_plasmids = find(:sample, sample_type: plasmid_type_id)
+
     # DEBUG: find all e coli plates
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     show {
-      note all_plasmids
+      note all_plasmids.map { |p| p.name }.join(" , ")
     }
 
     # Take out the right number of each plate type (array -> counter hash)
