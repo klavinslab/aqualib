@@ -60,7 +60,7 @@ class Protocol
 
 
     show {
-      note "#{concentrtions}"
+      note "#{concentrations}"
       note "#{lengths}"
     }
 
