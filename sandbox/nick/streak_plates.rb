@@ -42,7 +42,8 @@ class Protocol
 
     # DEBUG: find all markers
 #    all_plasmids = find(:sample, sample_type: "Plasmid")
-    all_plasmids = Sample.where("sample_type='Plasmid'")
+    all_plasmids = Sample.where("id=4")
+    #all_plasmids = Sample.where("sample_type='Plasmid'")
     # DEBUG: find all e coli plates
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     show {
