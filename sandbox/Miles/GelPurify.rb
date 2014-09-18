@@ -62,7 +62,7 @@ def main
 	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
 	
 	show{
-		note w
+		title w
 	}
 	
 	qgs=[]
