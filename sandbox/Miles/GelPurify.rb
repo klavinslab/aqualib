@@ -54,13 +54,12 @@ def main
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
-		for i in 1..slice_number
-			get "number", var: "w", tube: "Tube #{i}"
-			weights[i]=w
-		end
+		slices_full{ |gs|
+			get "number", var: "w#{gs.id}"
+		}
 	}	
 	
-	weights = slices.collect{ |slice_number| data[w.to_sym]}
+	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
 	
 end
 
