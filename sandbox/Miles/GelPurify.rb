@@ -28,9 +28,12 @@ def main{
 	
 	take slices, interactive: true,  method: "boxes"
 	
+	
+	s=*(1..slice_number)
+	
 	show{
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Tube", "Number"],[[slices], [1:slice_number]]]
+		table [["Tube", "Number"],[[slices], [s]]]
 	}
 	
 	data = show{
