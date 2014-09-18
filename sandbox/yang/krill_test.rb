@@ -14,8 +14,8 @@ class Protocol
     get "text", var: "y_data", label: "Enter a string", default: "Hello World"
     get "number", var: "z_data", label: "Enter a number", default: 555
     }
-    y_data = data[:y]
-    z_data = data[:z]
+    y_data = data[:y_data]
+    z_data = data[:z_data]
     show {
       title "Hello World!"
       note "y is #{y} and x is #{x}"
