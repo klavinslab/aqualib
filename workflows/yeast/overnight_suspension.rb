@@ -13,23 +13,30 @@ class Protocol
   def arguments
     {
       #Enter the item id that you are going to start overnight with
-      item_ids: [8437,8431,8426],
+      yeast_item_ids: [8437,8431,8426],
       media_type: "YPAD"
     }
   end
 
   def main
-  	items = []
+  	yeast_items = []
   	overnights = []
-  	input[:item_ids].each do |itd|
-  		item = find(:item, id: itd)
-  		items.push item
-  		overnight = produce new_sample item.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
+  	input[:yeast_item_ids].each do |itd|
+  		yeast_item = find(:item, id: itd)[0]
+  		yeast_items.push yeast_item
+  		name = yeast_item.sample.name
+  		overnight = produce new_sample name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
   		overnights.push overnight
   	end
 
-  	take items, interactive: true
+  	show {
+  		note(yeast_items.collect {|x| x.id})
+  	}
+
+  	take yeast_items, interactive: true
   	release overnights, interactive: true
+
+  	return input.merge yeast_overnight_ids: overnight.collect {|x| x.id}
 
   end
 
