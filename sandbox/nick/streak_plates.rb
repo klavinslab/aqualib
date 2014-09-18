@@ -2,7 +2,7 @@ needs "aqualib/lib/standard"
 
 class Protocol
   def arguments
-    { bacterial_plates: SampleType.where("name='E coli Plate'")[0]
+    { plate_ids: Sample.where("sample_type='E coli Plate'")[0]
     }
   end
 
