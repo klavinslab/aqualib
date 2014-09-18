@@ -88,11 +88,11 @@ class Protocol
           plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
         end
     
-#        primer_aliquots = []
-#        primer.each do |prid|
-#          primer = find(:sample,{id: prid})[0]
-#          primer_aliquot = primer.in "Primer Aliquot"
-#          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
+        primer_aliquots = []
+        primer_ids.each do |prid|
+          primer = find(:sample,{id: prid})[0]
+          primer_aliquot = primer.in "Primer Aliquot"
+          primer_aliquots.push primer_aliquot[0] if primer_aliquot[0]
 #        end
         
         primer_aliquots_unique = []
