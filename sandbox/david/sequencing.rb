@@ -11,20 +11,45 @@ class Protocol
   end
   
   def arguments
-    { x:1, y: "name" }
+    plasmid_ids: []
+    primer_ids: []
+  end
+  
+  
+  def plasmid_info fid
+    plasmid = find(:sample,{id: fid})[0]# Sample.find(fid)
+    length = plasmid.properties["Length"]
+    stock = plasmid.in "Fragment Stock"
+    conc = stock[0].datum[:concentration]
+    return {
+      plasmid: plasmid,
+      length: length,
+      stock: stock[0],
+      conc: conc
+    }
   end
   
   
   
   def main
    
-    x = input[:x]
-    y = input[:y]
+    #parse plasmid ids
+    plasmid_ids = input[:plasmid_ids]
+    plasmid_uniq= plasmid_ids.uniq
+    
+    #parse primer ids
+    primer_ids = input[:primer_ids]
+    primer_uniq= primer_ids.uniq
 
+    plasmid_ids.each_with_index do |fid, index|
+      info = plasmid_info fid
+    end
+
+    
     show {
-        title "Arguments"
-        note "x = #{x}, y = #{y}"
-      }
+      note "#{info}"
+    }
+
   
   end
   
