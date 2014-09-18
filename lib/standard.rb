@@ -6,6 +6,8 @@ require 'active_support/inflector'
 
 module Standard
 
+  # TODO: choose_sample and choose_object share a lot of code. They should be refactored to reuse the code
+
 	def choose_sample sample_name, p={}
 
 		# Directs the user to take an item or items associated with the sample defined by sample_name.
@@ -72,6 +74,12 @@ module Standard
 	end
 
   def choose_object object_name, p={}
+
+		# Directs the user to take an item or items associated with the object defined by object_name
+		# Options:
+		#   multiple : false          --> take one or take multiple items. if multiple, then a list of items is returned
+    #   quantity : n              --> the number of items to take. sets multiple to true if greater than 1
+    #   take : false              --> does an interactive take if true
 
     if block_given?
       user_shows = ShowBlock.new.run(&Proc.new) 
