@@ -3,6 +3,14 @@ needs "aqualib/lib/standard"
 class Protocol
 
   include Standard
+  
+  def arguments
+
+    {
+      "ids Yeast Overnight Suspension"
+    }
+
+  end
 
   def main
 
