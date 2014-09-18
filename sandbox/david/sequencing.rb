@@ -12,6 +12,7 @@ class Protocol
   
   def arguments
     {
+    initials: "First and last initial"
     plasmid_item_ids: [9976, 10575, 10576],
     primer_ids: [2064, 2064, 2064]
     }  
@@ -34,6 +35,9 @@ class Protocol
   
   
   def main
+   
+    #parse initials
+    initials = input[:initials]
    
     #parse plasmid item ids
     plasmid_item_ids = input[:plasmid_item_ids]
@@ -88,12 +92,20 @@ class Protocol
           primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
         end
 
-    take plasmid_stocks, interactive: true,  method: "boxes"
-    take primer_aliquots, interactive: true,  method: "boxes"
+    take plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
+
+
+    sequencing_reactions = []
+
+
+
+
+
+
 
     show {
-      note "#{concentrations}"
-      note "#{lengths}"
+      note "#{plasmid_ids}"
+      note "#{primer_aliquots}"
       note "#{plasmid_volume}"
       note "#{water_volume}"
     }
