@@ -20,15 +20,16 @@ class Protocol
     # choose multiple item from sample name
     items = choose_sample "Phusion HF Master Mix", quantity: 3
 
-    release [item] + items
+    take [item] + items, interactive: true
 
     # choose a single item from object name
-    item = choose_object "1 L Bottle", quantity: 1
+    item = choose_object "1 L Bottle", quantity: 1, take: true
 
     # choose multiple item from object name
-    items = choose_object "500 mL Bottle", quantity: 3
+    items = choose_object "500 mL Bottle", quantity: 3, take: true
 
     release [item] + items
+
 
   end
 
