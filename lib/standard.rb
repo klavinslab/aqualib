@@ -8,7 +8,7 @@ module Standard
 
 		params = ({ multiple: false, quantity: 1 }).merge p
 
-		params.multiple = true if params.quantity > 1
+		params[:multiple] = true if params[:quantity] > 1
 
 		options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
 
