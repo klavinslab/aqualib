@@ -45,7 +45,6 @@ class Protocol
 
     concentrations = []
     lengths = []
-    length = []
     length_bins = []
     
 
@@ -54,17 +53,6 @@ class Protocol
       concentrations.push info[:conc]
       lengths.push info[:length]
       
-      length = info[:length]
-      
-  #    if length <6000
-  #      length_bin=0
-  #    elseif legnth >10000
-  #      length_bin=2
-  #    else
-  #      length_bin=1
-  #    end
-  #    
-  #    length_bins.push length_bin
       
     end
 
@@ -72,8 +60,8 @@ class Protocol
 
 
     show {
-      note "#{length}"
-      note "#{length_bin}"
+      note "#{concentrtions}"
+      note "#{lengths}"
     }
 
   
