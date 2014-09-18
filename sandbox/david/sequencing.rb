@@ -52,7 +52,12 @@ class Protocol
       info = plasmid_info pid
       concentrations.push info[:conc]
       lengths.push info[:length]
-      length_bins.push 1
+      
+      if info[:length] <6000
+        length_bins.push 0
+      else
+        length_bins.push 1
+      end
       
     end
 
