@@ -54,7 +54,7 @@ def main
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
-		slices_full{ |gs|
+		slices_full.each{ |gs|
 			get "number", var: "w#{gs.id}"
 		}
 	}	
