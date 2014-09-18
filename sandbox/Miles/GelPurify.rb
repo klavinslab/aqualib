@@ -11,6 +11,11 @@ include Standard
 include Cloning
 
 
+ def debug
+    true
+ end
+
+
 def arguments
 	{
 	gelslice_ids: [27327, 27238]
