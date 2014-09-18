@@ -21,7 +21,7 @@ class Protocol
   def main
   	items = []
   	overnights = []
-  	item_ids.each do |id|
+  	input[:item_ids].each do |id|
   		item = find(item, id: id)
   		items.push item if item
   		overnight = produce new_sample item.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
