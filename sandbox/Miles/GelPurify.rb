@@ -18,7 +18,7 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: [27327, 27238]
+	gelslice_ids: [27327, 27320]
 	}
 end
 
@@ -54,6 +54,7 @@ def main
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
+		note slices_full.length
 		slices_full.each{ |gs|
 			get "number", var: "w#{gs.id}"
 		}
