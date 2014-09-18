@@ -99,7 +99,7 @@ class Protocol
         primer_uniq.each do |prid|
           primer = find(:sample,{id: prid})[0]
           primer_aliquot = primer.in "Primer Aliquot"
-          primer_aliquots_unique.push primer_aliquots[0] if primer_aliquots[0]
+          primer_aliquots_unique.push primer_aliquots_unique[0] if primer_aliquots_unique[0]
         end
         
 
