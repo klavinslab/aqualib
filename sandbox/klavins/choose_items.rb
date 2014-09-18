@@ -7,7 +7,7 @@ class Protocol
   def arguments
 
     {
-      "ids Yeast Overnight Suspension": []
+      "ids Yeast Overnight Suspension" => [0]
     }
 
   end
