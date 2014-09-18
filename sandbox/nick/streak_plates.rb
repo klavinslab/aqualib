@@ -41,7 +41,7 @@ class Protocol
     end
 
     # DEBUG: find all markers
-    all_plasmids = find(:sample, name: "Plasmid")
+    all_plasmids = find(:sample, sample_type: "Plasmid")
     # DEBUG: find all e coli plates
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     show {
