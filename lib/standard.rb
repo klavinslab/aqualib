@@ -41,7 +41,11 @@ module Standard
 
 		take items, interactive: true
 
-		return item
+		if params[:multiple]
+			return items
+		else
+			return items[0]
+		end
 
 	end
 
