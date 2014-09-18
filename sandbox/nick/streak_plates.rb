@@ -46,7 +46,7 @@ class Protocol
 #    show { note plasmid_type_id[0].methods.join(" \n ") }
     primer_type = Sample.first.sample_type
     show {
-      note find(:sample_type, name: "Plasmid")[0].name
+      note "#{find(:sample_type, name: "Plasmid")[0].name}"
     }
 #    show {
 #      note all_plasmids[0].name
