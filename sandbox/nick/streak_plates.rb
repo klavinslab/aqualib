@@ -45,7 +45,7 @@ class Protocol
     all_plasmids = find(:sample, sample_type: plasmid_type_id)
     show { note plasmid_type_id[0].methods.join(" \n ") }
     show {
-      note Sample.first.name
+      note Sample.first.sample_type
     }
 #    show {
 #      note all_plasmids[0].name
