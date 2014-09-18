@@ -11,9 +11,7 @@ class Protocol
   end
   
   def arguments
-    {
-      x:1, y: "name"
-    }
+    { x:1, y: "name" }
   end
   
   
