@@ -14,9 +14,9 @@ class Protocol
 
   def main
 
-    items = choose_sample "Phusion HF Master Mix", quantity: 1
+    item = choose_sample "Phusion HF Master Mix", quantity: 1
 
-    release items
+    release [ item ]
 
   end
 
