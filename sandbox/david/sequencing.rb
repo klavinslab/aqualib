@@ -71,6 +71,7 @@ class Protocol
 
 
     show {
+      note "#{length}"
       note "#{length_bin}"
     }
 
