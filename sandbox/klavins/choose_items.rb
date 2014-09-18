@@ -15,21 +15,20 @@ class Protocol
   def main
 
     # choose a single item from sample name
-    item = choose_sample "phi29 DNA Polymerase", quantity: 1
+    poly = choose_sample "phi29 DNA Polymerase", quantity: 1
 
     # choose multiple item from sample name
-    items = choose_sample "Phusion HF Master Mix", quantity: 3
+    mixes = choose_sample "Phusion HF Master Mix", quantity: 3
 
-    take [item] + items, interactive: true
+    take [poly] + mixes, interactive: true
 
     # choose a single item from object name
-    item = choose_object "1 L Bottle", quantity: 1, take: true
+    bottle = choose_object "1 L Bottle", quantity: 1, take: true
 
     # choose multiple item from object name
-    items = choose_object "500 mL Bottle", quantity: 3, take: true
+    bottles = choose_object "500 mL Bottle", quantity: 3, take: true
 
-    release [item] + items
-
+    release [ poly, bottle ] + mixes + bottles
 
   end
 
