@@ -24,13 +24,17 @@ class Protocol
   	input[:yeast_item_ids].each do |itd|
   		yeast_item = find(:item, id: itd)
   		yeast_items.push yeast_item
-  		name = yeast_item.sample.name
-  		overnight = produce new_sample name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
-  		overnights.push overnight
+  		# name = yeast_item.sample.name
+  		# overnight = produce new_sample name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
+  		# overnights.push overnight
   	end
 
-  	take yeast_items, interactive: true
-  	release overnights, interactive: true
+  	show {
+  		note (yeast_items.collect {|x| x.id}
+  	}
+
+  	# take yeast_items, interactive: true
+  	# release overnights, interactive: true
 
   end
 
