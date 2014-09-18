@@ -15,7 +15,7 @@ class Protocol
   
   def main
     
-    plasmids_to_take = find(:item, id: input[:plasmid_ids].unique )
+    plasmids_to_take = find(:item, id: input[:plasmid_ids].uniq )
     plasmids_to_digest = find(:item, id: input[:plasmid_ids] )
     
     take plasmids_to_take, interactive: true
