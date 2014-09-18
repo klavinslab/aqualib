@@ -8,7 +8,7 @@ class Protocol
   def main
     input_plates = input["plate_ids"]
     show {
-      note input_plates.to_s
+      note "#{input_plates.to_s}"
     }
   end
 end
