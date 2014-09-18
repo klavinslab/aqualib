@@ -34,7 +34,9 @@ class Protocol
 
   	take yeast_overnights, interactive: true, method: "boxes"
   	release yeast_50mL_cultures, interactive: true, method: "boxes"
-
+  	
+  	return input.merge culture_ids: yeast_50mL_cultures.collect {|x| x.id}  
+  		
   end
 
 end  
