@@ -52,7 +52,7 @@ class Protocol
       info = plasmid_info pid
       concentrations.push info[:conc]
       lengths.push info[:length]
-      
+      length_bins.push 1
       
     end
 
