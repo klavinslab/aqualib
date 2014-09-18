@@ -37,7 +37,7 @@ class Protocol
    
     #parse plasmid item ids
     plasmid_item_ids = input[:plasmid_item_ids]
-    plamid_ids = []
+    plasmid_ids = []
     plasmid_item_ids.each do |pid|
       plasmid_ids.push find(:item, id: pid)[0].sample
     end
