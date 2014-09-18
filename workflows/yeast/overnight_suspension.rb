@@ -21,7 +21,7 @@ class Protocol
   def main
   	yeast_items = []
   	overnights = []
-  	input[:item_ids].each do |itd|
+  	input[:yeast_item_ids].each do |itd|
   		yeast_item = find(:item, id: itd)
   		yeast_items.push yeast_item
   		name = yeast_item.sample.name
