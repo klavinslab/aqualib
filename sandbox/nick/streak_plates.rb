@@ -8,7 +8,7 @@ class Protocol
   def main
     input_plates = input["bacterial_plates"]
     show {
-      note bacterial_plates
+      note input_plates
     }
   end
 end
