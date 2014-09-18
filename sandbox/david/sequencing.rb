@@ -14,8 +14,8 @@ class Protocol
     {
     initials: "First and last initial",
     plasmid_item_ids: [9976, 10575, 10576],
-    primer_ids: [2064, 2064, 2064]
-    genewiz_tracking_number: "00-000000000",
+    primer_ids: [2064, 2064, 2064],
+    genewiz_tracking_number: "00-000000000"
     }  
   end
   
@@ -110,7 +110,7 @@ class Protocol
     }
 
   
- # release plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
+  release plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
   
   end
   
