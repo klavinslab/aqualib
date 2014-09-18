@@ -13,7 +13,7 @@ class Protocol
     plate_ids.each do |pid|
       plate_sample = find(:item, id: pid)[0].sample
       show {
-        note plate_sample
+        note plate_sample.name
       }
     end
     # Take out the right number of each plate type (array -> counter hash)
@@ -21,8 +21,5 @@ class Protocol
     # Produce each plate after streaking, consuming the taken plate
     # Put away the produced plates
     # Put away the plates that were taken out
-    show {
-      note input_plates.to_s
-    }
   end
 end
