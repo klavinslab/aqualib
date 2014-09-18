@@ -57,7 +57,7 @@ class Protocol
       
       if length <6000
         length_bin=0
-      else if legnth >10000
+      elseif legnth >10000
         length_bin=2
       else
         length_bin=1
