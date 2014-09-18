@@ -32,8 +32,8 @@ class Protocol
   		note(yeast_overnights.collect {|x| x.id})
   	}
 
-  	take yeast_overnights, interactive: true, method: boxes
-  	release yeast_50mL_cultures, interactive: true, method: boxes
+  	take yeast_overnights, interactive: true, method: "boxes"
+  	release yeast_50mL_cultures, interactive: true, method: "boxes"
 
   end
 
