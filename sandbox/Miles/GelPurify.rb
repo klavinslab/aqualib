@@ -16,7 +16,7 @@ def arguments
 	gelslice_ids: SampleType.where("name='Gel Slice'")[0] 
 	}
 
-def main{
+def main
 	
 	slices = find(:item, {sample: input[:gelslice_ids]})
 	
@@ -50,4 +50,4 @@ def main{
 	
 end
 
-}
+end
