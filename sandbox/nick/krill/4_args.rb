@@ -1,7 +1,7 @@
 class Protocol
   def arguments
     { a: 1,
-      b: banana
+      b: "banana"
     }
   end
 

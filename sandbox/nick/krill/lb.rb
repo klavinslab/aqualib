@@ -69,7 +69,7 @@ class Protocol
       # TODO: Figure out most convenient way to take the bottles. Bottles
       # are currently taken one at a time, which is slow since usually
       # more than one batch is being made.
-      # Should just add n keyword argument to choose_object()
+      # Should just add n keyword argument to choose_object()? Interface?
       # TODO: Same for stir bars
       bottle = choose_object bottle_info
       bottles.push(bottle)
@@ -112,8 +112,11 @@ class Protocol
     produce new_object bottle_infos[i][:name]
   end
 
-  # FIXME: Should do a produce-from here as bottles and stir bars go into
-  # final product. Is this available in krill?
+  # TODO: Should do a produce-from here as bottles and stir bars go into
+  # final product. Is this more than a silent release?
+  # should treat quantity field as data field that can be messed with -
+  # or come up with way to avoid having quantities at all
+  # think about options - a quantity_take (or qtake) may work
   if stir_bars.length > 0
     release stir_bars
   end
