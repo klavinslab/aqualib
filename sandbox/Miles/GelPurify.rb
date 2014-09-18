@@ -61,6 +61,10 @@ def main
 	
 	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
 	
+	show{
+		note w
+	}
+	
 	qgs=[]
 	count3=0
 	while count3 < slice_number do
