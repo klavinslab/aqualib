@@ -11,6 +11,11 @@ include Standard
 include Cloning
 
 
+ def debug
+    true
+ end
+
+
 def arguments
 	{
 	gelslice_ids: [27327, 27238]
@@ -23,26 +28,22 @@ def main
 	
 	slice_number = slices.length
 	
-	slices_full=[]
-	slices.each do |fid|
-			slice = find(:item, {id: fid})[0]
-    			#slice_full = slice "Gel Slice"
-    			slices_full.push(slice)
-    			#slices_full.push slice_full[0] if slice_full[0]
-	end
+
+	slices_full = find(:item, id: slices )
+
 	
 	show{
 		title "This protocol purfies gel slices int DNA fragment stocks."
-		note slices_full
-		note slice
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
 	
 	
-	s=*(1..slice_number)
+	
 	
 	show{
+		s=*(1..slice_number)
+		slices=input[:gelslice_ids]
 		title "Lable the gel slice tubes with the following numbers."
 		table [["Tube", "Number"],[[slices], [s]]]
 	}
