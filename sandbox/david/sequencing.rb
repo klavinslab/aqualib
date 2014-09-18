@@ -19,7 +19,7 @@ class Protocol
   def main
    
     x = input[:x]
-    y = input[:name]
+    y = input[:y]
 
     show {
         title "Arguments"
