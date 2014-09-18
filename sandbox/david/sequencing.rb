@@ -75,7 +75,7 @@ class Protocol
 
     # initilize plasmid and primer stocks array
         plasmid_stocks = []
-        plasmid_uniq.each do |fid|
+        plasmid_uniq.each do |pid|
           plasmid = find(:sample,{id: pid})[0]
           plasmid_stock = plasmid.in "Plasmid Stock"
           plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
