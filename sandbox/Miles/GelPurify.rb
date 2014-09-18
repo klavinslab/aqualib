@@ -29,15 +29,16 @@ def main
 	
 	show{
 		title "This protocol purfies gel slices int DNA fragment stocks."
-		note slices_full
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
 	
 	
-	s=*(1..slice_number)
+	
 	
 	show{
+		s=*(1..slice_number)
+		slices=input[:gelslice_ids]
 		title "Lable the gel slice tubes with the following numbers."
 		table [["Tube", "Number"],[[slices], [s]]]
 	}
