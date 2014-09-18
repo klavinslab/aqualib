@@ -18,10 +18,10 @@ class Protocol
   end
   
   
-  def plasmid_info fid
-    plasmid = find(:sample,{id: fid})[0]# Sample.find(fid)
+  def plasmid_info pid
+    plasmid = find(:sample,{id: pid})[0]# Sample.find(fid)
     length = plasmid.properties["Length"]
-    stock = plasmid.in "Fragment Stock"
+    stock = plasmid.in "Plasmid Stock"
     conc = stock[0].datum[:concentration]
     return {
       plasmid: plasmid,
@@ -43,13 +43,18 @@ class Protocol
     primer_ids = input[:primer_ids]
     primer_uniq= primer_ids.uniq
 
-    plasmid_ids.each_with_index do |fid, index|
-      info = plasmid_info fid
+    concentrations = []
+
+    plasmid_ids.each_with_index do |pid, index|
+      info = plasmid_info pid
+      concentrations.push info[:conc]
     end
 
+   
+    
     
     show {
-      note "#{info}"
+      note "#{concentrations}"
     }
 
   

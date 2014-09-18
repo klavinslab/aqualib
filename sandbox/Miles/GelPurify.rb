@@ -13,13 +13,13 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: SampleType.where("name='Gel Slice'")[1]
+	gelslice_ids: SampleType.where("name='Gel Slice'")[0]
 	}
 end
 
 def main
 	
-	slices = find(:item, {sample: input[:gelslice_ids]})
+	slices=input[:gelslice_ids]
 	
 	slice_number = slices.length
 	
