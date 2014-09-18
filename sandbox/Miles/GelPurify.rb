@@ -13,7 +13,7 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: SampleType.where("name='Gel Slice'")[0]
+	gelslice_ids: [1000, 2000]
 	}
 end
 
@@ -23,11 +23,18 @@ def main
 	
 	slice_number = slices.length
 	
+	slices_full=[]
+	slices.each do |fid|
+			slices = find(:item, {id: fid})[0]
+    			slices_full = slices.in "Gel Slice"
+    			slices_full.push slices_full[0] if slices_full[0]
+	end
+	
 	show{
 		title "This protocol purfies gel slices int DNA fragment stocks."
 	}
 	
-	take slices, interactive: true,  method: "boxes"
+	take slices_full, interactive: true,  method: "boxes"
 	
 	
 	s=*(1..slice_number)
@@ -42,12 +49,12 @@ def main
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
-		slices.each{
-			get "number", var: "w#{slices.id}"
+		slices_full.each{
+			get "number", var: "w#{slices_full.id}"
 		}
 	}	
 	
-	weights = slices.collect{ |slice_number| data["w#{slices.id}".to_sym]}
+	weights = slices.collect{ |slice_number| data["w#{slices_full.id}".to_sym]}
 	
 end
 
