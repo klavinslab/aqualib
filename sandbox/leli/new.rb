@@ -2,12 +2,12 @@
 class Protocol
   def main
     
-    #m = [
-    #  [ "A", "Very", "Nice", { content: "Table", style: { color: "#f00"}}],
-    #  [{content: 1, check: true},2,3,4]
-    #]
+    m = [
+      [ "A", "Very", "Nice", { content: "Table", style: { color: "#f00"}}],
+      [{content: 1, check: true},2,3,4]
+    ]
     
-    m = [ ["A","B"], [1,2] ]
+    #m = [ ["A","B"], [1,2] ]
     
     data = show {
       title "Hello World!"
