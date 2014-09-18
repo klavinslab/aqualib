@@ -56,8 +56,8 @@ class Protocol
       warning "Keep the master mix in an ice block while doing the next steps"
     }
     
-    #release pme1
-    #release cutsmart
+    release [pme1]
+    release [cutsmart]
     
     show {
       title "Prepare Stripwell Tubes"

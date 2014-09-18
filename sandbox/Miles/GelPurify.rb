@@ -34,6 +34,7 @@ def main
 	show{
 		title "This protocol purfies gel slices int DNA fragment stocks."
 		note slices_full
+		note slice
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
