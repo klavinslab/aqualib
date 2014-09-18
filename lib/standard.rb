@@ -95,7 +95,7 @@ module Standard
 				if params[:quantity] == 1
 				  title "Choose #{object_name} to use"
 				else
-					title "Choose #{params[:quantity]} #{sample_name.pluralize}"
+					title "Choose #{params[:quantity]} #{object_name.pluralize}"
 				end
   		  if quantity >= 0 
 			  	note "Try again. You chose the wrong number of items"
