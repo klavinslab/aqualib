@@ -15,13 +15,10 @@ class Protocol
   
   def main
     
-    plasmids_to_take = find(:item, id: input[:plasmid_ids].uniq )
-    plasmids_to_digest = find(:item, id: input[:plasmid_ids] )
-    
-    show {
-      table [ plasmids_to_digest.collect { |x| x.id } ]
-    }
-    
+    plasmids_to_digest = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
+    plasmids_to_take = plasmids_to_digest.uniq
+
+
     take plasmids_to_take, interactive: true
     
     cut_smart= choose_sample "Cut Smart"
