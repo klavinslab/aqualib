@@ -25,9 +25,9 @@ module Standard
 		while quantity != params[:quantity]
 
 			user_input = show {
-			  title "Choose #{params[:quantity]} #{sample_name} to use"
+			  title "Choose #{params[:quantity]} #{pluralize(params[:quantity],sample_name)} to use"
 			  if quantity >= 0 
-			  	note "Try again. You chose the wrong amount"
+			  	note "Try again. You chose the wrong number of items"
 			  end
 			  raw user_shows
 			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
