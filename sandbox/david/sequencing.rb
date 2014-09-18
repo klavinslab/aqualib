@@ -106,7 +106,7 @@ plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i
 
     show {
       note "#{plasmid_item_with_volume}"
-      note "#{plasmid_stock}"
+      note "#{plasmid_stocks}"
       note "#{primer_aliquots}"
       note "#{plasmid_volume}"
       note "#{water_volume}"
