@@ -43,22 +43,23 @@ def main
 	
 	show{
 		s=*(1..slice_number)
-		slices=input[:gelslice_ids]
+		
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Tube", "Number"],[slices, s]]
+		table [["Tube", "Number"]].concat(slices.zip s)
 	}
 	
+	weights=[]
 	data = show{
 		title "Weigh the gel slices."
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights below."
-		slices_full.each{
-			get "number", var: "w#{slices_full.id}"
+		slices_full.each{ |gs|
+			get "number", var: "w#{gs.id}"
 		}
 	}	
 	
-	weights = slices.collect{ |slice_number| data["w#{slices_full.id}".to_sym]}
+	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
 	
 end
 
