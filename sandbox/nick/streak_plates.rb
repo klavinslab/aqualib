@@ -43,12 +43,16 @@ class Protocol
     # DEBUG: find all markers
     plasmid_type_id = find(:sample_type, name: "Plasmid")[0].id
     all_plasmids = find(:sample, sample_type: plasmid_type_id)
-
+    show { note plasmid_type_id[0].methods.join(" \n ") }
+#    all_plasmids = find(:sample, sample_type: "Plasmid")
+    #all_plasmids = Sample.where("id=4")
+    #all_plasmids = Sample.where("sample_type='Plasmid'")
     # DEBUG: find all e coli plates
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
-    show {
-      note all_plasmids.map { |p| p.name }.join(" , ")
-    }
+    #show {
+      #note all_plasmids.map { |p| p.name }.join(" , ")
+      #note all_plasmids
+    #}
 
     # Take out the right number of each plate type (array -> counter hash)
     # Streak out strain i onto plate of type media[i]
