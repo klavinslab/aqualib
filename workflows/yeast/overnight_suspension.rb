@@ -24,7 +24,7 @@ class Protocol
   	item_ids.each do |id|
   		item = find(item, id: id)
   		items.push item if item
-  		overnight = produce new_sample item.name, of "Yeast Strain", as "Yeast Overnight Suspension"
+  		overnight = produce new_sample item.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
   		overnights.push overnight
   	end
 
