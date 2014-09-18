@@ -41,7 +41,7 @@ class Protocol
     end
 
     # DEBUG: find all E coli Plates
-    ecoli_plates = find(:item, sample: {:object_type, name: "E coli Plate"})
+    ecoli_plates = find(:item, sample: {:object_type, {name: "E coli Plate"}})
     show {
       note ecoli_plates
     }
