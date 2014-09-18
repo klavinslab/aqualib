@@ -10,7 +10,7 @@ class Protocol
     data = show {
       title "Hello World!"
       title "An input example."
-      table m
+      #table m
       get "text", var: "y", label:"Enter a string", default: "hi again"
     }
     
