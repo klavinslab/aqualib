@@ -122,7 +122,12 @@ class Protocol
       table (col1.concat rest).transpose
     }
 
-
+    show {
+      title "Put the tubes in the Genewiz mailbox"
+      note "Cap all of the stripwell tubes"
+      note "Put the stripwell tubes into a zip-lock bag along with the Genewiz order form with tracking number "#{tracking_number}""
+      note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
+    }
 
   
   release plasmid_stocks + primer_aliquots_unique, interactive: true,  method: "boxes"
