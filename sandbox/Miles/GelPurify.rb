@@ -13,7 +13,7 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: SampleType.where("name='Gel Slice'")[]
+	gelslice_ids: SampleType.where("name='Gel Slice'")[5]
 	}
 end
 
