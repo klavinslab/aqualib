@@ -15,7 +15,7 @@ class Protocol
   
   def main
     
-    plasmids_to_take = find(:item, id: input[:plasmid_ids].unique )
+    plasmids_to_take = find(:item, id: input[:plasmid_ids].uniq )
     plasmids_to_digest = find(:item, id: input[:plasmid_ids] )
     
     take plasmids_to_take, interactive: true
@@ -44,7 +44,7 @@ class Protocol
     
     water = 42*plasmids_to_digest.length*1.3
     buffer = 5*plasmids_to_digest.length*1.3
-    enzyme = 1ul*plasmids_to_digest.length*1.3
+    enzyme = 1*plasmids_to_digest.length*1.3
     
     show {
       title "Make master mix"
@@ -55,6 +55,9 @@ class Protocol
       check "Vortex for 20-30 seconds"
       warning "Keep the master mix in an ice block while doing the next steps"
     }
+    
+    release pme1
+    release cutsmart
     
     show {
       title "Prepare Stripwell Tubes"
@@ -69,6 +72,25 @@ class Protocol
       warning "Use a fresh pipette tip for each transfer."
     }
     
+    thermocycler = show {
+      title "Start the reactions"
+      check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
+      separator
+      check "Place the stripwells into an available thermal cycler and close the lid."
+      get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+      separator
+      check "Click 'Home' then click 'Saved Protocol'. Choose 'Digestion'."
+      check "Press 'run' and select 50ul."
+      # TODO: image: "thermal_cycler_home"
+    }
+    
+    stripwells.each do |sw|
+      sw.move thermocycler[:name]
+    end
+    
+    release stripwells
+
+    return { stripwell_ids: stripwells.collect { |s| s.id } }
     
     
   end

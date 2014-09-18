@@ -74,22 +74,22 @@ class Protocol
 
 
     # initilize plasmid and primer stocks array
-#        plasmid_stocks = []
-#        plasmid_uniq.each do |fid|
-#          plasmid = find(:sample,{id: pid})[0]
-#          plasmid_stock = plasmid.in "Plasmid Stock"
-#          plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
-#        end
-#    
-#        primer_aliquots = []
-#        primer_uniq.each do |prid|
-#          primer = find(:sample,{id: prid})[0]
-#         primer_stock = primer.in "Primer Aliquot"
-#          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
-#       end
-#
-#    take plasmid_stocks, interactive: true,  method: "boxes"
-#    take primer_aliquots, interactive: true,  method: "boxes"
+        plasmid_stocks = []
+        plasmid_uniq.each do |pid|
+          plasmid = find(:sample,{id: pid})[0]
+          plasmid_stock = plasmid.in "Plasmid Stock"
+          plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
+        end
+    
+        primer_aliquots = []
+        primer_uniq.each do |prid|
+          primer = find(:sample,{id: prid})[0]
+          primer_aliquots = primer.in "Primer Aliquot"
+          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
+        end
+
+    take plasmid_stocks, interactive: true,  method: "boxes"
+    take primer_aliquots, interactive: true,  method: "boxes"
 
     show {
       note "#{concentrations}"
@@ -97,11 +97,7 @@ class Protocol
       note "#{plasmid_volume}"
       note "#{water_volume}"
     }
-    
-#   show {
-#      note "#{plasmid_stocks}"
-#      note "#{primer_aliquots}"
-#    }
+
 
   
   end
