@@ -42,7 +42,7 @@ class Protocol
 
     # DEBUG: find all markers
     plasmid_type_id = find(:sample_type, name: "Plasmid")
-    show { note plasmid_type_id }
+    show { note plasmid_type_id[0].methods }
 #    all_plasmids = find(:sample, sample_type: "Plasmid")
     all_plasmids = Sample.where("id=4")
     #all_plasmids = Sample.where("sample_type='Plasmid'")
