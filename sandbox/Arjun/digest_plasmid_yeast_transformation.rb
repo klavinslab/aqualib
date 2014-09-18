@@ -57,7 +57,7 @@ class Protocol
     }
     
     release [pme1]
-    release [cutsmart]
+    release [cut_smart]
     
     show {
       title "Prepare Stripwell Tubes"
