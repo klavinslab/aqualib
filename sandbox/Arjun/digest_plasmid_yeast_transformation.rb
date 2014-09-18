@@ -44,7 +44,7 @@ class Protocol
     
     water = 42*plasmids_to_digest.length*1.3
     buffer = 5*plasmids_to_digest.length*1.3
-    enzyme = 1ul*plasmids_to_digest.length*1.3
+    enzyme = 1*plasmids_to_digest.length*1.3
     
     show {
       title "Make master mix"
