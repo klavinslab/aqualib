@@ -62,6 +62,7 @@ class Protocol
     show {
       note "#{concentrations}"
       note "#{lengths}"
+      note "#{length_bins}"
     }
 
   
