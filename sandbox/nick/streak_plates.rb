@@ -41,11 +41,11 @@ class Protocol
     end
 
     # DEBUG: find all markers
-    plasmid_type_id = find(:sample_type, name: "Plasmid")[0].id
-    all_plasmids = find(:sample, sample_type: plasmid_type_id)
-    show { note plasmid_type_id[0].methods.join(" \n ") }
+#    plasmid_type_id = find(:sample_type, name: "Plasmid")[0].id
+#    all_plasmids = find(:sample, sample_type: plasmid_type_id)
+#    show { note plasmid_type_id[0].methods.join(" \n ") }
     show {
-      note Sample.first.sample_type
+      note Sample.first.sample_type.methods.join(" \n ")
     }
 #    show {
 #      note all_plasmids[0].name
