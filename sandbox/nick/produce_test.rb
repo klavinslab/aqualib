@@ -1,5 +1,5 @@
 class Protocol
   def main
-    x = produce 1 ObjectType.where("name='1 L Bottle'")[0]
+    x = produce new_object("1 L Bottle")
   end
 end
