@@ -13,7 +13,7 @@ class Protocol
     plate_ids.each do |pid|
       plate_sample = find(:item, id: pid)[0].sample
       show {
-        note plate_sample.properties.keys
+        note plate_sample.properties.["Bacterial Marker"]
       }
     end
     # Take out the right number of each plate type (array -> counter hash)
