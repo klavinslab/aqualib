@@ -55,6 +55,8 @@ class Protocol
       
       if info[:length] <6000
         length_bins.push 0
+      elseif info[:length] >10000
+        length_bins.push 2
       else
         length_bins.push 1
       end
