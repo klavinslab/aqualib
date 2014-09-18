@@ -46,6 +46,8 @@ def main
 		
 		title "Lable the gel slice tubes with the following numbers."
 		table [["Tube", "Number"],[slices, s]]
+		note s
+		note slices
 	}
 	
 	data = show{
