@@ -12,7 +12,7 @@ class Protocol
   
   def arguments
     {
-    plasmid_ids: [2071, 2072, 2073],
+    plasmid_item_ids: [9976, 10575, 10576],
     primer_ids: [2064, 2064, 2064]
     }  
   end
@@ -35,8 +35,12 @@ class Protocol
   
   def main
    
-    #parse plasmid ids
-    plasmid_ids = input[:plasmid_ids]
+    #parse plasmid item ids
+    plasmid_item_ids = input[:plasmid_item_ids]
+    plasmid_ids = []
+    plasmid_item_ids.each do |pid|
+      plasmid_ids.push find(:item, id: pid)[0].sample
+    end
     plasmid_uniq= plasmid_ids.uniq
     
     #parse primer ids
@@ -49,7 +53,7 @@ class Protocol
     water_volume = []
     
 
-    plasmid_ids.each_with_index do |pid, index|
+    plasmid_ids.each do |pid|
       info = plasmid_info pid
       concentrations.push info[:conc]
       lengths.push info[:length]
@@ -70,21 +74,22 @@ class Protocol
 
 
     # initilize plasmid and primer stocks array
-        plasmid_stocks = []
-        plasmid_uniq.each do |fid|
-          plasmid = find(:sample,{id: pid})[0]
-          plasmid_stock = plasmid.in "Plasmid Stock"
-          plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
-        end
-    
-        primer_aliquots = []
-        primer_uniq.each do |prid|
-          primer = find(:sample,{id: prid})[0]
-          primer_stock = primer.in "Primer Aliquot"
-          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
-        end
-
-
+#        plasmid_stocks = []
+#        plasmid_uniq.each do |fid|
+#          plasmid = find(:sample,{id: pid})[0]
+#          plasmid_stock = plasmid.in "Plasmid Stock"
+#          plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
+#        end
+#    
+#        primer_aliquots = []
+#        primer_uniq.each do |prid|
+#          primer = find(:sample,{id: prid})[0]
+#         primer_stock = primer.in "Primer Aliquot"
+#          primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
+#       end
+#
+#    take plasmid_stocks, interactive: true,  method: "boxes"
+#    take primer_aliquots, interactive: true,  method: "boxes"
 
     show {
       note "#{concentrations}"
@@ -93,10 +98,10 @@ class Protocol
       note "#{water_volume}"
     }
     
-   show {
-      note "#{plasmid_stocks}"
-      note "#{primer_aliquots}"
-    }
+#   show {
+#      note "#{plasmid_stocks}"
+#      note "#{primer_aliquots}"
+#    }
 
   
   end

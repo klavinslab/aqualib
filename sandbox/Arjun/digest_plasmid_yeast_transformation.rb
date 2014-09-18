@@ -22,7 +22,19 @@ class Protocol
     
     cut_smart= choose_sample "Cut Smart"
     
-    stripwells = produce spread plasmids_to_digest, "Stripwell", 1, 12
+    digestions=[]
+    
+    plasmids_to_digest.each do |plasmid|
+        
+        j = produce new_sample plasmid.sample.name, of: "Plasmid", as: "Digested Plasmid"
+        digestions.push(j)
+        
+    end    
+    
+    
+    stripwells = produce spread digestions, "Stripwell", 1, 12
+    
+    
     
     show {
       warning "In the following step you will take PMEI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
@@ -58,15 +70,6 @@ class Protocol
     }
     
     
-    
-    plasmids_to_digest.each do |plasmid|
-        
-        j = produce new_sample plasmid.sample.name, of: "Plasmid", as: "Digested Plasmid"
-        
-        
-      end
-    
-  
     
   end
   
