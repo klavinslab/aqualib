@@ -1,12 +1,21 @@
 #hi
 needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
   include Standard
+  include Cloning
   
   def debug
     false
   end
+  
+  #def arguments 
+  #  {
+    #plasmid_ids: (SampleType.where("name='Plasmid'")[0].samples.collect { |p| p.id }).sample(10)
+    #plate_types: 
+  #  }
+  #end
   
   def main
     #data = show {
