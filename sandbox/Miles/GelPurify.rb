@@ -25,9 +25,9 @@ def main
 	
 	slices_full=[]
 	slices.each do |fid|
-			slices = find(:item, {id: fid})[0]
-    			slices_full = slices.in "Gel Slice"
-    			slices_full.push slices_full[0] if slices_full[0]
+			slice = find(:item, {id: fid})[0]
+    			slice_full = slice.in "Gel Slice"
+    			slices_full.push slice_full[0] if slice_full[0]
 	end
 	
 	show{
