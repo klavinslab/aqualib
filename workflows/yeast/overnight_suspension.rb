@@ -21,14 +21,15 @@ class Protocol
   def main
   	items = []
   	overnights = []
-  	input[:item_ids].each do |id|
-  		item = find(item, id: id)
+  	input[:item_ids].each do |itd|
+  		item = find(item, id: itd)
   		items.push item if item
   		overnight = produce new_sample item.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
   		overnights.push overnight
   	end
 
   	take items, interactive: true
+  	release overnights, interactive: true
 
   end
 
