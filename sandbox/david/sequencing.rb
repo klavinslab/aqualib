@@ -15,6 +15,7 @@ class Protocol
     initials: "First and last initial",
     plasmid_item_ids: [9976, 10575, 10576],
     primer_ids: [2064, 2064, 2064]
+    genewiz_tracking_number: "00-000000000",
     }  
   end
   
@@ -49,6 +50,9 @@ class Protocol
     #parse primer ids
     primer_ids = input[:primer_ids]
     primer_uniq= primer_ids.uniq
+
+    #parse genewiz tracking number
+    tracking_number = input[:genewiz_tracking_number]
 
     concentrations = []
     lengths = []
@@ -93,9 +97,6 @@ class Protocol
 
     take plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
 
-
-
-
 plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
 water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
 
@@ -104,20 +105,12 @@ tab.push plasmid_item_with_volume
 tab.push water_with_volume
 
 show {
- table tab 
+  title "Add the following to the stripwell tubes"
+  table tab 
 }
 
-
-
-    show {
-      note "#{plasmid_item_with_volume}"
-      note "#{plasmid_stocks}"
-      note "#{primer_aliquots}"
-      note "#{plasmid_volume}"
-      note "#{water_volume}"
-    }
-
-
+  
+  release plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
   
   end
   
