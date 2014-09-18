@@ -44,17 +44,34 @@ class Protocol
     primer_uniq= primer_ids.uniq
 
     concentrations = []
+    lengths = []
+    length_bins = []
+    
 
     plasmid_ids.each_with_index do |pid, index|
       info = plasmid_info pid
       concentrations.push info[:conc]
+      lengths.push info[:length]
+      
+      length = info[:length]
+      
+      if length <6000
+        length_bin=0
+      else if legnth >10000
+        length_bin=2
+      else
+        length_bin=1
+      end
+      
+      length_bins.push length_bin
+      
     end
 
-   
-    
-    
+
+
+
     show {
-      note "#{concentrations}"
+      note "#{length_bin}"
     }
 
   
