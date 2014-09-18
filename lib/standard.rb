@@ -37,9 +37,9 @@ module Standard
 
 		end
 
-		item = options[choices.index(user_input[:x])]
+		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
-		take [ item ], interactive: true
+		take items, interactive: true
 
 		return item
 
