@@ -15,9 +15,9 @@ class Protocol
       resistance_raw = plate_sample.properties["Bacterial Marker"]
       if resistance_raw.downcase.include? "amp"
         resistance = "amp"
-      elif resistance_raw.downcase.include? "kan"
+      eslif resistance_raw.downcase.include? "kan"
         resistance = "kan"
-      elif resistance_raw.downcase.include? "chlor"
+      eslif resistance_raw.downcase.include? "chlor"
         resistance = "chlor"
       else
         # For now, catching a wrong/empty value does the same thing
