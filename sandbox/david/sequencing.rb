@@ -55,15 +55,15 @@ class Protocol
       
       length = info[:length]
       
-      if length <6000
-        length_bin=0
-      elseif legnth >10000
-        length_bin=2
-      else
-        length_bin=1
-      end
-      
-      length_bins.push length_bin
+  #    if length <6000
+  #      length_bin=0
+  #    elseif legnth >10000
+  #      length_bin=2
+  #    else
+  #      length_bin=1
+  #    end
+  #    
+  #    length_bins.push length_bin
       
     end
 
