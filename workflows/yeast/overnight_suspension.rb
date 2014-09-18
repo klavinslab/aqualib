@@ -33,8 +33,8 @@ class Protocol
   		note(yeast_items.collect {|x| x.id})
   	}
 
-  	take yeast_items, interactive: true
-  	release overnights, interactive: true
+  	take yeast_items, interactive: true, method: "boxes"
+  	release overnights, interactive: true, method: "boxes"
 
   	return input.merge yeast_overnight_ids: overnights.collect {|x| x.id}
 
