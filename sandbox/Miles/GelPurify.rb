@@ -63,7 +63,7 @@ def main
 	
 	qgs=[]
 	count3=0
-	while count3 < y [do]
+	while count3 < slice_number [do]
   		label=count3+1
   		qg=w[count3]*3000
   		qg.floor
