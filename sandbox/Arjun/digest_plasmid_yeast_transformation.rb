@@ -56,6 +56,9 @@ class Protocol
       warning "Keep the master mix in an ice block while doing the next steps"
     }
     
+    release pme1
+    release cutsmart
+    
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
@@ -69,6 +72,25 @@ class Protocol
       warning "Use a fresh pipette tip for each transfer."
     }
     
+    thermocycler = show {
+      title "Start the reactions"
+      check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
+      separator
+      check "Place the stripwells into an available thermal cycler and close the lid."
+      get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+      separator
+      check "Click 'Home' then click 'Saved Protocol'. Choose 'Digestion'."
+      check "Press 'run' and select 50ul."
+      # TODO: image: "thermal_cycler_home"
+    }
+    
+    stripwells.each do |sw|
+      sw.move thermocycler[:name]
+    end
+    
+    release stripwells
+
+    return { stripwell_ids: stripwells.collect { |s| s.id } }
     
     
   end
