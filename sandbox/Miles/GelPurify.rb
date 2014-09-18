@@ -15,6 +15,7 @@ def arguments
 	{
 	gelslice_ids: SampleType.where("name='Gel Slice'")[0] 
 	}
+end
 
 def main
 	
@@ -50,4 +51,4 @@ def main
 	
 end
 
-
+end
