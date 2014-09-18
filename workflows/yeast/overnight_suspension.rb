@@ -36,6 +36,8 @@ class Protocol
   	take yeast_items, interactive: true
   	release overnights, interactive: true
 
+  	return input.merge yeast_overnight_ids: overnight.collect {|x| x.id}
+
   end
 
 end  
