@@ -2,6 +2,8 @@
 # Standard
 #
 
+require 'active_support/inflector'
+
 module Standard
 
 	def choose_sample sample_name, p={}
@@ -25,7 +27,11 @@ module Standard
 		while quantity != params[:quantity]
 
 			user_input = show {
-			  title "Choose #{params[:quantity]} #{pluralize(params[:quantity],sample_name)} to use"
+				if params[:quantity] == 1
+				  title "Choose a #{sample_name}"
+				else
+				  title "Choose #{params[:quantity]} #{sample_name.pluralize}"
+				end
 			  if quantity >= 0 
 			  	note "Try again. You chose the wrong number of items"
 			  end
