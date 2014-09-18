@@ -12,8 +12,8 @@ class Protocol
   
   def arguments
     {
-    plasmid_ids: [2071, 2072],
-    primer_ids: [2064, 2064]
+    plasmid_ids: [2071, 2072, 2073],
+    primer_ids: [2064, 2064, 2064]
     }  
   end
   
