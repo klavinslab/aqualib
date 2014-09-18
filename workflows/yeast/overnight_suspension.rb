@@ -23,8 +23,8 @@ class Protocol
   	overnights = []
   	input[:item_ids].each do |itd|
   		item = find(:item, id: itd)
-  		items.push item if item
-  		overnight = produce new_sample item.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
+  		items.push item
+  		overnight = produce new_sample item.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"
   		overnights.push overnight
   	end
 
