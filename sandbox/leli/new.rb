@@ -1,7 +1,7 @@
 #hi
 class Protocol
   def main
-    show {
+    data = show {
       title "Hello World!"
       title "An input example."
       get "text", var: "y", label:"Enter a string", default: "hi again"
