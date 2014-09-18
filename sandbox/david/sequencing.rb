@@ -89,13 +89,21 @@ class Protocol
         end
     
         primer_aliquots = []
-        primer_uniq.each do |prid|
+        primer.each do |prid|
           primer = find(:sample,{id: prid})[0]
-          primer_aliquots = primer.in "Primer Aliquot"
+          primer_aliquot = primer.in "Primer Aliquot"
           primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
         end
+        
+        primer_aliquots_unique = []
+        primer_uniq.each do |prid|
+          primer = find(:sample,{id: prid})[0]
+          primer_aliquot = primer.in "Primer Aliquot"
+          primer_aliquots_unique.push primer_aliquots[0] if primer_aliquots[0]
+        end
+        
 
-    take plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
+    take plasmid_stocks + primer_aliquots_unique, interactive: true,  method: "boxes"
 
     plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
     water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
@@ -112,7 +120,7 @@ class Protocol
     }
 
   
-  release plasmid_stocks + primer_aliquots, interactive: true,  method: "boxes"
+  release plasmid_stocks + primer_aliquots_unique, interactive: true,  method: "boxes"
   
   end
   
