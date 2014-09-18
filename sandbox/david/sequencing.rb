@@ -113,11 +113,16 @@ class Protocol
     tab.push water_with_volume
     tab.push plasmid_item_with_volume
     tab.push primer_with_volume
+    tab_check =  tab.collect { |row| row.collect { |e| { content: e, check: true } } }
+    col1 = [ [ "Tube", "Water", "Template", "Primer" ] ]  
+    rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
       
     show {
       title "Add the following to the stripwell tubes"
-      table tab 
+      table (col1.concat rest).transpose
     }
+
+
 
   
   release plasmid_stocks + primer_aliquots_unique, interactive: true,  method: "boxes"
