@@ -46,8 +46,14 @@ class Protocol
 #    show { note plasmid_type_id[0].methods.join(" \n ") }
     plasmid_type = find(:sample_type, name: "Plasmid")[0].id
     all_plasmids = find(:sample, sample_type_id: plasmid_type)
+    marker_list = all_plasmids.map { |p| p.attributes["Bacterial Marker"] }
+    markers = Hash.new(0)
+    marker_list.each do |marker|
+      markers[marker] += 1
+    end
+
     show {
-      note all_plasmids
+      note markers
     }
 #    show {
 #      note all_plasmids[0].name
