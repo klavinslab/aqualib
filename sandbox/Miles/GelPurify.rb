@@ -26,13 +26,14 @@ def main
 	slices_full=[]
 	slices.each do |fid|
 			slice = find(:item, {id: fid})[0]
-    			slice_full = slice "Gel Slice"
-    			#slices_full.push(slice)
-    			slices_full.push slice_full[0] if slice_full[0]
+    			#slice_full = slice "Gel Slice"
+    			slices_full.push(slice)
+    			#slices_full.push slice_full[0] if slice_full[0]
 	end
 	
 	show{
 		title "This protocol purfies gel slices int DNA fragment stocks."
+		note slices_full
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
