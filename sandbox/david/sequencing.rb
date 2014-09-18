@@ -58,18 +58,18 @@ class Protocol
       #Bin the plasmid lengths according to genewiz specifications
       if info[:length] <6000
         length_bins.push 0
-        plasmid_volume.push 500/info[:conc]
-        water_volume.push 12.5-500/info[:conc]
+        plasmid_volume.push (500/info[:conc]).round(2)
+        water_volume.push 12.5-(500/info[:conc]).round(2)
         
       elsif info[:length] >10000
         length_bins.push 2
-        plasmid_volume.push 1000/info[:conc]
-        water_volume.push 12.5-1000/info[:conc]
+        plasmid_volume.push (1000/info[:conc]).round(2)
+        water_volume.push 12.5-(1000/info[:conc]).round(2)
         
       else
         length_bins.push 1
-        plasmid_volume.push 800/info[:conc]
-        water_volume.push 12.5-800/info[:conc]
+        plasmid_volume.push (800/info[:conc]).round(2)
+        water_volume.push 12.5-(800/info[:conc]).round(2)
         
       end
     end
