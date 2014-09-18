@@ -58,7 +58,7 @@ def main
 		}
 	}	
 	
-	weights = slices.collect{ |slice_number| data["w#{slices_full.id}".to_sym]}
+	weights = slices.collect{ |slice_number| data[w.to_sym]}
 	
 end
 
