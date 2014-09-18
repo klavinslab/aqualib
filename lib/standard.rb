@@ -33,7 +33,7 @@ module Standard
 			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
 			}
 
-			quantity = data[:x].length
+			quantity = user_input[:x].length
 
 		end
 
