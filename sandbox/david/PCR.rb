@@ -10,12 +10,19 @@ class Protocol
     false
   end
 
+  #def arguments
+  #  {
+  #    # For testing purposes, choose a random set of 10 fragments
+  #    fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id }).sample(10)
+  #  }
+  #end
+
   def arguments
     {
-      # For testing purposes, choose a random set of 10 fragments
-      fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id }).sample(10)
+      fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id })
     }
   end
+
 
   def main
 
