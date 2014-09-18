@@ -45,6 +45,7 @@ class Protocol
 
     concentrations = []
     lengths = []
+    length = []
     length_bins = []
     
 
