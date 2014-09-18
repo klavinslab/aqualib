@@ -84,9 +84,9 @@ class Protocol
         primer_aliquots = []
         primer_uniq.each do |prid|
           primer = find(:sample,{id: prid})[0]
-         primer_stock = primer.in "Primer Aliquot"
+          primer_aliquots = primer.in "Primer Aliquot"
           primer_aliquots.push primer_aliquots[0] if primer_aliquots[0]
-       end
+        end
 
     take plasmid_stocks, interactive: true,  method: "boxes"
     take primer_aliquots, interactive: true,  method: "boxes"
