@@ -97,7 +97,7 @@ class Protocol
 
 
 
-plasmid_item_with_volume = plasmid_stock.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
+plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
 
 
 
