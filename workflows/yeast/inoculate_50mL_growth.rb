@@ -24,7 +24,7 @@ class Protocol
   	input[:yeast_overnight_ids].each do |itd|
   		yeast_overnight = find(:item, id: itd)[0]
   		yeast_overnights.push yeast_overnight
-  		overnight = produce new_sample yeast_50mL_culture.sample.name, of: "Yeast Strain", as: "Yeast 50ml culture"
+  		yeast_50mL_culture = produce new_sample yeast_overnight.sample.name, of: "Yeast Strain", as: "Yeast 50ml culture"
   		yeast_50mL_cultures.push yeast_50mL_culture
   	end
 
