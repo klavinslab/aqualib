@@ -53,7 +53,7 @@ class Protocol
     end
 
     show {
-      note markers
+      note markers.to_s
     }
 #    show {
 #      note all_plasmids[0].name
