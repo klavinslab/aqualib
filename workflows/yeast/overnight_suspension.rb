@@ -22,6 +22,7 @@ class Protocol
   def main
   	yeast_items = []
   	overnights = []
+  	volume = input[:volume]
   	input[:yeast_item_ids].each do |itd|
   		yeast_item = find(:item, id: itd)[0]
   		yeast_items.push yeast_item
@@ -41,7 +42,7 @@ class Protocol
   	}
 
   	show {
-  		note "Add #{input[:volume]} µL to each empty 14 mL test tube"
+  		note "Add #{volume} µL of to each empty 14 mL test tube"
   	}
 
 
