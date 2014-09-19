@@ -15,8 +15,8 @@ class Protocol
 
   def main
 
-    LiOAc = choose_sample "100 mM LiOAc"
-    water = choose_sample "50 mL Molecular Grade Water aliquot"
+    LiOAc = choose_object "100 mM LiOAc"
+    water = choose_object "50 mL Molecular Grade Water aliquot"
     
     cultures = input[:culture_ids].collect{|cid| find(:item,id:cid)[0]}
     take cultures, interactive: true
