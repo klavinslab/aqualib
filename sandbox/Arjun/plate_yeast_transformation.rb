@@ -19,7 +19,7 @@ class Protocol
     plasmids = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
     take plasmids
     
-    selections = plasmids.sample.properties
+    selections = plasmids.sample.sample_type
     
     release plasmids
     
