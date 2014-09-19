@@ -29,7 +29,7 @@ class Protocol
   		overnights.push overnight
   	end
 
-  	tube = choose_object("14 mL Test Tube")
+  	tube = choose_object("14 mL Test Tube")[0]
   	take tube, interactive: true
 
   	show {
