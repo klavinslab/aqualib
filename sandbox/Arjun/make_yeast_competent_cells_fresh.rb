@@ -119,7 +119,9 @@ class Protocol
       
     end
     
-    release [l, water, cultures]
+    release [l]
+    release [water]
+    release [cultures]
     
     return {yeast_compcell_aliquot_id: yeast_compcell_aliquot_id}
     
