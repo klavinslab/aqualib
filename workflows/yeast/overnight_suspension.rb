@@ -41,7 +41,7 @@ class Protocol
   	}
 
   	show {
-  		note: "Add #{input[:volume]} µL to each empty 14 mL test tube"
+  		note "Add #{input[:volume]} µL to each empty 14 mL test tube"
   	}
 
 
