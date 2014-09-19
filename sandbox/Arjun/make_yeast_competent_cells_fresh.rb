@@ -93,12 +93,14 @@ class Protocol
     
     yeast_compcell_aliquot_id=[]
     counter=0
+    
     cultures.each do |culture|
     
       num = input[:aliquots_number][counter]
       counter2=0
       culture_id = culture[:id]
       yeast_compcell_aliquot_id_table=[["Aliquot Number","Comp cell aliquot IDs"]]
+      tubenum=0
       
       while counter2<num
 
