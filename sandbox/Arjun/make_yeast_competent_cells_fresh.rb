@@ -90,7 +90,7 @@ class Protocol
       note "The 0.1 on the tube means 100ul and each line is another 100ul"
     }
     
-    yeast_compcell_aliquot_id_table=[["Aliquot Number","Comp cell aliquot IDs"]]
+    
     yeast_compcell_aliquot_id=[]
     counter=0
     cultures.each do |culture|
@@ -98,7 +98,8 @@ class Protocol
       num = input[:aliquots_number][counter]
       counter2=0
       culture_id = culture[:id]
-  
+      yeast_compcell_aliquot_id_table=[["Aliquot Number","Comp cell aliquot IDs"]]
+      
       while counter2<num
 
         j = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
