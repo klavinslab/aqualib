@@ -51,15 +51,15 @@ class Protocol
         plate = choose_object "SDO -Ura Plate (sterile)"
         plates.push([plate])
         
-      elseif plasmids[counter].sample.properties["Yeast Marker"]=="TRP"
+      else if plasmids[counter].sample.properties["Yeast Marker"]=="TRP"
         plate = choose_object "SDO -Trp Plate (sterile)"
         plates.push([plate])
         
-      elseif plasmids[counter].sample.properties["Yeast Marker"]=="LEU"
+      else if plasmids[counter].sample.properties["Yeast Marker"]=="LEU"
         plate = choose_object "SDO -Leu Plate (sterile)"
         plates.push([plate])
         
-      elseif plasmids[counter].sample.properties["Yeast Marker"]=="HIS"
+      else if plasmids[counter].sample.properties["Yeast Marker"]=="HIS"
         plate = choose_object "SDO -His Plate (sterile)"
         plates.push([plate])
         
