@@ -31,7 +31,7 @@ class Protocol
 
   	tube = choose_object("14 mL Test Tube")
   	take(tube, interactive: true) {
-	  note "Take #{yeast_items.length} tubes"
+	  note "Take 3 tubes"
 	}
 
   	show {
