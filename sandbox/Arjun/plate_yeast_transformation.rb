@@ -9,7 +9,7 @@ class Protocol
 
   def arguments
     {
-      yeast_transformation_mixture_ids: [27411],plasmid_ids:[27262]
+      yeast_transformation_mixture_ids: [27411],plasmid_ids:[27262],initials:["AK"]
     }
   end
   
@@ -19,7 +19,7 @@ class Protocol
     plasmids = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
     take plasmids
     
-    selections = plasmids.sample
+    selections = plasmids.sample.properties
     
     release plasmids
     
