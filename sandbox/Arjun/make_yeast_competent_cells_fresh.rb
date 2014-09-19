@@ -94,7 +94,7 @@ class Protocol
     counter=0
     cultures.each do |culture|
     
-      num = input[:aliquots_number[counter]]
+      num = input[:aliquots_number][counter]
       counter2=0
       culture_id = culture[:id]
   
