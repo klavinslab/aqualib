@@ -89,6 +89,35 @@ class Protocol
       note "The 0.1 on the tube means 100ul and each line is another 100ul"
     }
     
+    yeast_compcell_aliquot_id=[["Aliquot Number","Comp cell aliquot IDs"]]
+    counter=0
+    cultures.each do |culture|
+    
+      num = aliquots_number[counter]
+      counter2=0
+      culture_id = culture[:id]
+  
+      while counter2<num
+
+        j = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
+        
+        tubenum=counter2+1
+        yeast_compcell_aliquot_id.push([tubenum,j[:id]])
+    
+        counter2 = counter2 + 1
+      end
+      
+      show{
+        title "Aliquoting cells"
+        check "Label ependorf tubes for comp cells according to the tabel below"
+        check "Aliquot 50ul of the #{culture[:id]} resuspension into the eppendorf tubes"
+        table yeast_compcell_aliquot_id
+      }
+      counter = counter + 1
+      
+    end
+    
+    release [LiOAc, water, cultures]
     
   end
 
