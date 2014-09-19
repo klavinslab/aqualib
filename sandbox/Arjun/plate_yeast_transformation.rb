@@ -42,7 +42,7 @@ class Protocol
       yeast_transformation_plate_ids.push([j[:id]])
       
       show{
-        note "#{plasmids[counter].sample_type[:key5]}"
+        note "#{plasmids[counter].sample.sample_type[:key5]}"
       }
       
       
