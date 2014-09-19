@@ -129,9 +129,6 @@ def main
 		fragments.push(j)
 	end
 	
-	fragments.each do |pid|
-		fragments[pid].datum.Concentration=c[pid]
-	end
 	
 	release(slices_full)
 	end
