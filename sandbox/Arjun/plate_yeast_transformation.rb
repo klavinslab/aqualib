@@ -17,7 +17,7 @@ class Protocol
     
     yeast_transformation_mixtures = input[:yeast_transformation_mixture_ids].collect{|tid| find(:item, id: tid )[0]}
     plasmids = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
-    selections = plasmids.sample.sample_type[:key4]
+    selections = plasmids.sample
     
     take yeast_transformation_mixtures, interactive: true
     
@@ -47,19 +47,19 @@ class Protocol
       }
       
       
-      if selections[counter].properties[:key5]=="URA"
+      if selections[counter].sample_type[:key4]=="URA"
         plate = choose_object "SDO -Ura Plate (sterile)"
         plates.push([plate])
         
-      elseif selections[counter]=="TRP"
+      elseif selections[counter].sample_type[:key4]=="TRP"
         plate = choose_object "SDO -Trp Plate (sterile)"
         plates.push([plate])
         
-      elseif selections[counter]=="LEU"
+      elseif selections[counter].sample_type[:key4]=="LEU"
         plate = choose_object "SDO -Leu Plate (sterile)"
         plates.push([plate])
         
-      elseif selections[counter]=="HIS"
+      elseif selections[counter].sample_type[:key4]=="HIS"
         plate = choose_object "SDO -His Plate (sterile)"
         plates.push([plate])
         
