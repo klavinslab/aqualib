@@ -30,7 +30,7 @@ class Protocol
   	end
 
   	tube = choose_object("14 mL Test Tube")
-  	take tube
+  	take [tube]
 
   	show {
   		note(yeast_items.collect {|x| x.id})
