@@ -18,7 +18,7 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: [27327, 27238]
+	gelslice_ids: [27327, 27328]
 	}
 end
 
@@ -33,7 +33,7 @@ def main
 
 	
 	show{
-		title "This protocol purfies gel slices int DNA fragment stocks."
+		title "This protocol purfies gel slices into DNA fragment stocks."
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
@@ -53,13 +53,14 @@ def main
 		title "Weigh the gel slices."
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
-		note "Enter the recorded weights below."
+		note "Enter the recorded weights 1 through #{slice_number} from top to bottom."
 		slices_full.each{ |gs|
-			get "number", var: "w#{gs.id}"
+			get "number", var: "w#{gs.id}" 
 		}
 	}	
 	
 	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
+	
 	
 	qgs=[]
 	count3=0
@@ -80,6 +81,7 @@ def main
 	show{
 		title "Place tubes in 50 degree heat block for about 10 minutes. Vortex every few minutes to speed up the process."
 		note "10 minutues or until the gel slice is competely dissovled."
+		note "Add 1x volume (1 uL to 1 mg of gel slice) isopropanol. Pipette up and down to mix"
 	}
 	
 	show{
@@ -109,7 +111,38 @@ def main
 		  check "Elute DNA into Eppendorf tubes by spinning at top speed (> 17,900 xg) for one minute"
 	}
 	
+	show{
+		title "Measure Fragment DNA Concentration"
+		note "Go to B9 and nanodrop all of tubes. Record Concentrations on the side of the tube."
+		note "Enter all the DNA concetrations of tubes 1 through #{slice_number} below from top to bottom"
+		slices_full.each{ |gs|
+			get "number", var: "c#{gs.id}"
+		}
+	}	
 	
+	c = slices_full.collect{ |gs| data["c#{gs.id}".to_sym]}
+	
+	
+	fragments=[]
+	slices_full.each do |pid|
+		j=produce new_sample pid.sample.name, of: "Fragment", as: "Fragment Stock"
+		fragments.push(j)
+	end
+	
+	show{
+		title "Label the tubes with their aquairum IDs"
+		note "Lable tubes 1 through #{slice_number} with the IDs listed below left to right."
+		y=fragments.map{|e| e.id}
+		note y
+	}
+	
+	count=0
+	while count < slice_number do
+		fragments[count].datum={concentration: c[count]}
+		count=count+1
+	end	
+	
+	release(slices_full)
 	end
 
 end

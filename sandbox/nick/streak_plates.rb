@@ -41,19 +41,23 @@ class Protocol
     end
 
     # DEBUG: find all markers
-#    plasmid_type_id = find(:sample_type, name: "Plasmid")[0].id
-#    all_plasmids = find(:sample, sample_type: plasmid_type_id)
-#    show { note plasmid_type_id[0].methods.join(" \n ") }
-    show {
-      note Sample.first.sample_type.methods.join(" \n ")
-    }
-#    show {
-#      note all_plasmids[0].name
-#    }
-#    all_plasmids = find(:sample, sample_type: "Plasmid")
-    #all_plasmids = Sample.where("id=4")
-    #all_plasmids = Sample.where("sample_type='Plasmid'")
+    #plasmid_type = find(:sample_type, name: "Plasmid")[0].id
+    #all_plasmids = find(:sample, sample_type_id: plasmid_type)
+    #marker_list = all_plasmids.map { |p| p.properties["Bacterial Marker"] }
+    #markers = Hash.new(0)
+    #marker_list.each do |marker|
+    #  markers[marker] += 1
+    #end
+    #show {
+    #  note markers.to_s
+    #}
+
     # DEBUG: find all e coli plates
+    ecoli_plate_id = find(:object_type, name: "E coli Plate")[0]
+    all_ecoli_plates = find(:item, object_type_id: ecoli_plate_id)
+    show {
+      note all_ecoli_plates.map { |p| p.sample }
+    }
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     #show {
       #note all_plasmids.map { |p| p.name }.join(" , ")

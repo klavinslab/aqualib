@@ -8,22 +8,23 @@ class Protocol
 
   def arguments
     {
-      “cultures_ids Yeast 50ml culture” => [0]  
+      #"cultures_ids Yeast 50ml culture" => [0],
+      culture_ids: [0], 
       aliquots_number: [0]
     }
   end
 
   def main
 
-    LiOAc = choose_sample  "100 mM LiOAc"
-    water = choose_sample "50 mL Molecular Grade Water aliquot"
+    l = choose_object "100 mM LiOAc"
+    water = choose_object "50 mL Molecular Grade Water aliquot"
     
     cultures = input[:culture_ids].collect{|cid| find(:item,id:cid)[0]}
     take cultures, interactive: true
     
     culture_labels=[["Tube Number","Label"]]
     tube_labels=[["Label"]]
-    tube_number=0
+    tube_number=1
     cultures.each do |culture|
       culture_labels.push([tube_number,culture.id])
       tube_labels.push([tube_number])
@@ -40,7 +41,7 @@ class Protocol
       title "Harvesting Cells"
       check "Pour contents of flask into the labeled 50ml plastic falcon tube according to the tabel below"
       note "It does not matter if you dont get the foam into the tubes"
-      tabel culture_labels
+      table culture_labels
     }
     
     show{
@@ -89,6 +90,35 @@ class Protocol
       note "The 0.1 on the tube means 100ul and each line is another 100ul"
     }
     
+    yeast_compcell_aliquot_id=[["Aliquot Number","Comp cell aliquot IDs"]]
+    counter=0
+    cultures.each do |culture|
+    
+      num = aliquots_number[counter]
+      counter2=0
+      culture_id = culture[:id]
+  
+      while counter2<num
+
+        j = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
+        
+        tubenum=counter2+1
+        yeast_compcell_aliquot_id.push([tubenum,j[:id]])
+    
+        counter2 = counter2 + 1
+      end
+      
+      show{
+        title "Aliquoting cells"
+        check "Label ependorf tubes for comp cells according to the tabel below"
+        check "Aliquot 50ul of the #{culture[:id]} resuspension into the eppendorf tubes"
+        table yeast_compcell_aliquot_id
+      }
+      counter = counter + 1
+      
+    end
+    
+    release [l, water, cultures]
     
   end
 
