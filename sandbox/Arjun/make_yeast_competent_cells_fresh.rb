@@ -41,7 +41,7 @@ class Protocol
       title "Harvesting Cells"
       check "Pour contents of flask into the labeled 50ml plastic falcon tube according to the tabel below"
       note "It does not matter if you dont get the foam into the tubes"
-      tabel culture_labels
+      table culture_labels
     }
     
     show{
