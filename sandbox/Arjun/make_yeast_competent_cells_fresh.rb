@@ -15,7 +15,7 @@ class Protocol
 
   def main
 
-    Lioac = choose_object "100 mM LiOAc"
+    l = choose_object "100 mM LiOAc"
     water = choose_object "50 mL Molecular Grade Water aliquot"
     
     cultures = input[:culture_ids].collect{|cid| find(:item,id:cid)[0]}
@@ -117,7 +117,7 @@ class Protocol
       
     end
     
-    release [Lioac, water, cultures]
+    release [l, water, cultures]
     
   end
 
