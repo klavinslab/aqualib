@@ -14,7 +14,7 @@ class Protocol
     {
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [8437,8431,8426],
-      media_type: "YPAD",
+      media_type: "50 mL YPAD liquid aliquot (sterile)",
       volume: "2"
     }
   end
@@ -23,6 +23,7 @@ class Protocol
   	yeast_items = []
   	overnights = []
   	volume = input[:volume]
+  	media_type = input[:media_type]
   	input[:yeast_item_ids].each do |itd|
   		yeast_item = find(:item, id: itd)[0]
   		yeast_items.push yeast_item
@@ -36,16 +37,16 @@ class Protocol
   		title "Take #{yeast_items.length} tubes"
   	}
 
+  	media = choose_object(media_type, take: true)
+
   	show {
   		note(yeast_items.collect {|x| x.id})
   		note(tube.id)
   	}
 
   	show {
-  		note "Add #{volume} µL of to each empty 14 mL test tube"
+  		note "Add #{volume} µL of #{media_type} to each empty 14 mL test tube"
   	}
-
-
 
   	take yeast_items, interactive: true, method: "boxes"
   	release overnights, interactive: true, method: "boxes"
