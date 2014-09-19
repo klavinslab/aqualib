@@ -33,7 +33,7 @@ def main
 
 	
 	show{
-		title "This protocol purfies gel slices int DNA fragment stocks."
+		title "This protocol purfies gel slices into DNA fragment stocks."
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
@@ -124,6 +124,17 @@ def main
 	c = slices_full.collect{ |gs| data["c#{gs.id}".to_sym]}
 	
 	
+	fragments=[]
+	slices_full.each do |pid|
+		j=produce new_sample pid.sample.names, of: "Fragment", as: "Fragment Stock"
+		fragments.push(j)
+	end
+	
+	fragments.each do |pid|
+		fragments[pid].datum.Concentration=c[pid]
+	end
+	
+	release(slices_full)
 	end
 
 end
