@@ -113,9 +113,9 @@ def main
 	}
 	
 	show{
-		title: "Measure Fragment DNA Concentration"
-		note: "Go to B9 and nanodrop all of tubes. Record Concentrations on the side of the tube."
-		note: "Enter all the DNA concetrations of tubes 1 through #{slice_number} below"
+		title "Measure Fragment DNA Concentration"
+		note "Go to B9 and nanodrop all of tubes. Record Concentrations on the side of the tube."
+		note "Enter all the DNA concetrations of tubes 1 through #{slice_number} below"
 		slices_full.each{ |gs|
 			get "number", var: "c#{gs.id}"
 		}
