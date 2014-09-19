@@ -73,11 +73,11 @@ class Protocol
     
     show{
       check "Shake the plates in all directions to evely spread the culture over its surface till its dry"
-    end
+    }
     
     show{
       check "Put the plates with the agar side up in the 30C incubator"
-    end
+    }
     
   end
   
