@@ -18,7 +18,7 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: [27327, 27320]
+	gelslice_ids: [27327, 27328]
 	}
 end
 
