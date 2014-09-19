@@ -14,7 +14,7 @@ class Protocol
     {
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [8437,8431,8426],
-      media_type: "YPAD"
+      media_type: "YPAD",
       volume: "2"
     }
   end
