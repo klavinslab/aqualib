@@ -79,6 +79,9 @@ class Protocol
       check "Put the plates with the agar side up in the 30C incubator"
     }
     
+    release plates
+    release yeast_transformation_mixtures
+    
   end
   
 end
