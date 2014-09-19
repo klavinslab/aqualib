@@ -29,8 +29,8 @@ class Protocol
   		overnights.push overnight
   	end
 
-  	tube = choose_object("14 mL Test Tube")[0]
-  	take tube, interactive: true
+  	tube = choose_object("14 mL Test Tube")
+  	take tube[0], interactive: true
 
   	show {
   		note(yeast_items.collect {|x| x.id})
