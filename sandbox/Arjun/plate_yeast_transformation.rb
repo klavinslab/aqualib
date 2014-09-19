@@ -9,7 +9,7 @@ class Protocol
 
   def arguments
     {
-      yeast_transformation_mixture_ids: [],plasmid_ids:[]
+      yeast_transformation_mixture_ids: [27411],plasmid_ids:[27262]
     }
   end
   
