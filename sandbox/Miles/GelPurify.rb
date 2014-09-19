@@ -135,7 +135,7 @@ def main
 		note fragments.map |e| e.id
 	}
 	
-	while count=0
+	count=0
 	while count < slice_number do
 		fragments[i].dataum=concentration{c[i]}
 		count=count+1
