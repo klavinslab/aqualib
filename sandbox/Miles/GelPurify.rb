@@ -132,7 +132,7 @@ def main
 	show{
 		title "Label the tubes with their aquairum IDs"
 		note "Lable tubes 1 through #{slice_number} with the IDs listed below left to right."
-		note fragments.map(|e| e.id)
+		note fragments.map |e| e.id
 	}
 	
 	while count=0
