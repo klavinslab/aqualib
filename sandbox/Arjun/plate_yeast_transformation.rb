@@ -17,7 +17,8 @@ class Protocol
     
     yeast_transformation_mixtures = input[:yeast_transformation_mixture_ids].collect{|tid| find(:item, id: tid )[0]}
     plasmids = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
-    selections = plasmids.sample.properties
+    selections = plasmids.properties
+    
     
     take yeast_transformation_mixtures, interactive: true
     
