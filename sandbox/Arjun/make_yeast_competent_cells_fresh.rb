@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       #"cultures_ids Yeast 50ml culture" => [0],
-      cultures_ids: [0], 
+      culture_ids: [0], 
       aliquots_number: [0]
     }
   end
