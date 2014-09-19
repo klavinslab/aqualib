@@ -15,6 +15,7 @@ class Protocol
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [8437,8431,8426],
       media_type: "YPAD"
+      volume: "2"
     }
   end
 
@@ -38,6 +39,12 @@ class Protocol
   		note(yeast_items.collect {|x| x.id})
   		note(tube.id)
   	}
+
+  	show {
+  		note: "Add #{input[:volume]} µL to each empty 14 mL test tube"
+  	}
+
+
 
   	take yeast_items, interactive: true, method: "boxes"
   	release overnights, interactive: true, method: "boxes"
