@@ -55,13 +55,12 @@ class Protocol
     show {
       note markers.to_s
     }
-#    show {
-#      note all_plasmids[0].name
-#    }
-#    all_plasmids = find(:sample, sample_type: "Plasmid")
-    #all_plasmids = Sample.where("id=4")
-    #all_plasmids = Sample.where("sample_type='Plasmid'")
     # DEBUG: find all e coli plates
+    ecoli_plate_id = find(:object_type, name: "E coli Plate")[0]
+    all_ecoli_plates = find(:item, object_type_id: ecoli_plate_id)
+    show {
+      note all_ecoli_plates
+    }
     #ecoli_plates = find(:item, sample: {:object_type: {name: "E coli Plate"}})
     #show {
       #note all_plasmids.map { |p| p.name }.join(" , ")
