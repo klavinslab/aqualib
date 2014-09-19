@@ -42,10 +42,6 @@ class Protocol
       j = produce new_sample transformation_mixture.sample.name, of: "Yeast Strain", as: "Yeast Plate"
       yeast_transformation_plate_ids.push([j[:id]])
       
-      show{
-        note "#{plasmids[counter].sample.properties[:key4]}"
-      }
-      
       
       if plasmids[counter].sample.properties["Yeast Marker"]=="URA"
         plate = choose_object "SDO -Ura Plate (sterile)"
