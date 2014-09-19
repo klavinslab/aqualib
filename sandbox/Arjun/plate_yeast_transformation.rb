@@ -46,7 +46,7 @@ class Protocol
       yeast_transformation_plate_ids.push([j[:id]])
       
       show{
-        note "#{selections[counter].properties[:key5]}"
+        note "#{selections[counter].properties}"
       }
       
       
