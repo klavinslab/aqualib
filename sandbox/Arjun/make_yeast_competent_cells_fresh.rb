@@ -24,7 +24,7 @@ class Protocol
     
     culture_labels=[["Tube Number","Label"]]
     tube_labels=[["Label"]]
-    tube_number=0
+    tube_number=1
     cultures.each do |culture|
       culture_labels.push([tube_number,culture.id])
       tube_labels.push([tube_number])
