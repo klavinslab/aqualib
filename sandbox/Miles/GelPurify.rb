@@ -53,9 +53,9 @@ def main
 		title "Weigh the gel slices."
 		check "Zero the scale"
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
-		note "Enter the recorded weights below."
+		note "Enter the recorded weights 1 through #{slice_number} from top to bottom."
 		slices_full.each{ |gs|
-			get "number", var: "w#{gs.id}"
+			get "number", var: "w#{gs.id}" 
 		}
 	}	
 	
@@ -114,7 +114,7 @@ def main
 	show{
 		title "Measure Fragment DNA Concentration"
 		note "Go to B9 and nanodrop all of tubes. Record Concentrations on the side of the tube."
-		note "Enter all the DNA concetrations of tubes 1 through #{slice_number} below"
+		note "Enter all the DNA concetrations of tubes 1 through #{slice_number} below from top to bottom"
 		slices_full.each{ |gs|
 			get "number", var: "c#{gs.id}"
 		}
