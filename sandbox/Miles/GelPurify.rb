@@ -138,7 +138,7 @@ def main
 	
 	count=0
 	while count < slice_number do
-		fragments[i].dataum=concentration{c[i]}
+		fragments[count].dataum=concentration{c[count]}
 		count=count+1
 	end	
 	
