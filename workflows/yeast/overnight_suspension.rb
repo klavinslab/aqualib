@@ -7,7 +7,7 @@ class Protocol
   include Cloning
 
   def debug
-    false
+    true
   end
 
   def arguments
