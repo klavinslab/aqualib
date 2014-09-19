@@ -129,6 +129,11 @@ def main
 		fragments.push(j)
 	end
 	
+	show{
+		title "Label the tubes with their aquairum IDs"
+		note "Lable tubes 1 through #{slice_number} with the IDs listed below left to right."
+		note fragments
+	}
 	
 	release(slices_full)
 	end
