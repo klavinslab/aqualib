@@ -34,6 +34,7 @@ class Protocol
 
   	show {
   		note(yeast_items.collect {|x| x.id})
+  		note(tube.id)
   	}
 
   	take yeast_items, interactive: true, method: "boxes"
