@@ -132,8 +132,14 @@ def main
 	show{
 		title "Label the tubes with their aquairum IDs"
 		note "Lable tubes 1 through #{slice_number} with the IDs listed below left to right."
-		note fragments
+		note fragments.map(|e| e.id)
 	}
+	
+	while count=0
+	while count < slice_number do
+		fragments[i].dataum=concentration{c[i]}
+		count=count+1
+	end	
 	
 	release(slices_full)
 	end
