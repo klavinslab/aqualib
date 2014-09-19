@@ -46,22 +46,21 @@ class Protocol
       if plasmids[counter].sample.properties["Yeast Marker"]=="URA"
         plate = choose_object "SDO -Ura Plate (sterile)"
         plates.push([plate])
-        
-      else if plasmids[counter].sample.properties["Yeast Marker"]=="TRP"
+      end
+      if plasmids[counter].sample.properties["Yeast Marker"]=="TRP"
         plate = choose_object "SDO -Trp Plate (sterile)"
         plates.push([plate])
-        
-      else if plasmids[counter].sample.properties["Yeast Marker"]=="LEU"
+      end 
+      if plasmids[counter].sample.properties["Yeast Marker"]=="LEU"
         plate = choose_object "SDO -Leu Plate (sterile)"
         plates.push([plate])
-        
-      else if plasmids[counter].sample.properties["Yeast Marker"]=="HIS"
+      end
+      if plasmids[counter].sample.properties["Yeast Marker"]=="HIS"
         plate = choose_object "SDO -His Plate (sterile)"
         plates.push([plate])
-        
-      else
-        #get statement for the selection plate
       end
+      
+        #get statement for the selection plate
       
       show{
         check "Label plate with your initials, the date, the initials #{input[:initials]} and the ID: #{j[:id]}"
