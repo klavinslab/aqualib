@@ -61,7 +61,7 @@ class Protocol
       end
       
         #get statement for the selection plate
-      initiails = input[:initials]
+      initials = input[:initials]
       show{
         check "Label plate with your initials, the date, the initials #{initials} and the ID: #{j[:id]}"
         check "Flip the plate and add 4-5 glass beads to it"
