@@ -17,9 +17,8 @@ class Protocol
     
     yeast_transformation_mixtures = input[:yeast_transformation_mixture_ids].collect{|tid| find(:item, id: tid )[0]}
     plasmids = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
-    take plasmids
     
-    selections = plasmids.sample.sample_type
+    selections = plasmids.sample
     
     release plasmids
     
@@ -46,7 +45,7 @@ class Protocol
       j = produce new_sample transformation_mixture.sample.name, of: "Yeast Strain", as: "Yeast Plate"
       yeast_transformation_plate_ids.push([j[:id]])
       
-      if selections[counter]=="URA"
+      if selections[counter].properties[:key5]=="URA"
         plate = choose_object "SDO -Ura Plate (sterile)"
         plates.push([plate])
         
