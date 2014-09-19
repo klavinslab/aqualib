@@ -125,7 +125,7 @@ def main
 	
 	fragments=[]
 	slices_full.each do |pid|
-		j=produce new_sample pid.sample.names, of: "Fragment", as: "Fragment Stock"
+		j=produce new_sample pid.sample.name, of: "Fragment", as: "Fragment Stock"
 		fragments.push(j)
 	end
 	
