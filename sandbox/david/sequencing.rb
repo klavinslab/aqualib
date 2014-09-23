@@ -116,7 +116,7 @@ class Protocol
     tab_check =  tab.collect { |row| row.collect { |e| { content: e, check: true } } }
     col1 = [ [ "Tube", "Water", "Template", "Primer" ] ]  
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
-      
+    total = rest.unshit(col1)
       
       
       
@@ -124,7 +124,7 @@ class Protocol
       
     show {
       title "Add the following to the stripwell tubes"
-      table (rest.unshift(col1))
+      table total
     }
 
     show {
