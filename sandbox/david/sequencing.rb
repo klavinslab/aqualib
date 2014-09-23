@@ -114,7 +114,7 @@ class Protocol
     tab.push plasmid_item_with_volume
     tab.push primer_with_volume
     tab_check =  tab.collect { |row| row.collect { |e| { content: e, check: true } } }
-    col1 = [ [ "Tube", "Water", "Template", "Primer" ] ]  
+    col1 = [ "Tube", "Water", "Template", "Primer" ]  
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
     total = rest.unshift(col1)
       
