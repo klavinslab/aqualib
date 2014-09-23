@@ -124,7 +124,7 @@ class Protocol
       
     show {
       title "Add the following to the stripwell tubes"
-      table (rest.unshift(col1)).transpose
+      table (rest.unshift(col1))
     }
 
     show {
