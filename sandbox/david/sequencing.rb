@@ -117,9 +117,14 @@ class Protocol
     col1 = [ [ "Tube", "Water", "Template", "Primer" ] ]  
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
       
+      
+      
+      
+      
+      
     show {
       title "Add the following to the stripwell tubes"
-      table (col1.concat rest).transpose
+      table (rest.unshift(col1)).transpose
     }
 
     show {
