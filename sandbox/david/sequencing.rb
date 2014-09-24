@@ -117,24 +117,6 @@ class Protocol
     primer_with_volume = primer_aliquots.map {|j| "2.5 ul of " + j.id.to_s}
       
       
-      
-      
-    show {
-      note "#{tracking_number}"
-      note "#{plasmid_item_with_volume}"
-      note "#{water_with_volume}"
-      note "#{primer_with_volume}"
-    }
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     tab = []
     tab.push water_with_volume
     tab.push plasmid_item_with_volume
@@ -144,19 +126,9 @@ class Protocol
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
     total = rest.unshift(col1)
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     show {
       title "Add the following to the stripwell tubes"
-      table total
+      table total.transpose
     }
 
     show {
