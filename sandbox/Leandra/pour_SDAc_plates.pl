@@ -136,7 +136,8 @@ produce
     location: "A1.110"
 end
   
-release amp kan
+release amp 
+release kan
 
 
 
