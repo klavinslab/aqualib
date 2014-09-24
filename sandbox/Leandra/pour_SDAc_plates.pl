@@ -121,8 +121,8 @@ produce
     location: "A1.110"
 end
   
-release amp_aliquots 
-release kan_aliquots
+release amp_number antibiotic_amp 
+release kan_number antibiotic_kan
 
 
 
