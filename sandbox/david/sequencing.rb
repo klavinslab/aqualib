@@ -129,13 +129,15 @@ class Protocol
     num = plasmid_ids.length
     num2 = format('%02d', num)
     stripwell_tubes = (((num).to_f)/12).ceil
+    last_well = (num-1)%12+1
     
       
     show {
       title "Get stripwell tubes and label them"
       note "Grab #{stripwell_tubes} stripwell tubes"
-      note "label well 1 of stripwell 1 with ''#{initials}01'' as in the example image below"
-      note "label well ___ of stripwell #{stripwell_tubes} with ''#{initials}#{num2}''"
+      note "Label well 1 of stripwell 1 with ''#{initials}01'' as in the example image below"
+      note "Label well #{last_well} of stripwell #{stripwell_tubes} with ''#{initials}#{num2}''"
+      note "Label the first and last well of each stripwell tube (if not already labeled) with ''#{initials} + well number''"
     }
       
       
