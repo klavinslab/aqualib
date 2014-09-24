@@ -126,6 +126,18 @@ class Protocol
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
     total = rest.unshift(col1)
       
+    num = plasmid_ids.length
+    stripwell_tubes = (((num).to_f)/12).ceil
+    
+      
+    show {
+      title "Get stripwell tubes and label them"
+      note "Grab #{stripwell_tubes} stripwell tubes"
+      note "label the first well with #{initials}01"
+    }
+      
+      
+      
     show {
       title "Add the following to the stripwell tubes"
       table total.transpose
