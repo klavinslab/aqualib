@@ -47,8 +47,8 @@ take
 end
 
 
-antibiotic_number = amp_number kan_number
-antibiotic_name = antibiotic_amp antibiotic_kan # Initialize global variable
+antibiotic_number = [ amp_number, kan_number ]
+antibiotic_name = [ antibiotic_amp, antibiotic_kan ] # Initialize global variable
 antibiotic_aliquots = antibiotic_number antibiotic_name
 
 step
