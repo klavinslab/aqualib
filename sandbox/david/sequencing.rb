@@ -127,13 +127,15 @@ class Protocol
     total = rest.unshift(col1)
       
     num = plasmid_ids.length
+    num2 = format('%02d', num)
     stripwell_tubes = (((num).to_f)/12).ceil
     
       
     show {
       title "Get stripwell tubes and label them"
       note "Grab #{stripwell_tubes} stripwell tubes"
-      note "label the first well with ''#{initials}01'' as in the example image below"
+      note "label well 1 of stripwell 1 with ''#{initials}01'' as in the example image below"
+      note "label well ___ of stripwell #{stripwell_tubes} with ''#{initials}#{num2}''"
     }
       
       
