@@ -81,8 +81,15 @@ class Protocol
 
 
     # initilize plasmid and primer stocks array
-        plasmid_stocks = []
+        plasmid_stocks_unique = []
         plasmid_uniq.each do |pid|
+          plasmid = find(:sample,{id: pid})[0]
+          plasmid_stock = plasmid.in "Plasmid Stock"
+          plasmid_stocks_unique.push plasmid_stock[0] if plasmid_stock[0]
+        end
+        
+        plasmid_stocks = []
+        plasmid_ids.each do |pid|
           plasmid = find(:sample,{id: pid})[0]
           plasmid_stock = plasmid.in "Plasmid Stock"
           plasmid_stocks.push plasmid_stock[0] if plasmid_stock[0]
@@ -103,7 +110,7 @@ class Protocol
         end
         
 
-    take plasmid_stocks + primer_aliquots_unique, interactive: true,  method: "boxes"
+    take plasmid_stocks_unique + primer_aliquots_unique, interactive: true,  method: "boxes"
 
     plasmid_item_with_volume = plasmid_stocks.map.with_index {|t,i| plasmid_volume[i].to_s + " ul of " + t.id.to_s}
     water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
