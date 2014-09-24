@@ -133,7 +133,7 @@ class Protocol
     show {
       title "Get stripwell tubes and label them"
       note "Grab #{stripwell_tubes} stripwell tubes"
-      note "label the first well with #{initials}01"
+      note "label the first well with ''#{initials}01''"
     }
       
       
