@@ -5,7 +5,7 @@ information "Pour LB plates from 200, 400, or 800 mL sources."
 argument
   n: number, "Enter the number of bottles you are pouring."
   volume: number, "Enter the volume of LB Agar you are pouring in mL. Valid options are 200, 400, or 800."
-  antibiotic: string, "Enter the type of antibiotic you want. Valid options are Amp, Kan, Chlor or None."
+  antibiotic: string, "Enter the type of antibiotic you want. Valid options are Amp, Kan, Chlor, SDAc, or None."
   iptg: string, "Add IPTG? Enter Yes or No."
   atc: string, "Add aTc? Enter Yes or No."
   xgal: string, "Add X-gal? Enter Yes or No."
@@ -44,11 +44,11 @@ if xgal != "Yes" && iptg != "No"
     end
   end
 end
-if antibiotic != "Amp" && antibiotic != "Kan" && antibiotic != "Chlor" && antibiotic != "None"
+if antibiotic != "Amp" && antibiotic != "Kan" && antibiotic != "Chlor" && antibiotic != "SDAc" && antibiotic != "None"
   step
     description: "The antibiotic preference was incorrectly entered as %{antibiotic}."
     getdata
-      antibiotic: string, "Enter the type of antibiotic you want to add. If none, select 'None'.", ["Amp", "Kan", "Chlor", "None"]
+      antibiotic: string, "Enter the type of antibiotic you want to add. If none, select 'None'.", ["Amp", "Kan", "Chlor", "SDAc", "None"]
     end
   end
 end
@@ -69,8 +69,11 @@ end
 
 
 antibiotic_name = ""  # Initialize global variable
+antibiotic_name2 = ""
 antibiotic_volume = ""  # Initialize global variable
+antibiotic_volume2 = ""
 antibiotic_number = ""  # Initialize global variable
+antibiotic_number2 = ""
 product_name = ""  # Initialize global variable
 if antibiotic == "Amp"
   antibiotic_name = "100X 1 mL Ampicillin Aliquot"
@@ -88,6 +91,14 @@ elsif antibiotic == "Chlor"
   antibiotic_number = 1
   # TODO: does 'ceil' functionality exist? Would be useful for calculations
   product_name = "LB Chlor Plate (sterile)"
+elsif antibiotic == "SDAc"
+  antibiotic_name = "200X 1 mL Kanamycin Aliquot"
+  antibiotic_name2 = "100X 1 mL Ampicillin Aliquot"
+  antibiotic_volume = volume / 200.0
+  antibiotic_volume2 = volume / 500.0
+  antibiotic_number = antibiotic_volume * n
+  antibiotic_number2 = antibiotic_volume2 * n
+  product_name = "LB Kan/(low)Amp Plate (sterile)"
 elsif antibiotic == "None"
   product_name = "LB Plate (sterile)"
 end
@@ -102,7 +113,7 @@ end
 antibiotic_aliquots = ""  # Initialize global variable
 if antibiotic != "None"
   take
-    antibiotic_aliquots = antibiotic_number antibiotic_name
+    antibiotic_aliquots = antibiotic_number antibiotic_number2 antibiotic_name antibiotic_name2
   end
 
   step
