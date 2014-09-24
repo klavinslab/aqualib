@@ -109,6 +109,25 @@ class Protocol
     water_with_volume = water_volume.collect { |v| v.to_s + " ul of water"}
     primer_with_volume = primer_aliquots.map {|j| "2.5 ul of " + j.id.to_s}
       
+      
+      
+      
+    show {
+      note "#{tracking_number}"
+      note "#{plasmid_item_with_volume}"
+      note "#{water_with_volume}"
+      note "#{primer_with_volume}"
+    }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
     tab = []
     tab.push water_with_volume
     tab.push plasmid_item_with_volume
@@ -117,6 +136,12 @@ class Protocol
     col1 = [ "Tube", "Water", "Template", "Primer" ]  
     rest = (1..tab_check.transpose.length).collect { |i| [i].concat(tab_check.transpose[i-1]) }
     total = rest.unshift(col1)
+      
+      
+      
+      
+      
+      
       
       
       
