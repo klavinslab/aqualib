@@ -56,7 +56,7 @@ step
 end
 
 step
-    description: "Add %{amp_volume} mL of %{antibiotic_amp} and %{kan_volume} mL of %{antibiotic_kan)"
+    description: "Add %{amp_volume} mL of %{antibiotic_amp} and %{kan_volume} mL of %{antibiotic_kan}"
     note: "Repeat this step for each bottle. If possible, keep bottles at in a 37°C heat bath or incubator when not on a hot plate. Otherwise, work quickly.\n\nBottle setup: keep the bottle on the hot plate at B1.335 while adding antibiotics. Keep the bottle capped whenever you aren't immediately pipetting in antibiotics.\n\nPipetting: for each aliquot, spin on benchtop minifuge before opening. Using a 1000 µL micropipette, add a total of %{antibiotic_volume} mL of antibiotic solution to the LB Agar bottle. You can add 1000 µL at a time. Ampicillin sticks to the side of the pipet tip, but you can ignore small amounts of residue.\n\nRecap the bottle when finished."
     warning: "Make sure the media is at about 50°C (compare to the 50°C heat block using your hand)"
 end
