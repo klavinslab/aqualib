@@ -56,12 +56,13 @@ take
 end
 
 
-antibiotic_number = [ amp_number, kan_number ]
-antibiotic_name = [ antibiotic_amp, antibiotic_kan ] # Initialize global variable
-antibiotic_aliquots = ""
+#antibiotic_number = [ amp_number, kan_number ]
+#antibiotic_name = [ antibiotic_amp, antibiotic_kan ] # Initialize global variable
+#antibiotic_aliquots = ""
 
 take
-antibiotic_aliquots = antibiotic_number antibiotic_name
+ amp = amp_number antibiotic_amp
+ kan = kan_number antibiotic_kan
 end
 
 step
