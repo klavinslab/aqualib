@@ -47,8 +47,9 @@ take
 end
 
 
-amp_aliquots = amp_number antibiotic_amp
-kan_aliquots = kan_number antibiotic_kan # Initialize global variable
+antibiotic_number = amp_number kan_number
+antibiotic_name = antibiotic_amp antibiotic_kan # Initialize global variable
+antibiotic_aliquots = antibiotic_number antibiotic_name
 
 step
     description: "Thaw the antibiotic aliquot(s)"
@@ -121,8 +122,7 @@ produce
     location: "A1.110"
 end
   
-release [amp_number, antibiotic_amp] 
-release [kan_number, antibiotic_kan]
+release antibiotic_aliquots 
 
 
 
