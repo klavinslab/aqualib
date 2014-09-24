@@ -36,7 +36,15 @@ antibiotic_amp = "100X 1 mL Ampicillin Aliquot" # Initialize global variable
 antibiotic_kan = "200X 1 mL Kanamycin Aliquot"
 amp_volume = volume / 500.0  # Initialize global variable
 kan_volume = volume / 200.0
-amp_number = amp_volume * n
+
+if volume == 200
+ amp_number = n
+elsif volume == 400
+ amp_number = n
+else
+ amp_number = 2 * n
+end
+
 kan_number = kan_volume * n  # Initialize global variable
 product_name = "SDAc Plate (Kan + low Amp) (sterile)"  # Initialize global variable
 
