@@ -86,7 +86,7 @@ end
 
 step
   description: "Stack and label."
-  note: "Once the plates are cool, invert all of them lid down. Stack them (lid down) in groups of about 20. Label a piece of lab tape with LB, the antibiotic type if applicable, the inducer if applicable, X-gal if applicable. Apply the tape to the top plate on the stack."
+  note: "Once the plates are cool, invert all of them lid down. Stack them (lid down) in groups of about 20. Label a piece of lab tape with SDAc, LB Kan + low Amp, and the date. Apply the tape to the top plate on the stack."
 end
 
 
@@ -121,7 +121,8 @@ produce
     location: "A1.110"
 end
   
-release amp_aliquots kan_aliquots
+release amp_aliquots 
+release kan_aliquots
 
 
 
