@@ -37,6 +37,7 @@ antibiotic_kan = "200X 1 mL Kanamycin Aliquot"
 amp_volume = volume / 500.0  # Initialize global variable
 kan_volume = volume / 200.0
 
+amp_number = ""
 if volume == 200
  amp_number = n
 elsif volume == 400
