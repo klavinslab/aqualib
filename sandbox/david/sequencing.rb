@@ -144,7 +144,7 @@ class Protocol
       
     show {
       title "Add the following to the stripwell tubes"
-      table total.transpose
+      table total
     }
 
     show {
