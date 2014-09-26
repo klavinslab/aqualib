@@ -73,8 +73,8 @@ class Protocol
         plasmid_volume.push (1000/info[:conc]).round(1)
         water_volume.push 12.5-(1000/info[:conc]).round(1)
       else
-        plasmid_volume.push (800/info[:conc]).round(1)
-        water_volume.push 12.5-(800/info[:conc]).round(1)
+        plasmid_volume.push (800.0/info[:conc]).round(1)
+        water_volume.push 12.5-(800.0/info[:conc]).round(1)
       end
    
     end
