@@ -11,7 +11,7 @@ class Protocol
   }
 
   show { 
-    title: "Count Up"
+    title "Count Up"
     timer final: { hours: 0, minutes: 0, seconds: 10 }, direction: "up"
   }
 
