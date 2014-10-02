@@ -8,8 +8,8 @@ class Protocol
 
   def arguments
     {
-      elution_volume: 200,
-      overnight_ids: [27692,27693,27694]
+      elution_volume: 50,
+      overnight_ids: []
     }
   end
 
