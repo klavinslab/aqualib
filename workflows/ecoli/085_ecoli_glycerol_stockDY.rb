@@ -24,8 +24,8 @@ class Protocol
       overnight_uniq = overnight_ids.uniq
       
       
-      take [27662, 27663, 27664, 27665], interactive: true
-      release [27662, 27663, 27664, 27665]
+ #     take overnight_uniq, interactive: true
+#      release overnight_uniq
       
       
       show {
