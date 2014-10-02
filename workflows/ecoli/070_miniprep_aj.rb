@@ -37,7 +37,7 @@ class Protocol
     
     show{
       title "Remove the supernatant"
-      note "Pour off the supernaant into liquid waste, being sure not to upset the pellet. Pipette out the residual supernatant"
+      note "Pour off the supernatant into liquid waste, being sure not to upset the pellet. Pipette out the residual supernatant"
     }
     
     show{
