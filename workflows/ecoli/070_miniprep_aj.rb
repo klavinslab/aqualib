@@ -14,7 +14,7 @@ class Protocol
   end
 
   def main
-    
+    overnight_ids=input[:overnight_ids]
     overnights = input[:overnight_ids].collect{|oid| find(:item,id:oid)[0]}
     take overnights, interactive: true
     
@@ -22,7 +22,7 @@ class Protocol
     
     show{
       check "Label #{num} eppendorf tubes with IDs according to the table below"
-      table input[:overnight_ids]
+      table overnight_ids
     }
     
     show{
@@ -64,7 +64,7 @@ class Protocol
       check "Grab #{num} blue miniprep spin columns"
       check "Grab #{num} new eppendorf tubes"
       check "Label the side of the columns and the tops of the tubes according to the following table"
-      table input[:overnight_ids]
+      table overnight_ids
     }
     
     show{
