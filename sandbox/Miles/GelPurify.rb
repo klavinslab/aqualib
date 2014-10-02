@@ -144,9 +144,10 @@ def main
 	while count < slice_number do
 		fragments[count].datum={concentration: c[count]}
 		count=count+1
-	end	
+	end
 	
-	release(slices_full)
+	slices_full.mark_as_deleted
+	
 	release(fragments, interactive: true)
 	end
 
