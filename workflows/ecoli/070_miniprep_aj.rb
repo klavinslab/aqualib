@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       elution_volume: 200,
-      overnight_ids: [27689,27690,27691]
+      overnight_ids: [27692,27693,27694]
     }
   end
 
