@@ -31,7 +31,7 @@ def main
 	slice_number = slices.length
 	
 
-	slices_full = find(:item, id: slices )
+	slices_full = find(:item, id: slices, method: "boxes")
 
 	
 	show{
