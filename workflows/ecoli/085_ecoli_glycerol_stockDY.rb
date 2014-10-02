@@ -27,33 +27,42 @@ class Protocol
       
       
       
-      number_overnights = overnights.length
+      show {
+          note "overnights : #{overnights}"
+          note "overnight_ids : #{overnight_ids}"
+          note "overnight_uniq : #{overnight_uniq}"
+        }
       
       
       
+      
+  #    number_overnights = overnights.length
       
    #   glycerol = choose_sample "50 percent Glycerol (sterile)"
       
-      show {
-          title "Pipette 900 µL of 50 percent Glycerol stock into Cyro tube(s)."
-          warning "Make sure not to touch the inner side of the Glycerol bottle with the pipetter."
-        }
+  #    show {
+  #        title "Pipette 900 µL of 50 percent Glycerol stock into Cyro tube(s)."
+  #        warning "Make sure not to touch the inner side of the Glycerol bottle with the pipetter."
+  #      }
       
     
-      (overnights).each do |overnight|
+  #    (overnights).each do |overnight|
         
-        show {
-            check "Pipette 900 µL of the E. coli plasmid overnight into a Cyro tube."
-            check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
-          }
+  #      show {
+  #          check "Pipette 900 µL of the E. coli plasmid overnight into a Cyro tube."
+  #          check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
+  #        }
         
-        j = produce new_sample overnight, of: "Plasmid", as: "Plasmid Glycerol Stock"
+  #      j = produce new_sample overnight, of: "Plasmid", as: "Plasmid Glycerol Stock"
         
-        release [j]
+  #      release [j]
         
-      end
+  #    end
       
-      release [overnights, glycerol]
+  #    release [overnights, glycerol]
+  
+  
+  
   end
   
 end
