@@ -40,7 +40,7 @@ class Protocol
         
         j = produce new_sample overnight, of: "TB Overnight of Plasmid", as: "Plasmid Glycerol Stock"
         
-        release[j]
+        release [j]
         
       end
       
