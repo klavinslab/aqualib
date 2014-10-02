@@ -17,11 +17,20 @@ class Protocol
     
       #parse overnights
       overnights= input[:overnights]
-      #overnights = find(:item, { sample: input[:overnights] } )
+      overnight_ids = []
+      overnights.each do |oid|
+        overnight_ids.push find(:item, id: oid)[0].sample
+      end
+      overnight_uniq = overnight_ids.uniq
       
-      take overnights
+      take overnight_uniq
+      
+      
       
       number_overnights = overnights.length
+      
+      
+      
       
       glycerol = choose_sample "50 percent Glycerol (sterile)"
       
