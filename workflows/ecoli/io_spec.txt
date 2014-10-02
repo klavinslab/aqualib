@@ -21,7 +21,7 @@ end
 
 
 {
-  primer_stock_ids: [],  //made by 000
+  primer_stock_ids: [],  //made by get primers and rehydrate
   primer_aliquot_ids:[],  // made by dilute primers
 }
 
