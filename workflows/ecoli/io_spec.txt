@@ -1,14 +1,41 @@
 input output hash will be named io_hash in all protocols
 
+
 {
   primer_stock_ids: [],  //made by 000
   primer_aliquot_ids:[],  // made by dilute primers
+}
+
+//this is for the fragment metacol
+{
   fragment_ids:[],  //input for PCR
+  pcr_volume: [], //input for PCR one entry per rxn
   stripwell_ids: [], //made by PCR, input to pour gel and run gel.
-  gel_percentage: [] //
+  gel_percentage: [] //input
   gel_comb1: [] // 1,2 = 6 thin/thick 3,4 = 10 thin/thick
   gel_comb2: [] //
-  gel_ids: [] //made by pour gel input to run gel
-  volumes: [] //one entry per lane, 
-  
-  
+  gel_ids: [] //made by pour gel input to run gel, an empty collection, filled by rungel
+  lane_volumes: [] //one entry per lane, 
+  gel_slices: [] // each slice is an item
+  fragment_stock_ids:[]  // made by gel purify
+  //note: nanodrop is depricated now in gel purify
+}
+
+//this is for plasmid construction
+{
+  fragment_ids: [[],[],...] //input array of arrays as input for gibson rxn.  each inner array is one gibson rxn
+  plasmid_ids: [] // input, array of plasmid to makes
+  gibson_result_ids: [] //  made by gibson protocol
+  ecomp_cell_name: ["", "", ...]  //input for transformation
+  transformed_aliquot_ids: []  // made by transform
+  plate_ids: [] // made by plate protocol  053_
+  //things like check plate data can be added here later
+}
+ 
+ // verify plasmid  
+{
+  plate_ids: [] //input
+  plasmid_ids: [] // input
+}
+
+
