@@ -15,7 +15,9 @@ class Protocol
   
   def main
     
-      overnights = find(:item, { sample: input[:overnights] } )
+      #parse overnights
+      overnights= input[:overnights]
+      #overnights = find(:item, { sample: input[:overnights] } )
       
       take overnights
       
