@@ -22,7 +22,7 @@ class Protocol
     
     show{
       check "Label #{num} eppendorf tubes with IDs according to the table below"
-      table overnight_ids
+      table input[:overnight_ids]
     }
     
     show{
@@ -64,7 +64,7 @@ class Protocol
       check "Grab #{num} blue miniprep spin columns"
       check "Grab #{num} new eppendorf tubes"
       check "Label the side of the columns and the tops of the tubes according to the following table"
-      table overnight_ids
+      table input[:overnight_ids]
     }
     
     show{
