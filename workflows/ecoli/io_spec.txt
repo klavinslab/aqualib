@@ -1,0 +1,14 @@
+input output hash will be named io_hash in all protocols
+
+{
+  primer_stock_ids: [],  //made by 000
+  primer_aliquot_ids:[],  // made by dilute primers
+  fragment_ids:[],  //input for PCR
+  stripwell_ids: [], //made by PCR, input to pour gel and run gel.
+  gel_percentage: [] //
+  gel_comb1: [] // 1,2 = 6 thin/thick 3,4 = 10 thin/thick
+  gel_comb2: [] //
+  gel_ids: [] //made by pour gel input to run gel
+  volumes: [] //one entry per lane, 
+  
+  
