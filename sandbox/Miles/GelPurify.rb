@@ -146,6 +146,7 @@ def main
 		count=count+1
 	end
 	
+	count1=0
 	while count1 < slice_number do
 		num=slice_number[count1]
 		slice = find(:item, id: num)
