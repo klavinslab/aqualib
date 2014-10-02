@@ -32,11 +32,11 @@ class Protocol
     
       (overnights).each do |overnight|
         
-        show 
-          {
-            check "Pipette 900 µL of the E. coli plasmid overnight into a Cyro tube."
-            check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
-          }
+    #    show 
+    #      {
+    #        check "Pipette 900 µL of the E. coli plasmid overnight into a Cyro tube."
+    #        check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
+    #      }
         
         j = produce new_sample overnight, of: "TB Overnight of Plasmid", as: "Plasmid Glycerol Stock"
         
