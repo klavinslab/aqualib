@@ -142,7 +142,7 @@ class Protocol
 	end
   end
   
-  release (overnights, interactive: true)
-  release (plasmid_stocks, interactive: true)
+  release overnights, interactive: true
+  release plasmid_stocks, interactive: true
     
 end
