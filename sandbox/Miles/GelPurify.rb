@@ -147,7 +147,7 @@ def main
 	end
 	
 	slices_full.each do |pid|
-		slices_full.mark_as_deleted |pid|
+		slices_full[pid].mark_as_deleted
 	end
 	
 	release(fragments, interactive: true)
