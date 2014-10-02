@@ -140,9 +140,9 @@ class Protocol
 		plasmid.datum = {concentration: conc[count]}
 		count=count+1
 	end
-  end
   
-  release overnights, interactive: true
-  release plasmid_stocks, interactive: true
-    
+  
+  	release overnights, interactive: true
+  	release plasmid_stocks, interactive: true
+   end
 end
