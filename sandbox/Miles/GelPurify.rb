@@ -143,7 +143,7 @@ def main
 	end	
 	
 	release(slices_full)
-	release(fragments)
+	release(fragments, interactive: true)
 	end
 
 end
