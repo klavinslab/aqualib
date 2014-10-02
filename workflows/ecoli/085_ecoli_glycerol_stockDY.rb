@@ -9,7 +9,7 @@ class Protocol
 
   def arguments
     {
-      overnights:SampleType.where("name='TB Overnight of Plasmid'")[0]
+      overnights: [27662, 27663, 27664, 27665]
     }
   end
   
