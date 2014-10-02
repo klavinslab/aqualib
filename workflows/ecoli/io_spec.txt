@@ -35,7 +35,14 @@ input output hash will be named io_hash in all protocols
  // verify plasmid  
 {
   plate_ids: [] //input
-  plasmid_ids: [] // input
+  genewiz_tracking_no: [] //
+  n_colony: [] //one number per plate
+  overnight_ids: []  // made by start overnight
+  plasmid_stock_ids: [] //made by miniprep
+  sequencing_primer_ids: [[],[],...] //each sub list is a list of sequencing primers associated with a plate.
+  
+
+
 }
 
 
