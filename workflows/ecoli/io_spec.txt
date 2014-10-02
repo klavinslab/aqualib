@@ -5,18 +5,21 @@ Changing names or meanings is more serious and should be discussed at aq meeting
 
 note2: Sometimes it is useful to be able to call protocols indidivually.  To accomodate this,
 writers may accept multiple inputs, the first being io_hash, and the rest being the inputs 
-needed to complete the protocol.  in psudo code,
+needed to complete the protocol. For example, the following code will accept both io_hash and other inputs. You can use either
 
 ====================================
-input
-  io_hash ...
-  gel_percent ...
-  gel_comb ...
-end
+  def arguments
+    {
+      io_hash: {},
+      fragment_ids: [],
+      plasmid_ids: []
+    }
+  end
 
-if io_hash is not defined
-  io_hash = {gel_percentages: gel_percentages, gel_comb: gel_comb}
-end
+  def main
+    io_hash = input if input[:io_hash].empty?
+  end
+
 ====================================
 
 
