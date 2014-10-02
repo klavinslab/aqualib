@@ -76,6 +76,8 @@ class Protocol
         bullet "Tilt 14 mL tube such that you can reach the media with your tip."
         bullet "Open the tube cap, scrape colony into media, using a swirling motion. Place the tube back on the rack with cap closed."
       }
+      y.location = "B13.125"
+      y.save
     end
 
     release yeast_glycerol_stocks, interactive: true, method: "boxes"
@@ -94,6 +96,8 @@ class Protocol
             bullet "Open the tube cap, scrape colony into media, using a swirling motion. Place the tube back on the rack with cap closed."
         end
       }
+      y.location = "B13.125"
+      y.save
     end
 
 #    yeast_normal_items.each_with_index do |y,idx|
