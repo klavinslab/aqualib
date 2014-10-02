@@ -150,7 +150,7 @@ def main
 	while count1 < slice_number do
 		num=slice_number[count1]
 		slice = find(:item, id: num)
-		slice.mark_as_deleted
+		slice[0].mark_as_deleted
 		count1=count1+1
 	end
 	
