@@ -146,8 +146,11 @@ def main
 		count=count+1
 	end
 	
-	slices_full.each do |pid|
-		slices_full[pid].mark_as_deleted
+	while count1 < slice_number do
+		num=slice_number[count1]
+		slice = find(:item, id: num)
+		slice.mark_as_deleted
+		count1=count1+1
 	end
 	
 	release(fragments, interactive: true)
