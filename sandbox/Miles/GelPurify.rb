@@ -148,9 +148,8 @@ def main
 	
 	count1=0
 	while count1 < slice_number do
-		num=slice_number[count1]
-		slice = find(:item, id: num)
-		slice[0].mark_as_deleted
+		touch slices_full[count1]
+		slices_full.mark_as_deleted
 		count1=count1+1
 	end
 	
