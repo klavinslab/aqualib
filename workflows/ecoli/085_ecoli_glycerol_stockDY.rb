@@ -32,7 +32,7 @@ class Protocol
       
       
       
-      glycerol = choose_sample "50 percent Glycerol (sterile)"
+   #   glycerol = choose_sample "50 percent Glycerol (sterile)"
       
       show {
           title "Pipette 900 µL of 50 percent Glycerol stock into Cyro tube(s)."
