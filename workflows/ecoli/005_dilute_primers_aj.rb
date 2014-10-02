@@ -45,7 +45,7 @@ class Protocol
     }
     
     show{
-      check "Pipette 10ul from the Primer stock to the labeled aliquot tube accordingvto the table below"
+      check "Pipette 10ul from the Primer stock to the labeled aliquot tube according to the table below"
       table table2
     }
     
