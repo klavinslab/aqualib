@@ -23,7 +23,7 @@ class Protocol
       end
       overnight_uniq = overnight_ids.uniq
       
-      take overnighta, interactive: true
+      take overnights, interactive: true
       
       
       
