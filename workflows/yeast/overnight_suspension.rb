@@ -7,7 +7,7 @@ class Protocol
   include Cloning
 
   def debug
-    true
+    false
   end
 
   def arguments
@@ -15,7 +15,7 @@ class Protocol
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [8437,8431,8426,27629],
       #media_type could be YPAD or SC or anything you'd like to start with
-      media_type: "50 mL YPAD liquid aliquot (sterile)",
+      media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "2"
     }
@@ -35,12 +35,17 @@ class Protocol
     overnights = overnight_glycerol_stocks + overnight_normal_items
 
     show {
-      title "Testing page"
-      note(yeast_glycerol_stocks.collect {|x| x.object_type.name})
-      note(yeast_normal_items.collect {|x| x.object_type.name})
-      note(overnight_glycerol_stocks.collect {|x| x.id})
-      note(overnight_normal_items.collect {|x| x.id})
+      title "Protocol information"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions"
     }
+
+    # show {
+    #   title "Testing page"
+    #   note(yeast_glycerol_stocks.collect {|x| x.object_type.name})
+    #   note(yeast_normal_items.collect {|x| x.object_type.name})
+    #   note(overnight_glycerol_stocks.collect {|x| x.id})
+    #   note(overnight_normal_items.collect {|x| x.id})
+    # }
 
   	# tube = choose_object("14 mL Test Tube")
   	# take([tube], interactive: true) {
@@ -53,13 +58,16 @@ class Protocol
   	media = choose_object(media_type, take: true)
 
   	show {
-      title "Media preparation"
+      title "Media preparation in media bay"
       check "Grab #{overnights.length} of 14 mL Test Tube"
-  		check "Add #{volume} mL of #{media_type} to each empty 14 mL test tube"
+  		check "Add #{volume} mL of #{media_type} to each empty 14 mL test tube using serological pipette"
       check "Write down the following ids on cap of each test tube using dot labels #{overnights.collect {|x| x.id}}"
   	}
 
-  	take yeast_glycerol_stocks, interactive: true, method: "boxes"
+  	take(yeast_glycerol_stocks, interactive: true, method: "boxes") {
+      title "Work in the M80 area"
+      note "Work in the M80 area innoculating area while inoculating glycerol stocks to make sure you can put glycerol stocks back into M80 in time."
+    } if yeast_glycerol_stocks.length > 0
 
     yeast_glycerol_stocks.each_with_index do |y,idx|
       show {
@@ -70,7 +78,9 @@ class Protocol
       }
     end
 
-    take yeast_normal_items, interactive: true
+    release yeast_glycerol_stocks, interactive: true, method: "boxes"
+
+    take yeast_normal_items, interactive: true if yeast_normal_items.length > 0
 
     yeast_normal_items.each_with_index do |y,idx|
       show {
