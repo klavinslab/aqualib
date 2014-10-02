@@ -85,8 +85,65 @@ class Protocol
       check "Spin the columns at 17,000 xg for 1 minute"
     }
     
+    show{
+      title "Perform a final spin to fully dry the columns"
+      check "Remove the columns from the centrifuge and discard the flow through into a liquid waste container"
+      check "Spin the columns at 17,000 xg for 1 minute"
+      check "During the spin, open the clean and previously labeled eppendorf tubes"
+    }
     
+    show{
+      title "Elute with water"
+      check "Remove the columns from the centrifuge"
+      check "Inidividually take each column out of the flowthrough collector and put it into the open eppendorf tube of the same number."
+      warning "For this step, use a new pipette tip for each sample to avoid cross contamination"
+      check "Pipette %{volume} µL of water into the CENTER of each column"
+      check "Let the tubes sit on the bench for 5 minutes"
+      check "Spin the columns at 17,000 xg for 1 minute"
+      check "Remove the tubes and discard the columns"
+    }
     
+    plasmid_stocks=[]
+    table1=[["Tube ID","New ID to write on Label"]]
+    table2=[["Plasmid stock ID"]]
+    overnights.each do |overnight|
+      j = produce new_sample overnight.sample.name, of: "Plasmid", as: "Plasmid Stock"
+      plasmid_stocks.push(j)
+      table1.push([overnight.id,j.id])
+      table2.push([j.id])
+    end
+    
+    show{
+      title "Re-label the final tubes"
+      note "Add a while sticker to the top of each tube and relabel them according to the following table"
+      table table1
+    }
+    
+    show{
+      title "Go to B9 and nanodrop all of the plasmid stocks created. Record the concentrations on the side of the tubes."
+    }
+    
+    data = show{
+		  title "Enter Plasmid Concentrations"
+		  #note "Enter the plasmid concentrations in order according to the following table"
+		  #table table2
+		  plasmid_stocks.each{ |plasmid|
+			  get "number", var: "conc#{plasmid.id}", label: "Enter concentration of #{plasmid.id}", default: 200 
+		  }
+		}
+		
+		conc = plasmid_stocks.collect{ |plasmid| data["conc#{plasmid.id}".to_sym]}
+		
+		count=0
+		plasmid_stocks.each do |plasmid|
+		  plasmid.datum = {concentration: conc[count]}
+		  count=count+1
+		end
+		
+	}	
   end
+  
+  release (overnights, interactive: true)
+  release (plasmid_stocks, interactive: true)
     
 end
