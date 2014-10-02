@@ -149,7 +149,7 @@ def main
 	count1=0
 	while count1 < slice_number do
 		touch slices_full[count1]
-		slices_full.mark_as_deleted
+		slices_full[count1].mark_as_deleted
 		count1=count1+1
 	end
 	
