@@ -45,7 +45,7 @@ def main
 		s=*(1..slice_number)
 		
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Tube", "Number"]].concat(s.zip slices)
+		table [["Number", "Gel Slice ID Number"]].concat(s.zip slices)
 	}
 	
 	weights=[]
@@ -143,6 +143,7 @@ def main
 	end	
 	
 	release(slices_full)
+	release(fragments)
 	end
 
 end
