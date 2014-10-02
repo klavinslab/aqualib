@@ -15,6 +15,8 @@ class Protocol
 
   def main
     overnight_ids=input[:overnight_ids]
+    elution_volume=input[:elution_volume]
+    
     overnights = input[:overnight_ids].collect{|oid| find(:item,id:oid)[0]}
     take overnights, interactive: true
     
@@ -97,7 +99,7 @@ class Protocol
       check "Remove the columns from the centrifuge"
       check "Inidividually take each column out of the flowthrough collector and put it into the open eppendorf tube of the same number."
       warning "For this step, use a new pipette tip for each sample to avoid cross contamination"
-      check "Pipette %{volume} µL of water into the CENTER of each column"
+      check "Pipette #{elution_volume} µL of water into the CENTER of each column"
       check "Let the tubes sit on the bench for 5 minutes"
       check "Spin the columns at 17,000 xg for 1 minute"
       check "Remove the tubes and discard the columns"
