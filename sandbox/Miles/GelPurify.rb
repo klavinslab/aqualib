@@ -146,8 +146,9 @@ def main
 		count=count+1
 	end
 	
-	slices_full.each.mark_as_deleted
-		
+	slices_full.each do |pid|
+		slices_full.mark_as_deleted |pid|
+	end
 	
 	release(fragments, interactive: true)
 	end
