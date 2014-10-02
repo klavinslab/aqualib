@@ -47,7 +47,7 @@ class Protocol
             check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
           }
         
-        j = produce new_sample overnight, of: "TB Overnight of Plasmid", as: "Plasmid Glycerol Stock"
+        j = produce new_sample overnight, of: "Plasmid", as: "Plasmid Glycerol Stock"
         
         release [j]
         
