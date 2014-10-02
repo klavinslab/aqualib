@@ -106,6 +106,7 @@ class Protocol
     plasmid_stocks=[]
     table1=[["Tube ID","New ID to write on Label"]]
     table2=[["Plasmid stock ID"]]
+    
     overnights.each do |overnight|
       j = produce new_sample overnight.sample.name, of: "Plasmid", as: "Plasmid Stock"
       plasmid_stocks.push(j)
@@ -124,23 +125,21 @@ class Protocol
     }
     
     data = show{
-		  title "Enter Plasmid Concentrations"
-		  #note "Enter the plasmid concentrations in order according to the following table"
-		  #table table2
-		  plasmid_stocks.each{ |plasmid|
-			  get "number", var: "conc#{plasmid.id}", label: "Enter concentration of #{plasmid.id}", default: 200 
-		  }
+		title "Enter Plasmid Concentrations"
+		#note "Enter the plasmid concentrations in order according to the following table"
+		#table table2
+		plasmid_stocks.each{ |plasmid|
+			get "number", var: "conc#{plasmid.id}", label: "Enter concentration of #{plasmid.id}", default: 200 
 		}
+	}
 		
-		conc = plasmid_stocks.collect{ |plasmid| data["conc#{plasmid.id}".to_sym]}
+	conc = plasmid_stocks.collect{ |plasmid| data["conc#{plasmid.id}".to_sym]}
+	count=0
 		
-		count=0
-		plasmid_stocks.each do |plasmid|
-		  plasmid.datum = {concentration: conc[count]}
-		  count=count+1
-		end
-		
-	}	
+	plasmid_stocks.each do |plasmid|
+		plasmid.datum = {concentration: conc[count]}
+		count=count+1
+	end
   end
   
   release (overnights, interactive: true)
