@@ -19,7 +19,7 @@ class Protocol
     take primer_stocks, iteractive: true
     
     diluted_primers=[]
-    tablel1= [["Aliquot IDs"]]
+    table1= [["Aliquot IDs"]]
     table2= [["Aliquot IDs","Primer IDs to add"]]
     
     primer_stocks.each do |primer|
