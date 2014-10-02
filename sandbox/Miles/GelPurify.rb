@@ -1,4 +1,6 @@
 #This protocol purifies gel slices into fragment stocks
+#Still need to alter the protocol to take a hash as input and output a hash
+#Also need to modify the protocol to be able to run indepently of a metacol
 
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
