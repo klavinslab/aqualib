@@ -149,8 +149,6 @@ def main
 	slices_full.each.mark_as_deleted
 		
 	
-	slices_full.mark_as_deleted
-	
 	release(fragments, interactive: true)
 	end
 
