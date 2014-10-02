@@ -45,7 +45,7 @@ def main
 		s=*(1..slice_number)
 		
 		title "Lable the gel slice tubes with the following numbers."
-		table [["Number", "Gel Slice ID Number"]].concat(s.zip slices)
+		table [["Tube Number", "Gel Slice ID Number"]].concat(s.zip slices)
 	}
 	
 	weights=[]
@@ -75,7 +75,7 @@ def main
 	show{
 		s=*(1..slice_number)
 		title "Add the following volumes of QG buffer to the corresponding tube."
-		table [["tube", "QG Volume in µl"]].concat(s.zip qgs)
+		table [["Tube", "QG Volume in µl"]].concat(s.zip qgs)
 	}
 	
 	show{
@@ -130,10 +130,14 @@ def main
 	end
 	
 	show{
-		title "Label the tubes with their aquairum IDs"
-		note "Lable tubes 1 through #{slice_number} with the IDs listed below left to right."
 		y=fragments.map{|e| e.id}
-		note y
+		
+		s=*(1..slice_number)
+		title "Label the tubes with their aquairum IDs"
+		table [["Tube", "Fragment Stock ID Number"]].concat(s.zip y)
+		
+		
+		
 	}
 	
 	count=0
