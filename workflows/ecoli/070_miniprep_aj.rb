@@ -73,7 +73,7 @@ class Protocol
     }
     
     show{
-      title "Be sure to check the boxs as you complete each step."
+      title "Be sure to check the boxes as you complete each step."
       check "Spin the columns"
       check "Spin at 17,000 xg for 1 minute"
       warning "Again, make sure the the centrifuge is balanced. Use an extra column with 500 µL of water if necessary"
