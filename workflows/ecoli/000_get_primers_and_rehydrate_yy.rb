@@ -6,6 +6,9 @@ class Protocol
   include Standard
   include Cloning
 
+  def debug
+    false
+  end
 
   def arguments
     {
@@ -23,8 +26,8 @@ class Protocol
         title "Call the biochem store to see if primers have arrived."
         check "On the lab phone, dial 31728"
         check "If someone answers, politely ask the following: 'Hi, I am calling from the Klavins Lab and was wondering if primers have arrived."
-        select [ "Yes", "No" ], var: "answer", label: "Did anyone answer?", default: "No"
-        select [ "Yes", "No", "They did not answer..." ], var: "arrived", label: "Did any primers arrive?", default: "No"
+        select [ "Yes", "No" ], var: "answer", label: "Did anyone answer?", default: "Yes"
+        select [ "Yes", "No", "They did not answer..." ], var: "arrived", label: "Did any primers arrive?", default: "Yes"
       }
       answer = check_store[:answer]
       arrived = check_store[:arrived]
@@ -49,14 +52,15 @@ class Protocol
 
       primers_info = show {
         title "How many primer tubes do you got?"
-        get "number", var: "num", label: "Enter a number", default: 0
+        get "number", var: "num", label: "Enter a number", default: 1
       }
 
-      (1..primers_info[:num]).each do |i|
+      i = 0
+      while i < primers_info[:num]
         primer = show {
           title "Grab one primer tube"
-          get "number", var: "primer_id", label: "Enter primer ID number, which is listed before the primer's name on the side of the tube.", default: 0
-          get "number", var: "mole", label: "Enter the number of moles of primer in the tube, in nm. This is written toward the bottom of the tube, below the MW.", default: 0
+          get "number", var: "primer_id", label: "Enter primer ID number, which is listed before the primer's name on the side of the tube.", default: 2054
+          get "number", var: "mole", label: "Enter the number of moles of primer in the tube, in nm. This is written toward the bottom of the tube, below the MW.", default: 10
         }
         primer_id = primer[:primer_id]
         primer_mole = primer[:mole]
@@ -69,10 +73,19 @@ class Protocol
             note "Add #{primer_mole*10} µL of TE into the primer tube"
             note "Label the tube with #{primer_stock} using white dot label"
           }
+          i += 1
         else
-          show {
-            note "The number you entered is not a primer sample id, please go correct it if you entered wrong or inform the primer owner about this error."
+          primer_check = show {
+            title "Sample id error"
+            select [ "Yes", "No" ], var: "id_correct", label: "The number you entered is not a primer sample id. Did you enter it correctly?", default: "No"
           }
+          if primer_check[:id_correct] == "Yes"
+            i += 1 
+            show {
+              title "Inform the primer owner about id error"
+              note "Email or tell the primer owner that their primer sample id has problems"
+            }
+          end
         end
       end
       if primer_stocks.length > 0
@@ -82,7 +95,7 @@ class Protocol
         } 
         show {
           title "Vortex and centrifuge"
-          note "Vortex each tube on table top vortexer for 10 seconds and then quick spin for 2 seconds on table top centrifuge"
+          note "Vortex each tube on table top vortexer for 5 seconds and then quick spin for 2 seconds on table top centrifuge"
         }
 
         release primer_stocks, interactive: true,  method: "boxes"
