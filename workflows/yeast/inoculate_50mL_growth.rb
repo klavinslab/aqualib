@@ -7,7 +7,7 @@ class Protocol
   include Cloning
 
   def debug
-    true
+    false
   end
 
   def arguments
@@ -21,9 +21,9 @@ class Protocol
 
   def main
   	yeast_overnights = input[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
-    show {
-      note(yeast_overnights.collect {|x| x.id})
-    }
+    # show {
+    #   note(yeast_overnights.collect {|x| x.id})
+    # }
   	yeast_50mL_cultures = []
   	yeast_overnights.each do |y|
   		yeast_50mL_culture = produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast 50ml culture"
