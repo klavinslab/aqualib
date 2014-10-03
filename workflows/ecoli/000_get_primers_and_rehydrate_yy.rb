@@ -1,6 +1,8 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
+# please use the sample id (not the item id) as suffix when ordering primers from IDT.
+
 class Protocol
 
   include Standard
