@@ -7,7 +7,7 @@ class Protocol
   include Cloning
 
   def debug
-    true
+    false
   end
 
   def arguments
@@ -25,11 +25,11 @@ class Protocol
     yeast_transformation_mixtures = input[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
     stripwells = input[:stripwell_ids].collect { |i| collection_from i }
 
-    show {
-      title "Testing page"
-      note(yeast_competent_cells.collect {|x| x.id})
-      note(yeast_transformation_mixtures.collect {|x| x.id})
-    }
+    # show {
+    #   title "Testing page"
+    #   note(yeast_competent_cells.collect {|x| x.id})
+    #   note(yeast_transformation_mixtures.collect {|x| x.id})
+    # }
 
     peg = choose_object "50 percent PEG 3350"
     lioac = choose_object "1.0 M LiOAc"
@@ -65,16 +65,30 @@ class Protocol
     }
 
     show {
-      title "Vortex strongly"
+      title "Vortex strongly and heat shock"
       check "Vortex each tube on highest settings for 45 seconds"
-    }
-
-    show {
-      title "Heat shock"
       check "Place all aliquots on 42 C heat block for 15 minutes"
       timer initial: { hours: 0, minutes: 15, seconds: 0}
     }
 
+    show {
+      title "Spin down"
+      check "Retrive all #{yeast_transformation_mixtures.length} tubes from 42 C heat block."
+      check "Spin the tube down for 20 seconds on a small tabletop centrifuge."
+      check "Remove all the supernatant carefully with a 1000 µL pipettor (~400 µL total)"
+    }
+
+    show {
+      title "Resuspend in YPAD"
+      check "Add 1 mL of YPAD to the each tube and vortex for 20 seconds"
+      check "Grab #{yeast_transformation_mixtures.length} 14 mL tubes, label with #{yeast_transformation_mixtures.collect {|x| x.id}}"
+      check "Transfer all contents from each 1.5 mL tube to corresponding 14 mL tube has the same label number"
+      check "Place all #{yeast_transformation_mixtures.length} 14 mL tubes into 30 C shaker incubator" 
+      check "Discard all #{yeast_transformation_mixtures.length} 1.5 mL tubes"
+    }
+
+    release [peg] + [lioac] + [ssDNA], interactive: true
+    release yeast_competent_cells + stripwells
 
     return input.merge yeast_transformation_mixture_ids: yeast_transformation_mixtures.collect {|x| x.id}
 
