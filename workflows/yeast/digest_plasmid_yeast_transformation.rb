@@ -63,7 +63,8 @@ class Protocol
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
         check "Label a new stripwell with the id #{sw}. Just use a full size stripwell."
-        check "Pipette 48 µL of MM made in previous step into wells"
+        check "Pipette 48 µL of MM made in previous step into wells" + sw.non_empty_string + "."
+        separator
       end
     }
     
@@ -85,6 +86,7 @@ class Protocol
     end
     
     release stripwells
+    release plasmids_to_take, interactive: true, method: "boxes"
 
     return { stripwell_ids: stripwells.collect { |s| s.id } }
     

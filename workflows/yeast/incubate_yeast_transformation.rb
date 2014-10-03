@@ -35,7 +35,7 @@ class Protocol
     show{
       title "Incubate yeast transformations"
       check "Put tube in the styrofoam rack in the 30C shaker"
-      check "Set a timer for 2 hours after which a plating protocol should be run"
+      check "Set a timer for 2.5 hours after which a plating protocol should be run"
     }
     
   end

@@ -36,7 +36,18 @@ class Protocol
     ssDNA = choose_object "Salmon Sperm DNA (boiled)"
     take [peg] + [lioac] + [ssDNA], interactive: true
 
+    tab = [["Old ids","New ids"]]
+    yeast_competent_cells.each_with_index do |y,idx|
+      tab.push([y.id,yeast_transformation_mixtures[idx].id])
+    end
+
+
     take yeast_competent_cells + stripwells, interactive: true, method: "boxes"
+
+    show {
+      title "Re-label all the competent cell tubes"
+      table tab
+    }
 
     show {
       title "Yeast transformation preparation"
@@ -51,6 +62,17 @@ class Protocol
     load_samples(["Yeast Competent Aliquot"],[yeast_competent_cells], stripwells) {
       title "Load 50 µL from each well into corresponding yeast aliquot"
       note "Pieptte 50 µL from each well into corresponding yeast aliquot"
+    }
+
+    show {
+      title "Vortex strongly"
+      check "Vortex each tube on highest settings for 45 seconds"
+    }
+
+    show {
+      title "Heat shock"
+      check "Place all aliquots on 42 C heat block for 15 minutes"
+      timer initial: { hours: 0, minutes: 15, seconds: 0}
     }
 
 
