@@ -60,27 +60,33 @@ class Protocol
         }
         primer_id = primer[:primer_id]
         primer_mole = primer[:mole]
-        primer_stock = produce new_sample find(:sample,{id: primer_id})[0].name, of: "Primer", as: "Primer Stock"
-        primer_stocks.push primer_stock
-
-        show {
-          title "Rehydrate the primer"
-          note "Add #{primer_mole*10} µL of TE into the primer tube"
-          note "Label the tube with #{primer_stock} using white dot label"
-        }
+        primer_sample = find(:sample,{id: primer_id})[0]
+        if primer_sample.sample_type.name == "Primer"
+          primer_stock = produce new_sample primer_sample.name, of: "Primer", as: "Primer Stock"
+          primer_stocks.push primer_stock
+          show {
+            title "Rehydrate the primer"
+            note "Add #{primer_mole*10} µL of TE into the primer tube"
+            note "Label the tube with #{primer_stock} using white dot label"
+          }
+        else
+          show {
+            note "The number you entered is not a primer sample id, please go correct it if you entered wrong or inform the primer owner about this error."
+          }
+        end
       end
-      
-      show {
-        title "Wait one minute for the primer to dissolve in TE"
-        timer initial: { hours: 0, minutes: 1, seconds: 0}
-      }
-        
-      show {
-        title "Vortex and centrifuge"
-        note "Vortex each tube on table top vortexer for 10 seconds and then quick spin for 2 seconds on table top centrifuge"
-      }
+      if primer_stocks.length > 0
+        show {
+          title "Wait one minute for the primer to dissolve in TE"
+          timer initial: { hours: 0, minutes: 1, seconds: 0}
+        } 
+        show {
+          title "Vortex and centrifuge"
+          note "Vortex each tube on table top vortexer for 10 seconds and then quick spin for 2 seconds on table top centrifuge"
+        }
 
-      release primer_stocks, interactive: true,  method: "boxes"
+        release primer_stocks, interactive: true,  method: "boxes"
+      end
 
     end
 
