@@ -34,6 +34,11 @@ class Protocol
 
     overnights = overnight_glycerol_stocks + overnight_normal_items
 
+    overnights.each do |y|
+      y.location = "B13.125"
+      y.save
+    end
+
     show {
       title "Protocol information"
       note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions"
@@ -65,8 +70,7 @@ class Protocol
   	}
 
   	take(yeast_glycerol_stocks, interactive: true, method: "boxes") {
-      title "Work in the M80 area"
-      note "Work in the M80 area innoculating area while inoculating glycerol stocks to make sure you can put glycerol stocks back into M80 in time."
+      warning "Work in the M80 area innoculating area while inoculating glycerol stocks to make sure you can put glycerol stocks back into M80 in time."
     } if yeast_glycerol_stocks.length > 0
 
     yeast_glycerol_stocks.each_with_index do |y,idx|
@@ -76,8 +80,6 @@ class Protocol
         bullet "Tilt 14 mL tube such that you can reach the media with your tip."
         bullet "Open the tube cap, scrape colony into media, using a swirling motion. Place the tube back on the rack with cap closed."
       }
-      y.location = "B13.125"
-      y.save
     end
 
     release yeast_glycerol_stocks, interactive: true, method: "boxes"
@@ -86,7 +88,7 @@ class Protocol
 
     yeast_normal_items.each_with_index do |y,idx|
       show {
-        title "Inoculate yeast item #{y.id} into test tube #{overnight_glycerol_stocks[idx].id}"
+        title "Inoculate yeast item #{y.id} into test tube #{overnight_normal_items[idx].id}"
         case y.object_type.name
           when "Yeast Overnight Suspension"
             bullet "Pipette 10 µL of culture into tube"
@@ -96,8 +98,6 @@ class Protocol
             bullet "Open the tube cap, scrape colony into media, using a swirling motion. Place the tube back on the rack with cap closed."
         end
       }
-      y.location = "B13.125"
-      y.save
     end
 
 #    yeast_normal_items.each_with_index do |y,idx|

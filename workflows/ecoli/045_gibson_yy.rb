@@ -13,6 +13,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       #Enter the fragment sample id or item id as a list, eg [2048,2049,2060,2061,2,2]
       fragment_ids: [2058,2059,2060,2061,2062],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item
@@ -48,7 +49,15 @@ class Protocol
     #check if inputs are correct
     raise "Incorrect group info inputs, does not match number of fragments" if input[:group_info].inject{|sum,x| sum + x } != input[:fragment_ids].length
     raise "Incorrect group info inputs, does not match numer of plasmids" if input[:group_info].length != input[:plasmid_ids].length
+    
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
 
+
+    show {
+      title "Testing page"
+      note "io_hash is now input" if not io_hash.empty?
+    }
     #find fragment stocks, concentrations and lengths
     fragment_stocks = input[:fragment_ids].collect{|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]} if input[:sample_or_item] == "sample"
     fragment_stocks = input[:fragment_ids].collect{|fid| find(:item, id: fid )[0]} if input[:sample_or_item] == "item"
