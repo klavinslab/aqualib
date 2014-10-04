@@ -111,7 +111,6 @@ class Protocol
       title "Discard and recycle tubes"
       note "Discard 1.5 mL tubes that was temporarily labeled with #{(1..cultures.length).to_a}."
       note "Recycle all 50 mL tubes by putting into a bin near the sink."
-
     }
     
     # yeast_compcell_aliquot_id=[]
