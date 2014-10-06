@@ -48,7 +48,7 @@ class Protocol
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
     tanneal = 72 if tanneal > 72
 
-    extension_time = lengths.max/1000.0*30
+    extension_time = (lengths.max)/1000.0*30
 
     # Tell the user what we are doing
     show {
