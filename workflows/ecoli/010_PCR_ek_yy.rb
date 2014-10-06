@@ -34,6 +34,7 @@ class Protocol
     forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
     temperatures    = fragment_info_list.collect { |fi| fi[:tanneal] }
+    lengths         = fragment_info_list.collect { |fi| fi[:length] }
 
 
     if fragments.length == 0
@@ -45,6 +46,9 @@ class Protocol
 
     # find the average annealing temperature
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
+    tanneal = 72 if tanneal > 72
+
+    extension_time = lengths.max/1000.0*30
 
     # Tell the user what we are doing
     show {
@@ -102,8 +106,9 @@ class Protocol
       check "Place the stripwells into an available thermal cycler and close the lid."
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       separator
-      check "Click 'Home' then click 'Saved Protocol'. Choose 'DAVID' and then 'CLONEPCR'."
-      check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
+      check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+      check "Set the anneal temperature to #{tanneal.round(0)}. This is the 3rd temperature."
+      check "Set the 3rd time (extension time) to be #{extension_time.round(0)}."
       check "Press 'run' and select 50 µL."
       # TODO: image: "thermal_cycler_home"
     }
