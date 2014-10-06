@@ -49,6 +49,7 @@ class Protocol
     tanneal = 72 if tanneal > 72
 
     extension_time = (lengths.max)/1000.0*30
+    mm, ss = (extension_time.to_i).divmod(60) 
 
     # Tell the user what we are doing
     show {
@@ -108,7 +109,7 @@ class Protocol
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
       check "Set the anneal temperature to #{tanneal.round(0)}. This is the 3rd temperature."
-      check "Set the 3rd time (extension time) to be #{extension_time.round(0)}."
+      check "Set the 3rd time (extension time) to be 0#{mm}:#{ss}."
       check "Press 'run' and select 50 µL."
       # TODO: image: "thermal_cycler_home"
     }
