@@ -13,7 +13,7 @@ class Protocol
   def arguments
     {
       #input should be yeast competent cells and digested plasmids
-      yeast_competent_ids: [8437,8431,8426,27794,27788,27782],
+      "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431,8426,27794,27788,27782],
       #stripwell that containing digested plasmids
       stripwell_ids: [27779],
       yeast_transformed_strain_ids: [1705,1706,1879,1879,1879,1706],
