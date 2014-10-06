@@ -109,7 +109,7 @@ class Protocol
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
       check "Set the anneal temperature to #{tanneal.round(0)}. This is the 3rd temperature."
-      check "Set the 3rd time (extension time) to be 0#{mm}:#{ss}."
+      check "Set the 3rd time (extension time) to be #{mm}:#{ss}."
       check "Press 'run' and select 50 µL."
       # TODO: image: "thermal_cycler_home"
     }
