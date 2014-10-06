@@ -13,7 +13,8 @@ class Protocol
   def arguments
     {
       # For testing purposes, choose a random set of 10 fragments
-      fragment_ids: (SampleType.where("name='Fragment'")[0].samples.collect { |f| f.id }).sample(10)
+      fragment_ids: [2058,2059,2061,2062,73],
+      pcr_volumes: [50,50,50,50,50]
     }
   end
 
