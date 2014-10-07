@@ -12,7 +12,6 @@ class Protocol
 
   def arguments
     {
-      # For testing purposes, choose a random set of 10 fragments
       fragment_ids: [2058,2059,2061,2062,73]
     }
   end
@@ -109,7 +108,7 @@ class Protocol
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
       check "Set the anneal temperature to #{tanneal.round(0)}. This is the 3rd temperature."
-      check "Set the 3rd time (extension time) to be #{mm}:#{ss}."
+      check "Set the 4th time (extension time) to be #{mm}:#{ss}."
       check "Press 'run' and select 50 µL."
       # TODO: image: "thermal_cycler_home"
     }

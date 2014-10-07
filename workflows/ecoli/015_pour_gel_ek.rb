@@ -11,7 +11,7 @@ class Protocol
   def arguments
     {
       comb_1: 2,
-      comb_2: 2,
+      comb_2: 0,
       percentage: 1,
       stripwell_ids: []
     }
@@ -40,17 +40,11 @@ class Protocol
     }
 
     show {
-      title "Work in the gel weigh area"
+      title "Work in the gel weigh area, wear gloves and eye protection"
       note "Work in the gel weigh area (A5.300-A5.305) until otherwise indicated."
-      warning "Wear gloves at all times!"
+      check "Wear gloves at all times!"
+      check "Put on the clear protective glasses"
     }
-
-    show {
-      title "Wear eye protection"
-      warning "Put on the clear protective glasses"
-    }
-
-    agarose = choose_object "Ultrapure* Agarose"
 
     gel_volume = 50.0
     agarose_mass = num_gels * (percentage / 100.0) * gel_volume
@@ -61,22 +55,13 @@ class Protocol
       bullet "Go to the station at A5.300. Obtain a flask from on top of the microwave M2."
       bullet "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
       bullet "Add agarose by tipping and shaking the bag, removing excess to the waste container by folding the weigh paper."
+      bullet "Wipe down the weigh area"
       image "gel_measure_agarose"
     }
 
     show {
-      title "Wipe down the weigh area"
-      note "Use a 70% ethanol spray bottle and kimwipes."
-    }
-
-    show {
-      title "Add 1X TAE"
-      note "Get a graduated cylinder from on top of the microwave at A5.305. Measure and add #{num_gels*50} mL of 1X TAE from jug J2 at A5.500 to the flask."
-      image "gel_measure_tae"
-    }
-
-    show {
-      title "Microwave into solution"
+      title "Add 1X TAE and microwave into solution"
+      bullet "Get a graduated cylinder from on top of the microwave at A5.305. Measure and add #{num_gels*50} mL of 1X TAE from jug J2 at A5.500 to the flask."
       bullet "Swirl the flask to mix for about two seconds."
       bullet "Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
       bullet "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
@@ -89,7 +74,7 @@ class Protocol
       note "For the remainder of this protocol, work in the gel pouring area (A7.320-A7.325). Carefully transfer the flask containing molten agar to A7.320 using a paper towel."
     }
 
-    gel_green = choose_object "GelGreen Nucleic Acid Stain"
+    # gel_green = choose_object "GelGreen Nucleic Acid Stain"
 
     gel_green_volume = num_gels * gel_volume / 10.0  # in µL
 
@@ -101,7 +86,7 @@ class Protocol
       image "gel_add_gelgreen"
     }
 
-    release [ agarose, gel_green ], interactive: true
+    # release [ agarose, gel_green ], interactive: true
 
     gels = []
 
@@ -111,13 +96,14 @@ class Protocol
         title "Gel Number #{gel_number}"
       }
 
-      gel_box = choose_object "49 mL Gel Box With Casting Tray (clean)"
+      # gel_box = choose_object "49 mL Gel Box With Casting Tray (clean)"
 
       combs = [ "n/a", "6-well", "6-well", "10-well", "10-well"   ]
       sides = [ "n/a", "thinner", "thicker", "thinner", "thicker" ]
 
       show {
         title "Add top comb"
+        check "Go get a 49 mL Gel Box With Casting Tray (clean)"
         check "Retrieve a #{combs[comb_1]} purple comb from A7.325"
         check "Position the gel box With the electrodes facing away from you. Add a purple comb to the side of the casting tray nearest the side of the gel box."
         check "Put the #{sides[comb_1]} side of the comb down."
@@ -149,7 +135,7 @@ class Protocol
       end
 
       gel = produce new_collection "50 mL #{percentage} Percent Agarose Gel in Gel Box", rows, cols
-      release [ gel_box ]
+      # release [ gel_box ]
       gel.move "A7.325"
 
       show {
@@ -177,10 +163,9 @@ class Protocol
 
     release stripwells
 
-    return input.merge gel_ids: gels
+    return input.merge gels_ids: gels
 
   end
 
 end
-
 
