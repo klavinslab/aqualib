@@ -13,7 +13,7 @@ class Protocol
       comb_1: 2,
       comb_2: 0,
       percentage: 1,
-      stripwell_ids: []
+      stripwell_ids: [28076]
     }
   end
 
@@ -39,40 +39,43 @@ class Protocol
       note "This protocol should be run in the gel room. If you are not there, log out, go to the gel room, and log in there to run this protocol. It will be under 'Protocols > Pending Jobs'."
     }
 
-    show {
-      title "Work in the gel weigh area, wear gloves and eye protection"
-      note "Work in the gel weigh area (A5.300-A5.305) until otherwise indicated."
-      check "Wear gloves at all times!"
-      check "Put on the clear protective glasses"
-    }
-
     gel_volume = 50.0
     agarose_mass = num_gels * (percentage / 100.0) * gel_volume
     error = (agarose_mass * 0.05).round 5
 
     show {
-      title "Add #{agarose_mass} g agarose to flask"
-      bullet "Go to the station at A5.300. Obtain a flask from on top of the microwave M2."
-      bullet "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
-      bullet "Add agarose by tipping and shaking the bag, removing excess to the waste container by folding the weigh paper."
-      bullet "Wipe down the weigh area"
-      image "gel_measure_agarose"
+      title "Pour gel"
+      check "Grab a flask from on top of the microwave M2."
+      check "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
+      check "Get a graduated cylinder from on top of the microwave. Measure and add #{num_gels*50} mL of 1X TAE from jug J2 to the flask."
+      check "Use a paper towel to handle the flask. Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
+      note "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
+      warning "Work in the gel room, wear gloves and eye protection all the time"
     }
 
-    show {
-      title "Add 1X TAE and microwave into solution"
-      bullet "Get a graduated cylinder from on top of the microwave at A5.305. Measure and add #{num_gels*50} mL of 1X TAE from jug J2 at A5.500 to the flask."
-      bullet "Swirl the flask to mix for about two seconds."
-      bullet "Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
-      bullet "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
-      warning "Use a paper towel to handle the flask."
-      image "gel_in_solution"
-    }
+    # show {
+    #   title "Add #{agarose_mass} g agarose to flask"
+    #   bullet "Go to the station at A5.300. Obtain a flask "
+    #   bullet "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
+    #   bullet "Add agarose by tipping and shaking the bag, removing excess to the waste container by folding the weigh paper."
+    #   bullet "Wipe down the weigh area"
+    #   image "gel_measure_agarose"
+    # }
 
-    show {
-      title "Work in the gel pouring area"
-      note "For the remainder of this protocol, work in the gel pouring area (A7.320-A7.325). Carefully transfer the flask containing molten agar to A7.320 using a paper towel."
-    }
+    # show {
+    #   title "Add 1X TAE and microwave into solution"
+    #   bullet 
+    #   bullet "Swirl the flask to mix for about two seconds."
+    #   bullet 
+    #   bullet "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
+    #   warning "Use a paper towel to handle the flask."
+    #   image "gel_in_solution"
+    # }
+
+    # show {
+    #   title "Work in the gel pouring area"
+    #   note "For the remainder of this protocol, work in the gel pouring area (A7.320-A7.325). Carefully transfer the flask containing molten agar to A7.320 using a paper towel."
+    # }
 
     # gel_green = choose_object "GelGreen Nucleic Acid Stain"
 
@@ -83,7 +86,7 @@ class Protocol
       note "Using a 10 µL pipetter, take up #{gel_green_volume} µL of GelGreen into the pipet tip. Expel the GelGreen directly into the molten agar (under the surface), then swirl to mix."
       warning "GelGreen is supposedly safe, but stains DNA and can transit cell membranes (limit your exposure)."
       warning "GelGreen is photolabile. Limit its exposure to light by putting it back in the box."
-      image "gel_add_gelgreen"
+      # image "gel_add_gelgreen"
     }
 
     # release [ agarose, gel_green ], interactive: true
@@ -105,20 +108,20 @@ class Protocol
         title "Add top comb"
         check "Go get a 49 mL Gel Box With Casting Tray (clean)"
         check "Retrieve a #{combs[comb_1]} purple comb from A7.325"
-        check "Position the gel box With the electrodes facing away from you. Add a purple comb to the side of the casting tray nearest the side of the gel box."
+        check "Position the gel box with the electrodes facing away from you. Add a purple comb to the side of the casting tray nearest the side of the gel box."
         check "Put the #{sides[comb_1]} side of the comb down."
         note "Make sure the comb is well-situated in the groove of the casting tray."
-        image "gel_comb_placement"
+        # image "gel_comb_placement"
       }
 
       unless comb_2 == 0
         show {
           title "Add bottom comb"
           check "Retrieve a #{combs[comb_2]} purple comb from A7.325"
-          check "Position the gel box With the electrodes facing away from you. Add a purple comb to the center of the casting tray."
+          check "Position the gel box with the electrodes facing away from you. Add a purple comb to the center of the casting tray."
           check "Put the #{sides[comb_2]} side of the comb down."
           note "Make sure the comb is well-situated in the groove of the casting tray."
-          image "gel_comb_placement"
+        # image "gel_comb_placement"
         }
       end
 
@@ -144,7 +147,7 @@ class Protocol
         note "Write id #{gel} on piece of lab tape and affix it to the side of the gel box."
         note "Leave the gel to location A7.325 to solidify."
         if num_gels != 1
-          warning "Make sure to use only 1#{num_gels} of the agarose"
+          warning "Make sure to use only 1/#{num_gels} of the agarose"
         end
         image "gel_pouring"
       }
