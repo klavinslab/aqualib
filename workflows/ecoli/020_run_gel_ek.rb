@@ -10,9 +10,9 @@ class Protocol
 
   def arguments
     {
-      stripwell_ids: [],
-      gels_ids: [],
-      volume: 20       # The volume of PCR fragment to load in µL
+      stripwell_ids: [28076],
+      gel_ids: [28130],
+      volume: 50       # The volume of PCR fragment to load in µL
     }
   end
 
@@ -22,10 +22,12 @@ class Protocol
     gels = input[:gel_ids].collect { |i| collection_from i }
     volume = input[:volume] || 20
 
-    take stripwells + gels
+    take stripwells + gels, interactive: true
 
-    ladder = choose_sample "1 kb Ladder" 
+    ladder = choose_sample "1 kb Ladder"
     dye = choose_object "Gel Loading Dye Blue (6X)"
+
+    take [ladder] + [dye], interactive: true
 
     show {
       title "Set up the power supply"
