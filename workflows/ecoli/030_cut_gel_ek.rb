@@ -50,14 +50,22 @@ class Protocol
 
   def arguments
     {
-      gel_ids: [28130]
+      gel_ids: [12537],
+      fragment_ids: [2568,2570,2571,2574,2576]
     }
   end
 
   def main
   	gels = input[:gel_ids].collect { |i| collection_from i }
   	take gels, interactive: true
-  	slices = []
+  	# stripwells = input[:stripwell_ids].collect { |i| collection_from i }
+  	# stripwells.each do |strip|
+  	# 	strip.matrix.
+  	fragment_lengths = input[:fragment_ids].collect {|f| find(:sample,{id: fid})[0].sample.properties["Length"]}
+  	show {
+  		title "Lengths of fragments"
+  		note "#{fragment_lengths.collect {|f| f}}"
+  	}
 
   	gels.each do |gel|
   		s = distribute( gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true ) {
