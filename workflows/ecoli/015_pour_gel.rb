@@ -169,7 +169,7 @@ class Protocol
 
     io_hash[:gel_ids] = gel_ids
 
-    return io_hash
+    return {io_hash: io_hash}
 
   end
 

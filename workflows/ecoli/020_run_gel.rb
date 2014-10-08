@@ -94,8 +94,7 @@ class Protocol
 
     release gels + [ ladder, dye ]
 
-    return io_hash
-
+    return {io_hash: io_hash}
   end
 
 end
