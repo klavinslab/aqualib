@@ -71,9 +71,6 @@ class Protocol
       if gel.dimensions[0] == 2
         gel.set 1, 0, ladder 
       end
-      show {
-        note "#{gel.dimensions}"
-      }
     end
 
     transfer( stripwells, gels ) {

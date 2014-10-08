@@ -52,4 +52,4 @@ wire run_gel => cut_gel
 transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && completed(1) end
 transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
-transition [ wait_for_gel ] => [ cut_gel ] when completed end
+transition [ wait_for_gel ] => [ cut_gel ] when completed(0) end
