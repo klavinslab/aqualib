@@ -12,13 +12,12 @@ class Protocol
 
   def arguments
     {
-      io_hash: {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
       fragment_ids: []
     }
   end
 
   def main
-    io_hash = input[:io_hash]
+    io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
     # io_hash = input if input[:io_hash].empty?
     io_hash[:fragment_ids] = input[:fragment_ids]
     # Collect fragment info
