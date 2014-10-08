@@ -128,7 +128,7 @@ class Protocol
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
 
-    return {:io_hash, io_hash}
+    return {io_hash: io_hash}
 
   end
 
