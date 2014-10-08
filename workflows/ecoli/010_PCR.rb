@@ -23,7 +23,7 @@ class Protocol
 
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
-      t.simple_spec[:pieces].each do |fid|
+      t.simple_spec[:fragments].each do |fid|
 
         info = fragment_info fid
 
