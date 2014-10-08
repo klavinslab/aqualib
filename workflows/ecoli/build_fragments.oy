@@ -1,12 +1,12 @@
 argument
-  fragment_ids: generic, "List of fragment ids"
+  io_hash: {fragment_ids: [2058,2059,2061,2062,73],stripwell_ids: [],gel_ids: [],gel_slice_ids: []}
 end
 
 place pcr
   protocol: "aqualib:workflows/ecoli/010_PCR.rb"
   group: "technicians"
   argument
-    io_hash[:fragment_ids]: fragment_ids
+    io_hash: io_hash
   end
   marked: true
   start: now()
