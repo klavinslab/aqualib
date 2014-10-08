@@ -67,11 +67,11 @@ class Protocol
     # io_hash = input if input[:io_hash].empty?
     gibson_info = gibson_assembly_status_test
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
-    fragment_to_build_ids += input[:fragment_ids]
-    io_hash[:fragment_ids] = fragment_to_build_ids.uniq
+    io_hash[:fragment_ids] = (fragment_to_build_ids + input[:fragment_ids]).uniq
     show {
-      title "List of fragment ids ready to build from Gibson Assembly tasks"
-      note "#{fragment_to_build_ids.collect {|f| f}}"
+      title "List of fragment ids ready to build"
+      note "From Gibson Assembly tasks the following #{fragment_to_build_ids.collect {|f| f}}"
+      note "From metacol, the following #{input[:fragment_ids].collect {|f| f}}"
     }
     # Collect fragment info
     fragment_info_list = []
