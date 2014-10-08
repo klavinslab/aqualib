@@ -6,7 +6,7 @@ place pcr
   protocol: "aqualib:workflows/ecoli/010_PCR.rb"
   group: "technicians"
   argument
-    fragment_ids: fragment_ids
+    io_hash[:fragment_ids]: fragment_ids
   end
   marked: true
   start: now()
