@@ -54,32 +54,6 @@ class Protocol
       warning "Work in the gel room, wear gloves and eye protection all the time"
     }
 
-    # show {
-    #   title "Add #{agarose_mass} g agarose to flask"
-    #   bullet "Go to the station at A5.300. Obtain a flask "
-    #   bullet "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
-    #   bullet "Add agarose by tipping and shaking the bag, removing excess to the waste container by folding the weigh paper."
-    #   bullet "Wipe down the weigh area"
-    #   image "gel_measure_agarose"
-    # }
-
-    # show {
-    #   title "Add 1X TAE and microwave into solution"
-    #   bullet 
-    #   bullet "Swirl the flask to mix for about two seconds."
-    #   bullet 
-    #   bullet "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
-    #   warning "Use a paper towel to handle the flask."
-    #   image "gel_in_solution"
-    # }
-
-    # show {
-    #   title "Work in the gel pouring area"
-    #   note "For the remainder of this protocol, work in the gel pouring area (A7.320-A7.325). Carefully transfer the flask containing molten agar to A7.320 using a paper towel."
-    # }
-
-    # gel_green = choose_object "GelGreen Nucleic Acid Stain"
-
     gel_green_volume = num_gels * gel_volume / 10.0  # in µL
 
     show {
