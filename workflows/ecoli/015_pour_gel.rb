@@ -166,7 +166,7 @@ class Protocol
 
     release stripwells
 
-    return input.merge gels_ids: gel_ids
+    return input.merge gel_ids: gel_ids
 
   end
 
