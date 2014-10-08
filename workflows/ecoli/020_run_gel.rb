@@ -10,6 +10,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       stripwell_ids: [28076],
       gel_ids: [28224],
       volume: 50       # The volume of PCR fragment to load in µL
@@ -18,8 +19,9 @@ class Protocol
 
   def main
 
-    stripwells = input[:stripwell_ids].collect { |i| collection_from i }
-    gels = input[:gel_ids].collect { |i| collection_from i }
+    io_hash = input[:io_hash]
+    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    gels = io_hash[:gel_ids].collect { |i| collection_from i }
     volume = input[:volume] || 20
 
     take stripwells + gels, interactive: true
@@ -92,7 +94,7 @@ class Protocol
 
     release gels + [ ladder, dye ]
 
-    return input
+    return io_hash
 
   end
 

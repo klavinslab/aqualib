@@ -38,7 +38,7 @@ needed to complete the protocol. For example, the following code will accept bot
   gel_comb: [[1,1],[],...], // 1 inner array for each gel.  inner array has exactly two elements, one for each comb.  1,2 = 6 thin/thick 3,4 = 10 thin/thick\
   gel_ids: [] //made by pour gel input to run gel, an empty collection, filled by rungel
   lane_volumes: [], //one entry per lane, 
-  gel_slices: [], // each slice is an item
+  gel_slice_ids: [], // each slice is an item
   fragment_stock_ids:[],  // made by gel purify
   //note: nanodrop is depricated now in gel purify
 }

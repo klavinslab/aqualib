@@ -7,22 +7,24 @@ class Protocol
   include Cloning
 
   def debug
-    false
+    true
   end
 
   def arguments
     {
-      fragment_ids: [2058,2059,2061,2062,73]
+      io_hash: {fragment_ids: [2058,2059,2061,2062,73],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
+      fragment_ids: []
     }
   end
 
   def main
-
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
     # Collect fragment info
     fragment_info_list = []
     not_ready = []
 
-    input[:fragment_ids].each do |fid|
+    io_hash[:fragment_ids].each do |fid|
       info = fragment_info fid
       fragment_info_list.push info   if info
       not_ready.push fid if !info
@@ -124,7 +126,9 @@ class Protocol
     # Release the stripwells silently, since they should stay in the thermocycler
     release stripwells
 
-    return { stripwell_ids: stripwells.collect { |s| s.id } }
+    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
+
+    return io_hash
 
   end
 

@@ -15,18 +15,18 @@ class Protocol
   end
 
   def gel_band_verify col, options = {}
-  	m = col.matrix
-	routes = []
-	opts = { except: [] }.merge options
+    m = col.matrix
+    routes = []
+    opts = { except: [] }.merge options
 
-	(0..m.length-1).each do |i|
-		(0..m[i].length-1).each do |j|
-		  if m[i][j] > 0 && ! ( opts[:except].include? [i,j] )
-		    s = find(:sample,{id: m[i][j]})[0]
-		    length = s.properties["Length"]
-		    routes.push lane: [i,j], length: length
-		  end
-		end
+    (0..m.length-1).each do |i|
+    	(0..m[i].length-1).each do |j|
+    	  if m[i][j] > 0 && ! ( opts[:except].include? [i,j] )
+    	    s = find(:sample,{id: m[i][j]})[0]
+    	    length = s.properties["Length"]
+    	    routes.push lane: [i,j], length: length
+    	  end
+    	end
 	end
 
 	show {
@@ -38,7 +38,8 @@ class Protocol
   end
 
   def main
-  	gels = input[:gel_ids].collect { |i| collection_from i }
+    io_hash = input[:io_hash]
+  	gels = io_hash[:gel_ids].collect { |i| collection_from i }
   	take gels, interactive: true
   	slices = []
   	gels.each do |gel|
@@ -75,6 +76,8 @@ class Protocol
   	}
 
   	release slices, interactive: true, method: "boxes"
+    io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
+    return io_hash
 
   end
 

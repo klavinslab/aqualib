@@ -10,6 +10,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
       comb_1: 2,
       comb_2: 0,
       percentage: 1,
@@ -22,11 +23,11 @@ class Protocol
     #   percentage: number, "Enter the percentage gel to make (e.g. 1 = 1%)"
     #   comb_1: number, "Enter '1' for 6 thin lanes. Enter '2' for 6 thick lanes. Enter '3' for 10 thin lanes. Enter '4' for 10 thick lanes"
     #   comb_2: number, "Enter '0' for no second comb. Enter '1' for 6 thin lanes. Enter '2' for 6 thick lanes. Enter '3' for 10 thin lanes. Enter '4' for 10 thick lanes"
-
+    io_hash = input[:io_hash]
     comb_1 = input[:comb_1] || 2
     comb_2 = input[:comb_2] || 2
     percentage = input[:percentage] || 1
-    stripwells = input[:stripwell_ids].collect { |sid| collection_from sid }
+    stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
 
     take stripwells
 
@@ -166,7 +167,9 @@ class Protocol
 
     release stripwells
 
-    return input.merge gel_ids: gel_ids
+    io_hash[:gel_ids] = gel_ids
+
+    return io_hash
 
   end
 
