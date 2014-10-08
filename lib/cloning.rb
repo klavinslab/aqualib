@@ -3,7 +3,7 @@ module Cloning
   def fragment_info fid
 
     # This method returns information about the ingredients needed to make the fragment with id fid.
-    # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template. It also computes the annealing temperature.
+    # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template (1 ng/µL Plasmid Stock). It also computes the annealing temperature.
 
     # find the fragment and get its properties
     fragment = find(:sample,{id: fid})[0]
@@ -26,7 +26,7 @@ module Cloning
       # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
       rev_items = rev.in "Primer Aliquot"
-      template_items = template.in "Plasmid Stock"
+      template_items = template.in "1 ng/µL Plasmid Stock"
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
 
