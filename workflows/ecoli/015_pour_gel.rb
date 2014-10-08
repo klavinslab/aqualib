@@ -5,7 +5,7 @@ class Protocol
   include Standard
 
   def debug
-    false
+    true
   end
 
   def arguments
@@ -91,7 +91,7 @@ class Protocol
 
     # release [ agarose, gel_green ], interactive: true
 
-    gels = []
+    gel_ids = []
 
     (1..num_gels).each do |gel_number|
 
@@ -154,7 +154,7 @@ class Protocol
 
       release [ gel ]
 
-      gels.push gel.id
+      gel_ids.push gel.id
 
     end
 
@@ -166,7 +166,7 @@ class Protocol
 
     release stripwells
 
-    return input.merge gels_ids: gels
+    return input.merge gels_ids: gel_ids
 
   end
 
