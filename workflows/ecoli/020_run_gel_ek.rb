@@ -65,7 +65,7 @@ class Protocol
 
     gels.each do |gel|
       gel.set 0, 0, ladder
-      gel.set 1, 0, ladder
+      #gel.set 1, 0, ladder
       # if gel.dimensions[0] == 2
       #   gel.set 1, 0, ladder 
       # end
