@@ -10,52 +10,6 @@ class Protocol
     false
   end
 
-  def gibson_assembly_status_test
-
-    # find all un done gibson assembly tasks ans arrange them into lists by status
-    tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-    ready = tasks.select { |t| t.status == "ready" }
-    running = tasks.select { |t| t.status == "running" }
-    out = tasks.select { |t| t.status == "out for sequencing"  }
-
-    # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
-    ready.each do |t|
-
-      t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
-
-      t.simple_spec[:fragments].each do |fid|
-
-        info = fragment_info fid
-
-        if !info
-          t[:fragments][:not_ready_to_build].push fid
-        elsif info[:stocks].length > 0
-          t[:fragments][:ready_to_use].push fid
-        else
-          t[:fragments][:ready_to_build].push fid
-        end
-
-      end
-
-    end
-
-    # return a big hash describing the status of all un-done assemblies
-    return {
-
-      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
-        .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
-
-      assemblies: {
-        under_construction: running.collect { |t| t.id },
-        waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-        ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-          out_for_sequencing: out.collect { |t| t.id }
-        }
-
-    }
-
-  end
-
   def arguments
     {
       fragment_ids: [2061,2062]
@@ -65,7 +19,7 @@ class Protocol
   def main
     io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []}
     # io_hash = input if input[:io_hash].empty?
-    gibson_info = gibson_assembly_status_test
+    gibson_info = gibson_assembly_status
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
     fragment_metacol_ids = input[:fragment_ids]
     io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq
