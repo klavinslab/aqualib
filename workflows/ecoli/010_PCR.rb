@@ -19,7 +19,7 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    # io_hash = input if input[:io_hash].empty?
     io_hash[:fragment_ids] = input[:fragment_ids]
     # Collect fragment info
     fragment_info_list = []
