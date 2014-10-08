@@ -12,7 +12,7 @@ class Protocol
 
   def arguments
     {
-      io_hash: {fragment_ids: [2058,2059,2061,2062,73],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
+      io_hash: {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
       fragment_ids: []
     }
   end
@@ -20,6 +20,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    io_hash[:fragment_ids] = input[:fragment_ids]
     # Collect fragment info
     fragment_info_list = []
     not_ready = []
