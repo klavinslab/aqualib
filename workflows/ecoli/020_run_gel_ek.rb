@@ -5,7 +5,7 @@ class Protocol
   include Standard
 
   def debug
-    false
+    true
   end
 
   def arguments
@@ -66,6 +66,12 @@ class Protocol
     gels.each do |gel|
       gel.set 0, 0, ladder
       gel.set 1, 0, ladder
+      # if gel.dimensions[0] == 2
+      #   gel.set 1, 0, ladder 
+      # end
+      # show {
+      #   note "#{gel.dimensions}"
+      # }
     end
 
     transfer( stripwells, gels ) {
