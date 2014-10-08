@@ -61,7 +61,7 @@ class Protocol
   	# stripwells = input[:stripwell_ids].collect { |i| collection_from i }
   	# stripwells.each do |strip|
   	# 	strip.matrix.
-  	fragment_lengths = input[:fragment_ids].collect {|f| find(:sample,{id: fid})[0].sample.properties["Length"]}
+  	fragment_lengths = input[:fragment_ids].collect {|f| find(:sample,{id: f})[0].sample.properties["Length"]}
   	show {
   		title "Lengths of fragments"
   		note "#{fragment_lengths.collect {|f| f}}"
