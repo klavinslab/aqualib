@@ -24,6 +24,12 @@ class Protocol
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
     volume = input[:volume] || 50
 
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
+
     take stripwells + gels, interactive: true
 
     ladder = choose_sample "1 kb Ladder"

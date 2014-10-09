@@ -28,6 +28,12 @@ def main
 	io_hash = input[:io_hash]
 	io_hash = input if input[:io_hash].empty?
 	slices= io_hash[:gel_slice_ids]
+
+	if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
 	
 	slice_number = slices.length
 	

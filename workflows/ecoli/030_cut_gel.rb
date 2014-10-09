@@ -40,6 +40,11 @@ class Protocol
   def main
     io_hash = input[:io_hash]
   	gels = io_hash[:gel_ids].collect { |i| collection_from i }
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
   	take gels, interactive: true
   	slices = []
   	gels.each do |gel|
