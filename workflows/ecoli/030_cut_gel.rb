@@ -39,6 +39,7 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
   	gels = io_hash[:gel_ids].collect { |i| collection_from i }
     if io_hash[:debug_mode] == "Yes"
       def debug
@@ -79,6 +80,10 @@ class Protocol
   		note "Remove the blue light goggles and put them back where you found them."
   		note "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
   	}
+    
+    gels.each do |gel|
+      gel.mark_as_deleted
+    end
 
   	release slices, interactive: true, method: "boxes"
     io_hash[:gel_slice_ids] = slices.collect {|s| s.id}

@@ -1,8 +1,8 @@
 argument
   fragment_ids: generic, "List of fragment ids"
+  debug_mode: string, "Yes or No"
 end
 
-debug_mode = "Yes"
 
 place pcr
   protocol: "aqualib:workflows/ecoli/010_PCR.rb"

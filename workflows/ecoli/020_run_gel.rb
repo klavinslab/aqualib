@@ -11,8 +11,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      stripwell_ids: [28076],
-      gel_ids: [28224],
+      stripwell_ids: [28339],
+      gel_ids: [28276],
       volume: 50       # The volume of PCR fragment to load in µL
     }
   end
@@ -20,6 +20,7 @@ class Protocol
   def main
 
     io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
     volume = input[:volume] || 50
@@ -93,9 +94,16 @@ class Protocol
       image "gel_check_for_bubbles"
     }
 
-    release stripwells # TODO throw these away
+    show {
+      title "Clean up"
+      note "Discard the empty stripwells"
+      stripwells.each do |stripwell|
+        stripwell.mark_as_deleted
+      end
+    }
 
-    release gels + [ ladder, dye ]
+    release gels
+    release [ ladder, dye ], interactive: true
 
     return {io_hash: io_hash}
   end
