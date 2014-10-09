@@ -7,8 +7,6 @@ needs "aqualib/lib/cloning"
 
 class Protocol
 	
-
-
 include Standard
 include Cloning
 
@@ -154,7 +152,7 @@ def main
 		count1=count1+1
 	end
 	
-	release(fragments, interactive: true)
+	release fragments, interactive: true, method: "boxes"
 	io_hash[:fragment_stock_ids] = fragments.collect{|f| f.id}
 	return {io_hash: io_hash}
 

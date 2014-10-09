@@ -7,7 +7,7 @@ class Protocol
   include Cloning
 
   def debug
-    true
+    false
   end
 
    def gibson_assembly_status_test
@@ -54,22 +54,29 @@ class Protocol
 
     }
 
-  end # # # # # # # 
+  end
 
 
   def arguments
     {
-      fragment_ids: [2061,2062]
+      fragment_ids: [2061,2062],
+      debug_mode: "Yes"
     }
   end
 
   def main
-    io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []}
+    io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: [], debug_mode: "No"}
     # io_hash = input if input[:io_hash].empty?
     gibson_info = gibson_assembly_status
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
     fragment_metacol_ids = input[:fragment_ids]
     io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq
+    io_hash[:debug_mode] = input[:debug_mode]
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
     show {
       title "List of fragment ids ready to build"
       note "From Gibson Assembly tasks the following #{fragment_to_build_ids.collect {|f| f}}"
