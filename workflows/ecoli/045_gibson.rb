@@ -8,7 +8,7 @@ class Protocol
   require 'matrix'
 
   def debug
-    true
+    false
   end
 
   def arguments
