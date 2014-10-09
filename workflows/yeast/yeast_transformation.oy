@@ -1,0 +1,57 @@
+argument
+  plasmid_ids: generic, "List of plasmid ids"
+  yeast_item_ids: generic, "List of yeast strain item ids that you are going to transform plasmid into"
+  yeast_transformed_strain_ids: generic, "List of transformed yeast strain ids"
+end
+
+place pcr
+  protocol: "aqualib:workflows/ecoli/010_PCR.rb"
+  group: "technicians"
+  argument
+    fragment_ids: fragment_ids
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place wait_for_pcr
+  marked: false
+end
+
+place pour_gel
+  protocol: "aqualib:workflows/ecoli/015_pour_gel.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place run_gel
+  protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place wait_for_gel
+  marked: false
+end
+
+place cut_gel
+  protocol: "aqualib:workflows/ecoli/030_cut_gel.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+wire pcr => pour_gel
+wire pour_gel => run_gel
+wire run_gel => cut_gel
+
+transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
+transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when minutes_elapsed(0,1) && completed(1) end
+transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
+transition [ wait_for_gel ] => [ cut_gel ] when minutes_elapsed(0,1) end

@@ -20,18 +20,21 @@ include Cloning
 
 def arguments
 	{
-	gelslice_ids: [27327, 27328]
+		io_hash: {},
+		gel_slice_ids: [28284]
 	}
 end
 
 def main
-	
-	slices=input[:gelslice_ids]
+
+	io_hash = input[:io_hash]
+	io_hash = input if input[:io_hash].empty?
+	slices= io_hash[:gel_slice_ids]
 	
 	slice_number = slices.length
 	
 
-	slices_full = find(:item, id: slices, method: "boxes")
+	slices_full = find(:item, id: slices)
 
 	
 	show{
@@ -39,10 +42,7 @@ def main
 	}
 	
 	take slices_full, interactive: true,  method: "boxes"
-	
-	
-	
-	
+
 	show{
 		s=*(1..slice_number)
 		
@@ -57,12 +57,11 @@ def main
 		check "Weigh each slice and record it's weight on the side of the tube in grams."
 		note "Enter the recorded weights 1 through #{slice_number} from top to bottom."
 		slices_full.each{ |gs|
-			get "number", var: "w#{gs.id}" 
+			get "number", var: "w#{gs.id}", label: "Enter a number for tube #{gs.id}", default: 0.123
 		}
 	}	
 	
 	w = slices_full.collect{ |gs| data["w#{gs.id}".to_sym]}
-	
 	
 	qgs=[]
 	count3=0
@@ -118,7 +117,7 @@ def main
 		note "Go to B9 and nanodrop all of tubes. Record Concentrations on the side of the tube."
 		note "Enter all the DNA concetrations of tubes 1 through #{slice_number} below from top to bottom"
 		slices_full.each{ |gs|
-			get "number", var: "c#{gs.id}"
+			get "number", var: "c#{gs.id}", default: 0.123
 		}
 	}	
 	
@@ -156,6 +155,9 @@ def main
 	end
 	
 	release(fragments, interactive: true)
+	io_hash[:fragment_stock_ids] = fragments.collect{|f| f.id}
+	return {io_hash: io_hash}
+
 	end
 
 end

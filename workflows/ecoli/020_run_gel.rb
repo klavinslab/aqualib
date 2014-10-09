@@ -5,7 +5,7 @@ class Protocol
   include Standard
 
   def debug
-    false
+    true
   end
 
   def arguments
@@ -22,7 +22,7 @@ class Protocol
     io_hash = input[:io_hash]
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
-    volume = input[:volume] || 20
+    volume = input[:volume] || 50
 
     take stripwells + gels, interactive: true
 
