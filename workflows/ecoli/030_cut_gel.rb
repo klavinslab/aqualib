@@ -54,7 +54,7 @@ class Protocol
   		band_mockup = gel_band_verify( gel, except: [ [0,0], [1,0] ] )
   		gel_data = show {
   			title "How's the gel size?"
-  			select ["Yes", "No"], var: "okay", label: "Does this gel looks as expected?"
+  			select ["Yes", "No"], var: "okay", label: "Does this gel look as expected?"
   		}
   		if gel_data[:okay] == "Yes"
 			s = distribute( gel, "Gel Slice", except: [ [0,0], [1,0] ], interactive: true ) {
