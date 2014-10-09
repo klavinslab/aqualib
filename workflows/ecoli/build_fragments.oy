@@ -45,11 +45,21 @@ place cut_gel
   window: hours(1)
 end
 
+place purify_gel
+  protocol: "aqualib:workflows/ecoli/035_gel_purify_MG.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
 wire pcr => pour_gel
 wire pour_gel => run_gel
 wire run_gel => cut_gel
+wire cut_gel => purify_gel
 
 transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && completed(1) end
 transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
 transition [ wait_for_gel ] => [ cut_gel ] when completed(0) end
+transition [ cut_gel ] => [ purify_gel ] when completed (0) end
