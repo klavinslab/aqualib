@@ -29,6 +29,12 @@ class Protocol
     percentage = input[:percentage] || 1
     stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
 
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
+
     take stripwells
 
     num_samples = stripwells.inject(0) { |sum,sw| sum + sw.num_samples }

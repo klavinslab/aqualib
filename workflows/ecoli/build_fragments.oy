@@ -66,3 +66,4 @@ transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && comple
 transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
 transition [ wait_for_gel ] => [ cut_gel ] when completed(0) end
 transition [ cut_gel ] => [ purify_gel ] when completed (0) end
+transition [ purify_gel ] => [] when completed (0) end
