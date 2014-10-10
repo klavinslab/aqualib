@@ -6,16 +6,12 @@ class Protocol
   include Standard
   include Cloning
 
-  def debug
-    false
-  end
-
   def arguments
     {
-      io_hash = {},
-      #"cultures_ids Yeast 50 mL culture" => [0],
-      yeast_culture_ids: [27780,27571,27781], 
-      aliquot_numbers: [1,3,2]
+      io_hash: {},
+      yeast_culture_ids: [8429,8427],
+      aliquot_numbers: [1,3],
+      debug_mode: "Yes"
     }
   end
 
@@ -34,7 +30,7 @@ class Protocol
     water = choose_object "50 mL Molecular Grade Water aliquot"
     take [l] + [water], interactive: true
     
-    cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item,id:cid)[0]}
+    cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item, id:cid)[0]}
     take cultures, interactive: true
     
     culture_labels=[["Flask Label","50 mL Tube Number"]]

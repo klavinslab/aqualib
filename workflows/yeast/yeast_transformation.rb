@@ -6,19 +6,16 @@ class Protocol
   include Standard
   include Cloning
 
-  def debug
-    true
-  end
-
   def arguments
     {
       io_hash: {},
       #input should be yeast competent cells and digested plasmids
-      "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431,8426,27794,27788,27782],
+      "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431],
       #stripwell that containing digested plasmids
-      stripwell_ids: [27779],
-      yeast_transformed_strain_ids: [1705,1706,1879,1879,1879,1706],
-      plasmid_ids: [27507,27508,27509,1543,3859,28030]
+      stripwell_ids: [11614],
+      yeast_transformed_strain_ids: [1705,1706],
+      plasmid_ids: [9189,9167],
+      debug_mode: "Yes"
     }
   end
 
