@@ -11,7 +11,7 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
     plasmid_ids: plasmid_ids
     yeast_item_ids: yeast_item_ids
     aliquot_numbers: aliquot_numbers
-    yeast_transformed_strain_ids: yeast_transformation_ids
+    yeast_transformed_strain_ids: yeast_transformed_strain_ids
   end
   group: "technicians"
   marked: true
