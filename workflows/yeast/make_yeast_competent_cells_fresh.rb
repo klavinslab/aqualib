@@ -118,39 +118,9 @@ class Protocol
       note "Discard 1.5 mL tubes that was temporarily labeled with #{(1..cultures.length).to_a}."
       note "Recycle all 50 mL tubes by putting into a bin near the sink."
     }
-    
-    # yeast_compcell_aliquot_id=[]
-    # counter=0
-    
-    # cultures.each_with_index do |culture,idx|
-    
 
-    #   counter2=0
-    #   culture_id = culture[:id]
-    #   yeast_compcell_aliquot_id_table=[["Tube Number","Comp cell aliquot IDs"]]
-    #   tubenum=0
-      
-    #   while counter2<num
-
-    #     j = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
-        
-    #     tubenum=counter2+1
-    #     yeast_compcell_aliquot_id_table.push([idx+1,j[:id]])
-    #     yeast_compcell_aliquot_id.push([j[:id]])
-    #     counter2 = counter2 + 1
-    #   end
-      
-    #   show{
-    #     title "Aliquoting cells"
-    #     check "Label empty 1.5 mL tubes for comp cells according to the Comp cell aliquot IDs column"
-    #     check "Aliquot 50 µL of the resuspension in tube #{idx+1} into the eppendorf tubes"
-    #     table yeast_compcell_aliquot_id_table
-    #   }
-    #   counter = counter + 1
-    # end
-    
     release [l] + [water] + cultures, interactive: true
-    io_hash[:yeast_compcell_aliquot_ids] = yeast_compcell_aliquot_ids
+    io_hash[:yeast_competent_ids] = yeast_compcell_aliquot_ids
     
     return {io_hash: io_hash}
   end
