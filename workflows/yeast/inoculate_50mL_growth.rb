@@ -12,6 +12,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {}
       #Enter the overnight ids that you are going to start overnight with
       yeast_overnight_ids: [8437,8431,8426],
       #Enter the media type you are going to use
@@ -20,7 +21,9 @@ class Protocol
   end  
 
   def main
-  	yeast_overnights = input[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+  	yeast_overnights = io_hash[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
     # show {
     #   note(yeast_overnights.collect {|x| x.id})
     # }
@@ -32,7 +35,7 @@ class Protocol
   		yeast_50mL_cultures.push yeast_50mL_culture
   	end
 
-    media_type = input[:media_type]
+    media_type = io_hash[:media_type]
     media = choose_object(media_type, take: true)
 
     show {
@@ -57,9 +60,8 @@ class Protocol
 
     release yeast_overnights, interactive: true, method: "boxes"
   	release yeast_50mL_cultures, interactive: true, method: "boxes"
-  	
-  	return input.merge culture_ids: yeast_50mL_cultures.collect {|x| x.id}  
-  		
+    io_hash[:yeast_culture_ids] = yeast_50mL_cultures.collect {|x| x.id}  
+    return {io_hash: io_hash}
   end
 
 end  

@@ -22,10 +22,16 @@ class Protocol
   end
 
   def main
-    yeast_glycerol_stocks = input[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+    io_hash = {yeast_item_ids: [],yeast_overnight_ids: [],plasmid_ids: [],stripwell_ids: [], yeast_transformed_strain_ids: [], yeast_plate_ids: [], yeast_transformation_mixture_ids: [],media_type: "800 mL YPAD liquid (sterile)", volume: "2"}
+
+    io_hash[:yeast_item_ids] = input[:yeast_item_ids]
+    io_hash[:yeast_transformed_strain_ids] = input[:yeast_transformed_strain_ids]
+    io_hash[:plasmid_ids] = input[:plasmid_ids]
+
+    yeast_glycerol_stocks = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_glycerol_stocks.delete_if {|y| y.object_type.name != "Yeast Glycerol Stock"}
 
-    yeast_normal_items = input[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+    yeast_normal_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_normal_items.delete_if {|y| y.object_type.name == "Yeast Glycerol Stock"}
 
     overnight_glycerol_stocks = yeast_glycerol_stocks.collect{|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
@@ -57,8 +63,8 @@ class Protocol
   	# 	title "Take #{yeast_items.length} tubes"
   	# }
 
-    volume = input[:volume]
-    media_type = input[:media_type]
+    volume = io_hash[:volume] || 2
+    media_type = io_hash[:media_type] || "800 mL YPAD liquid (sterile)"
 
   	media = choose_object(media_type, take: true)
 
@@ -105,9 +111,9 @@ class Protocol
     release yeast_normal_items, interactive: true, method: "boxes"
 
   	release overnights, interactive: true, method: "boxes"
-
-  	return input.merge yeast_overnight_ids: overnights.collect {|x| x.id}
-
+    io_hash[:yeast_overnight_ids] = overnights.collect {|x| x.id}
+    
+    return {io_hash: io_hash}
   end
 
 end  
