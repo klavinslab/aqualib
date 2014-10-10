@@ -91,7 +91,7 @@ class Protocol
     release stripwells
     release plasmids_to_take, interactive: true, method: "boxes"
 
-    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id } }
+    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
     return { io_hash: io_hash }
     
   end

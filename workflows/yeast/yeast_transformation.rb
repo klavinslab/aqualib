@@ -25,6 +25,11 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
   	yeast_competent_cells = io_hash[:yeast_competent_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }

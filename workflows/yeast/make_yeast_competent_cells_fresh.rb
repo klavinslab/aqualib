@@ -24,6 +24,12 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
 
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
+
     l = choose_object "100 mM LiOAc"
     water = choose_object "50 mL Molecular Grade Water aliquot"
     take [l] + [water], interactive: true
