@@ -19,7 +19,7 @@ class Protocol
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
-      volume: "2"
+      volume: "2",
       debug_mode: "No"
     }
   end
