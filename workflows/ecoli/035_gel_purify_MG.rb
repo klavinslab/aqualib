@@ -147,7 +147,7 @@ def main
 	
 	count=0
 	while count < slice_number do
-		fragments[count].datum={concentration: c[count]}
+		fragments[count].datum[:concentration] = c[count]
 		count=count+1
 	end
 	
