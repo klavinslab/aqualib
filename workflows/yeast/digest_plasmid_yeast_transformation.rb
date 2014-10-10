@@ -9,13 +9,16 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       plasmid_ids: [27507,27508,27509]
     }
   end
   
   def main
-    
-    plasmids_to_digest = input[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
+
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+    plasmids_to_digest = io_hash[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
     plasmids_to_take = plasmids_to_digest.uniq
 
 
@@ -88,7 +91,8 @@ class Protocol
     release stripwells
     release plasmids_to_take, interactive: true, method: "boxes"
 
-    return { stripwell_ids: stripwells.collect { |s| s.id } }
+    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id } }
+    return { io_hash: io_hash }
     
   end
   

@@ -8,7 +8,10 @@ end
 place startovernight
 protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
   argument
+    plasmid_ids: plasmid_ids
     yeast_item_ids: yeast_item_ids
+    aliquot_numbers: aliquot_numbers
+    yeast_transformed_strain_ids: yeast_transformation_ids
   end
   group: "technicians"
   marked: true
@@ -17,43 +20,28 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
 end
 
 place innoculate
-  protocol: "cloning/yeast/innoculate_compcell_culture.pl"
+  protocol: "aqualib:workflows/yeast/innoculate_50mL_growth.pl"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place digest
-  protocol: "cloning/yeast/pmeI_digest_aj.pl"
-  argument
-    plasmids: plasmids
-    pmei: pmei
-    cutsmart: cutsmart
-    initials: initials
-  end
+  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.pl"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place makecompcell
-  protocol: "cloning/yeast/Make_yeast_compcells_fresh.pl"
-  argument
-    aliquots_number: aliquots_number
-  end
+  protocol: "aqualib:workflows/yeast/make_yeast_competent_cells_fresh.pl"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place transformation
-  protocol: "cloning/yeast/yeast_transformation_aj.pl"
-  argument
-    plate_type: plate_type
-    rescue_vol: rescue_vol
-    products: products
-    initials: initials
-  end
+  protocol: "aqualib:workflows/yeast/yeast_transformation_aj.pl"
   group: "technicians"
   start: now()
   window: hours(20)

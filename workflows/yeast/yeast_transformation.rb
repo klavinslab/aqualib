@@ -12,6 +12,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       #input should be yeast competent cells and digested plasmids
       "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431,8426,27794,27788,27782],
       #stripwell that containing digested plasmids
@@ -22,9 +23,11 @@ class Protocol
   end
 
   def main
-  	yeast_competent_cells = input[:yeast_competent_ids].collect {|yid| find(:item, id: yid )[0]}
-    yeast_transformation_mixtures = input[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
-    stripwells = input[:stripwell_ids].collect { |i| collection_from i }
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+  	yeast_competent_cells = io_hash[:yeast_competent_ids].collect {|yid| find(:item, id: yid )[0]}
+    yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
+    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
 
     # show {
     #   title "Testing page"
@@ -80,7 +83,7 @@ class Protocol
     }
 
     yeast_transformation_mixtures_markers = Hash.new {|h,k| h[k] = [] }
-    yeast_markers = input[:plasmid_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
+    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
     yeast_transformation_mixtures.each_with_index do |y,idx|
       yeast_markers.uniq.each do |mk|
         yeast_transformation_mixtures_markers[mk].push y if yeast_markers[idx] == mk
@@ -146,10 +149,9 @@ class Protocol
     release [peg] + [lioac] + [ssDNA], interactive: true
     release yeast_competent_cells + stripwells
 
-    output = input
-    output = output.merge yeast_plate_ids: yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
-    output = output.merge yeast_transformation_mixture_ids: yeast_transformation_mixtures_markers["kan"].collect {|x| x.id} if yeast_transformation_mixtures_markers["kan"]
-    return output
+    io_hash[:yeast_plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
+    io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_markers["kan"].collect {|x| x.id} if yeast_transformation_mixtures_markers["kan"]
+    return {io_hash: io_hash}
 
   end
 

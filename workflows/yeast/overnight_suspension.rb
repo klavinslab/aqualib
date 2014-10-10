@@ -13,7 +13,9 @@ class Protocol
   def arguments
     {
       #Enter the item id that you are going to start overnight with
-      yeast_item_ids: [8437,8431,8426,27629],
+      yeast_item_ids: [8437,8431,8426],
+      yeast_transformed_strain_ids: [],
+      plasmid_ids: [],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -30,6 +32,11 @@ class Protocol
 
     yeast_glycerol_stocks = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_glycerol_stocks.delete_if {|y| y.object_type.name != "Yeast Glycerol Stock"}
+
+    show {
+      title "Testing page"
+      note(yeast_glycerol_stocks.collect {|x| x.object_type.name})
+    }
 
     yeast_normal_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_normal_items.delete_if {|y| y.object_type.name == "Yeast Glycerol Stock"}

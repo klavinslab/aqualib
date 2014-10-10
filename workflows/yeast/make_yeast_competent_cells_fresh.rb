@@ -12,19 +12,23 @@ class Protocol
 
   def arguments
     {
+      io_hash = {},
       #"cultures_ids Yeast 50 mL culture" => [0],
-      culture_ids: [27780,27571,27781], 
-      aliquots_number: [1,3,2]
+      yeast_culture_ids: [27780,27571,27781], 
+      aliquot_numbers: [1,3,2]
     }
   end
 
   def main
 
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+
     l = choose_object "100 mM LiOAc"
     water = choose_object "50 mL Molecular Grade Water aliquot"
     take [l] + [water], interactive: true
     
-    cultures = input[:culture_ids].collect {|cid| find(:item,id:cid)[0]}
+    cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item,id:cid)[0]}
     take cultures, interactive: true
     
     culture_labels=[["Flask Label","50 mL Tube Number"]]
@@ -93,7 +97,7 @@ class Protocol
 
     yeast_compcell_aliquot_ids=[]
     cultures.each_with_index do |culture,idx|
-      num = input[:aliquots_number][idx]
+      num = io_hash[:aliquot_numbers][idx]
       yeast_compcell_aliquots = []
       (1..num).each do |i|
         yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
@@ -144,9 +148,9 @@ class Protocol
     # end
     
     release [l] + [water] + cultures, interactive: true
+    io_hash[:yeast_compcell_aliquot_ids] = yeast_compcell_aliquot_ids
     
-    return {yeast_compcell_aliquot_ids: yeast_compcell_aliquot_ids}
-    
+    return {io_hash: io_hash}
   end
 
 end
