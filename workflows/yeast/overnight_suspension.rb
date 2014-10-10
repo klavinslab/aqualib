@@ -16,6 +16,7 @@ class Protocol
       yeast_item_ids: [8437,8431,8426],
       yeast_transformed_strain_ids: [],
       plasmid_ids: [],
+      aliquot_numbers: [],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -28,6 +29,7 @@ class Protocol
     io_hash = {yeast_item_ids: [],yeast_overnight_ids: [],plasmid_ids: [],stripwell_ids: [], yeast_transformed_strain_ids: [], yeast_plate_ids: [], yeast_transformation_mixture_ids: [],media_type: "800 mL YPAD liquid (sterile)", volume: "2"}
 
     io_hash[:yeast_item_ids] = input[:yeast_item_ids]
+    io_hash[:aliquot_numbers] = input[:aliquot_numbers]
     io_hash[:yeast_transformed_strain_ids] = input[:yeast_transformed_strain_ids]
     io_hash[:plasmid_ids] = input[:plasmid_ids]
     io_hash[:debug_mode] = input[:debug_mode]
