@@ -32,7 +32,7 @@ class Protocol
     io_hash[:plasmid_ids] = input[:plasmid_ids]
     io_hash[:debug_mode] = input[:debug_mode]
 
-    if io_hash[:debug_mode] == "Yes"
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end

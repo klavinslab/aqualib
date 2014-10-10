@@ -10,7 +10,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_ids: [27507,27508,27509]
+      plasmid_ids: [9189,11546,11547],
+      debug_mode: "Yes"
     }
   end
   
@@ -18,15 +19,19 @@ class Protocol
 
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
     plasmids_to_digest = io_hash[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
     plasmids_to_take = plasmids_to_digest.uniq
 
 
     take plasmids_to_take, interactive: true, method: "boxes"
     
-    cut_smart= choose_sample "Cut Smart"
-    take [cut_smart], interactive: true, method: "boxes"
-    
+    cut_smart= choose_sample "Cut Smart", take: true
+
     digestions=[]
     
     plasmids_to_digest.each do |plasmid|
@@ -36,15 +41,13 @@ class Protocol
         
     end    
     
-    
     stripwells = produce spread digestions, "Stripwell", 1, 12
 
     show {
       warning "In the following step you will take PmeI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
     }
     
-    pme1= choose_sample "PmeI"
-    take [pme1], interactive: true, method: "boxes"
+    pme1= choose_sample "PmeI", take: true
     
     water = 42*plasmids_to_digest.length*1.3
     buffer = 5*plasmids_to_digest.length*1.3
@@ -53,9 +56,9 @@ class Protocol
     show {
       title "Make master mix"
       check "Label a new eppendorf tube MM."
-      check "Add #{water.round(1)} µL of water to the tube"
-      check "Add #{buffer.round(1)} µL of the cutsmart buffer to the tube"
-      check "Add #{enzyme.round(1)} µL of the Pme1 to the tube"
+      check "Add #{water.round(1)} µL of water to the tube."
+      check "Add #{buffer.round(1)} µL of the cutsmart buffer to the tube."
+      check "Add #{enzyme.round(1)} µL of the Pme1 to the tube."
       check "Vortex for 20-30 seconds"
       warning "Keep the master mix in an ice block while doing the next steps"
     }
