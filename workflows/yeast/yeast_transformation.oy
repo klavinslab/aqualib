@@ -54,6 +54,6 @@ wire digest => makecompcell
 wire makecompcell => transformation
 
 transition [ startovernight ] => [ innoculate ] when completed(0) end
-transition [ innoculate ] => [ digest ] completed(0) end
+transition [ innoculate ] => [ digest ] when completed(0) end
 transition [ digest ] => [ makecompcell ] when completed(0) end
 transition [ makecompcell ] => [ transformation ] when completed(0) end
