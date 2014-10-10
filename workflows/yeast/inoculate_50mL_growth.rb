@@ -23,6 +23,11 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
   	yeast_overnights = io_hash[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
     # show {
     #   note(yeast_overnights.collect {|x| x.id})

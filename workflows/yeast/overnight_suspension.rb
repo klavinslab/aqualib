@@ -20,6 +20,7 @@ class Protocol
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "2"
+      debug_mode: "No"
     }
   end
 
@@ -29,7 +30,13 @@ class Protocol
     io_hash[:yeast_item_ids] = input[:yeast_item_ids]
     io_hash[:yeast_transformed_strain_ids] = input[:yeast_transformed_strain_ids]
     io_hash[:plasmid_ids] = input[:plasmid_ids]
+    io_hash[:debug_mode] = input[:debug_mode]
 
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
     yeast_glycerol_stocks = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_glycerol_stocks.delete_if {|y| y.object_type.name != "Yeast Glycerol Stock"}
 

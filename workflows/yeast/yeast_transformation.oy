@@ -3,6 +3,7 @@ argument
   yeast_item_ids: generic, "List of yeast strain item ids that you are going to transform plasmid into"
   aliquot_numbers: number array, "List of number of aliquots to make from each yeast item"
   yeast_transformed_strain_ids: generic, "List of transformed yeast strain ids"
+  debug_mode: string, "Yes or No"
 end
 
 place startovernight
@@ -12,6 +13,7 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
     yeast_item_ids: yeast_item_ids
     aliquot_numbers: aliquot_numbers
     yeast_transformed_strain_ids: yeast_transformed_strain_ids
+    debug_mode: debug_mode
   end
   group: "technicians"
   marked: true
@@ -20,28 +22,28 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
 end
 
 place innoculate
-  protocol: "aqualib:workflows/yeast/innoculate_50mL_growth.pl"
+  protocol: "aqualib:workflows/yeast/innoculate_50mL_growth.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place digest
-  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.pl"
+  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place makecompcell
-  protocol: "aqualib:workflows/yeast/make_yeast_competent_cells_fresh.pl"
+  protocol: "aqualib:workflows/yeast/make_yeast_competent_cells_fresh.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place transformation
-  protocol: "aqualib:workflows/yeast/yeast_transformation_aj.pl"
+  protocol: "aqualib:workflows/yeast/yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
