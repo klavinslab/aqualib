@@ -1,10 +1,13 @@
 class Protocol
   
   def arguments
-    {x: 1379, y:"name"}
+    {x: 1379, y:"name", fid: 2576}
   end
 
   def main
+    def debug
+      true
+    end
     x = input[:x]
     y = input[:y]
     plasmid_x1 = find(:item, id: 123)
@@ -21,6 +24,13 @@ class Protocol
       note "y is #{y} and x is #{x}"
       note "y_data is #{y_data} and z_data is #{z_data}"
     }
+    fid = input[:fid]
+    fragment = find(:sample,{id: fid})[0]
+    stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted" }
+    show {
+      note "#{stocks.collect {|s| s.id}}"
+    } 
+
   end
   
 end
