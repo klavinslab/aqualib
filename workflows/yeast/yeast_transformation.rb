@@ -30,6 +30,7 @@ class Protocol
   	yeast_competent_cells = io_hash[:yeast_competent_ids].collect {|yid| find(:item, id: yid )[0]}
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
 
     # show {
     #   title "Testing page"
@@ -85,7 +86,6 @@ class Protocol
     }
 
     yeast_transformation_mixtures_markers = Hash.new {|h,k| h[k] = [] }
-    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
     yeast_transformation_mixtures.each_with_index do |y,idx|
       yeast_markers.uniq.each do |mk|
         yeast_transformation_mixtures_markers[mk].push y if yeast_markers[idx] == mk
