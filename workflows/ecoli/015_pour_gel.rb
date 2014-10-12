@@ -10,7 +10,7 @@ class Protocol
 
   def arguments
     {
-      io_hash: {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: []},
+      io_hash: {},
       comb_1: 2,
       comb_2: 0,
       percentage: 1,
