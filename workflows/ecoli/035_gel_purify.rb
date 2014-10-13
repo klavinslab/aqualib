@@ -1,6 +1,4 @@
-#This protocol purifies gel slices into fragment stocks
-#Still need to alter the protocol to take a hash as input and output a hash
-#Also need to modify the protocol to be able to run indepently of a metacol
+#First version by Miles Gander, refactored by Yaoyu
 
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
@@ -21,7 +19,7 @@ end
 def main
 	io_hash = input[:io_hash]
 	io_hash = input if input[:io_hash].empty?
-	slices= io_hash[:gel_slice_ids]
+	gel_slice_ids = io_hash[:gel_slice_ids]
 
 	if io_hash[:debug_mode] == "Yes"
       def debug
@@ -29,7 +27,9 @@ def main
       end
     end
 
-	gel_slices = find(:item, id: slices)
+	gel_slices = find(:item, id: gel_slice_ids)
+	gel_slice_lengths = gel_slices.collect {|gs| gs.sample.properties["Length"]}
+
 	num = gel_slices.length
 	num_arr = *(1..num)
 
@@ -53,6 +53,15 @@ def main
 	gel_weights = gel_slices.collect { |gs| weights[:"w#{gs.id}".to_sym] }
 
 	qg_volumes = gel_weights.collect { |g| (g*3000).floor}
+
+	iso_volumes = gel_weights.collect { |g| (g*1000).floor}
+
+	gel_slices.each_with_index do |gs,idx|
+		if gs.sample.properties["Length"] >500 and gs.sample.properties["Length"] < 4000
+			iso_volumes[idx] = 0
+		end
+	end
+
 	
 	show{
 		# s=*(1..slice_number)
@@ -65,14 +74,15 @@ def main
 		timer initial: { hours: 0, minutes: 10, seconds: 0}
 		note "Vortex every few minutes to speed up the process."
 		note "Retreve after 10 minutues or until the gel slice is competely dissovled."
-		note "Add 1x volume (1 uL to 1 mg of gel slice) isopropanol. Pipette up and down to mix"
+		note "Add isopropanol according to the following table. Pipette up and down to mix"
+		table [["Gel slice", "Isopropanol"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
 	}
 	
 	show {
 		  title "Check the boxes as you complete each step."
 		  check "Grab #{num} of pink Qiagen columns, label with 1 to #{num} on the top."
 		  check "Add tube contents to LABELED pink Qiagen columns using the following table."
-		  check "Be sure not to add more than 750 µl to each pick columns"
+		  check "Be sure not to add more than 750 µL to each pick columns"
 		  table [["Gel slices tube", "Qiagen column"]].concat(gel_slices.collect {|s| s.id}.zip num_arr)
 		}
 		  
@@ -80,10 +90,10 @@ def main
     	title "Centrifuge"
 		check "Spin at top speed (> 17,900 g) for 1 minute to bind DNA to columns"
 		check "Empty collection columns by pouring waste liquid into waste liquid container."
-		check "Add 750 µl PE buffer to columns and wait five minutes"
+		check "Add 750 µL PE buffer to columns and wait five minutes"
 		check "Spin at top speed (> 17,900 g) for 30 seconds to wash columns."
 		check "Empty collection tubes."
-		check "Add 500 µl PE buffer to columns and wait five minutes"
+		check "Add 500 µL PE buffer to columns and wait five minutes"
 		check "Spin at top speed (> 17,900 g) for 30 seconds to wash columns"
 		check "Empty collection tubes."
 		check "Spin at top speed (> 17,900 g) for 1 minute to remove all PE buffer from columns"
@@ -93,7 +103,7 @@ def main
 
 	show{
 		  title "Transfer to 1.5 mL tube"
-		  check "Label #{num} 1.5 mL Eppendorf tube with #{fragment_stocks.collect {|fs| fs.id}}"
+		  check "Label #{num} 1.5 mL tube with #{fragment_stocks.collect {|fs| fs.id}}"
 		  check "Transfer pink columns to empty Eppendorf tubes using the following table."
 		  table [["Qiagen column","1.5 mL tube"]].concat(num_arr.zip fragment_stocks.collect {|fs| fs.id})
 		  check "Add 30 µl molecular grade water or EB elution buffer to center of column."
@@ -122,7 +132,7 @@ def main
 	#
 
 	fragment_stocks.each do |fs|
-		fs.datum = {"concentration"=> concs[:"c#{fs.id}".to_sym],"volume"=> 28}
+		fs.datum = {concentration: concs[:"c#{fs.id}".to_sym], volume: 28}
 		fs.save
 	end
 

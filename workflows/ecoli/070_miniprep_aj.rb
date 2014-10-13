@@ -1,3 +1,4 @@
+#First version by Arjun, improved by Yaoyu.
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
@@ -8,69 +9,66 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       elution_volume: 50,
-      overnight_ids: []
+      overnight_ids: [12389,12388,12387],
+      debug_mode: "Yes"
     }
   end
 
   def main
-    overnight_ids=input[:overnight_ids]
-    elution_volume=input[:elution_volume]
-    
-    overnights = input[:overnight_ids].collect{|oid| find(:item,id:oid)[0]}
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+    overnight_ids = io_hash[:overnight_ids]
+    elution_volume = io_hash[:elution_volume]
+
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
+
+    overnights = overnight_ids.collect{|oid| find(:item,id:oid)[0]}
     take overnights, interactive: true
     
     num=overnights.length
+    num_arr = *(1..num)
     
     show{
-      check "Label #{num} eppendorf tubes with IDs according to the table below"
-      table overnight_ids
-    }
-    
-    show{
-      check "Pipet 1000 µL of culture from the overnight culutres into the corresponding labeled eppendorf tubes."
+      check "Label #{num} 1.5 mL tubes with 1 to #{num}"
+      check "Pipette 1.5 mL of overnight cultures into the 1.5 mL tubes using the following table"
+      table [["Overnight", "1.5 mL tube"]].concat(overnights.collect {|s| s.id}.zip num_arr)
     }
     
     show{
       title "Spin down the cells"
-      note "Spin at 5,800 xg for 2 minutes"
-      warning "Make sure to balance the centrifuge. If you have an odd number of samples, use a balance tube with water"
-    }
-    
-    show{
-      title "Remove the supernatant"
+      check "Spin at 5,800 xg for 2 minutes"
+      note "Make sure to balance the centrifuge. If you have an odd number of samples, use a balance tube with water"
+      check "Remove the supernatant"
       note "Pour off the supernatant into liquid waste, being sure not to upset the pellet. Pipette out the residual supernatant"
     }
     
     show{
-      title "Resuspend in P1"
-      note "Pipette 250 µL of P1 into each tube and vortex strongly to resuspend"
+      title "Resuspend in P1, P2, N3"
+      check "Add 250 µL of P1 into each tube and vortex strongly to resuspend."
+      check "Add 250 µL of P2 and gently invert 5-10 times to mix, tube contents should turn blue."
+      check "Pipette 350 µL of N3 into each tube and gently invert 5-10 times to mix. Tube contents should turn colorless."
+      warning "Time between adding P2 and N3 should be minimized. Cells should not be exposed to active P2 for more than 5 minutes"
     }
     
-    show{
-      title "Be sure to check the boxs as you complete each step."
-      check "Add P2 and gently invert to mix"
-      check "Pipette 250 µL of P2 into each tube and gently invert 10 times to mix. Tube contents should turn blue."
-      warning "This step should be done rapidly. Cells should not be exposed to active P2 for more than 5 minutes"
-    }
     
     show{
-    
-      check "Add N3 and gently invert to mix"
-      check "Pipette 350 µL of N3 into each tube and gently invert 10 times to mix. Tube contents should turn colorless."
-      check "Spin tubes and set up columns and final tubes"
+      title "Centrifuge and set up"
       check "Spin tubes at 17,000 xg for 10 minutes"
       warning "Make sure to balance the centrifuge. If you have an odd number of samples, use a balance tube with water"
-      
       note "Meanwhile, prep and label all of the columns and tubes you will need for the rest of the protocol"
-      check "Grab #{num} blue miniprep spin columns"
-      check "Grab #{num} new eppendorf tubes"
-      check "Label the side of the columns and the tops of the tubes according to the following table"
-      table overnight_ids
+      check "Grab #{num} blue miniprep spin columns and label with 1 to #{num}"
+      check "Carefully pipette the supernatant into the columns"
+      check "Grab #{num} new 1.5 mL tubes and label top of the tube with"
     }
     
     show{
-      title "Carefully pour the supernatant into the columns"
+      title "Carefully pipette the supernatant into the columns"
       note "The contents of each tube from the centrifuge should go into the similarly labeled column"
     }
     
@@ -118,7 +116,7 @@ class Protocol
     
     show{
       title "Re-label the final tubes"
-      note "Add a while sticker to the top of each tube and relabel them according to the following table"
+      note "Add a white sticker to the top of each tube and relabel them according to the following table"
       table table1
     }
     
@@ -136,15 +134,13 @@ class Protocol
 	}
 		
 	conc = plasmid_stocks.collect{ |plasmid| data["conc#{plasmid.id}".to_sym]}
-	count=0
 		
-	plasmid_stocks.each do |plasmid|
-		plasmid.datum = {concentration: conc[count]}
-		count=count+1
+	plasmid_stocks.each_with_index do |ps,idx|
+		ps.datum = {concentration: conc[idx]}
+    ps.save
 	end
   
-  
-  	release overnights, interactive: true
-  	release plasmid_stocks, interactive: true
-   end
+	release overnights, interactive: true
+	release plasmid_stocks, interactive: true, method: "boxes"
+  end
 end
