@@ -137,6 +137,18 @@ module Standard
 		end
 
 	end
-
+	
+	def debug args = {}
+		arguments = { mode: false, }.merge args
+		if arguments[:mode]
+		  def debug
+		    true
+		  end
+		else
+		  def debug
+		    false
+		  end
+		end
+	end
 
 end

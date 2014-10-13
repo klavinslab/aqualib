@@ -6,6 +6,19 @@ class Protocol
   include Standard
   include Cloning
 
+  # def debug args = {}
+  #   arguments = { mode: false, }.merge args
+  #   if arguments[:mode]
+  #     def debug
+  #       true
+  #     end
+  #   else
+  #     def debug
+  #       false
+  #     end
+  #   end
+  # end
+
    def gibson_assembly_status_test
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
@@ -64,11 +77,7 @@ class Protocol
     io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: [], debug_mode: "No"}
     # io_hash = input if input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode]
-    if io_hash[:debug_mode] == "Yes"
-      def debug
-        true
-      end
-    end
+    debug mode: true if io_hash[:debug_mode] == "Yes"
     gibson_info = gibson_assembly_status
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
     fragment_metacol_ids = input[:fragment_ids]

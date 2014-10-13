@@ -88,6 +88,14 @@ class Protocol
 
     end # transfer
 
+  def debug args = {}
+    arguments = { mode: true }.merge args
+    if arguments[:mode]
+      return true
+    else
+      return false
+    end
+  end
 
   def arguments
     {

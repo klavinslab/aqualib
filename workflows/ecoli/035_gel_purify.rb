@@ -1,4 +1,4 @@
-#First version by Miles Gander, refactored by Yaoyu
+#First version by Miles Gander, refactored by Yaoyu Yang.
 
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"

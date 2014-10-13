@@ -69,7 +69,7 @@ class Protocol
         [ "Row", "Column", "New Gel Slice id", "Length" ]
       ].concat( new_routes.collect { |r| [ r[:lane ][0]+1, r[:lane][1]+1, { content: r[:slice_id], check: true }, r[:length] ] } )
       note "Label the tubes with the id shown above."
-      note "Wipe the blade with ethanol between each cut."
+      note "Wipe the blade with ethanol before each cut."
       warning "Wear blue light goggles during this process!"
     }
 	  return items
