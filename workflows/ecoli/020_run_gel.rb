@@ -59,7 +59,7 @@ class Protocol
 
           # clear routing for next step
           routing = []
-          if sources[s].matrix[sr][sc]
+          if sr && dc
             return if sources[s].matrix[sr][sc] == -1
           end
 
