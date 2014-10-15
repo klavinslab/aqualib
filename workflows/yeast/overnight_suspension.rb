@@ -6,10 +6,6 @@ class Protocol
   include Standard
   include Cloning
 
-  def debug
-    false
-  end
-
   def arguments
     {
       #Enter the item id that you are going to start overnight with
