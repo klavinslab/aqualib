@@ -23,7 +23,7 @@ class Protocol
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
     tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-    ready = tasks.select { |t| t.status == "out for sequencing" }
+    ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "running" }
     out = tasks.select { |t| t.status == "out for sequencing"  }
 
@@ -31,6 +31,10 @@ class Protocol
     ready.each do |t|
 
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
+
+      show {
+        note "#{t.simple_spec}"
+      }
 
       t.spec[:fragments].each do |fid|
 
@@ -51,7 +55,7 @@ class Protocol
     # return a big hash describing the status of all un-done assemblies
     return {
 
-      fragments: ((tasks.select { |t| t.status == "out for sequencing" }).collect { |t| t[:fragments] })
+      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
         .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
       assemblies: {
@@ -83,7 +87,7 @@ class Protocol
       end
     end
 
-    gibson_info = gibson_assembly_status
+    gibson_info = gibson_assembly_status_test
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
     fragment_metacol_ids = input[:fragment_ids]
     io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq

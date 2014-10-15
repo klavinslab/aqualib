@@ -10,8 +10,9 @@ class Protocol
     {
       io_hash: {},
       yeast_overnight_ids: [28702,28701,28700,13012,13013,13014,13015],
-      media_type: "800 mL YPAD liquid (sterile)",
+      media_type: "800 mL SC liquid (sterile)",
       volume: 2,
+      inducer: "beta-estradiol",
       debug_mode: "Yes"
     }
   end
@@ -26,6 +27,7 @@ class Protocol
     end
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
+    inducer = io_hash[:inducer]
 
     yeast_overnights = io_hash[:yeast_overnight_ids].collect { |y| find(:item, id: y)[0] }
     diluted_yeast_overnights = yeast_overnights.collect{ |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
@@ -34,6 +36,7 @@ class Protocol
 		check "Grab #{yeast_overnights.length} of 14 mL Test Tube"
 		check "Add #{volume} mL of #{media_type} to each empty 14 mL test tube using serological pipette"
 		check "Write down the following ids on cap of each test tube using dot labels #{diluted_yeast_overnights.collect {|x| x.id}}"
+		check "Pipette 2 µL of 100 µM #{inducer} into each tube, making 100 nM final concentration." if inducer.length > 0
 	}
 	take yeast_overnights, interactive: true
 	show {
