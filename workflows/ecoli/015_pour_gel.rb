@@ -14,7 +14,7 @@ class Protocol
       comb_1: 2,
       comb_2: 0,
       percentage: 1,
-      stripwell_ids: [28076]
+      stripwell_ids: [28848]
     }
   end
 
@@ -77,17 +77,13 @@ class Protocol
 
     (1..num_gels).each do |gel_number|
 
-      show {
-        title "Gel Number #{gel_number}"
-      }
-
       # gel_box = choose_object "49 mL Gel Box With Casting Tray (clean)"
 
       combs = [ "n/a", "6-well", "6-well", "10-well", "10-well"   ]
       sides = [ "n/a", "thinner", "thicker", "thinner", "thicker" ]
 
       show {
-        title "Add top comb"
+        title "Gel Number #{gel_number}, add top comb"
         check "Go get a 49 mL Gel Box With Casting Tray (clean)"
         check "Retrieve a #{combs[comb_1]} purple comb from A7.325"
         check "Position the gel box with the electrodes facing away from you. Add a purple comb to the side of the casting tray nearest the side of the gel box."
@@ -98,7 +94,7 @@ class Protocol
 
       unless comb_2 == 0
         show {
-          title "Add bottom comb"
+          title "Gel Number #{gel_number}, add bottom comb"
           check "Retrieve a #{combs[comb_2]} purple comb from A7.325"
           check "Position the gel box with the electrodes facing away from you. Add a purple comb to the center of the casting tray."
           check "Put the #{sides[comb_2]} side of the comb down."
