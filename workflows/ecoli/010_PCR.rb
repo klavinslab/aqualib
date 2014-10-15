@@ -23,7 +23,7 @@ class Protocol
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
     tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-    ready = tasks.select { |t| t.status == "ready" }
+    ready = tasks.select { |t| t.status == "waiting for fragments" }
     running = tasks.select { |t| t.status == "running" }
     out = tasks.select { |t| t.status == "out for sequencing"  }
 
@@ -55,7 +55,7 @@ class Protocol
     # return a big hash describing the status of all un-done assemblies
     return {
 
-      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
+      fragments: ((tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t[:fragments] })
         .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
       assemblies: {
@@ -81,13 +81,14 @@ class Protocol
     io_hash = {fragment_ids: [],stripwell_ids: [],gel_ids: [],gel_slice_ids: [], debug_mode: "No"}
     # io_hash = input if input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode]
+    # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode] == "Yes"
       def debug
         true
       end
     end
 
-    gibson_info = gibson_assembly_status_test
+    gibson_info = gibson_assembly_status
     fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
     fragment_metacol_ids = input[:fragment_ids]
     io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq
