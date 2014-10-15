@@ -61,12 +61,13 @@ module Cloning
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
     tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    waiting = tasks.select { |t| t.status == "waiting for fragments" }
     ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "running" }
     out = tasks.select { |t| t.status == "out for sequencing"  }
 
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
-    ready.each do |t|
+    waiting.each do |t|
 
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
@@ -89,7 +90,7 @@ module Cloning
     # return a big hash describing the status of all un-done assemblies
     return {
 
-      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
+      fragments: ((tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t[:fragments] })
         .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
       assemblies: {
