@@ -32,9 +32,9 @@ class Protocol
 
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
-      show {
-        note "#{t.simple_spec}"
-      }
+      # show {
+      #   note "#{t.simple_spec}"
+      # }
 
       t.spec[:fragments].each do |fid|
 
