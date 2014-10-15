@@ -4,7 +4,7 @@ class Protocol
 
   include Standard
 
-  def debug
+  def debug 
     false
   end
 
