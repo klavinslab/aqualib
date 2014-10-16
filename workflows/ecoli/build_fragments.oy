@@ -1,3 +1,7 @@
+# To do list for build_fragments
+# Make 1 ng/uL plasmid stock
+# Feedback on which fragments ingredients are missing.
+
 argument
   fragment_ids: generic, "List of fragment ids"
   debug_mode: string, "Yes or No"
