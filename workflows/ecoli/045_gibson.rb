@@ -1,5 +1,5 @@
-needs "protocols/mutagenesis_workflow/lib/standard"
-needs "protocols/mutagenesis_workflow/lib/cloning"
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
 
@@ -49,14 +49,30 @@ class Protocol
     io_hash[:debug_mode] = input[:debug_mode]
     io_hash[:fragment_ids] = input[:fragment_ids]
     io_hash[:plasmid_ids] = input[:plasmid_ids]
+    io_hash[:task_mode] = input[:task_mode]
+
     if io_hash[:debug_mode] == "Yes"
       def debug
         true
       end
     end
 
+    if io_hash[:task_mode] == "Yes"
+      gibson_info = gibson_assembly_status
+      ready_task_ids = gibson_info[:assemblies][:ready_to_build]
+      ready_task_ids.each do |tid|
+        ready_task = find(:task, id: tid)[0]
+        io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
+        io_hash[:plasmid_ids].push ready_task.simple_spec[:target]
+        ready_task.status = "running"
+        ready_task.save
+      end
+
+    end
+
     #find fragment stocks, concentrations and lengths
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+    #Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
     # build an array of arrays for fragments stocks based on the group info
