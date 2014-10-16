@@ -80,10 +80,13 @@ module Cloning
 
         info = fragment_info fid
 
-        if !info
-          t[:fragments][:not_ready_to_build].push fid
-        elsif info[:stocks].length > 0
+        # First check if there already exists fragment stock, if so, it's ready to build.
+        if find(:sample, id: fid).in("Fragment Stock")
           t[:fragments][:ready_to_use].push fid
+        elsif !info
+          t[:fragments][:not_ready_to_build].push fid
+        # elsif info[:stocks].length > 0
+        #   t[:fragments][:ready_to_use].push fid
         else
           t[:fragments][:ready_to_build].push fid
         end
