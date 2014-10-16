@@ -92,7 +92,7 @@ module Cloning
 
       show {
         note "After processing"
-        note "#{t}"
+        note "#{t[:fragments]}"
       }
 
     end
