@@ -118,9 +118,9 @@ class Protocol
   		note "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
   	}
 
-    # gels.each do |gel|
-    #   gel.mark_as_deleted
-    # end
+    gels.each do |gel|
+      gel.mark_as_deleted
+    end
 
   	release slices, interactive: true, method: "boxes"
     io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
