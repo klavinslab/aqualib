@@ -136,9 +136,9 @@ def main
 		fs.save
 	end
 
-	# gel_slices.each do |gs|
-	# 	gs.mark_as_deleted
-	# end
+	gel_slices.each do |gs|
+		gs.mark_as_deleted
+	end
 
 	release fragment_stocks, interactive: true, method: "boxes"
 	io_hash[:fragment_stock_ids] = fragment_stocks.collect{|fs| fs.id}
