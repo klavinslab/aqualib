@@ -90,7 +90,7 @@ class Protocol
     end
 
     gibson_info = gibson_assembly_status
-    fragment_to_build_ids = gibson_info[:fragments][:ready_to_build]
+    fragment_to_build_ids = gibson_info[:fragments][:ready_to_build] if gibson_info
     fragment_metacol_ids = input[:fragment_ids]
     io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq
 

@@ -69,7 +69,12 @@ class Protocol
     load_samples(["Yeast Competent Aliquot"],[yeast_competent_cells], stripwells) {
       title "Load 50 µL from each well into corresponding yeast aliquot"
       note "Pieptte 50 µL from each well into corresponding yeast aliquot"
+      note "Discard the stripwell into waste bin."
     }
+
+    stripwells.each do |stripwell|
+        stripwell.mark_as_deleted
+    end
 
     show {
       title "Vortex strongly and heat shock"
