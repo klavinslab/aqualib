@@ -32,8 +32,8 @@ class Protocol
     plasmids = plasmids.compact
     plasmids_need_to_dilute = plasmids.select{|p| p.in("Plasmid Stock").length > 0 && (p.in("1 ng/µL Plasmid Stock").length == 0)}
     plasmid_stocks = plasmids_need_to_dilute.collect{|p| p.in("Plasmid Stock")[0]}
-    # concat with direct input to this protocol
-  	plasmid_stocks.concat input[:plasmid_stock_ids].collect{|fid| find(:item, id: fid)[0]}
+    # concat with direct input to this protocol if input[:plasmid_stock_ids] is defined
+  	plasmid_stocks.concat input[:plasmid_stock_ids].collect{|fid| find(:item, id: fid)[0]} if input[:plasmid_stock_ids]
     if plasmid_stocks.length == 0
       show {
         title "No plasmid stocks need to be diluted"
