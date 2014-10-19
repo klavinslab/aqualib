@@ -7,6 +7,17 @@ argument
   debug_mode: string, "Yes or No"
 end
 
+place dilute_plasmid_stock
+  protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
+  group: "technicians"
+  argument
+    debug_mode: debug_mode
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
 place pcr
   protocol: "aqualib:workflows/ecoli/010_PCR.rb"
   group: "technicians"
@@ -14,7 +25,7 @@ place pcr
     fragment_ids: fragment_ids
     debug_mode: debug_mode
   end
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -64,9 +75,11 @@ wire pour_gel => run_gel
 wire run_gel => cut_gel
 wire cut_gel => purify_gel
 
-transition [ pcr ] => [ wait_for_pcr, pour_gel ] when completed(0) end
+
+transition [dilute_plasmid_stock] => [ pcr ] when completed (0) end
+transition [ pcr ] => [ wait_for_pcr, pour_gel ] when !error(0) && completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && completed(1) end
-transition [ run_gel ] => [ wait_for_gel ] when completed(0) end
-transition [ wait_for_gel ] => [ cut_gel ] when completed(0) end
-transition [ cut_gel ] => [ purify_gel ] when completed (0) end
-transition [ purify_gel ] => [] when completed (0) end
+transition [ run_gel ] => [ wait_for_gel ] when !error(0) && completed(0) end
+transition [ wait_for_gel ] => [ cut_gel ] when !error(0) && completed(0) end
+transition [ cut_gel ] => [ purify_gel ] when !error(0) && completed (0) end
+transition [ purify_gel ] => [] when !error(0) && completed (0) end
