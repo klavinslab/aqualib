@@ -6,18 +6,40 @@ class Protocol
   include Standard
   include Cloning
 
-  def debug
-    false
-  end
-
   def arguments
     {
-      plasmid_stock_ids: [27259,27507,9189]
+      io_hash: {},
+      plasmid_stock_ids: [27259,27507,9189],
+      debug_mode: "Yes",
+      task_mode: "Yes"
     }
   end
 
   def main
-  	plasmid_stocks = input[:plasmid_stock_ids].collect{|fid| find(:item, id: fid)[0]}
+    io_hash = {}
+    # io_hash = input if input[:io_hash].empty?
+    io_hash[:debug_mode] = input[:debug_mode]
+    io_hash[:task_mode] = input[:task_mode]
+    if io_hash[:debug_mode] == "Yes"
+      def debug
+        true
+      end
+    end
+    plasmid_stocks = []
+    if io_hash[:task_mode] == "Yes"
+      gibson_info = gibson_assembly_status
+      fragment_not_ready_to_to_build_ids = []
+      fragment_not_ready_to_build_ids = gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
+      plasmids = fragment_not_ready_to_to_build_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
+      plasmids = plasmids.compact
+      plasmids_need_to_dilute = plasmids.select{|p| p.in("Plasmid Stock") && (not p.in("1 ng/µL Plasmid Stock"))}
+      plasmid_stocks = plasmids_need_to_dilute.collect{|p| p.in("Plasmid Stock")}
+    end
+    show {
+      title "Testing page"
+      note "#{plasmid_stocks.collect{|p| p.id}}"
+    }
+  	plasmid_stocks.concat input[:plasmid_stock_ids].collect{|fid| find(:item, id: fid)[0]}
   	take plasmid_stocks, interactive: true, method: "boxes"
   	plasmid_diluted_stocks = plasmid_stocks.collect {|f| produce new_sample f.sample.name, of: "Plasmid", as: "1 ng/µL Plasmid Stock"}
   	tab = [["Newly labled tube","Plasmid stock, 1 µL","Water volume"]]

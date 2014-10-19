@@ -1,7 +1,7 @@
 class Protocol
   
   def arguments
-    {x: 1379, y:"name", fid: 2576}
+    {x: 1379, y:"name", fid: 2574}
   end
 
   def main
@@ -27,8 +27,10 @@ class Protocol
     fid = input[:fid]
     fragment = find(:sample,{id: fid})[0]
     stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted" }
+    stock_new = find(:sample, id: fid)[0].in("Fragment Stock")
     show {
       note "#{stocks.collect {|s| s.id}}"
+      note "#{stock_new.collect {|s| s.id}}"
     } 
 
   end

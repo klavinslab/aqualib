@@ -26,7 +26,8 @@ module Cloning
       # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
       rev_items = rev.in "Primer Aliquot"
-      template_items = template.in "1 ng/µL Plasmid Stock"
+      template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
+      template_items = template.in "1 ng/µL Fragment Stock" if template.sample_type.name == "Fragment"
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
 
@@ -81,7 +82,7 @@ module Cloning
         info = fragment_info fid
 
         # First check if there already exists fragment stock, if so, it's ready to build.
-        if find(:sample, id: fid)[0].in("Fragment Stock")
+        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0
           t[:fragments][:ready_to_use].push fid
         elsif !info
           t[:fragments][:not_ready_to_build].push fid
