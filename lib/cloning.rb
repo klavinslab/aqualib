@@ -70,11 +70,6 @@ module Cloning
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
     (waiting + ready).each do |t|
 
-      show {
-        note "Before processing"
-        note "#{t}"
-      }
-
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
       t.simple_spec[:fragments].each do |fid|
