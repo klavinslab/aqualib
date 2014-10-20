@@ -19,55 +19,53 @@ class Protocol
   #   end
   # end
 
-   def gibson_assembly_status_test
-
-    # find all un done gibson assembly tasks ans arrange them into lists by status
-    tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
-    ready = tasks.select { |t| t.status == "waiting for fragments" }
+  def fragment_construction_status
+    # find all fragment construction tasks and arrange them into lists by status
+    tasks = find(:task,{task_prototype: { name: "Fragment Construction" }})
+    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "running" }
-    out = tasks.select { |t| t.status == "out for sequencing"  }
+    done = tasks.select { |t| t.status == "done" }
 
-    # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
-    ready.each do |t|
+    (waiting + ready).each do |t|
 
-      t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
+      t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
 
-      # show {
-      #   note "#{t.simple_spec}"
-      # }
-
-      t.spec[:fragments].each do |fid|
+      t.simple_spec[:fragments].each do |fid|
 
         info = fragment_info fid
-
         if !info
           t[:fragments][:not_ready_to_build].push fid
-        elsif info[:stocks].length > 0
-          t[:fragments][:ready_to_use].push fid
         else
           t[:fragments][:ready_to_build].push fid
         end
 
       end
 
+      if t[:fragments][:ready_to_build].length == t.simple_spec[:fragments].length
+        t.status = "ready"
+        t.save
+        show {
+          note "fragment construction status set to ready"
+          note "#{t.id}"
+        }
+      elsif t[:fragments][:ready_to_build].length < t.simple_spec[:fragments].length
+        t.status = "waiting for ingredients"
+        t.save
+        show {
+          note "fragment construction status set to waiting"
+          note "#{t.id}"
+        }
+      end
     end
 
-    # return a big hash describing the status of all un-done assemblies
     return {
-
-      fragments: ((tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t[:fragments] })
-        .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
-
-      assemblies: {
-        under_construction: running.collect { |t| t.id },
-        waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-        ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-          out_for_sequencing: out.collect { |t| t.id }
-        }
-
+      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
+      running_ids: running.collect {|t| t.id}
     }
-
   end
+          
 
 
   def arguments
@@ -89,17 +87,27 @@ class Protocol
       end
     end
 
-    gibson_info = gibson_assembly_status
-    fragment_to_build_ids = []
-    fragment_to_build_ids = gibson_info[:fragments][:ready_to_build] if gibson_info[:fragments]
+    gibson_assembly = gibson_assembly_status
+    fragment_from_gibson_ids = []
+    fragment_from_gibson_ids = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
 
-    fragment_metacol_ids = input[:fragment_ids]
-    io_hash[:fragment_ids] = (fragment_to_build_ids + fragment_metacol_ids).uniq
+    fragment_construction = fragment_construction_status
+    fragment_from_construction_ids = []
+    fragment_construction[:ready_ids].each do |tid|
+      ready_task = find(:task, id: tid)[0]
+      fragment_from_construction_ids.concat ready_task.simple_spec[:fragments]
+      ready_task.status = "running"
+      ready_task.save
+    end
+
+    fragment_from_metacol_ids = input[:fragment_ids]
+    io_hash[:fragment_ids] = (fragment_from_gibson_ids + fragment_from_construction_ids + fragment_from_metacol_ids).uniq
 
     show {
       title "List of fragment ids ready to build"
-      note "From Gibson Assembly tasks the following #{fragment_to_build_ids.collect {|f| f}}"
-      note "From metacol, the following #{fragment_metacol_ids.collect {|f| f}}"
+      note "From Gibson Assembly tasks the following #{fragment_from_gibson_ids}"
+      note "From Fragment Construction tasks the following #{fragment_from_construction_ids}"
+      note "From metacol, the following #{fragment_from_metacol_ids}"
     }
     # Collect fragment info
     fragment_info_list = []
@@ -117,7 +125,6 @@ class Protocol
     reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
     temperatures    = fragment_info_list.collect { |fi| fi[:tanneal] }
     lengths         = fragment_info_list.collect { |fi| fi[:length] }
-
 
     if fragments.length == 0
       show {
