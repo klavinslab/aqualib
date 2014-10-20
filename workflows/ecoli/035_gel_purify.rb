@@ -140,6 +140,9 @@ def main
 		gs.mark_as_deleted
 	end
 
+	# run gibson_assembly_status to update all the tasks status.
+	gas = gibson_assembly_status
+
 	release fragment_stocks, interactive: true, method: "boxes"
 	io_hash[:fragment_stock_ids] = fragment_stocks.collect{|fs| fs.id}
 	return {io_hash: io_hash}
