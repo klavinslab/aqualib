@@ -12,6 +12,7 @@ place dilute_plasmid_stock
   protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
   group: "technicians"
   argument
+    fragment_ids: fragment_ids
     debug_mode: debug_mode
   end
   marked: true

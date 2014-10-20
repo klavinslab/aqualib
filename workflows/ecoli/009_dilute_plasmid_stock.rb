@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       plasmid_stock_ids: [5392,5389,5350],
+      fragment_ids: [],
       debug_mode: "Yes"
     }
   end
@@ -27,6 +28,7 @@ class Protocol
     # choose from Gibson assembly tasks which template needs to be diluted to 1ng/µL.
     gibson_info = gibson_assembly_status
     fragment_not_ready_to_build_ids = []
+    fragment_not_ready_to_build_ids.concat input[:fragment_ids] # add fragment_ids from protocol or metacol
     fragment_not_ready_to_build_ids = gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
     plasmids = fragment_not_ready_to_build_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
     plasmids = plasmids.compact
