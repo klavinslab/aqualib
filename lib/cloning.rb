@@ -94,9 +94,17 @@ module Cloning
       if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length
         t.status == "ready"
         t.save
+        show {
+          note "status changed to ready"
+          note "#{t.id}"
+        }
       elsif t[:fragments][:ready_to_use].length < t.simple_spec[:fragments].length
         t.status == "waiting for fragments"
         t.save
+        show {
+          note "status changed to waiting"
+          note "#{t.id}"
+        }
       end
 
       show {
