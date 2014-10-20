@@ -31,9 +31,11 @@ class Protocol
   	take yeast_items, interactive: true
 
   	yeast_lysates = []
+  	yeast_colonies = []
   	yeast_items.each_with_index do |y,idx|
   		(1..input[:colony_numbers][idx]).each do |x|
   			yeast_lysates.push y.sample
+  			yeast_colonies.push y
   		end
   	end
 
@@ -61,7 +63,7 @@ class Protocol
     }
 
     load_samples( [ "Colony from plate, 1/3 size"], [
-        yeast_items,
+        yeast_colonies,
       ], stripwells ) {
     	note "Before scraping colony, mark it with stripwell_id/location. For example, the first one should be marked as #{stripwells[0].id}/#{1}"
     	note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, place the tip in the well."
