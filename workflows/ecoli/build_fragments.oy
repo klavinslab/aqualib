@@ -1,6 +1,7 @@
 # To do list for build_fragments
-# Make 1 ng/uL plasmid stock
+[Solved] # Make 1 ng/uL plasmid stock
 # Feedback on which fragments ingredients are missing.
+# Change tasks status while progressing
 
 argument
   fragment_ids: generic, "List of fragment ids"
@@ -78,7 +79,7 @@ wire cut_gel => purify_gel
 
 transition [dilute_plasmid_stock] => [ pcr ] when completed (0) end
 transition [ pcr ] => [ wait_for_pcr, pour_gel ] when !error(0) && completed(0) end
-transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && completed(1) end
+transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && !error(1) && completed(1) end
 transition [ run_gel ] => [ wait_for_gel ] when !error(0) && completed(0) end
 transition [ wait_for_gel ] => [ cut_gel ] when !error(0) && completed(0) end
 transition [ cut_gel ] => [ purify_gel ] when !error(0) && completed (0) end

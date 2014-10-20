@@ -67,6 +67,7 @@ module Cloning
     running = tasks.select { |t| t.status == "running" }
     out = tasks.select { |t| t.status == "out for sequencing" }
 
+
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
     (waiting + ready).each do |t|
 
@@ -89,11 +90,19 @@ module Cloning
 
       end
 
+    # change tasks status based on whether the fragments are ready.
+      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length
+        t.status == "ready"
+        t.save
+      elsif t[:fragments][:ready_to_use].length < t.simple_spec[:fragments].length
+        t.status == "waiting for fragments"
+        t.save
+      end
+
       show {
         note "After processing"
         note "#{t[:fragments]}"
       }
-
     end
 
     # # # look up all the plasmids that are ready to build and return fragment array.
@@ -117,6 +126,8 @@ module Cloning
     }
 
   end # # # # # # # 
+
+
 
 end
 
