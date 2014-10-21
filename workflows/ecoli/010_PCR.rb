@@ -152,6 +152,8 @@ class Protocol
 
     # Take the primers and templates
     take templates + forward_primers + reverse_primers, interactive: true,  method: "boxes"
+    # Get phusion enzyme
+    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
 
     # Set up stripwells
     stripwells = produce spread fragments, "Stripwell", 1, 12
@@ -175,9 +177,6 @@ class Protocol
         note "Load templates first, then forward primers, then reverse primers."
         warning "Use a fresh pipette tip for each transfer."
       }
-
-    # Get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
 
     # Add phusion enzyme
     show {
@@ -212,7 +211,7 @@ class Protocol
     end
 
     # Release the templates, primers, and enzymes
-    release templates + forward_primers + reverse_primers, interactive: true, method: "boxes" 
+    release templates + forward_primers + reverse_primers + , interactive: true, method: "boxes" 
 
     # Release the stripwells silently, since they should stay in the thermocycler
     release stripwells
