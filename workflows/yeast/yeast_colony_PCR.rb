@@ -34,6 +34,9 @@ class Protocol
 
     take lysate_stripwells, interactive: true
     take forward_primers + reverse_primers, interactive: true, method: "boxes"
+    # Get phusion enzyme
+    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
+    
     # make new pcr_stripwells for holding all the colony PCR reactions.
     pcr_stripwells = []
     lysate_stripwells.each do |stripwell|
@@ -58,9 +61,6 @@ class Protocol
       ], pcr_stripwells ) {
         warning "Use a fresh pipette tip for each transfer."
       }
-
-    # Get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
 
     # Add master mix
     show {
