@@ -168,10 +168,10 @@ class Protocol
       # tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
       # tanneal = 72 if tanneal > 72
 
-      fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
-      templates       = fragment_info_list.collect { |fi| fi[:template] }
-      forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-      reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
+      fragments       = fragment_info.collect { |fi| fi[:fragment] }
+      templates       = fragment_info.collect { |fi| fi[:template] }
+      forward_primers = fragment_info.collect { |fi| fi[:fwd] }
+      reverse_primers = fragment_info.collect { |fi| fi[:rev] }
 
       # Set up stripwells
       stripwells = produce spread fragments, "Stripwell", 1, 12
