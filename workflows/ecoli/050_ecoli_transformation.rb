@@ -36,13 +36,13 @@ class Protocol
     take gibson_results, interactive: true, method: "boxes"
 
     show {
-    	title "Intialize the Electroporator"
+    	title "Intialize the electroporator"
     	note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
-        note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button.\nClick the time constant button."
+        note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
     }
 
     show {
-    	title "Retrieve and arrange Ice Block"
+    	title "Retrieve and arrange ice block"
     	note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
         image "arrange_cold_block"
     }
@@ -50,9 +50,10 @@ class Protocol
     transformed_aliquots = []
     gibson_result_marker_hash.each do |marker, gibson_result|
     	num = gibson_result.length
+    	num_arr = *(1..num)
     	ids = []
     	if marker == :non_amp
-    		transformed_aliquots = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}} 
+    		transformed_aliquots = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
     		ids = transformed_aliquots.collect {|t| t.id} 
     	elsif marker == :amp
     		ids = *(1..num)
@@ -67,24 +68,25 @@ class Protocol
 
 	    show {
 	    	title "Prepare #{num} 1.5 mL tubes and pipetters"
-	    	check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}".
+	    	check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
 	    	check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
 			check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
 	    }
 
 	    show {
-	    	title "Label the electrocompetent cell and check if it has thawed"
-	    	check "Label each electrocompetent aliquots with #{*(1..num)}"
+	    	title "Label the electrocompetent cell"
+	    	check "Label each electrocompetent aliquots with #{num_arr}."
 	    	note "If still frozen, wait till the cells have thawed to a slushy consistency."
 	    	warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
 	    	warning "Do not wait too long"
 	        image "thawed_electrocompotent_cells"
 	    }
 
+
 	    show {
-	    	title "Pipette plasmid/gibson_result into electrocompetent aliquot"
-	    	check "Pipette according to the following table"
-	    	table [["Plasmid/Gibson Result, 2 µL", "Qiagen column"]].concat(gibson_result.collect {|s| g.id}.zip *(1..num))
+	    	title "Pipette plasmid into electrocompetent aliquot"
+	    	note "Pipette according to the following table"
+	    	table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_result.collect {|g| { content: g.id, check: true }}.zip num_arr)
 	    }
 	end
 

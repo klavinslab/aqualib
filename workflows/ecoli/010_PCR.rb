@@ -45,17 +45,17 @@ class Protocol
       if t[:fragments][:ready_to_build].length == t.simple_spec[:fragments].length
         t.status = "ready"
         t.save
-        show {
-          note "fragment construction status set to ready"
-          note "#{t.id}"
-        }
+        # show {
+        #   note "fragment construction status set to ready"
+        #   note "#{t.id}"
+        # }
       elsif t[:fragments][:ready_to_build].length < t.simple_spec[:fragments].length
         t.status = "waiting for ingredients"
         t.save
-        show {
-          note "fragment construction status set to waiting"
-          note "#{t.id}"
-        }
+        # show {
+        #   note "fragment construction status set to waiting"
+        #   note "#{t.id}"
+        # }
       end
     end
 
