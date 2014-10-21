@@ -66,13 +66,13 @@ class Protocol
         yeast_colonies,
       ], stripwells ) {
     	note "Before scraping colony, mark it with stripwell_id/location. For example, the first one should be marked as #{stripwells[0].id}/#{1}"
-    	note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, place the tip in the well."
+    	note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, swirl tip inside the well until mixed."
     }
 
     # Run the thermocycler
     thermocycler = show {
       title "Start the lysate reactions"
-      check "Remove all of the pipets from the stripwells, put the cap on each stripwell. Press each one very hard to make sure it is sealed."
+      check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
       separator
       check "Place the stripwells into an available thermal cycler and close the lid."
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
