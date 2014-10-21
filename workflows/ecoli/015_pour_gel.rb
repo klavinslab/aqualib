@@ -4,10 +4,6 @@ class Protocol
 
   include Standard
 
-  def debug 
-    false
-  end
-
   def arguments
     {
       io_hash: {},

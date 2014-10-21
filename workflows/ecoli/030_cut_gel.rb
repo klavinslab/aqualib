@@ -88,7 +88,7 @@ class Protocol
   	slices = []
   	gels.each do |gel|
   		show {
-  			title "Put the gel #{gel.id} on the transilluminator"
+  			title "Image gel #{gel.id}"
   			check "Clean the transilluminator with ethanol."
   			check "Put the gel #{gel.id} on the transilluminator."
   			check "Put the camera hood on, turn on the transilluminator and take a picture using the camera control interface on computer."
