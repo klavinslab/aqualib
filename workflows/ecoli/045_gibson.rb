@@ -67,7 +67,6 @@ class Protocol
         ready_task.status = "running"
         ready_task.save
       end
-
     end
 
     #find fragment stocks, concentrations and lengths
