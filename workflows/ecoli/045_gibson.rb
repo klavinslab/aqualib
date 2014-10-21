@@ -146,6 +146,9 @@ class Protocol
     }
 
     release gibson_results, interactive: true,  method: "boxes"
+
+    io_hash[:gibson_result_ids] = gibson_results.collect {|g| g.id}
+    return {io_hash: io_hash}
   end
 
 end
