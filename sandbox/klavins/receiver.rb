@@ -6,7 +6,7 @@ class Protocol
 
     show {
       title "Input"
-      note u
+      note u.to_json
     }
 
   end
