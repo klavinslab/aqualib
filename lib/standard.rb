@@ -32,8 +32,6 @@ module Standard
 
 		quantity = -1
 
-		user_input = { x: [] }
-
 		while quantity != params[:quantity]
 
 			user_input = show {
@@ -48,6 +46,10 @@ module Standard
 			  raw user_shows
 			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
 			}
+
+			if ! user_input[:x]
+				user_input[:x] = []
+			end
 
 			if params[:quantity] != 1
 				quantity = user_input[:x].length
