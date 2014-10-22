@@ -32,6 +32,8 @@ module Standard
 
 		quantity = -1
 
+		user_input = { x: [] }
+
 		while quantity != params[:quantity]
 
 			user_input = show {

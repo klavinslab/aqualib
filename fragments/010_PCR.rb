@@ -35,7 +35,6 @@ class Protocol
     reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
     temperatures    = fragment_info_list.collect { |fi| fi[:tanneal] }
 
-
     if fragments.length == 0
       show {
         title "No fragments ready to build"
