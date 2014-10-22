@@ -24,13 +24,13 @@ class Protocol
       def debug
         true
       end
-    end
-    media_type = io_hash[:media_type]
-    volume = io_hash[:volume]
-    inducer = io_hash[:inducer]
+  end
+  media_type = io_hash[:media_type]
+  volume = io_hash[:volume]
+  inducer = io_hash[:inducer]
 
-    yeast_overnights = io_hash[:yeast_overnight_ids].collect { |y| find(:item, id: y)[0] }
-    diluted_yeast_overnights = yeast_overnights.collect{ |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
+  yeast_overnights = io_hash[:yeast_overnight_ids].collect { |y| find(:item, id: y)[0] }
+  diluted_yeast_overnights = yeast_overnights.collect{ |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
 	show {
 		title "Media preparation in media bay"
 		check "Grab #{yeast_overnights.length} of 14 mL Test Tube"

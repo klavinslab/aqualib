@@ -48,6 +48,7 @@ class Protocol
     }
 
     transformed_aliquots = []
+    plates = []
     gibson_result_marker_hash.each do |marker, gibson_result|
     	num = gibson_result.length
     	num_arr = *(1..num)
@@ -56,13 +57,14 @@ class Protocol
     		transformed_aliquots = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
     		ids = transformed_aliquots.collect {|t| t.id} 
     	elsif marker == :amp
+        plates = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
     		ids = *(1..num)
     	end
 
 	    show {
 	    	title "Retrieve cuvettes and electrocompetent aliquots"
 	    	check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-	    	check "Retrieve #{num} DH5alpha electrocompetent aliquots and place it on the aluminum tube rack."
+	    	check "Retrieve #{num} DH5alpha electrocompetent aliquots from M80 and place it on the aluminum tube rack."
 	    	image "handle_electrocompetent_cells"
 	    }
 
@@ -70,27 +72,70 @@ class Protocol
 	    	title "Prepare #{num} 1.5 mL tubes and pipetters"
 	    	check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
 	    	check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
-			check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
+			  check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
 	    }
 
 	    show {
 	    	title "Label the electrocompetent cell"
-	    	check "Label each electrocompetent aliquots with #{num_arr}."
+	    	check "Label each electrocompetent aliquot with #{num_arr}."
 	    	note "If still frozen, wait till the cells have thawed to a slushy consistency."
 	    	warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
 	    	warning "Do not wait too long"
-	        image "thawed_electrocompotent_cells"
+	      image "thawed_electrocompotent_cells"
 	    }
-
 
 	    show {
 	    	title "Pipette plasmid into electrocompetent aliquot"
-	    	note "Pipette according to the following table"
+	    	note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
 	    	table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_result.collect {|g| { content: g.id, check: true }}.zip num_arr)
 	    }
-	end
+
+      show {
+        title "Electroporation and Rescue"
+        check "Grab a 50 mL LB liquid aliquot (sterile) and loosen the cap."
+        check "Take a labeled electrocompetent aliquot, transfer mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
+        check "Remove the cuvette from the electroporator and QUICKLY add 1 mL of LB."
+        check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
+        table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
+      }
+	  end
 
     release gibson_results, interactive: true, method: "boxes"
+
+    if transformed_aliquots.length > 0
+      show {
+        title "Incubate the following 1.5 mL tubes"
+        check "Put the tubes with the following ids into 30 C incubator."
+        check "#{transformed_aliquots.collect {|t| t.id}}"
+      }
+      transformed_aliquots.each do |t|
+        t.location = "30 C incubator"
+        t.save
+      end
+      release transformed_aliquots
+    end
+
+    if plates.length > 0
+      num_arr = *(1..plates.length)
+      show {
+        title "Plate on LB Amp Plate (sterile)"
+        check "Grab #{plates.length} LB Amp Plate (sterile) from fridge."
+        check "Label the plates with id #{plates.collect {|p| p.id}}."
+        check "Use sterile beads to plate 200 µL from each 1.5 mL tube onto a labeled LB Amp Plate according to the following table."
+        table [["1.5 mL tube","LB Amp Plate"]].concat(num_arr.zip plates.collect{ |p| { content: p.id, check: true } })
+      }
+      plates.each do |p|
+        p.location = "30 C incubator"
+        p.save
+      end
+      release plates, interactive: true, method: "boxes"
+    end
+
+    io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
+    io_hash[:plate_ids] = plates.collect { |p| p.id }
+
+    return {io_hash: io_hash}
+
   end #main
 
 end #Protocol
