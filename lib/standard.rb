@@ -7,7 +7,7 @@ require 'active_support/inflector'
 module Standard
 
   # TODO: choose_sample and choose_object share a lot of code. They should be refactored to reuse the code
-
+  # TODO: Return items in an array, even only one item, this makes code more consistent with find or
 	def choose_sample sample_name, p={}
 
 		# Directs the user to take an item or items associated with the sample defined by sample_name.
@@ -15,6 +15,7 @@ module Standard
 		#   multiple : false          --> take one or take multiple items. if multiple, then a list of items is returned
     #   quantity : n              --> the number of items to take. sets multiple to true if greater than 1
     #   take : false              --> does an interactive take if true
+
 
     if block_given?
       user_shows = ShowBlock.new.run(&Proc.new) 
@@ -44,7 +45,7 @@ module Standard
 			  	note "Try again. You chose the wrong number of items"
 			  end
 			  raw user_shows
-			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple]
+			  select choices, var: "x", label: "Choose #{params[:quantity]} #{sample_name}", multiple: params[:multiple]
 			}
 
 			if params[:quantity] != 1
@@ -55,13 +56,16 @@ module Standard
 
 		end
 
+		show {
+			note "#{user_input[:x]}" + "and" + " #{quantity}"
+		}
 
 		if params[:quantity] == 1
 			user_input[:x] = [ user_input[:x] ]
 		end
 
 		show {
-			note "#{user_input[:x]}" + "and" + "#{quantity}"
+			note "#{user_input[:x]}" + "and" + " #{quantity}"
 		}
 
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
@@ -75,6 +79,9 @@ module Standard
 		else
 			return items[0]
 		end
+
+        # proposed change
+		# return items  
 
 	end
 
