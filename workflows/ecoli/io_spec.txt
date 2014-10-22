@@ -1,0 +1,67 @@
+input output hash will be named io_hash in all protocols
+
+note: users may "freely" (discuss first) add to these hash specs.  
+Changing names or meanings is more serious and should be discussed at aq meeting.
+
+note2: Sometimes it is useful to be able to call protocols indidivually.  To accomodate this,
+writers may accept multiple inputs, the first being io_hash, and the rest being the inputs 
+needed to complete the protocol. For example, the following code will accept both io_hash and other inputs. You can use either
+
+====================================
+  def arguments
+    {
+      io_hash: {},
+      fragment_ids: [],
+      plasmid_ids: []
+    }
+  end
+
+  def main
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+  end
+
+====================================
+
+
+{
+  primer_stock_ids: [],  //made by get primers and rehydrate
+  primer_aliquot_ids:[],  // made by dilute primers
+}
+
+//this is for the fragment metacol
+{
+  fragment_ids:[],  //input for PCR
+  pcr_volumes: [], //input for PCR one entry per rxn
+  stripwell_ids: [], //made by PCR, input to pour gel and run gel.
+  gel_percentages: [], //input
+  gel_comb: [[1,1],[],...], // 1 inner array for each gel.  inner array has exactly two elements, one for each comb.  1,2 = 6 thin/thick 3,4 = 10 thin/thick\
+  gel_ids: [] //made by pour gel input to run gel, an empty collection, filled by rungel
+  lane_volumes: [], //one entry per lane, 
+  gel_slice_ids: [], // each slice is an item
+  fragment_stock_ids:[],  // made by gel purify
+  //note: nanodrop is depricated now in gel purify
+}
+
+//this is for plasmid construction
+{
+  fragment_ids: [[],[],...] //input array of arrays as input for gibson rxn.  each inner array is one gibson rxn
+  plasmid_ids: [] // input, array of plasmid to makes
+  gibson_result_ids: [] //  made by gibson protocol
+  ecomp_cell_name: ["", "", ...]  //input for transformation
+  transformed_aliquot_ids: []  // made by transform
+  plate_ids: [] // made by plate protocol  053_
+  //things like check plate data can be added here later
+}
+ 
+ // verify plasmid  
+{
+  plate_ids: [] //input
+  genewiz_tracking_no: [] //
+  n_colony: [] //one number per plate
+  overnight_ids: []  // made by start overnight
+  plasmid_stock_ids: [] //made by miniprep
+  sequencing_primer_ids: [[],[],...] //each sub list is a list of sequencing primers associated with a plate.
+}
+
+

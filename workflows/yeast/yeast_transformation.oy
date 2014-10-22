@@ -1,0 +1,61 @@
+argument
+  plasmid_ids: generic, "List of plasmid ids"
+  yeast_item_ids: generic, "List of yeast strain item ids that you are going to transform plasmid into"
+  aliquot_numbers: number array, "List of number of aliquots to make from each yeast item"
+  yeast_transformed_strain_ids: generic, "List of transformed yeast strain ids"
+  debug_mode: string, "Yes or No"
+end
+
+place startovernight
+protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
+  argument
+    plasmid_ids: plasmid_ids
+    yeast_item_ids: yeast_item_ids
+    aliquot_numbers: aliquot_numbers
+    yeast_transformed_strain_ids: yeast_transformed_strain_ids
+    debug_mode: debug_mode
+  end
+  group: "technicians"
+  marked: true
+  start: now()
+  window: hours(20)
+end
+
+place innoculate
+  protocol: "aqualib:workflows/yeast/inoculate_50mL_growth.rb"
+  group: "technicians"
+  start: now()
+  window: hours(20)
+end
+
+place digest
+  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.rb"
+  group: "technicians"
+  start: now()
+  window: hours(20)
+end
+
+place makecompcell
+  protocol: "aqualib:workflows/yeast/make_yeast_competent_cells_fresh.rb"
+  group: "technicians"
+  start: now()
+  window: hours(20)
+end
+
+place transformation
+  protocol: "aqualib:workflows/yeast/yeast_transformation.rb"
+  group: "technicians"
+  start: now()
+  window: hours(20)
+end
+
+
+wire startovernight => innoculate
+wire innoculate => digest
+wire digest => makecompcell
+wire makecompcell => transformation
+
+transition [ startovernight ] => [ innoculate ] when completed(0) end
+transition [ innoculate ] => [ digest ] when completed(0) end
+transition [ digest ] => [ makecompcell ] when completed(0) end
+transition [ makecompcell ] => [ transformation ] when completed(0) end

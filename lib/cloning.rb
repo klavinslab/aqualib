@@ -3,8 +3,7 @@ module Cloning
   def fragment_info fid
 
     # This method returns information about the ingredients needed to make the fragment with id fid.
-    # It returns a hash containing a list of stocks of the fragment, as well item numbers for forward,
-    # reverse primers and plasmid template. It also computes the annealing temperature.
+    # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template (1 ng/µL Plasmid Stock). It also computes the annealing temperature.
 
     # find the fragment and get its properties
     fragment = find(:sample,{id: fid})[0]
@@ -15,6 +14,9 @@ module Cloning
     rev = props["Reverse Primer"]
     template = props["Template"]
 
+    # get length for each fragment
+    length = props["Length"]
+
     if fwd == nil || rev == nil || template == nil
 
       return nil # Whoever entered this fragment didn't provide infor on how to make it
@@ -24,7 +26,8 @@ module Cloning
       # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
       rev_items = rev.in "Primer Aliquot"
-      template_items = template.in "Plasmid Stock"
+      template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
+      template_items = template.in "1 ng/µL Fragment Stock" if template.sample_type.name == "Fragment"
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
 
@@ -33,15 +36,16 @@ module Cloning
       else
 
         # compute the annealing temperature
-        t1 = fwd_items[0].sample.properties["Tm Anneal"] || 70.0
-        t2 = rev_items[0].sample.properties["Tm Anneal"] || 70.0
+        t1 = fwd_items[0].sample.properties["T Anneal"] || 70.0
+        t2 = rev_items[0].sample.properties["T Anneal"] || 70.0
 
         # find stocks of this fragment, if any
-        stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" }
+        stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
 
         return {
           fragment: fragment,
           stocks: stocks,
+          length: length,
           fwd: fwd_items[0],
           rev: rev_items[0],
           template: template_items[0],
@@ -58,12 +62,14 @@ module Cloning
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
     tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    waiting = tasks.select { |t| t.status == "waiting for fragments" }
     ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "running" }
-    out = tasks.select { |t| t.status == "out for sequencing"  }
+    out = tasks.select { |t| t.status == "out for sequencing" }
+
 
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
-    ready.each do |t|
+    (waiting + ready).each do |t|
 
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
@@ -71,34 +77,65 @@ module Cloning
 
         info = fragment_info fid
 
-        if !info
-          t[:fragments][:not_ready_to_build].push fid
-        elsif info[:stocks].length > 0
+        # First check if there already exists fragment stock, if so, it's ready to build.
+        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0
           t[:fragments][:ready_to_use].push fid
+        elsif !info
+          t[:fragments][:not_ready_to_build].push fid
+        # elsif info[:stocks].length > 0
+        #   t[:fragments][:ready_to_use].push fid
         else
           t[:fragments][:ready_to_build].push fid
         end
 
       end
 
+    # change tasks status based on whether the fragments are ready.
+      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length
+        t.status = "ready"
+        t.save
+        # show {
+        #   note "status changed to ready"
+        #   note "#{t.id}"
+        # }
+      elsif t[:fragments][:ready_to_use].length < t.simple_spec[:fragments].length
+        t.status = "waiting for fragments"
+        t.save
+        # show {
+        #   note "status changed to waiting"
+        #   note "#{t.id}"
+        # }
+      end
+
+      # show {
+      #   note "After processing"
+      #   note "#{t[:fragments]}"
+      # }
     end
+
+    # # # look up all the plasmids that are ready to build and return fragment array.
+    # ready.each do |r|
+
+    #   r[:fragments] 
 
     # return a big hash describing the status of all un-done assemblies
     return {
 
-      fragments: ((tasks.select { |t| t.status == "ready" }).collect { |t| t[:fragments] })
+      fragments: ((tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t[:fragments] })
         .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
       assemblies: {
         under_construction: running.collect { |t| t.id },
-        waiting_for_ingredients: (ready.select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-        ready_to_build: (ready.select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-          out_for_sequencing: out.collect { |t| t.id }
+        waiting_for_ingredients: ((tasks.select { |t| t.status == "waiting for fragments" }).select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
+        ready_to_build: ((tasks.select { |t| t.status == "ready" }).select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
+        out_for_sequencing: out.collect { |t| t.id }
         }
 
     }
 
   end # # # # # # # 
+
+
 
 end
 
