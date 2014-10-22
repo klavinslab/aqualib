@@ -59,6 +59,10 @@ module Standard
 			user_input[:x] = [ user_input[:x] ]
 		end
 
+		show {
+			note "#{user_input[:x]}"
+		}
+
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
 		if params[:take]
