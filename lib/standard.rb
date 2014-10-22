@@ -60,7 +60,7 @@ module Standard
 			note "#{user_input[:x]}" + "and" + " #{quantity}"
 		}
 
-		if params[:quantity] == 1
+		if params[:quantity] == 1 && !params[:multiple]
 			user_input[:x] = [ user_input[:x] ]
 		end
 
