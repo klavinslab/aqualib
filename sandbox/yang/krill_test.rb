@@ -34,13 +34,16 @@ class Protocol
     #   note "#{stocks.collect {|s| s.id}}"
     #   note "#{stock_new.collect {|s| s.id}}"
     # } 
-    stocks = find(:sample, id:2382)[0].items.select { |i| i.object_type.name == "Yeast Glycerol Stock" }
-    stocks[1].location
-    stocks[1].location = "M80"
-    stocks[1].save
-    show {
-      note "#{stocks[1].location}"
-    }
+    # stocks = find(:sample, id:2382)[0].items.select { |i| i.object_type.name == "Yeast Glycerol Stock" }
+    # stocks[1].location
+    # stocks[1].location = "M80"
+    # stocks[1].save
+    # show {
+    #   note "#{stocks[1].location}"
+    # }
+    phusion_stock_item = choose_sample "Phusion HF Master Mix"
+
+    take [phusion_stock_item], interactive: true, method: "boxes" 
 
   end
   
