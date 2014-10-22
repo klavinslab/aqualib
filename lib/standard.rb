@@ -33,7 +33,10 @@ module Standard
 
 		quantity = -1
 
-		while quantity != params[:quantity]
+        user_input = {}
+        
+        # make sure user has selected an input
+        while quantity != params[:quantity] || !user_input[:x]
 
 			user_input = show {
 				if params[:quantity] == 1
@@ -48,7 +51,7 @@ module Standard
 			  select choices, var: "x", label: "Choose #{params[:quantity]} #{sample_name}", multiple: params[:multiple]
 			}
 
-			if params[:quantity] != 1
+			if params[:quantity] != 1 && user_input[:x]
 				quantity = user_input[:x].length
 			else
 				quantity = 1
@@ -56,20 +59,12 @@ module Standard
 
 		end
 
-		show {
-			note "#{user_input[:x]}" + "and" + " #{quantity}"
-		}
-
-		if params[:quantity] == 1 && !params[:multiple]
-			user_input[:x] = [ user_input[:x] ]
-		end
-
-		show {
-			note "#{user_input[:x]}" + "and" + " #{quantity}"
-		}
+		# only convert user_input[:x] into array when it is not an array, makes the code more robust
+        user_input[:x] = [ user_input[:x] ] unless user_input[:x].kind_of?(Array)
 
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
+        # use boxes method as default
 		if params[:take]
 			take items, interactive: true, method: "boxes"
 		end

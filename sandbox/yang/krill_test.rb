@@ -6,6 +6,88 @@ class Protocol
   include Standard
   include Cloning
  
+
+    def choose_sample sample_name, p={}
+
+        # Directs the user to take an item or items associated with the sample defined by sample_name.
+        # Options:
+        #   multiple : false          --> take one or take multiple items. if multiple, then a list of items is returned
+    #   quantity : n              --> the number of items to take. sets multiple to true if greater than 1
+    #   take : false              --> does an interactive take if true
+
+
+    if block_given?
+      user_shows = ShowBlock.new.run(&Proc.new) 
+    else
+      user_shows = []
+    end
+
+        params = ({ multiple: false, quantity: 1, take: false }).merge p
+        params[:multiple] = true if params[:quantity] > 1
+
+        options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
+        raise "No choices found for #{sample_name}" if options.length == 0
+
+        choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
+
+        quantity = -1
+
+        user_input = {}
+
+        while quantity != params[:quantity] || !user_input[:x]
+
+            user_input = show {
+                if params[:quantity] == 1
+                  title "Choose a #{sample_name}"
+                else
+                  title "Choose #{params[:quantity]} #{sample_name.pluralize}"
+                end
+              if quantity >= 0 
+                note "Try again. You chose the wrong number of items"
+              end
+              raw user_shows
+              select choices, var: "x", label: "Choose #{params[:quantity]} #{sample_name}", multiple: params[:multiple]
+            }
+
+            if params[:quantity] != 1 && user_input[:x]
+                quantity = user_input[:x].length
+            else
+                quantity = 1
+            end
+
+        end
+
+        # show {
+        #   note "#{user_input[:x]}" + "and" + " #{quantity}"
+        # }
+
+        # if params[:quantity] == 1 && !params[:multiple]
+        #     user_input[:x] = [ user_input[:x] ]
+        # end
+
+        user_input[:x] = [ user_input[:x] ] unless user_input[:x].kind_of?(Array)
+
+        # show {
+        #   note "#{user_input[:x]}" + "and" + " #{quantity}"
+        # }
+
+        items = user_input[:x].collect { |y| options[choices.index(y)] }
+
+        if params[:take]
+            take items, interactive: true, method: "boxes"
+        end
+
+        if params[:multiple]
+            return items
+        else
+            return items[0]
+        end
+
+        # proposed change
+        # return items  
+
+    end
+
   def arguments
     {x: 1379, y:"name", fid: 2574}
   end
@@ -50,9 +132,9 @@ class Protocol
 
 
 
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
+    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true, quantity: 3
 
-    take [phusion_stock_item], interactive: true, method: "boxes" 
+#    take [phusion_stock_item], interactive: true, method: "boxes" 
 
   end
   
