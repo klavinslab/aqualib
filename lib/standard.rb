@@ -55,18 +55,19 @@ module Standard
 
 		end
 
+
 		if params[:quantity] == 1
 			user_input[:x] = [ user_input[:x] ]
 		end
 
 		show {
-			note "#{user_input[:x]}"
+			note "#{user_input[:x]}" + "and" + "#{quantity}"
 		}
 
 		items = user_input[:x].collect { |y| options[choices.index(y)] }
 
 		if params[:take]
-			take items, interactive: true
+			take items, interactive: true, method: "boxes"
 		end
 
 		if params[:multiple]
