@@ -27,5 +27,5 @@ class Protocol
   	end
 
   	release overnights
-  	
   end
+end
