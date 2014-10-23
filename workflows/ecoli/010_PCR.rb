@@ -143,8 +143,9 @@ class Protocol
     # Take the primers and templates
     take all_templates + all_forward_primers + all_reverse_primers, interactive: true,  method: "boxes"
     # Get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
+    phusion_stock_item = choose_sample "Phusion HF Master Mix"
 
+    take [phusion_stock_item], interactive: true, method: "boxes" 
     # Build a fragment_info_temp hash that group fragment info by T Anneal
     fragment_info_temp_hash = Hash.new {|h,k| h[k] = [] }
     fragment_info_list.each do |fi|
