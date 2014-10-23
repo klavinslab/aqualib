@@ -15,7 +15,14 @@ class Protocol
   end
 
   def main
-  	overnights = input[:overnight_ids].collect { |oid| find(:item, id: oid)[0] }
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
+  	overnights = io_hash[:overnight_ids].collect { |oid| find(:item, id: oid)[0] }
   	take overnights, interactive: true
   	show {
   		title "Put them in the dish washing station"
