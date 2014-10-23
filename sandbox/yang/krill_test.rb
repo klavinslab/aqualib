@@ -132,7 +132,7 @@ class Protocol
 
 
 
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true, quantity: 3
+    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true, multiple: true 
 
 #    take [phusion_stock_item], interactive: true, method: "boxes" 
 

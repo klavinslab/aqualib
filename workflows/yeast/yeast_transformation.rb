@@ -12,9 +12,9 @@ class Protocol
       #input should be yeast competent cells and digested plasmids
       "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431],
       #stripwell that containing digested plasmids
-      stripwell_ids: [11614],
-      yeast_transformed_strain_ids: [1705,1706],
-      plasmid_ids: [9189,9167],
+      "stripwell_ids Stripwell" => [11614],
+      "yeast_transformed_strain_ids Yeast Strain" => [1705,1706],
+      "plasmid_ids Plasmid Stock" => [9189,9167],
       debug_mode: "Yes"
     }
   end

@@ -69,7 +69,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      fragment_ids: [2061,2062],
+      "fragment_ids Fragment" => [2061,2062],
       debug_mode: "Yes"
     }
   end
