@@ -9,13 +9,13 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "overnight_ids Yeast Overnight Suspension" => [],
+      "overnight_ids Yeast Overnight Suspension" => [1234],
       debug_mode: "Yes"
     }
   end
 
   def main
-  	overnights = input[:overnight_ids].collect { |oid| find(:item, id: oid) }
+  	overnights = input[:overnight_ids].collect { |oid| find(:item, id: oid)[0] }
   	take overnights, interactive: true
   	show {
   		title "Put them in the dish washing station"
