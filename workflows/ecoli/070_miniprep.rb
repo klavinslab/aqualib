@@ -12,7 +12,7 @@ class Protocol
       io_hash: {},
       elution_volume: 50,
       overnight_ids: [12389,12388,12387],
-      debug_mode: "Yes"
+      debug_mode: "no"
     }
   end
 
@@ -61,7 +61,7 @@ class Protocol
       check "Spin tubes at 17,000 xg for 10 minutes"
       warning "Make sure to balance the centrifuge."
       check "Grab #{num} blue miniprep spin columns and label with 1 to #{num}."
-      check "Remove the tubes from centrifuge and carefully pipette the supernatant into the same labeled columns."
+      check "Remove the tubes from centrifuge and carefully pipette the supernatant (up to 750 µL) into the same labeled columns."
       warning "Be careful not to disturb the pellet."
       check "Discard the used 1.5 mL tubes into waste bin."
     }
