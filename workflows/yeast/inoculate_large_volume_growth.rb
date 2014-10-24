@@ -14,7 +14,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the overnight ids that you are going to start overnight with
-      yeast_overnight_ids: [8437,8431,8426],
+      "yeast_overnight_ids Yeast Overnight Suspension" => [8437,8431,8426],
       #Enter the media type you are going to use
       volume: 100,
       media_type: "800 mL YPAD liquid (sterile)",
