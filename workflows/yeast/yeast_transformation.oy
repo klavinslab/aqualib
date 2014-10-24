@@ -22,7 +22,7 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
 end
 
 place innoculate
-  protocol: "aqualib:workflows/yeast/inoculate_50mL_growth.rb"
+  protocol: "aqualib:workflows/yeast/inoculate_large_volume_growth.rb"
   group: "technicians"
   start: now()
   window: hours(20)
