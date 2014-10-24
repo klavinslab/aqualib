@@ -161,6 +161,7 @@ class Protocol
       note "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
+    release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
     io_hash[:genewiz_tracking_no] = genewiz[:tracking_num]
     return { io_hash: io_hash }
   end
