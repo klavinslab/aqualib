@@ -1,0 +1,158 @@
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
+
+class Protocol
+
+  include Standard
+  include Cloning
+
+  def arguments
+    {
+      io_hash: {},
+      yeast_culture_ids: [8429,8427],
+      debug_mode: "Yes"
+    }
+  end
+
+  def main
+
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
+
+    water = choose_object "50 mL Molecular Grade Water aliquot"
+    take [water], interactive: true
+    
+    cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item, id:cid)[0]}
+    take cultures, interactive: true
+    
+    culture_labels=[["Flask Label","50 mL Tube Number"]]
+    cultures.each_with_index do |culture,idx|
+      culture_labels.push([culture.id,idx+1])
+    end
+    
+    num = cultures.length
+
+    show{
+      title "Preperation Step"
+      note "Label #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
+      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
+      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+    }
+    
+    show{
+      title "Harvesting Cells"
+      check "Pour contents of flask into the labeled 50 mL falcon tube according to the tabel below"
+      note "It does not matter if you do not get the foam into the tubes"
+      table culture_labels
+    }
+    
+    show{
+      title "Harvesting Cells"
+      check "Balance the 50 mL tubes so that they all weigh approximately (within 0.1g) the same."
+      check "Load the 50 mL tubes into the large table top centerfuge such that they are balanced."
+      check "Set the speed to 3000xg" 
+      check "Set the time to 5 minutes"
+      warning "MAKE SURE EVERYTHING IS BALANCED"
+      check "Hit start"
+      note "If you have never used the centerfuge before, or are unsure about any aspect of what you have just done ASK A MORE EXPERIENCED LAB MEMBER BEFORE YOU HIT START!"
+    }
+    
+    show{
+      title "Harvesting Cells"
+      check "After spin take out 50 mL tubes and take them in a rack to the sink at the tube washing station without shaking tubes and pour out liquid from tubes in one smooth motion so as not to disturb cell pellet then recap tubes and take back to bench."
+    }
+    
+    show{
+      title "Making cells competent: Water wash"
+      check "Add 1 mL of molecular grade water to each 50 mL tube and recap"
+      check "Vortex the tubes till cell pellet is resuspended"
+      check "Aliquot 1.5 mL from each 50 mL tube into the corresponding labeled 1.5 mL tube that has the same label number."
+      note "It is OK if you have more than 1.5 mL of the resuspension. 1.5 mL is enough. If you have less than 1.5 mL, pipette as much as possible from tubes."
+    }
+    
+    show{
+      title "Water wash"
+      check "Spin down all 1.5 mL tubes for 20 seconds or till cells are pelleted."
+      check "Use a pipette and remove the supernatant from each tube without disturbing the cell pellet."
+      check "Add 1 mL of molecular grade water to each 1.5 mL tube and recap."
+      check "Vortex all tubes till cell pellet is resuspended"
+      check "Spin down again for all tubes for 20 seconds or till cells are pelleted."
+      check "Use a pipette and remove the supernatant from each tube without disturbing the cell pellet."
+    }
+
+    show {
+      title "Prepare Frozen Competent Cell Solution (FCC Solution)"
+      check "Grab a 15 mL Falcon tube."
+      check "Add 500 µL of DMSO, 500 µL of glyerol, 4 mL of molecular grade water."
+      check "Mix by vortexing."
+    }
+    
+    pellet_volume = show {
+      title "Estimate pellet volume"
+      check "Estimate the pellet volume using the gradations on the side of the eppendorf tube for each tube."
+      note "The 0.1 on the tube means 100 µL and each line is another 100 µL"
+      (1..num).each do |x|
+        get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for first tube #{num}", default: 30
+        get "number", var: "#{x}_2", label: "Enter an estimated volume of the pellet for second tube #{num}", default: 30
+      end
+    }
+
+    show {
+      title "Pipetting FCC into 1.5 mL tubes"
+      (1..num).each do |x|
+        check "Add #{4*pellet_volume[:"#{x}_1".to_sym]} µL of FCC to the first tube #{x}"
+        check "Add #{4*pellet_volume[:"#{x}_2".to_sym]} µL of FCC to the second tube #{x}"
+      end
+      check "Vortex the tubes till cell pellet is resuspended"
+    }
+
+    volumes = []
+    (1..num).each do |x|
+      volumes.push (4.5)*(pellet_volume[:"#{x}_1".to_sym]+pellet_volume[:"#{x}_2".to_sym])
+    end
+
+    num_of_aliquots = volumes.collect {|v| (v/50.0).floor}
+
+    yeast_compcell_aliquots = []
+    cultures.each_with_index do |culture,idx|
+      (1..num_of_aliquots[idx]).each do |i|
+        yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
+        yeast_compcell_aliquots.push yeast_compcell_aliquot
+      end
+      show {
+        title "Aliquoting competent cells from 1.5 mL tube #{idx+1}"
+        check "Label #{num_of_aliquots[idx]} empty 1.5 mL tubes with the following ids #{yeast_compcell_aliquots.collect {|y| y.id}}"
+        check "Add 50 µL from tube #{idx+1} to each newly labled tube"
+      }
+    end
+
+    show {
+      title "Discard and recycle tubes"
+      note "Discard 1.5 mL tubes that was temporarily labeled with #{(1..cultures.length).to_a}."
+      note "Recycle all 50 mL tubes by putting into a bin near the sink."
+    }
+
+    show {
+      title "Put into Styrofoam box at M80"
+      check "Put into the styrofoam box for 10 minutes"
+    }
+    release [water] + cultures, interactive: true
+
+    show {
+      title "Retrive all 1.5 mL tubes from Styrofoam box at M80"
+      note "Put back into M80 boxes according to the next release pages."
+    }
+    release yeast_compcell_aliquots, interactive: true, method: "boxes"
+    io_hash[:yeast_competent_ids] = yeast_compcell_aliquots.collect {|y| y.id}
+    
+    return {io_hash: io_hash}
+  end
+
+end
