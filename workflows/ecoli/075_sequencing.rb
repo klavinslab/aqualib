@@ -61,7 +61,7 @@ class Protocol
     {
     # Enter your first and last name initials
     io_hash: {},
-    initials: "YY",
+    initials: "",
     plasmid_stock_ids: [],
     primer_ids: [],
     debug_mode: "Yes"
