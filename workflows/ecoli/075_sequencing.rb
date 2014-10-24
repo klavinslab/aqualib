@@ -1,3 +1,4 @@
+# first version by David, refactored and task enabled by Yaoyu
 needs "protocols/mutagenesis_workflow/lib/standard"
 needs "protocols/mutagenesis_workflow/lib/cloning"
 
@@ -95,6 +96,13 @@ class Protocol
       ready_task.status = "send to sequencing"
       ready_task.save
     end
+    if plasmid_stock_ids.length == 0
+      show {
+        title "No sequencing needs to run."
+        note "Thank you!"
+      }
+      return { io_hash: io_hash }
+    end
     dna_names = []
     plasmid_stock_ids.each_with_index do |pid,idx|
       dna_names.push "#{pid}-" + initials[idx]
@@ -130,7 +138,7 @@ class Protocol
     end
     water_volume_list = plasmid_volume_list.collect{|v| (12.5-v).to_s + " µL"}
     plasmids_with_volume = io_hash[:plasmid_stock_ids].map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
-    primers_with_volume = io_hash[:primer_ids].collect{|prid| "2.5 µL of " + prid.to_s }
+    primers_with_volume = primer_aliquots.collect{|p| "2.5 µL of " + p.id.to_s }
     			
     # show {
     # 	note (water_volume_list.collect {|p| "#{p}"})
