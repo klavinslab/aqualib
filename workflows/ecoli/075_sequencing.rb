@@ -89,9 +89,9 @@ class Protocol
         plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id]
         initials.push ready_task.simple_spec[:initials]
       end
-      show {
-        note "#{ready_task.spec}"
-      }
+      # show {
+      #   note "#{ready_task.spec}"
+      # }
       ready_task.status = "send to sequencing"
       ready_task.save
     end
