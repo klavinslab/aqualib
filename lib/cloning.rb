@@ -72,7 +72,7 @@ module Cloning
     (waiting + ready).each do |t|
 
       show {
-          note "#{t}"
+          note "#{t.simple_spec}"
       }
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
