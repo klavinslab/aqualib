@@ -24,6 +24,13 @@ class Protocol
       end
     end
     all_transformed_aliquots = io_hash[:transformed_aliquots_ids].collect { |tid| find(:item, id: tid)[0] }
+    if all_transformed_aliquots.length == 0
+      show {
+        title "No plating required"
+        note "No transformed aliquots need to be plated."
+      }
+      return {io_hash: io_hash}
+    end
     take all_transformed_aliquots, interactive: true
 
     transformed_aliquot_marker_hash = Hash.new { |h,k| h[k] = [] }
@@ -66,7 +73,7 @@ class Protocol
   		p.location = "37 C incubator"
   		p.save
   	end
-    
+
   	release all_plates, interactive: true
   	io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
   	io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
