@@ -74,7 +74,7 @@ class Protocol
   		p.save
   	end
 
-  	release all_plates, interactive: true, if all_plates.length > 0
+  	release all_plates, interactive: true if all_plates.length > 0
   	io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
   	io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
 
