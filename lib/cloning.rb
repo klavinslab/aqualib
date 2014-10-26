@@ -70,10 +70,9 @@ module Cloning
 
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
     (waiting + ready).each do |t|
-
-      show {
-          note "#{t.simple_spec}"
-      }
+      # show {
+      #     note "#{t.simple_spec}"
+      # }
       t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
       t.simple_spec[:fragments].each do |fid|
@@ -124,8 +123,7 @@ module Cloning
     # return a big hash describing the status of all un-done assemblies
     return {
 
-      fragments: ((tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t[:fragments] })
-        .inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
+      fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
 
       assemblies: {
         under_construction: running.collect { |t| t.id },

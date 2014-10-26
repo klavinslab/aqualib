@@ -20,12 +20,12 @@ class Protocol
 	  		[ "Done on a plate", gas[:assemblies][:on_plate].to_s ]
 	  	]	
 	  	
-	  	# note "Fragments"
-	  	# table [
-	  	# 	[ "Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
-	  	#  	[ "Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
-	  	#  	[ "Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
-	  	# ]	
+	  	note "Fragments"
+	  	table [
+	  		[ "Ready To Use",  gas[:fragments][:ready_to_use].to_s ],
+	  	 	[ "Ready To Build",  gas[:fragments][:ready_to_build].to_s ],
+	  	 	[ "Not Ready To Build", gas[:fragments][:not_ready_to_build].to_s ]
+	  	]	
 	  	  	
 	  }
 
