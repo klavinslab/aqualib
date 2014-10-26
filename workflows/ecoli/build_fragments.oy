@@ -78,7 +78,7 @@ wire run_gel => cut_gel
 wire cut_gel => purify_gel
 
 
-transition [dilute_plasmid_stock] => [ pcr ] when completed (0) end
+transition [dilute_plasmid_stock] => [ pcr ] when !error(0) && completed (0) end
 transition [ pcr ] => [ wait_for_pcr, pour_gel ] when !error(0) && completed(0) end
 transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && !error(1) && completed(1) end
 transition [ run_gel ] => [ wait_for_gel ] when !error(0) && completed(0) end

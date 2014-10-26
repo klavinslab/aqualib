@@ -42,21 +42,21 @@ class Protocol
   end
 
   def main
-    #check if inputs are correct
-    raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if input[:fragment_ids].length != input[:plasmid_ids].length
-    #creat an empty io_hash for passing information
+    # Create an empty io_hash for passing information
     io_hash = {}
-    io_hash[:debug_mode] = input[:debug_mode]
-    io_hash[:fragment_ids] = input[:fragment_ids]
-    io_hash[:plasmid_ids] = input[:plasmid_ids]
-    io_hash[:task_mode] = input[:task_mode]
-
+    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash[:fragment_ids] = input[:fragment_ids] || []
+    io_hash[:plasmid_ids] = input[:plasmid_ids] || []
+    io_hash[:task_mode] = input[:task_mode] || "Yes"
+    # Check if inputs are correct
+    raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
+    # Set debug based on debug_mode
     if io_hash[:debug_mode] == "Yes"
       def debug
         true
       end
     end
-
+    # Pull gibson info from Gibson Assembly Task
     if io_hash[:task_mode] == "Yes"
       gibson_info = gibson_assembly_status
       ready_task_ids = gibson_info[:assemblies][:ready_to_build]
@@ -69,9 +69,9 @@ class Protocol
       end
     end
 
-    #find fragment stocks, concentrations and lengths
+    # Find fragment stocks, concentrations and lengths
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
-    #Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
+    # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
     # build an array of arrays for fragments stocks based on the group info

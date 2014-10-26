@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       yeast_culture_ids: [8429,8427],
+      volumes: [100,100],
       debug_mode: "Yes"
     }
   end
@@ -25,8 +26,8 @@ class Protocol
       end
     end
 
-    water = choose_object "50 mL Molecular Grade Water aliquot"
-    take [water], interactive: true
+    # water = choose_object "50 mL Molecular Grade Water aliquot"
+    # take [water], interactive: true
     
     cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item, id:cid)[0]}
     take cultures, interactive: true
@@ -140,13 +141,17 @@ class Protocol
     }
 
     show {
-      title "Put into Styrofoam box at M80"
-      check "Put into the styrofoam box for 10 minutes"
+      title "Put into styrofoam holders in styrofoam box at M80"
+      check "Place the 1.5mL tubes in styrofoam holders."
+      check "Put into the styrofoam box and place in M80 for 10 minutes"
     }
-    release [water] + cultures, interactive: true
+
+    release cultures, interactive: true
 
     show {
-      title "Retrive all 1.5 mL tubes from Styrofoam box at M80"
+      title "Wait and then retrive all 1.5 mL tubes from Styrofoam box at M80"
+      timer initial: { hours: 0, minutes: 10, seconds: 0}
+      check "Retrive all 1.5 mL tubes from Styrofoam box at M80"
       note "Put back into M80 boxes according to the next release pages."
     }
     release yeast_compcell_aliquots, interactive: true, method: "boxes"

@@ -1,0 +1,37 @@
+argument
+  debug_mode: string, "Yes or No"
+end
+
+place gibson
+  protocol: "aqualib:workflows/ecoli/045_gibson.rb"
+  group: "technicians"
+  argument
+    debug_mode: debug_mode
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place transformation
+  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place plate
+  protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+wire gibson => transformation
+wire transformation => plate
+
+transition [ gibson ] => [ transformation ] when !error(0) && completed(0) end
+transition [ transformation] => [ plate ] when !error(0) && completed(0) end
+transition [ plate ] => [] when !error(0) && completed(0) end

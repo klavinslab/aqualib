@@ -85,10 +85,12 @@ class Protocol
     initials = [io_hash[:initials]]*io_hash[:plasmid_stock_ids].length
     sequencing_info[:ready_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
-      primer_ids.concat ready_task.simple_spec[:primer_ids]
-      (1..ready_task.simple_spec[:primer_ids].length).each do
-        plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id]
-        initials.push ready_task.simple_spec[:initials]
+      ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
+        primer_ids.concat pids
+        (1..pids.length).each do
+          plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
+          initials.push ready_task.simple_spec[:initials]
+        end
       end
       # show {
       #   note "#{ready_task.spec}"
@@ -119,7 +121,7 @@ class Protocol
       table [["DNA Name", "My Primer Name"]].concat (dna_names.zip primer_ids)
       check "Click Save & Next, Review the form and click Next Step"
       check "Enter Quotation Number MS0721101, click Next Step"  
-      check "Print out the form."
+      check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"

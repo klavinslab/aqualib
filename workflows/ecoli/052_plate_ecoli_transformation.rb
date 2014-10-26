@@ -62,14 +62,15 @@ class Protocol
 	    end
     end
 
-	all_plates.each do |p|
-		p.location = "30 C incubator"
-		p.save
-	end
-	release all_plates, interactive: true
-	io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
-	io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
-	return {io_hash: io_hash}
+  	all_plates.each do |p|
+  		p.location = "37 C incubator"
+  		p.save
+  	end
+    
+  	release all_plates, interactive: true
+  	io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
+  	io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
+  	return {io_hash: io_hash}
   end # main
 
 end # Protocol
