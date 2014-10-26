@@ -57,6 +57,7 @@ class Protocol
       end
     end
     # Pull gibson info from Gibson Assembly Task
+    ready_task_ids = []
     if io_hash[:task_mode] == "Yes"
       gibson_info = gibson_assembly_status
       ready_task_ids = gibson_info[:assemblies][:ready_to_build]
@@ -68,6 +69,7 @@ class Protocol
         ready_task.save
       end
     end
+    io_hash[:task_ids] = ready_task_ids
 
     # Find fragment stocks, concentrations and lengths
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}

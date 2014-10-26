@@ -77,6 +77,15 @@ class Protocol
   	release all_plates, interactive: true
   	io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
   	io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
+
+    # Set tasks in the io_hash to be on plate
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task.status = "on plate"
+        task.save
+      end
+    end
   	return {io_hash: io_hash}
   end # main
 
