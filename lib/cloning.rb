@@ -65,7 +65,7 @@ module Cloning
     waiting = tasks.select { |t| t.status == "waiting for fragments" }
     ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "running" }
-    out = tasks.select { |t| t.status == "out for sequencing" }
+    done = tasks.select { |t| t.status == "on plate" }
 
 
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
@@ -128,7 +128,7 @@ module Cloning
         under_construction: running.collect { |t| t.id },
         waiting_for_ingredients: ((tasks.select { |t| t.status == "waiting for fragments" }).select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
         ready_to_build: ((tasks.select { |t| t.status == "ready" }).select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-        out_for_sequencing: out.collect { |t| t.id }
+        on_plate: done.collect { |t| t.id }
         }
 
     }
