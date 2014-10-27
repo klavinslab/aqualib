@@ -74,7 +74,7 @@ class Protocol
       end
     end
     batch_initials = "MP"
-  	initials = io_hash[:initials]
+  	initials = io_hash[:initials] || "KL"
     sequencing_info = sequencing_status
     plasmid_stock_ids = io_hash[:plasmid_stock_ids]
     primer_ids = io_hash[:primer_ids]
