@@ -74,14 +74,17 @@ class Protocol
       end
     end
     batch_initials = "MP"
-  	initials = io_hash[:initials] || ["KL"]*io_hash[:plasmid_stock_ids].length
-    show {
-      note "#{initials}"
-    }
+  	initials = io_hash[:initials] || "KL"
     sequencing_info = sequencing_status
-    plasmid_stock_ids = io_hash[:plasmid_stock_ids]
-    primer_ids = io_hash[:primer_ids]
-    initials = [io_hash[:initials]]*io_hash[:plasmid_stock_ids].length
+    # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
+    plasmid_stock_ids = []
+    primer_ids = []
+    io_hash[:primer_ids].each_with_index do |pids|
+      (1..pids.length).each do
+        plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
+      end
+    end
+    initials = [io_hash[:initials]]*plasmid_stock_ids.length
     sequencing_info[:ready_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
