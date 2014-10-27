@@ -79,7 +79,7 @@ class Protocol
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
-    io_hash[:primer_ids].each_with_index do |pids|
+    io_hash[:primer_ids].each_with_index do |pids,idx|
       (1..pids.length).each do
         plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
       end
