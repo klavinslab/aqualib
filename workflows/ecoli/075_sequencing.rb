@@ -80,10 +80,12 @@ class Protocol
     plasmid_stock_ids = []
     primer_ids = []
     io_hash[:primer_ids].each_with_index do |pids,idx|
+      primer_ids.concat pids
       (1..pids.length).each do
         plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
       end
     end
+
     initials = [io_hash[:initials]]*plasmid_stock_ids.length
     sequencing_info[:ready_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
