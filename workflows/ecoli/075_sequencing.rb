@@ -109,7 +109,7 @@ class Protocol
     end
     dna_names = []
     plasmid_stock_ids.each_with_index do |pid,idx|
-      dna_names.push "#{pid}-" + initials[idx]
+      dna_names.push "#{pid}-"#+ initials[idx]
     end
 
     num = primer_ids.length
