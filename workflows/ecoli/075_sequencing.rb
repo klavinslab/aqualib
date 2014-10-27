@@ -56,11 +56,10 @@ class Protocol
 
   def arguments
     {
-    # Enter your first and last name initials
     io_hash: {},
-    initials: "",
-    plasmid_stock_ids: [],
-    primer_ids: [],
+    initials: ["YY","YY"],
+    plasmid_stock_ids: [29489,29490],
+    primer_ids: [[2575,2569],[2054,2569]],
     debug_mode: "Yes"
     }
   end
@@ -74,19 +73,19 @@ class Protocol
       end
     end
     batch_initials = "MP"
-  	initials = io_hash[:initials] || "KL"
     sequencing_info = sequencing_status
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
+    initials = []
     io_hash[:primer_ids].each_with_index do |pids,idx|
       primer_ids.concat pids
       (1..pids.length).each do
         plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
+        initials.push io_hash[:initials][idx]
       end
     end
 
-    initials = [io_hash[:initials]]*plasmid_stock_ids.length
     sequencing_info[:ready_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
@@ -111,7 +110,7 @@ class Protocol
     end
     dna_names = []
     plasmid_stock_ids.each_with_index do |pid,idx|
-      dna_names.push "#{pid}-"#+ initials[idx]
+      dna_names.push "#{pid}-" + initials[idx]
     end
 
     num = primer_ids.length
@@ -143,7 +142,7 @@ class Protocol
     	end
     end
     water_volume_list = plasmid_volume_list.collect{|v| (12.5-v).to_s + " µL"}
-    plasmids_with_volume = io_hash[:plasmid_stock_ids].map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
+    plasmids_with_volume = plasmid_stock_ids.map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
     primers_with_volume = primer_aliquots.collect{|p| "2.5 µL of " + p.id.to_s }
     			
     # show {
@@ -171,7 +170,7 @@ class Protocol
       ], stripwells ) 
     show {
       title "Put all stripwells in the Genewiz mailbox"
-      note "Cap all of the stripwells"
+      note "Cap all of the stripwells."
       note "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
