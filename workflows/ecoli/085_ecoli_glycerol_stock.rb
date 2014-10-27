@@ -28,7 +28,7 @@ class Protocol
     glycerol_stocks = overnights.collect {|y| produce new_sample y.sample.name, of: "Plasmid", as: "Plasmid Glycerol Stock"}
 
     show {
-      title "Pipette 900 µL of 50 percent Glycerol into Cyro tube(s)."
+      title "Prepare glycerol in cryo tubes."
       check "Take #{overnights.length} Cryo #{"tube".pluralize(overnights.length)}"
       check "Label each tube with #{(glycerol_stocks.collect {|y| y.id}).join(", ")}"
       check "Pipette 900 µL of 50 percent Glycerol into each tube."
@@ -37,7 +37,7 @@ class Protocol
 
     show {
       title "Add overnight suspensions to Cyro tube"
-      check "Pipette 900 µL of yeast overnight into a Cyro tube according to the following table."
+      check "Pipette 900 µL of overnight suspension into a Cyro tube according to the following table."
       table [["Overnight id","Cryo tube id"]].concat(overnights.collect { |o| o.id }.zip glycerol_stocks.collect { |g| { content: g.id, check: true } })
       check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
       check "Discard the used overnight suspensions."
