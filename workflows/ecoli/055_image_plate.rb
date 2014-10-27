@@ -32,7 +32,7 @@ class Protocol
     }
     take plates, interactive: true
     show {
-      title "Image"
+      title "Imaging guide"
       bullet "Place the agar part of the plate inverted on the transilluminator. Place the camera hood on the transilluminator. Turn on transilluminator by sliding you hand into the hood."
       bullet "Open EOS Utility software on the desktop, and click Camera Settings/Remote Shooting"
       bullet "In the pop up window EOS Rebel T3, make sure the settings are 2'', F4.5, ISO100, Tungsten(light bulb icon), S1."
@@ -49,6 +49,11 @@ class Protocol
         p.location = "DFP.6"
         p.save
       end
+    }
+
+    show {
+      title "Parafilm plate"
+      note "Parafilm each plate and store them in deli-fridge according to the release page."
     }
 
     release plates, interactive: true

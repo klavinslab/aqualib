@@ -6,10 +6,6 @@ class Protocol
   
   include Standard
   include Cloning
-  
-  def debug
-    false
-  end
 
   def sequencing_status
     # find all fragment construction tasks and arrange them into lists by status

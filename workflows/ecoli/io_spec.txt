@@ -58,7 +58,7 @@ needed to complete the protocol. For example, the following code will accept bot
 {
   plate_ids: [] //input
   genewiz_tracking_no: [] //
-  n_colony: [] //one number per plate
+  num_colonies: [] //one number per plate
   overnight_ids: []  // made by start overnight
   plasmid_stock_ids: [] //made by miniprep
   sequencing_primer_ids: [[],[],...] //each sub list is a list of sequencing primers associated with a plate.

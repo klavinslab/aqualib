@@ -117,5 +117,7 @@ class Protocol
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"
-    end
-end
+    io_hash[:plasmid_stock_ids] = plasmid_stocks.collect { |p| p.id}
+    return { io_hash: io_hash }
+  end # main
+end # Protocol
