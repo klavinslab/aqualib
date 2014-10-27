@@ -111,7 +111,7 @@ class Protocol
     }
 
   	plasmid_stocks.each_with_index do |ps,idx|
-  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: elution_volume-2 }
+  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: elution_volume }
       ps.save
   	end
     
