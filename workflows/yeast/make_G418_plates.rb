@@ -17,11 +17,12 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
-    end
+    # if io_hash[:debug_mode].downcase == "yes"
+    #   def debug
+    #     true
+    #   end
+    # end
+    debug_mode true
     plasmid_kan_ids = io_hash[:plasmid_ids].select { |pid| find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3]== "kan"}
     num = plasmid_kan_ids.length
     show {
