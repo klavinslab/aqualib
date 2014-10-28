@@ -147,18 +147,22 @@ module Standard
 	end
 
   def debug_mode arg
-    # only takes true or false as argument
-  	if arg == true
-  		def debug
-  			true
-  		end
-  		return 1
-  	elsif arg == false
-  		def debug
-  			false
-  		end
-  		return 0
-  	end
+	  # only takes true or false as argument
+    def self.included base
+	  	if arg == true
+	  		base.class_eval do
+		  		def debug
+		  			true
+		  		end
+		  		return 1
+	  	  end
+	  	elsif arg == false
+	  		def debug
+	  			false
+	  		end
+	  		return 0
+	  	end
+	  end
   end
 
 end

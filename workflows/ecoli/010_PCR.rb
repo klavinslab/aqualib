@@ -45,6 +45,9 @@ class Protocol
     
     # Pull info from Fragment Construction Tasks
     fragment_construction = fragment_construction_status
+    show {
+      note "#{fragment_construction[:ready_ids]}"
+    }
     fragment_from_construction_ids = []
     fragment_construction[:ready_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
