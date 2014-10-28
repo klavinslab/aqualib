@@ -84,6 +84,20 @@ class Protocol
     #   fragment_stocks_arr.push fragment_stocks_sub
     # end
 
+    fragment_stocks_need_to_measure = fragment_stocks.select {|f| not f.datum[:concentration]}
+    if fragment_stocks_need_to_measure.length > 0
+      data = show {
+        title "Nanodrop the following fragment stocks."
+        fragment_stocks_need_to_measure.each do |x|
+          get "number", var: "c#{x.id}", label: "Go to B9 and nanodrop tube #{x.id}, enter DNA concentrations in the following", default: 30.2
+        end
+      }
+      fragment_stocks_need_to_measure.each do |x|
+        x.datum = {concentration: data[:"c#{x.id}".to_sym]}
+        x.save
+      end
+    end
+
     fragment_volumes = []
     fragment_stocks.each do |fs|
       conc_over_length = fs.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
