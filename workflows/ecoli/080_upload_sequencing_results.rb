@@ -38,7 +38,7 @@ class Protocol
       task = find(:task, id: tid)[0]
       task.status = "results back"
       task.save
-  	end
+    end
     return { io_hash: io_hash}
   end # main
 end # Protocol
