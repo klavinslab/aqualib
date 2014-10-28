@@ -24,11 +24,11 @@ class Protocol
     end
     genewiz_tracking_no = io_hash[:genewiz_tracking_no]
     show {
-    	title "Upload Genewiz Sequencing Results"
-    	note "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
-    	note "Find Genewiz sequencing results for Tracking Number #{genewiz_tracking_no}"
-    	note "Download All Selected Trace Files and then upload the zip file here."
-    	upload var: "sequencing_#{genewiz_tracking_no}"
+      title "Upload Genewiz Sequencing Results"
+      note "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
+      note "Find Genewiz sequencing results for Tracking Number #{genewiz_tracking_no}"
+      note "Download All Selected Trace Files and then upload the zip file here."
+      upload var: "sequencing_#{genewiz_tracking_no}"
     }
     task_ids = []
     task_ids.concat io_hash[:task_ids] if io_hash[:task_ids]
