@@ -32,21 +32,12 @@ class Protocol
     fragment_ids.concat gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
     # Pull info from Fragment Construction tasks which fragment needs to work on
     fragment_construction = fragment_construction_status
-    show {
-      note "#{fragment_construction}"
-    }
     fragment_construction[:waiting_ids].each do |tid|
       task = find(:task, id: tid)[0]
       fragment_ids.concat task.simple_spec[:fragments]
     end
-    show {
-      note "#{fragment_ids}"
-    }
     plasmids = fragment_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
     plasmids = plasmids.compact
-    show {
-      note "#{plasmids.collect { |p| p.id }}"
-    }
     plasmids_need_to_dilute = plasmids.select{ |p| p.in("Plasmid Stock").length > 0 && (p.in("1 ng/µL Plasmid Stock").length == 0) }
     plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in("Plasmid Stock")[0] }
     # concat with input to this protocol if input[:plasmid_stock_ids] is defined
