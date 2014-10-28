@@ -37,12 +37,13 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?  
+    io_hash = input if !input[io_hash] || input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+    io_hash = { plate_ids: [], num_colonies: [], primer_ids: [], initials: [] } unless input[io_hash]
     tasks = find(:task,{task_prototype: { name: "Cloning Verification" }})
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
     waiting_ids.each do |tid|
