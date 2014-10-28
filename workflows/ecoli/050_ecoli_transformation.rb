@@ -27,11 +27,11 @@ class Protocol
     # group gibson results into hash by their bacterial marker
     gibson_result_marker_hash = Hash.new {|h,k| h[k] = [] }
     gibson_results.each do |g|
-    	if g.sample.properties["Bacterial Marker"].downcase[0,3] == "amp"
-    		gibson_result_marker_hash[:amp].push g
-    	else
-    		gibson_result_marker_hash[:non_amp].push g
-    	end
+      if g.sample.properties["Bacterial Marker"].downcase[0,3] == "amp"
+        gibson_result_marker_hash[:amp].push g
+      else
+        gibson_result_marker_hash[:non_amp].push g
+      end
     end
     take gibson_results, interactive: true, method: "boxes"
 
@@ -48,8 +48,8 @@ class Protocol
     	num_arr = *(1..num)
     	ids = []
     	if marker == :non_amp
-    		transformed_aliquots = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
-    		ids = transformed_aliquots.collect {|t| t.id} 
+        transformed_aliquots = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
+        ids = transformed_aliquots.collect {|t| t.id} 
     	elsif marker == :amp
         plates = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
         ids = *(1..num)
@@ -135,7 +135,7 @@ class Protocol
         release plates, interactive: true, method: "boxes"
       end
 
-	  end #gibson_result_marker_hash
+    end #gibson_result_marker_hash
 
     release gibson_results, interactive: true, method: "boxes"
 
