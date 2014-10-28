@@ -38,6 +38,9 @@ class Protocol
     end
     plasmids = fragment_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
     plasmids = plasmids.compact
+    show {
+      note "#{plasmids.collect { |p| p.id }}"
+    }
     plasmids_need_to_dilute = plasmids.select{ |p| p.in("Plasmid Stock").length > 0 && (p.in("1 ng/µL Plasmid Stock").length == 0) }
     plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in("Plasmid Stock")[0] }
     # concat with input to this protocol if input[:plasmid_stock_ids] is defined
