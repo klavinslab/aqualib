@@ -48,7 +48,7 @@ class Protocol
     show {
       note "#{io_hash}"
     }
-    tasks = find(:task,{task_prototype: { name: "Cloning Verification" }})
+    tasks = find(:task,{task_prototype: { name: "Plasmid Verification" }})
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
     waiting_ids.each do |tid|
       task = find(:task, id: tid)[0]

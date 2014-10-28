@@ -119,7 +119,7 @@ class Protocol
     primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]} 
     genewiz = show {
       title "Create a Genewiz order"
-      check "Go the Genewiz website, log in with lab account."
+      check "Go the Genewiz website, log in with lab account. Username: mnparks@uw.edu, password is the lab general password."
       check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
       check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
       table [["DNA Name", "My Primer Name"]].concat (dna_names.zip primer_ids)
