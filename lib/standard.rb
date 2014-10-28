@@ -157,6 +157,7 @@ module Standard
   			false
   		end
   	end
+  	return 1
   end
 
 end
