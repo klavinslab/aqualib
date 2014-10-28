@@ -34,11 +34,11 @@ class Protocol
     task_ids.concat io_hash[:task_ids] if io_hash[:task_ids]
     task_ids.concat io_hash[:sequencing_task_ids] if io_hash[:sequencing_task_ids]
     # Set tasks in the io_hash to be results back
-	task_ids.each do |tid|
-    task = find(:task, id: tid)[0]
-		task.status = "results back"
-		task.save
-	end
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      task.status = "results back"
+      task.save
+  	end
     return { io_hash: io_hash}
   end # main
 end # Protocol
