@@ -32,6 +32,9 @@ class Protocol
     fragment_ids.concat gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
     # Pull info from Fragment Construction tasks which fragment needs to work on
     fragment_construction = fragment_construction_status
+    show {
+      note "#{fragment_construction}"
+    }
     fragment_construction[:waiting_ids].each do |tid|
       task = find(:task, id: tid)[0]
       fragment_ids.concat task.simple_spec[:fragments]

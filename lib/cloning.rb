@@ -177,7 +177,7 @@ module Cloning
     end
 
     return {
-      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
+      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
       running_ids: running.collect {|t| t.id}
     }
