@@ -44,7 +44,7 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash.merge({ plate_ids: [], num_colonies: [], primer_ids: [], initials: [] }) if !input[:io_hash]
+    io_hash = io_hash.merge({ plate_ids: [], num_colonies: [], primer_ids: [], initials: [] }) if !input[:io_hash]
     show {
       note "#{io_hash}"
     }
