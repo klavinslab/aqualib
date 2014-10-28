@@ -38,7 +38,7 @@ class Protocol
     show {
     	title "Intialize the electroporator"
     	note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
-        note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
+      note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
     }
 
     transformed_aliquots = []
@@ -52,43 +52,43 @@ class Protocol
     		ids = transformed_aliquots.collect {|t| t.id} 
     	elsif marker == :amp
         plates = gibson_result.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
-    		ids = *(1..num)
-    	end
+        ids = *(1..num)
+      end
 
       show {
         title "Retrieve and arrange ice block"
         note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
-          image "arrange_cold_block"
+        image "arrange_cold_block"
       }
 
-	    show {
-	    	title "Retrieve cuvettes and electrocompetent aliquots"
-	    	check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-	    	check "Retrieve #{num} DH5alpha electrocompetent aliquots from M80 and place it on the aluminum tube rack."
-	    	image "handle_electrocompetent_cells"
-	    }
+      show {
+        title "Retrieve cuvettes and electrocompetent aliquots"
+        check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
+        check "Retrieve #{num} DH5alpha electrocompetent aliquots from M80 and place it on the aluminum tube rack."
+        image "handle_electrocompetent_cells"
+      }
 
-	    show {
-	    	title "Prepare #{num} 1.5 mL tubes and pipetters"
-	    	check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-	    	check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
-			  check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
-	    }
+      show {
+        title "Prepare #{num} 1.5 mL tubes and pipetters"
+        check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
+        check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
+        check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
+      }
 
-	    show {
-	    	title "Label the electrocompetent cell"
-	    	check "Label each electrocompetent aliquot with #{num_arr}."
-	    	note "If still frozen, wait till the cells have thawed to a slushy consistency."
-	    	warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
-	    	warning "Do not wait too long"
-	      image "thawed_electrocompotent_cells"
-	    }
+      show {
+        title "Label the electrocompetent cell"
+        check "Label each electrocompetent aliquot with #{num_arr}."
+        note "If still frozen, wait till the cells have thawed to a slushy consistency."
+        warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
+        warning "Do not wait too long"
+        image "thawed_electrocompotent_cells"
+      }
 
-	    show {
-	    	title "Pipette plasmid into electrocompetent aliquot"
-	    	note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
-	    	table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_result.collect {|g| { content: g.id, check: true }}.zip num_arr)
-	    }
+      show {
+        title "Pipette plasmid into electrocompetent aliquot"
+        note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
+        table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_result.collect {|g| { content: g.id, check: true }}.zip num_arr)
+      }
 
       show {
         title "Electroporation and Rescue"
