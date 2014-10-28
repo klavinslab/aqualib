@@ -22,7 +22,10 @@ class Protocol
     #     true
     #   end
     # end
-    debug_mode true
+    x = debug_mode true
+    show {
+      note "#{x}"
+    }
     plasmid_kan_ids = io_hash[:plasmid_ids].select { |pid| find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3]== "kan"}
     num = plasmid_kan_ids.length
     show {
