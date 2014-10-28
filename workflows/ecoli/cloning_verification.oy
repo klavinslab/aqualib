@@ -1,0 +1,47 @@
+argument
+  debug_mode: string, "Yes or No"
+end
+
+place overnight
+  protocol: "aqualib:workflows/ecoli/060_start_overnight_plate.rb"
+  group: "technicians"
+  argument
+    debug_mode: debug_mode
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place miniprep
+  protocol: "aqualib:workflows/ecoli/070_miniprep.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place sequencing
+  protocol: "aqualib:workflows/ecoli/075_sequencing.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place upload
+  protocol: "aqualib:workflows/ecoli/080_upload_sequencing_results.rb"
+  group: "technicians"
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+wire overnight => miniprep
+wire miniprep => sequencing
+wire sequencing => upload
+
+transition [ overnight ] => [ miniprep ] when !error(0) && completed(0) end
+transition [ miniprep] => [ sequencing ] when !error(0) && completed(0) end
+transition [ sequencing] => [ upload ] when !error(0) && completed(0) end
+transition [ upload ] => [] when !error(0) && completed(0) end
