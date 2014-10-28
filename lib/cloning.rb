@@ -136,7 +136,52 @@ module Cloning
 
   end # # # # # # # 
 
+  def fragment_construction_status
+    # find all fragment construction tasks and arrange them into lists by status
+    tasks = find(:task,{task_prototype: { name: "Fragment Construction" }})
+    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    ready = tasks.select { |t| t.status == "ready" }
+    running = tasks.select { |t| t.status == "running" }
+    done = tasks.select { |t| t.status == "done" }
 
+    (waiting + ready).each do |t|
+
+      t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
+
+      t.simple_spec[:fragments].each do |fid|
+
+        info = fragment_info fid
+        if !info
+          t[:fragments][:not_ready_to_build].push fid
+        else
+          t[:fragments][:ready_to_build].push fid
+        end
+
+      end
+
+      if t[:fragments][:ready_to_build].length == t.simple_spec[:fragments].length
+        t.status = "ready"
+        t.save
+        # show {
+        #   note "fragment construction status set to ready"
+        #   note "#{t.id}"
+        # }
+      elsif t[:fragments][:ready_to_build].length < t.simple_spec[:fragments].length
+        t.status = "waiting for ingredients"
+        t.save
+        # show {
+        #   note "fragment construction status set to waiting"
+        #   note "#{t.id}"
+        # }
+      end
+    end
+
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
+      running_ids: running.collect {|t| t.id}
+    }
+  end ### fragment_construction_status
 
 end
 

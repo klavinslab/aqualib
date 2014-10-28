@@ -35,6 +35,7 @@ class Protocol
       warning "Make sure not to touch the inner side of the Glycerol bottle with the pipetter."
     }
 
+    # Add overnights to cyro tubes
     show {
       title "Add overnight suspensions to Cyro tube"
       check "Pipette 900 µL of overnight suspension into a Cyro tube according to the following table."
@@ -42,12 +43,20 @@ class Protocol
       check "Cap the Cryo tube and then vortex on a table top vortexer for about 20 seconds"
       check "Discard the used overnight suspensions."
     }
-    overnights.each do |o|
+
+    # Discard the overnights
+    show {
+      title "Discard overnights"
+      check "Discard the used overnight suspensions. For glass tubes, place in the washing station. For plastic tubes, press the cap to seal and throw into biohazard boxes."
+      overnights.each do |o|
       o.mark_as_deleted
       o.save
     end
+    }
     release [glycerol], interactive: true
     release glycerol_stocks, interactive: true, method: "boxes"
+    io_hash[:glycerol_stock_ids] = glycerol_stocks.collect { |g| g.id }
+    return { io_hash: io_hash }
   end
   
 end
