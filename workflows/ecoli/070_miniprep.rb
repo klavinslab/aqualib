@@ -20,14 +20,15 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     overnight_ids = io_hash[:overnight_ids]
-    elution_volume = io_hash[:elution_volume]
+    elution_volume = io_hash[:elution_volume] || 50
 
-    if io_hash[:debug_mode] == "Yes"
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
+    # Find all overnights and take them
     overnights = overnight_ids.collect{|oid| find(:item,id:oid)[0]}
     take overnights, interactive: true
     
@@ -76,13 +77,6 @@ class Protocol
       check "Perform a final spin: spin all columns at 17,000 xg for 1 minute."
     }
     
-    # show{
-    #   title "Perform a final spin to fully dry the columns"
-    #   check "Remove the columns from the centrifuge and discard the flow through into a liquid waste container"
-    #   check "Spin the columns at 17,000 xg for 1 minute"
-    #   check "During the spin, open the clean and previously labeled eppendorf tubes"
-    # }
-    
     show{
       title "Elute with water"
       check "Grab #{num} new 1.5 mL tubes and label top of the tube with 1 to #{num}."
@@ -95,7 +89,7 @@ class Protocol
       check "Remove the tubes and discard the columns"
     }
     
-    plasmid_stocks= overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "Plasmid Stock"}
+    plasmid_stocks = overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "Plasmid Stock"}
     
     show{
       title "Re-label all 1.5 mL tubes"
@@ -110,13 +104,24 @@ class Protocol
       end
     }
 
+    volume = elution_volume - 2
+
   	plasmid_stocks.each_with_index do |ps,idx|
-  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: elution_volume }
+  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume }
       ps.save
   	end
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"
+    # Set tasks in the io_hash to be plasmid extracted
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task.status = "plasmid extracted"
+        task.save
+      end
+    end
+    # Return io_hash
     io_hash[:plasmid_stock_ids] = plasmid_stocks.collect { |p| p.id}
     return { io_hash: io_hash }
   end # main

@@ -97,6 +97,10 @@ class Protocol
       end
     end
 
+    show {
+      note "yeast_transformation_mixtures_markers"
+    }
+
     yeast_plates = []
     yeast_transformation_mixtures_markers.each do |key, mixtures|
       if key == "kan"

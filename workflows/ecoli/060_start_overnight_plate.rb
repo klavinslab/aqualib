@@ -51,7 +51,10 @@ class Protocol
       io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
       io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
+      task.status = "overnight"
+      task.save
     end
+    # Parse out plate_ids, num_colonies, initials for plasmid that has marker info entered.
     info_needed_plate_ids = []
     plate_ids = []
     num_colonies = []
@@ -124,10 +127,13 @@ class Protocol
     end
     release overnights, interactive: true
     release plates, interactive: true
+    # Return all io_hash related info
+    io_hash[:task_ids] = waiting_ids
     io_hash[:plate_ids] = plate_ids
     io_hash[:num_colonies] = num_colonies
     io_hash[:overnight_ids] = overnights.collect { |o| o.id }
     io_hash[:primer_ids] = sequencing_primer_ids
+    io_hash[:initials] = initials
     return { io_hash: io_hash }
 
   end # main

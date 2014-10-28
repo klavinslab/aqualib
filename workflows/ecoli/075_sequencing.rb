@@ -73,7 +73,6 @@ class Protocol
       end
     end
     batch_initials = "MP"
-    sequencing_info = sequencing_status
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
@@ -86,7 +85,9 @@ class Protocol
       end
     end
 
-    sequencing_info[:ready_ids].each do |tid|
+    sequencing_info = sequencing_status
+    io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
+    io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         primer_ids.concat pids
@@ -175,6 +176,15 @@ class Protocol
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
+    # Set tasks in the io_hash to be plasmid extracted
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task.status = "send to sequencing"
+        task.save
+      end
+    end
+    # Return all info
     io_hash[:genewiz_tracking_no] = genewiz[:tracking_num]
     return { io_hash: io_hash }
   end
