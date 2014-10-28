@@ -149,6 +149,7 @@ module Standard
   def debug_mode arg
     # only takes true or false as argument
   	if arg == true
+  		alias_method :debug_original, :debug
   		def debug
   			true
   		end
