@@ -152,12 +152,13 @@ module Standard
   		def debug
   			true
   		end
+  		return 1
   	elsif arg == false
   		def debug
   			false
   		end
+  		return 0
   	end
-  	return 1
   end
 
 end

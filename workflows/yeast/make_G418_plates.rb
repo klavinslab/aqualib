@@ -17,9 +17,9 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    debug_mode true 
+    x = debug_mode true 
     show {
-      note "#{debug_mode true}"
+      note "#{x}"
     }
     show {
     	title "Grab YPAD plates and G418 stock"
