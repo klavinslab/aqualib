@@ -45,6 +45,9 @@ class Protocol
     end
     # making sure have the following hash indexes.
     io_hash.merge({ plate_ids: [], num_colonies: [], primer_ids: [], initials: [] }) if !input[:io_hash]
+    show {
+      note "#{io_hash}"
+    }
     tasks = find(:task,{task_prototype: { name: "Cloning Verification" }})
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
     waiting_ids.each do |tid|
