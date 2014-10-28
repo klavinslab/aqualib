@@ -8,9 +8,9 @@ class Protocol
 
   def arguments
     {
-  		io_hash: {},
-  		genewiz_tracking_no: "",
-  		debug_mode: "Yes"
+      io_hash: {},
+      genewiz_tracking_no: "",
+      debug_mode: "Yes"
     }
   end
  
