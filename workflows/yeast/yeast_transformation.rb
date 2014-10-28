@@ -104,7 +104,7 @@ class Protocol
           title "Resuspend in YPAD"
           check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
           check "Add 1 mL of YPAD to the each tube and vortex for 20 seconds"
-          check "Grab #{mixtures.length} 14 mL #{"tube".pluralize(mixtures.length)} , label with #{(mixtures.collect {|x| x.id}).join(", ")}"
+          check "Grab #{mixtures.length} 14 mL #{"tube".pluralize(mixtures.length)}, label with #{(mixtures.collect {|x| x.id}).join(", ")}"
           check "Transfer all contents from each 1.5 mL tube to corresponding 14 mL tube that has the same label number"
           check "Place all #{mixtures.length} 14 mL #{"tube".pluralize(mixtures.length)}  into 30 C shaker incubator" 
           check "Discard all #{mixtures.length} empty 1.5 mL #{"tube".pluralize(mixtures.length)} "

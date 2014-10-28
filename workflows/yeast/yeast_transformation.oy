@@ -49,13 +49,23 @@ place transformation
   window: hours(20)
 end
 
+place plate
+  protocol: "aqualib:workflows/yeast/plate_yeast_transformation.rb"
+  group: "technicians"
+  start: now()
+  window: hours(20)
+end
+
 
 wire startovernight => innoculate
 wire innoculate => digest
 wire digest => makecompcell
 wire makecompcell => transformation
+wire transformation => plate
 
-transition [ startovernight ] => [ innoculate ] when completed(0) end
-transition [ innoculate ] => [ digest ] when completed(0) end
-transition [ digest ] => [ makecompcell ] when completed(0) end
-transition [ makecompcell ] => [ transformation ] when completed(0) end
+transition [ startovernight ] => [ innoculate ] when !error(0) && completed(0) end
+transition [ innoculate ] => [ digest ] when !error(0) && completed(0) end
+transition [ digest ] => [ makecompcell ] when !error(0) && completed(0) end
+transition [ makecompcell ] => [ transformation ] when !error(0) && completed(0) end
+transition [ transformation ] => [ plate ] when !error(0) && completed(0) end
+transition [ plate ] => [] when !error(0) && completed(0) end
