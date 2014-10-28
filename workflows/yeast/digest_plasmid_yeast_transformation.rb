@@ -18,7 +18,7 @@ class Protocol
   def main
 
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true

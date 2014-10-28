@@ -16,7 +16,7 @@ class Protocol
       #Enter the overnight ids that you are going to start overnight with
       "yeast_overnight_ids Yeast Overnight Suspension" => [8437,8431,8426],
       #Enter the media type you are going to use
-      volume: 100,
+      large_volume: 100,
       media_type: "800 mL YPAD liquid (sterile)",
       debug_mode: "Yes"
     }
@@ -30,7 +30,7 @@ class Protocol
         true
       end
     end
-    volume = io_hash[:volume]
+    large_volume = io_hash[:large_volume]
   	yeast_overnights = io_hash[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
     # show {
     #   note(yeast_overnights.collect {|x| x.id})
@@ -49,7 +49,7 @@ class Protocol
     show {
       title "Media preparation"
       check "Grab #{yeast_overnights.length} of 250 mL Baffled Flask"
-      check "Add #{volume} mL of #{media_type} into each 250 mL Baffled Flask"
+      check "Add #{large_volume} mL of #{media_type} into each 250 mL Baffled Flask"
       check "Label each flask with a piece of tape using following ids"
       note (yeast_cultures.collect {|x| x.id})
       warning "Work in the media bay for media prepartion"
@@ -59,7 +59,7 @@ class Protocol
     
     tab = [["Flask ids","Yeast Overnight ids","Volume (µL)"]]
     yeast_overnights.each_with_index do |y,idx|
-      tab.push(["#{yeast_cultures[idx].id}","#{y.id}",{ content: "#{volume/50} mL", check: true }])
+      tab.push(["#{yeast_cultures[idx].id}","#{y.id}",{ content: "#{large_volume/50} mL", check: true }])
     end
     show {
       title "Inoculate yeast overnights into flasks"
