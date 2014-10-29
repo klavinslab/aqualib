@@ -18,7 +18,7 @@ needed to complete the protocol. For example, the following code will accept bot
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
   end
 
 ====================================

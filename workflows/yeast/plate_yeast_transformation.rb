@@ -79,10 +79,10 @@ class Protocol
     yeast_transformation_mixtures.each do |y|
       y.mark_as_deleted
       y.save
-    eppendorf
+    end
     io_hash[:yeast_plate_ids] = [] if !io_hash[:yeast_plate_ids]
     io_hash[:yeast_plate_ids].concat yeast_plates.collect { |p| p.id }
-    return {io_hash: io_hash}
-  end
+    return { io_hash: io_hash }
+  end # main
   
 end
