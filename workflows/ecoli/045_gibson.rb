@@ -89,7 +89,7 @@ class Protocol
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten(1).uniq
 
-    fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| not f.datum[:concentration]}
+    fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| !f.datum[:concentration]}
     if fragment_stocks_need_to_measure.length > 0
       data = show {
         title "Nanodrop the following fragment stocks."

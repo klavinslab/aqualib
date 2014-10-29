@@ -52,7 +52,7 @@ class Protocol
     # take all items
   	take plasmid_stocks, interactive: true, method: "boxes"
     # measure concentration for those have no concentration recorded in datum field
-    plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| not f.datum[:concentration]}
+    plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
     if plasmid_stocks_need_to_measure.length > 0
       data = show {
         title "Nanodrop the following plasmid stocks."

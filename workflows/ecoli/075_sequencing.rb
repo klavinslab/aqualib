@@ -176,7 +176,7 @@ class Protocol
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-    # Set tasks in the io_hash to be plasmid extracted
+    # Set tasks in the io_hash to be send to sequencing
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
