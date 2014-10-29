@@ -53,17 +53,18 @@ class Protocol
   	take plasmid_stocks, interactive: true, method: "boxes"
     # measure concentration for those have no concentration recorded in datum field
     plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
-    if plasmid_stocks_need_to_measure.length > 0
+    while plasmid_stocks_need_to_measure.length > 0
       data = show {
         title "Nanodrop the following plasmid stocks."
         plasmid_stocks_need_to_measure.each do |ps|
-          get "number", var: "c#{ps.id}", label: "Go to B9 and nanodrop tube #{ps.id}, enter DNA concentrations in the following", default: 30.2
+          get "number", var: "c#{ps.id}", label: "Go to B9 and nanodrop tube #{ps.id}, enter DNA concentrations in the following"
         end
       }
       plasmid_stocks_need_to_measure.each do |ps|
         ps.datum = {concentration: data[:"c#{ps.id}".to_sym]}
         ps.save
       end
+      plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
     end
     # collect all concentrations
     concs = plasmid_stocks.collect {|f| f.datum[:concentration].to_f}
