@@ -10,12 +10,12 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #Enter the fragment sample id or item id as a list, eg [2048,2049,2060,2061,2,2]
-      fragment_ids: [[2058,2059],[2060,2061],[2058,2062]],
+      #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
+      fragment_ids: [],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [2236,1923,2573],
+      plasmid_ids: [],
       debug_mode: "Yes",
       task_mode: "Yes"
     }
