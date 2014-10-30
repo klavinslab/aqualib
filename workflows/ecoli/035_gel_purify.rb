@@ -39,7 +39,7 @@ class Protocol
 			note "The following gel slices are going to be purfied"
 			note "#{gel_slices.collect {|s| s.id}}"
 		}
-		
+
 		take gel_slices, interactive: true,  method: "boxes"
 
 		weights = show{
@@ -63,7 +63,7 @@ class Protocol
 			end
 		end
 
-		
+
 		show{
 		# s=*(1..slice_number)
 		title "Add the following volumes of QG buffer to the corresponding tube."
@@ -86,7 +86,7 @@ class Protocol
 		check "Be sure not to add more than 750 µL to each pick columns"
 		table [["Gel slices tube", "Qiagen column"]].concat(gel_slices.collect {|s| s.id}.zip num_arr)
 	}
-	
+
 	show {
 		title "Centrifuge"
 		check "Spin at top speed (> 17,900 g) for 1 minute to bind DNA to columns"
@@ -112,7 +112,7 @@ class Protocol
 	}
 
 	show {
-		title "Wait one minute"
+		title "Wait one minute and then spin"
 		timer initial: { hours: 0, minutes: 1, seconds: 0}
 		check "Elute DNA into Eppendorf tubes by spinning at top speed (> 17,900 xg) for one minute"
 	}
@@ -132,8 +132,6 @@ class Protocol
 	# 	fs.save
 	# end
 	# }
-
-	#
 
 	fragment_stocks.each do |fs|
 		fs.datum = {concentration: concs[:"c#{fs.id}".to_sym], volume: 28}
