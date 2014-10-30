@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the fragment sample id or item id as a list, eg [2048,2049,2060,2061,2,2]
-      fragment_ids: [[2058,2059],[2060,2061],[2048,2058,2062]],
+      fragment_ids: [[2058,2059],[2060,2061],[2058,2062]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
@@ -55,9 +55,9 @@ class Protocol
     io_hash[:fragment_ids] = input[:fragment_ids] || []
     io_hash[:plasmid_ids] = input[:plasmid_ids] || []
     io_hash[:task_mode] = input[:task_mode] || "Yes"
-    show {
-      note "#{io_hash}"
-    }
+    # show {
+    #   note "#{io_hash}"
+    # }
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
     # Set debug based on debug_mode
@@ -89,6 +89,10 @@ class Protocol
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten(1).uniq
 
+    # show {
+    #   note "#{fragment_stocks_flatten.collect {|f| f.id}}"
+    # }
+
     fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| !f.datum[:concentration]}
     if fragment_stocks_need_to_measure.length > 0
       data = show {
@@ -111,6 +115,7 @@ class Protocol
       coefficient_matrix = Matrix.build(num, num) {|row, col| gibson_coefficients row, col, conc_over_length}
       volume_vector = coefficient_matrix.inv * total_vector
       volumes = volume_vector.each.to_a
+      volumes.collect! { |x| x < 0.5 ? 0.5 : x }
       fragment_volumes.push volumes 
     end
 

@@ -107,7 +107,7 @@ class Protocol
 		show {
 			title "Transfer to 1.5 mL tube"
 			check "Label #{num} 1.5 mL tube with #{fragment_stocks.collect {|fs| fs.id}}"
-			check "Transfer pink columns to empty Eppendorf tubes using the following table."
+			check "Transfer pink columns to the labeled tubes using the following table."
 			table [["Qiagen column","1.5 mL tube"]].concat(num_arr.zip fragment_stocks.collect {|fs| fs.id})
 			check "Add 30 µL molecular grade water or EB elution buffer to center of the column."
 			warning "Be very careful to not pipette on the wall of the tube."
