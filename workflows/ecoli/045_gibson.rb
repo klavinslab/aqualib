@@ -119,14 +119,6 @@ class Protocol
       fragment_volumes.push volumes 
     end
 
-    # produce Gibson reaction results ids
-    gibson_results = []
-    io_hash[:plasmid_ids].each_with_index do |pid,idx|
-      plasmid = find(:sample,{id: pid})[0]
-      gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
-      gibson_results = gibson_results.push gibson_result
-    end
-
     # Tell the user what we are doing
     show {
       title "Fragment Information"
@@ -136,6 +128,14 @@ class Protocol
 
     # Take fragment stocks, since fragment stocks are array of arrays, so use the flatten(1) method.
     take fragment_stocks.flatten(1), interactive: true,  method: "boxes"
+
+    # produce Gibson reaction results ids
+    gibson_results = []
+    io_hash[:plasmid_ids].each_with_index do |pid,idx|
+      plasmid = find(:sample,{id: pid})[0]
+      gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
+      gibson_results = gibson_results.push gibson_result
+    end
 
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
