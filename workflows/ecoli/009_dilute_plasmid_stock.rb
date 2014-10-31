@@ -26,7 +26,7 @@ class Protocol
     end
     fragment_ids = []
     # add fragment_ids from protocol or metacol
-    fragment_ids.concat input[:fragment_ids] 
+    fragment_ids.concat input[:fragment_ids] || []
     # Pull info from Gibson assembly tasks which fragment needs to work on
     gibson_info = gibson_assembly_status
     fragment_ids.concat gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
