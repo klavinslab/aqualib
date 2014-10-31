@@ -9,8 +9,8 @@ class Protocol
   def arguments
   	{
       io_hash: {},
-  		yeast_item_ids: [13011,13010,13022],
-  		colony_numbers: [3,3,3],
+  		yeast_item_ids: [13011,13010],
+  		colony_numbers: [3,3],
   		debug_mode: "Yes"
   	}
   end
@@ -33,17 +33,17 @@ class Protocol
   	yeast_items = input[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
   	take yeast_items, interactive: true
 
-  	yeast_lysates = []
+  	yeast_samples = []
   	yeast_colonies = []
   	yeast_items.each_with_index do |y,idx|
   		(1..input[:colony_numbers][idx]).each do |x|
-  			yeast_lysates.push y.sample
+  			yeast_samples.push y.sample
   			yeast_colonies.push y
   		end
   	end
 
-  	sds = yeast_lysates.length * 3 * 1.1
-  	water = yeast_lysates.length * 27 * 1.1
+  	sds = yeast_samples.length * 3 * 1.1
+  	water = yeast_samples.length * 27 * 1.1
 
   	show {
   		title "Prepare 0.2 percent SDS"
@@ -54,7 +54,7 @@ class Protocol
   		check "Mix with vortexer."
   	}
 
-  	stripwells = produce spread yeast_lysates, "Stripwell", 1, 12
+  	stripwells = produce spread yeast_samples, "Stripwell", 1, 12
 
     show {
       title "Prepare Stripwell Tubes"
@@ -118,7 +118,7 @@ class Protocol
     release stripwells
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
-    io_hash[:yeast_lysate_ids] = yeast_lysates.collect { |y| y.id }
+    io_hash[:yeast_sample_ids] = yeast_samples.collect { |y| y.id }
 
     return { io_hash: io_hash }
   end
