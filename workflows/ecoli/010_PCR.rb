@@ -30,7 +30,7 @@ class Protocol
   def main
     io_hash = {}
     # io_hash = input if input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode]
+    io_hash[:debug_mode] = input[:debug_mode] || "No"
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode] == "Yes"
       def debug
@@ -57,14 +57,15 @@ class Protocol
       ready_task.save
     end
 
-    fragment_from_metacol_ids = input[:fragment_ids] || []
-    io_hash[:fragment_ids] = (fragment_from_gibson_ids + fragment_from_construction_ids + fragment_from_metacol_ids).uniq
+    # Pull info from protocol input
+    fragment_from_protocol_ids = input[:fragment_ids] || []
+    io_hash[:fragment_ids] = (fragment_from_gibson_ids + fragment_from_construction_ids + fragment_from_protocol_ids).uniq
 
     show {
       title "List of fragment ids ready to build"
       note "From Gibson Assembly tasks the following #{fragment_from_gibson_ids}"
       note "From Fragment Construction tasks the following #{fragment_from_construction_ids}"
-      note "From metacol, the following #{fragment_from_metacol_ids}"
+      note "From protocol, the following #{fragment_from_protocol_ids}"
     }
 
     # Collect fragment info
