@@ -46,7 +46,8 @@ class Protocol
     # Pull info from Fragment Construction Tasks
     fragment_construction = fragment_construction_status
     show {
-      note "#{fragment_construction[:ready_ids]}"
+      title "Not ready fragment ids"
+      note "#{fragment_construction[:fragments][:not_ready_to_build]}"
     }
     fragment_from_construction_ids = []
     fragment_construction[:ready_ids].each do |tid|
