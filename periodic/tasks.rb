@@ -8,7 +8,7 @@ class Protocol
 
   def main
 
-    i = find(:item, sample: { object_type: { name: "Enzyme Aliquot" }, sample: { name: "ecoRI" } } )
+    i = find(:item, sample: { name: "pLAB1" })
     take(i)
     release(i)
 
