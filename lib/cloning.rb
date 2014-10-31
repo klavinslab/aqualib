@@ -64,9 +64,6 @@ module Cloning
     tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
     waiting = tasks.select { |t| t.status == "waiting for fragments" }
     ready = tasks.select { |t| t.status == "ready" }
-    running = tasks.select { |t| t.status == "running" }
-    done = tasks.select { |t| t.status == "on plate" }
-
 
     # look up all fragments needed to assemble, and sort them by whether they are ready to build, etc.
     (waiting + ready).each do |t|
@@ -122,16 +119,12 @@ module Cloning
 
     # return a big hash describing the status of all un-done assemblies
     return {
-
       fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
-
-      assemblies: {
-        under_construction: running.collect { |t| t.id },
-        waiting_for_ingredients: ((tasks.select { |t| t.status == "waiting for fragments" }).select { |t| t[:fragments][:ready_to_build] != [] || t[:fragments][:not_ready_to_build] != [] }).collect { |t| t.id },
-        ready_to_build: ((tasks.select { |t| t.status == "ready" }).select { |t| t[:fragments][:ready_to_build] == [] && t[:fragments][:not_ready_to_build] == [] }).collect { |t| t.id },
-        on_plate: done.collect { |t| t.id }
-        }
-
+      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect { |t| t.id },
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
+      running_ids: (tasks.select { |t| t.status == "running" }).collect { |t| t.id },
+      plated_ids: (tasks.select { |t| t.status == "plated" }).collect { |t| t.id },
+      done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
     }
 
   end # # # # # # # 
@@ -145,7 +138,6 @@ module Cloning
     done = tasks.select { |t| t.status == "done" }
 
     (waiting + ready).each do |t|
-
       t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
 
       t.simple_spec[:fragments].each do |fid|
