@@ -8,7 +8,7 @@ class Protocol
 
   def main
 
-    i = find(:item, {id: 123})
+    i = find(:item, id: 123)
     take([i])
     release([i])
 
