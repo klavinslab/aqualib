@@ -30,8 +30,7 @@ class Protocol
         }
 
         task = (tasks.select { |t| t.name == data[:choice] }).first
-        task.status = "working"
-        task.save
+        set_task_status( task, "working" )
 
         data = show {
           title task.name
@@ -42,8 +41,7 @@ class Protocol
           select [ "Yes", "No" ], var: "done", label: "Did you complete the task?", default: 1
         }
 
-        task.status = data[:done] == "Yes" ? "done" : "ready"
-        task.save
+        set_task_status( task, data[:done] == "Yes" ? "done" : "ready" )
 
         if data[:done] == "No" || tasks.length > 1
 
