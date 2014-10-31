@@ -128,7 +128,7 @@ class Protocol
 		}
 
 		fragment_stocks.each do |fs|
-			fs.datum = {concentration: concs[:"c#{fs.id}".to_sym], volume: 28}
+			fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28 }
 			fs.save
 		end
 
