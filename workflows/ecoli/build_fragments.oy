@@ -4,7 +4,6 @@
 # Change tasks status while progressing
 
 argument
-  fragment_ids: generic, "List of fragment ids"
   debug_mode: string, "Yes or No"
 end
 
