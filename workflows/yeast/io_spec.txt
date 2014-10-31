@@ -1,0 +1,34 @@
+input output hash will be named io_hash in all protocols
+
+note: users may "freely" (discuss first) add to these hash specs.  
+Changing names or meanings is more serious and should be discussed at aq meeting.
+
+note2: Sometimes it is useful to be able to call protocols indidivually.  To accomodate this,
+writers may accept multiple inputs, the first being io_hash, and the rest being the inputs 
+needed to complete the protocol. For example, the following code will accept both io_hash and other inputs. You can use either
+
+====================================
+  def arguments
+    {
+      io_hash: {},
+      yeast_plate_ids: []
+    }
+  end
+
+  def main
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+  end
+
+====================================
+
+//this is for the yeast verification metacol
+{
+  yeast_plate_ids:[],  //input for make_yeast_lysates
+  num_colonies: [] //one number per plate
+  lysate_stripwell_ids: [] //stripwells ids for yeast lysates
+  stripwell_ids: [] // colony pcr stripwell ids for yeast lysates which will be used for pour gel and run gel
+  yeast_sample_ids: [] // yeast sample ids corresponding to each well in the stripwell
+  debug_mode: "" // if the protocol or metacol is in debug_mode
+}
+

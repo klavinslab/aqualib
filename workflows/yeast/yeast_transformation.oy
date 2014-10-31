@@ -7,7 +7,7 @@ argument
 end
 
 place startovernight
-protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
+protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
   argument
     plasmid_ids: plasmid_ids
     yeast_item_ids: yeast_item_ids
@@ -22,35 +22,35 @@ protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
 end
 
 place innoculate
-  protocol: "aqualib:workflows/yeast/inoculate_large_volume_growth.rb"
+  protocol: "aqualib:workflows/yeast/015_inoculate_large_volume_growth.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place digest
-  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transforamtion.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place makecompcell
-  protocol: "aqualib:workflows/yeast/make_yeast_competent_cells_fresh.rb"
+  protocol: "aqualib:workflows/yeast/020_make_yeast_competent_cells_fresh.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place transformation
-  protocol: "aqualib:workflows/yeast/yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/040_yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place plate
-  protocol: "aqualib:workflows/yeast/plate_yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/050_plate_yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
