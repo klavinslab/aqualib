@@ -57,7 +57,7 @@ class Protocol
       ready_task.save
     end
 
-    fragment_from_metacol_ids = input[:fragment_ids]
+    fragment_from_metacol_ids = input[:fragment_ids] || []
     io_hash[:fragment_ids] = (fragment_from_gibson_ids + fragment_from_construction_ids + fragment_from_metacol_ids).uniq
 
     show {
