@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       lysate_stripwell_ids: [13682],
-      yeast_lysate_sample_ids: [2866,2866,2866,2866,2866,2866],
+      yeast_sample_ids: [2866,2866,2866,2866,2866,2866],
       debug_mode: "Yes"
     }
   end
@@ -22,7 +22,7 @@ class Protocol
       note "#{io_hash}"
     }
     lysate_stripwells = io_hash[:lysate_stripwell_ids].collect { |sid| collection_from sid }
-    yeast_lysates = io_hash[:yeast_lysate_sample_ids].collect { |yid| find(:sample, id: yid)[0]}
+    yeast_lysates = io_hash[:yeast_sample_ids].collect { |yid| find(:sample, id: yid)[0]}
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -100,6 +100,9 @@ class Protocol
     release lysate_stripwells, interactive: true
 
     release forward_primers + reverse_primers, interactive: true, method: "boxes"
+    
+    io_hash[:pcr_stripwell_ids] = pcr_stripwells.collect { |s| s.id }
+    return { io_hash: io_hash }
 
   end
 

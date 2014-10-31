@@ -9,7 +9,7 @@ class Protocol
   def arguments
   	{
       io_hash: {},
-  		yeast_item_ids: [13011,13010],
+  		yeast_plate_ids: [13011,13010],
   		colony_numbers: [3,3],
   		debug_mode: "Yes"
   	}
@@ -30,7 +30,7 @@ class Protocol
   		note "This protocol makes yeast lysates in stripwell tubes"
   	}
 
-  	yeast_items = input[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+  	yeast_items = input[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
   	take yeast_items, interactive: true
 
   	yeast_samples = []
@@ -117,7 +117,7 @@ class Protocol
 
     release stripwells
 
-    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
+    io_hash[:lysate_stripwell_ids] = stripwells.collect { |s| s.id }
     io_hash[:yeast_sample_ids] = yeast_samples.collect { |y| y.id }
 
     return { io_hash: io_hash }
