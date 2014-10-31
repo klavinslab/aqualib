@@ -129,7 +129,7 @@ class Protocol
           table [["1.5 mL tube","LB Amp Plate"]].concat(num_arr.zip plates.collect{ |p| { content: p.id, check: true } })
         }
         plates.each do |p|
-          p.location = "30 C incubator"
+          p.location = "37 C incubator"
           p.save
         end
         release plates, interactive: true, method: "boxes"
