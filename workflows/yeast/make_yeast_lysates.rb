@@ -8,6 +8,7 @@ class Protocol
 
   def arguments
   	{
+      io_hash: {},
   		yeast_item_ids: [13011,13010,13022],
   		colony_numbers: [3,3,3],
   		debug_mode: "Yes"
@@ -15,13 +16,15 @@ class Protocol
   end
 
   def main
-  	io_hash = {}
-  	io_hash[:debug_mode] = input[:debug_mode]
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+  	io_hash[:debug_mode] = input[:debug_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+
   	show {
   		title "Test page"
   		note "This protocol makes yeast lysates in stripwell tubes"
@@ -115,8 +118,9 @@ class Protocol
     release stripwells
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
+    io_hash[:yeast_lysate_ids] = yeast_lysates.collect { |y| y.id }
 
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
   end
 
 end
