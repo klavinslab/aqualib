@@ -58,7 +58,7 @@ class Protocol
       data = show {
         title "Nanodrop the following plasmid stocks."
         plasmid_stocks_need_to_measure.each do |ps|
-          get "number", var: "c#{ps.id}", label: "Go to B9 and nanodrop tube #{ps.id}, enter DNA concentrations in the following"
+          get "number", var: "c#{ps.id}", label: "Go to B9 and nanodrop tube #{ps.id}, enter DNA concentrations in the following", default: 100
         end
       }
       plasmid_stocks_need_to_measure.each do |ps|
