@@ -8,6 +8,10 @@ class Protocol
 
   def main
 
+    i = find(:item,[:id: 123])
+    take([i])
+    release([i])
+
     type = input[:type]
 
     tasks = find(:task,{task_prototype: {name: type},status: "ready"})
