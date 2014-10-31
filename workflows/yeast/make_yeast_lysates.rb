@@ -9,7 +9,7 @@ class Protocol
   def arguments
   	{
       io_hash: {},
-  		yeast_plate_ids: [13011,13010],
+  		yeast_plate_ids: [13578,13579],
   		colony_numbers: [3,3],
   		debug_mode: "Yes"
   	}
@@ -19,6 +19,8 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
   	io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash[:comb_1] = 3
+    io_hash[:comb_2] = 0
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true

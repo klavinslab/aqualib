@@ -100,8 +100,8 @@ class Protocol
     release lysate_stripwells, interactive: true
 
     release forward_primers + reverse_primers, interactive: true, method: "boxes"
-    
-    io_hash[:pcr_stripwell_ids] = pcr_stripwells.collect { |s| s.id }
+
+    io_hash[:stripwell_ids] = pcr_stripwells.collect { |s| s.id }
     return { io_hash: io_hash }
 
   end
