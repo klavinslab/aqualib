@@ -8,9 +8,9 @@ class Protocol
 
   def main
 
-    i = find(:item, id: 123)
-    take([i])
-    release([i])
+    i = find(:item, sample: { object_type: { name: "Enzyme Aliquot" }, sample: { name: "ecoRI" } } )
+    take(i)
+    release(i)
 
     type = input[:type]
 
