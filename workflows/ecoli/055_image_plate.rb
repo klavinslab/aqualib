@@ -46,7 +46,7 @@ class Protocol
       plates.each do |p|
         check "Rename the image for plate #{p.id} as plate_#{p.id} and upload here:"
         upload var: "plate_#{p.id}"
-        p.location = "DFP.6"
+        p.location = "DFP.1"
         p.save
       end
     }
