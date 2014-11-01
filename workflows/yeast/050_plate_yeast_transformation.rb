@@ -30,7 +30,7 @@ class Protocol
     yeast_transformation_mixtures = io_hash[:yeast_transformation_mixture_ids].collect {|tid| find(:item, id: tid )[0]}
     take yeast_transformation_mixtures, interactive: true
     
-    show{
+    show {
       title "Resuspend in water"
       check "Spin down all the tubes in a small table top centrifuge for ~1 minute"
       check "Pipette off supernatant being careful not to disturb yeast pellet"

@@ -51,6 +51,19 @@ class Protocol
       end
     }
 
+    colony_number = show {
+      title "Estimate colony numbers"
+      note "Estimate colony numbers for each plate and enter in the following."
+      plates.each do |p|
+        get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
+      end
+    }
+
+    plates.each do |p|
+      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym], volume: 28 }
+      p.save
+    end
+
     show {
       title "Parafilm plate"
       note "Parafilm each plate and store them in deli-fridge according to the release page."
