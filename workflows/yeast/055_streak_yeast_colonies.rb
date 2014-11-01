@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       yeast_plate_ids: [13578,13579],
-      colony_numbers: [3,3],
+      num_colonies: [3,3],
       debug_mode: "Yes"
     }
   end
@@ -27,7 +27,20 @@ class Protocol
     end
 
     yeast_plates = io_hash[:yeast_plate_ids].collect { |yid| find(:item, id: yid)[0] }
-    streaked_yeast_plates = yeast_plates.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
-    streaked_yeast_plates.collect {
-      
+    take yeast_plates, interactive: true
+    show {
+      note "#{yeast_plates.collect { |y| y.id }}"
     }
+    streaked_yeast_plates = yeast_plates.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
+    show {
+      note "#{streaked_yeast_plates.collect { |y| y.id }}"
+    }
+    streaked_yeast_plates.each_with_index do |y,idx|
+      y.datum = { from: yeast_plates[idx].id, regions: io_hash[:num_colonies][idx] }
+      y.location = "30 C incubator"
+      y.save
+    end
+    release yeast_plates, interactive: true
+    release streaked_yeast_plates, interactive: true
+  end # main
+end # Protocol
