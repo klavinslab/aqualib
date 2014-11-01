@@ -60,7 +60,7 @@ class Protocol
     }
 
     plates.each do |p|
-      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym], volume: 28 }
+      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
       p.save
     end
 
