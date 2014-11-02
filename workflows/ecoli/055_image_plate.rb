@@ -46,7 +46,6 @@ class Protocol
       plates.each do |p|
         check "Rename the image for plate #{p.id} as plate_#{p.id} and upload here:"
         upload var: "plate_#{p.id}"
-        p.location = "DFP.1"
         p.save
       end
     }
@@ -59,15 +58,19 @@ class Protocol
       end
     }
 
+    location_plate = show {
+      title "Parafilm plate"
+      note "Parafilm each plate and store them in a box in deli-fridge. Enter the number of the box in the following (DFP.0-DFP.7)"
+      get "text", var: "x", label: "Enter the label of box you put in", default: "DFP.0"
+    }
+
+    # updates plates datum and location
+
     plates.each do |p|
       p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
+      p.location = location_plate[:x]
       p.save
     end
-
-    show {
-      title "Parafilm plate"
-      note "Parafilm each plate and store them in deli-fridge according to the release page."
-    }
 
     release plates, interactive: true
 

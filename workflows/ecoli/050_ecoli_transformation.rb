@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the gibson result ids as a list
-      gibson_result_ids: [13002,13003,13004,13005,12197],
+      "gibson_result_ids Gibson Reaction Result" => [13002,13003,13004,13005,12197],
       debug_mode: "Yes"
     }
   end #arguments
