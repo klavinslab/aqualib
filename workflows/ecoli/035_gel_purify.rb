@@ -143,11 +143,11 @@ class Protocol
 
     io_hash[:fragment_construction_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
-      set_task_status(ready_task,"gel purified and done")
+      set_task_status(ready_task,"done")
     end
 
 		io_hash[:fragment_stock_ids] = fragment_stocks.collect{|fs| fs.id}
-		return {io_hash: io_hash}
+		return { io_hash: io_hash }
 
   end # main
 
