@@ -50,8 +50,8 @@ class Protocol
       note "#{fragment_construction[:fragments][:not_ready_to_build]}"
     }
     fragment_from_construction_ids = []
-    io_hash[:fragment_construction_task_ids] = fragment_construction[:ready_ids]
-    io_hash[:fragment_construction_task_ids].each do |tid|
+    io_hash[:task_ids] = fragment_construction[:ready_ids]
+    io_hash[:task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       fragment_from_construction_ids.concat ready_task.simple_spec[:fragments]
     end
