@@ -80,7 +80,7 @@ class Protocol
     # Set tasks in the io_hash to be on plate
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
-        ready_task = find(:task, id: tid)[0]
+        task = find(:task, id: tid)[0]
         set_task_status(task,"plated")
       end
     end
