@@ -122,7 +122,8 @@ class Protocol
 		
 		concs = show {
 			title "Measure DNA Concentration"
-			check "Elute DNA into 1.5 mL tubes by spinning at top speed (> 17,900 xg) for one minute, discard the columns."
+			check "Elute DNA into 1.5 mL tubes by spinning at top speed (> 17,900 xg) for one minute, keep the columns."
+			check "Pipette the flow through (30 µL) onto the center of the column, spin again at top speed (> 17,900 xg) for one minute. Discard the columns this time."
 			check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
 			fragment_stocks.each do |fs|
 				get "number", var: "c#{fs.id}", label: "Enter a number for tube #{fs.id}", default: 30.2
