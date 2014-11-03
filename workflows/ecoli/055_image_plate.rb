@@ -60,7 +60,7 @@ class Protocol
 
     location_plate = show {
       title "Parafilm plate"
-      note "Parafilm each plate and store them in a box in deli-fridge. Enter the number of the box in the following (DFP.0-DFP.7)"
+      note "Parafilm each plate and store them in an available box in deli-fridge. Enter the number of the box in the following (DFP.0-DFP.7)"
       get "text", var: "x", label: "Enter the label of box you put in", default: "DFP.0"
     }
 

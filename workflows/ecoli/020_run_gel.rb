@@ -188,7 +188,12 @@ class Protocol
     release gels
     release [ ladder, dye ], interactive: true
 
-    return {io_hash: io_hash}
+    io_hash[:fragment_construction_task_ids].each do |tid|
+      ready_task = find(:task, id: tid)[0]
+      set_task_status(ready_task,"gel run")
+    end
+    
+    return { io_hash: io_hash }
   end
 
 end
