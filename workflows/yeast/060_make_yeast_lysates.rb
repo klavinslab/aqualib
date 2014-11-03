@@ -10,7 +10,7 @@ class Protocol
   	{
       io_hash: {},
   		yeast_plate_ids: [13578,13579],
-  		colony_numbers: [3,3],
+  		num_colonies: [3,3],
   		debug_mode: "Yes"
   	}
   end
@@ -19,26 +19,39 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
   	io_hash[:debug_mode] = input[:debug_mode] || "No"
-    io_hash[:comb_1] = 3
-    io_hash[:comb_2] = 0
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
+    io_hash[:comb_1] = 3
+    io_hash[:comb_2] = 0
+
+    # making sure have the following hash indexes.
+    io_hash = io_hash.merge({ plate_ids: [], num_colonies: [] }) if !input[:io_hash]
+
+    tasks = find(:task,{ task_prototype: { name: "Yeast Strain QC" } })
+    waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
+    io_hash[:task_ids] = waiting_ids
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
+      io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
+    end
+
   	show {
-  		title "Test page"
+  		title "Protocol information"
   		note "This protocol makes yeast lysates in stripwell tubes"
   	}
 
-  	yeast_items = input[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
+  	yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
   	take yeast_items, interactive: true
 
   	yeast_samples = []
   	yeast_colonies = []
   	yeast_items.each_with_index do |y,idx|
-  		(1..input[:colony_numbers][idx]).each do |x|
+  		(1..io_hash[:num_colonies][idx]).each do |x|
   			yeast_samples.push y.sample
   			yeast_colonies.push y
   		end
@@ -83,7 +96,7 @@ class Protocol
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'LYSATE'."
-      check "Press 'run' and select 50 µL."
+      check "Press 'run' and select 30 µL."
       # TODO: image: "thermal_cycler_home"
     }
 
@@ -118,6 +131,13 @@ class Protocol
     end
 
     release stripwells
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id:tid)[0]
+        set_task_status(task,"lysate")
+      end
+    end
 
     io_hash[:lysate_stripwell_ids] = stripwells.collect { |s| s.id }
     io_hash[:yeast_sample_ids] = yeast_samples.collect { |y| y.id }

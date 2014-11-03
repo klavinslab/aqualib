@@ -141,10 +141,10 @@ class Protocol
 		gas = gibson_assembly_status
 
 		release fragment_stocks, interactive: true, method: "boxes"
-    if io_hash[:fragment_construction_task_ids]
-	    io_hash[:fragment_construction_task_ids].each do |tid|
-	      ready_task = find(:task, id: tid)[0]
-	      set_task_status(ready_task,"done")
+    if io_hash[:task_ids]
+	    io_hash[:task_ids].each do |tid|
+	      task = find(:task, id: tid)[0]
+	      set_task_status(task,"done")
 	    end
 	  end
 

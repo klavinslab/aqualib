@@ -45,9 +45,9 @@ class Protocol
     end
     # making sure have the following hash indexes.
     io_hash = io_hash.merge({ plate_ids: [], num_colonies: [], primer_ids: [], initials: [] }) if !input[:io_hash]
-    show {
-      note "#{io_hash}"
-    }
+    # show {
+    #   note "#{io_hash}"
+    # }
     tasks = find(:task,{task_prototype: { name: "Plasmid Verification" }})
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
     io_hash[:task_ids] = waiting_ids
@@ -57,8 +57,6 @@ class Protocol
       io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
       io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
-      task.status = "overnight"
-      task.save
     end
     # Parse out plate_ids, num_colonies, initials for plasmid that has marker info entered.
     info_needed_plate_ids = []
@@ -80,9 +78,9 @@ class Protocol
     initials.collect!.with_index {|x,i| [x]*num_colonies[i]}
     initials = initials.flatten
 
-    show {
-      note "#{initials}"
-    }
+    # show {
+    #   note "#{initials}"
+    # }
 
     show {
       title "Bacterial Marker info required"

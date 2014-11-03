@@ -31,7 +31,16 @@ class Protocol
   			upload var: "my_gel_pic"
   		}
   	end
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id:tid)[0]
+        set_task_status(task,"gel imaged")
+      end
+    end
+
   	release gels, interactive: true
+    return { io_hash: io_hash }
   end # main
 
 end
