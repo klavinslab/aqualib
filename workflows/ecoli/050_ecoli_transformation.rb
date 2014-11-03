@@ -141,6 +141,8 @@ class Protocol
 
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
     io_hash[:plate_ids] = plates.collect { |p| p.id }
+
+    # Set tasks in the io_hash to be transformed
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]

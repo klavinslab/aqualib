@@ -117,8 +117,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        task.status = "plasmid extracted"
-        task.save
+        set_task_status(ready_task,"plasmid extracted")
       end
     end
     # Return io_hash

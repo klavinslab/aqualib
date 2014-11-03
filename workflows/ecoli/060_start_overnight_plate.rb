@@ -50,7 +50,8 @@ class Protocol
     }
     tasks = find(:task,{task_prototype: { name: "Plasmid Verification" }})
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
-    waiting_ids.each do |tid|
+    io_hash[:task_ids] = waiting_ids
+    io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       io_hash[:plate_ids].concat task.simple_spec[:plate_ids]
       io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
@@ -132,8 +133,15 @@ class Protocol
     end
     release overnights, interactive: true
     release plates, interactive: true
+    
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id:tid)[0]
+        set_task_status(ready_task,"overnight")
+      end
+    end
+
     # Return all io_hash related info
-    io_hash[:task_ids] = waiting_ids
     io_hash[:plate_ids] = plate_ids
     io_hash[:num_colonies] = num_colonies
     io_hash[:overnight_ids] = overnights.collect { |o| o.id }
