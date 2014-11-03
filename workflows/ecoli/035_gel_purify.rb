@@ -77,6 +77,7 @@ class Protocol
 		}
 
 		show {
+			title "Add isopropanol"
 			note "Add isopropanol according to the following table. Pipette up and down to mix"
 			table [["Gel slice", "Isopropanol"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
 		} if (iso_volumes.select { |v| v > 0 }).length > 0
