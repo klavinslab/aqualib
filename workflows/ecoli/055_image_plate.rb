@@ -78,11 +78,10 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        task.status = "imaged and stored in fridge"
-        task.save
+        set_task_status(task,"imaged and stored in fridge")
       end
     end
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
   end # main
 end # Protocol
 

@@ -75,8 +75,6 @@ class Protocol
         ready_task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
         io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
-        ready_task.status = "running"
-        ready_task.save
       end
     end
     io_hash[:task_ids] = ready_task_ids
@@ -172,7 +170,10 @@ class Protocol
     }
 
     release gibson_results, interactive: true,  method: "boxes"
-
+    io_hash[:task_ids].each do |tid|
+      ready_task = find(:task, id: tid)[0]
+      set_task_status(task,"running")
+    end
     io_hash[:gibson_result_ids] = gibson_results.collect {|g| g.id}
     return { io_hash: io_hash }
   end

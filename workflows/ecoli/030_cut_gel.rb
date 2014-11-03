@@ -113,10 +113,12 @@ class Protocol
   end
 
   release slices, interactive: true, method: "boxes"
-
-  io_hash[:fragment_construction_task_ids].each do |tid|
-    ready_task = find(:task, id: tid)[0]
-    set_task_status(ready_task,"gel cut")
+  
+  if io_hash[:fragment_construction_task_ids]
+    io_hash[:fragment_construction_task_ids].each do |tid|
+      ready_task = find(:task, id: tid)[0]
+      set_task_status(ready_task,"gel cut")
+    end
   end
 
   io_hash[:gel_slice_ids] = slices.collect {|s| s.id}

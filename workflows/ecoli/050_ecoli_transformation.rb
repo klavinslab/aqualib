@@ -142,7 +142,7 @@ class Protocol
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
     io_hash[:plate_ids] = plates.collect { |p| p.id }
 
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
 
   end #main
 
