@@ -180,7 +180,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(ready_task,"send to sequencing")
+        set_task_status(task,"send to sequencing")
       end
     end
     # Return all info
