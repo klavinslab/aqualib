@@ -38,8 +38,8 @@ class Protocol
     num_gels = ( num_samples / 10.0 ).ceil
 
     show {
-      title "#{num_gels} 50 mL agarose gel(s) for #{num_samples} fragment(s)"
-      note "This protocol produces gels to be used to purify the fragments in stripwells #{stripwells.collect { |s| s.id }}"
+      title "#{num_gels} 50 mL agarose gel(s) for #{num_samples} sample(s)"
+      note "This protocol produces gels to be used to run samples in stripwells #{stripwells.collect { |s| s.id }}"
       note "This protocol should be run in the gel room. If you are not there, log out, go to the gel room, and log in there to run this protocol. It will be under 'Protocols > Pending Jobs'."
     }
 
