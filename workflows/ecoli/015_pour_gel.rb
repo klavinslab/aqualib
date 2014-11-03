@@ -26,12 +26,13 @@ class Protocol
     percentage = io_hash[:percentage] || 1
     stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
 
-    if io_hash[:debug_mode] == "Yes"
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-
+    
     take stripwells
 
     num_samples = stripwells.inject(0) { |sum,sw| sum + sw.num_samples }

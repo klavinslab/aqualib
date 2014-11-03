@@ -15,7 +15,8 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
   	gels = io_hash[:gel_ids].collect { |i| collection_from i }
-    if io_hash[:debug_mode] == "Yes"
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end

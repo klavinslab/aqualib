@@ -56,18 +56,19 @@ class Protocol
 
   def arguments
     {
-    io_hash: {},
-    initials: ["YY","YY"],
-    plasmid_stock_ids: [29489,29490],
-    primer_ids: [[2575,2569],[2054,2569]],
-    debug_mode: "Yes"
+      io_hash: {},
+      initials: ["YY","YY"],
+      plasmid_stock_ids: [29489,29490],
+      primer_ids: [[2575,2569],[2054,2569]],
+      debug_mode: "Yes"
     }
   end
  
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    if io_hash[:debug_mode] == "Yes"
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end

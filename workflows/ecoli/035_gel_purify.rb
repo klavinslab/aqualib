@@ -22,12 +22,13 @@ class Protocol
 		io_hash = input if input[:io_hash].empty?
 		gel_slice_ids = io_hash[:gel_slice_ids]
 
-		if io_hash[:debug_mode] == "Yes"
-			def debug
-				true
-			end
-		end
-
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
+    
 		gel_slices = find(:item, id: gel_slice_ids)
 		gel_slice_lengths = gel_slices.collect {|gs| gs.sample.properties["Length"]}
 
