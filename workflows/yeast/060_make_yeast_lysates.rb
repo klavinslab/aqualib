@@ -83,7 +83,7 @@ class Protocol
     load_samples( [ "Colony from plate, 1/3 size"], [
         yeast_colonies,
       ], stripwells ) {
-    	note "Before scraping colony, mark it with stripwell_id/location. For example, the first one should be marked as #{stripwells[0].id}/#{1}"
+      note "If colonies on the plate are already marked with circles as c1, c2, c3 ..., scrape colonies following the order on the plates for those marked colonies. Otherwise mark required number of colonies with c1, c2, c3, ..."
     	note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, swirl tip inside the well until mixed."
     }
 
