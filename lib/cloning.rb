@@ -76,7 +76,7 @@ module Cloning
 
         info = fragment_info fid
 
-        # First check if there already exists fragment stock, if so, it's ready to build.
+        # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
         if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
           t[:fragments][:ready_to_use].push fid
         elsif !info
