@@ -32,7 +32,7 @@ class Protocol
     overnights = overnight_ids.collect{|oid| find(:item,id:oid)[0]}
     take overnights, interactive: true
     
-    num=overnights.length
+    num = overnights.length
     num_arr = *(1..num)
     
     show{
@@ -110,6 +110,12 @@ class Protocol
   		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume }
       ps.save
   	end
+
+    # change overnights location to DFP.4
+    overnights.each do |overnight|
+      overnight.location = "DFP.4"
+      overnight.save
+    end
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"

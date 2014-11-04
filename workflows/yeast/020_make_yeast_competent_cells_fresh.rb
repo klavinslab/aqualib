@@ -119,7 +119,13 @@ class Protocol
       note "Recycle all 50 mL tubes by putting into a bin near the sink."
     }
 
+    cultures.each do |y|
+      y.mark_as_deleted
+      y.save
+    end
+
     release [l] + [water] + cultures, interactive: true
+
     io_hash[:yeast_competent_ids] = yeast_compcell_aliquot_ids
     
     return {io_hash: io_hash}

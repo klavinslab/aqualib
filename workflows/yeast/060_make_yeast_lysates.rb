@@ -27,6 +27,7 @@ class Protocol
 
     io_hash[:comb_1] = 3
     io_hash[:comb_2] = 0
+    io_hash[:volume] = 10 # volume for PCR reaction
 
     # making sure have the following hash indexes.
     io_hash = io_hash.merge({ yeast_plate_ids: [], num_colonies: [] }) if !input[:io_hash]

@@ -31,5 +31,6 @@ needed to complete the protocol. For example, the following code will accept bot
   yeast_sample_ids: [] // yeast sample ids corresponding to each well in the stripwell
   debug_mode: "" // if the protocol or metacol is in debug_mode
   task_ids: [] // tasks ids associated with the metacol
+  volume: // colony PCR reaction volume
 }
 

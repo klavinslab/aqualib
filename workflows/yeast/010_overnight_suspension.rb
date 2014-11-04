@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       #Enter the item id that you are going to start overnight with
-      yeast_item_ids: [13011,13010,13022,13023,13024,8437,8431,8426,13022,13023,13024,28703,28702,28701,28700,13012,13013,13014,13015],
+      yeast_item_ids: [13011],
       yeast_transformed_strain_ids: [],
       plasmid_ids: [],
       aliquot_numbers: [],

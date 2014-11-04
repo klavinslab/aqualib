@@ -16,10 +16,10 @@ class Protocol
   def main
 
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
-    volume = input[:volume] || 50
+    volume = io_hash[:volume] || 50
 
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
