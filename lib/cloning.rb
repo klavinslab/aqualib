@@ -17,9 +17,9 @@ module Cloning
     # get length for each fragment
     length = props["Length"]
 
-    if fwd == nil || rev == nil || template == nil
+    if fwd == nil || rev == nil || template == nil || length == 0
 
-      return nil # Whoever entered this fragment didn't provide infor on how to make it
+      return nil # Whoever entered this fragment didn't provide enough information on how to make it
 
     else
 
@@ -77,7 +77,7 @@ module Cloning
         info = fragment_info fid
 
         # First check if there already exists fragment stock, if so, it's ready to build.
-        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0
+        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
           t[:fragments][:ready_to_use].push fid
         elsif !info
           t[:fragments][:not_ready_to_build].push fid

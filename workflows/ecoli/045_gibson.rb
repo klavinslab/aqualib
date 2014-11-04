@@ -91,6 +91,15 @@ class Protocol
     #   note "#{fragment_stocks_flatten.collect {|f| f.id}}"
     # }
 
+    fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
+
+    show {
+      title "Inform user to enter fragment length info"
+      note "The following fragment stocks need length info to be entered in the fragment sample page"
+      note fragment_stocks_need_length_info.collect { |f| "#{f}" }
+      note "Proceed until all the fragmment length info entered."
+    } if fragment_stocks_need_length_info.length > 0
+
     fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| !f.datum[:concentration]}
     if fragment_stocks_need_to_measure.length > 0
       data = show {
