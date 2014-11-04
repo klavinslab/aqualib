@@ -79,10 +79,12 @@ class Protocol
     primer_ids = []
     initials = []
     io_hash[:primer_ids].each_with_index do |pids,idx|
-      primer_ids.concat pids
-      (1..pids.length).each do
-        plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
-        initials.push io_hash[:initials][idx]
+      unless find(:item, id: io_hash[:plasmid_stock_ids][idx])[0].datum[:concentration] == 0
+        primer_ids.concat pids
+        (1..pids.length).each do
+          plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
+          initials.push io_hash[:initials][idx]
+        end
       end
     end
 
@@ -91,10 +93,12 @@ class Protocol
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
-        primer_ids.concat pids
-        (1..pids.length).each do
-          plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
-          initials.push ready_task.simple_spec[:initials]
+        unless find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0].datum[:concentration] == 0
+          primer_ids.concat pids
+          (1..pids.length).each do
+            plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
+            initials.push ready_task.simple_spec[:initials]
+          end
         end
       end
       # show {
@@ -130,7 +134,6 @@ class Protocol
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-
     plasmid_lengths = plasmid_stocks.collect{|pls| pls.sample.properties["Length"]}
     plasmid_concs = plasmid_stocks.collect{|pls| pls.datum[:concentration]}
     plasmid_volume_list = []
