@@ -29,11 +29,11 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }) if !input[:io_hash]
+    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [], task_mode: "Yes" }) if !input[:io_hash]
 
     yeast_items = []
 
-    if io_hash[:task_mode].downcase == "yes" || !io_hash[:task_mode]
+    if io_hash[:task_mode].downcase == "yes"
       tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
       ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
       io_hash[:task_ids] = ready_ids
