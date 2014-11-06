@@ -64,10 +64,6 @@ class Protocol
 
     take stripwells, interactive: true
 
-    show {
-      title "Re-label all the competent cell tubes"
-      table tab.transpose
-    }
 
     show {
       title "Yeast transformation preparation"
@@ -83,6 +79,11 @@ class Protocol
       title "Load 50 µL from each well into corresponding yeast aliquot"
       note "Pieptte 50 µL from each well into corresponding yeast aliquot"
       note "Discard the stripwell into waste bin."
+    }
+
+    show {
+      title "Re-label all the competent cell tubes"
+      table tab.transpose
     }
 
     stripwells.each do |stripwell|
