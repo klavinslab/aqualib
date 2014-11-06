@@ -56,7 +56,7 @@ class Protocol
 
     fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
     length			    = fragment_info_list.collect { |fi| fi[:length] }
-    net_length      = fragment_info_list.collect { |fi| fi[:net_length] }
+    # net_length      = fragment_info_list.collect { |fi| fi[:net_length] }
     templates       = fragments.collect { |f| f.properties["Template"].in("Plasmid Stock")[0]}
     template_lengths = templates.collect { |tp| tp.sample.properties["Length"] }
     concs           = templates.collect { |tp| tp.datum[:concentration] }
@@ -66,6 +66,10 @@ class Protocol
 
     # find the average annealing temperature
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
+
+    show {
+      note "#{length}"
+    }
 
     # find the extension time, 30 sec/kb + 30 sec
     extension_time = (length.max)/1000.0*30 + 30
