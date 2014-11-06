@@ -1,18 +1,10 @@
 argument
-  plasmid_ids: generic, "List of plasmid ids"
-  yeast_item_ids: generic, "List of yeast strain item ids that you are going to transform plasmid into"
-  aliquot_numbers: number array, "List of number of aliquots to make from each yeast item"
-  yeast_transformed_strain_ids: generic, "List of transformed yeast strain ids"
   debug_mode: string, "Yes or No"
 end
 
 place startovernight
 protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
   argument
-    plasmid_ids: plasmid_ids
-    yeast_item_ids: yeast_item_ids
-    aliquot_numbers: aliquot_numbers
-    yeast_transformed_strain_ids: yeast_transformed_strain_ids
     debug_mode: debug_mode
   end
   group: "technicians"
