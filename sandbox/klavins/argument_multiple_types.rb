@@ -13,7 +13,7 @@ class Protocol
     show {
       title "Samples input"
       samples.each { |s|
-        note "name: #{s.name}"
+        note "name: #{s.name}, type: #{s.sample_type.name}"
       }
     }
 
