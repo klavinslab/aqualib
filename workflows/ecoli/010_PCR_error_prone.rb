@@ -53,12 +53,16 @@ class Protocol
     show {
       note "#{io_hash}"
     }
-    
+
     io_hash[:fragment_ids].each do |fid|
       info = fragment_info fid
       fragment_info_list.push info   if info
       not_ready.push fid if !info
     end
+
+    show {
+      note "#{fragment_info_list}"
+    }
 
     mutation_nums = io_hash[:mutation_nums]
 
