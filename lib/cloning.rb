@@ -176,6 +176,42 @@ module Cloning
     }
   end ### fragment_construction_status
 
+  def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
+
+    raise "Empty collection list" unless collections.length > 0
+
+    heading = [ [ "#{collections[0].object_type.name}", "Location" ] + headings ]
+    i = 0
+
+    collections.each do |col|
+      
+      tab = []
+      m = col.matrix
+
+      (0..m.length-1).each do |r|
+        (0..m[r].length-1).each do |c|
+          if i < ingredients[0].length
+            if m.length == 1
+              loc = "#{c+1}"
+            else
+              loc = "#{r+1},#{c+1}"
+            end
+            tab.push( [ col.id, loc ] + ingredients.collect { |ing| { content: ing[i], check: true } } )
+          end
+          i += 1
+        end
+      end
+
+      show {
+          title "Load #{col.object_type.name} #{col.id}"
+          table heading + tab
+        }
+    end
+
+  end
+
+
+
 end
 
 
