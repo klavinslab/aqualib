@@ -79,7 +79,8 @@ class Protocol
       # get length for each fragment
       length = props["Length"]
       show {
-        note "#{fragment}" + " " + "#{length}"
+        note "#{fragment}" + " " + "#{length}" + "#{template}"
+        note "#{fwd}" + "#{rev}"
       }
     end
 
