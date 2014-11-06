@@ -68,7 +68,7 @@ class Protocol
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
 
     show {
-      note "#{length}"
+      note fragments.collect { |f| f.id }
     }
 
     # find the extension time, 30 sec/kb + 30 sec
