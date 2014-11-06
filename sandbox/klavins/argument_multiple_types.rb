@@ -8,7 +8,7 @@ class Protocol
 
   def main
 
-    samples = input[:ids].collect { |i| find(:sample,id:i) }
+    samples = input[:ids].collect { |i| find(:sample,id:i)[0] }
 
     show {
       title "Samples input"
