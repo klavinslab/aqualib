@@ -50,52 +50,63 @@ class Protocol
       io_hash[:mutation_nums].concat task.simple_spec[:mutation_nums]
     end
 
-    show {
-      note "#{io_hash}"
-    }
+    # show {
+    #   note "#{io_hash}"
+    # }
 
-    io_hash[:fragment_ids].each do |fid|
-      info = fragment_info fid
-      show {
-        note "#{info}"
-      }
-      fragment_info_list.push info   if info
-      not_ready.push fid if !info
-    end
+    # io_hash[:fragment_ids].each do |fid|
+    #   info = fragment_info fid
+    #   show {
+    #     note "#{info}"
+    #   }
+    #   fragment_info_list.push info   if info
+    #   not_ready.push fid if !info
+    # end
 
-    show {
-      note "#{fragment_info_list}"
-    }
+    # show {
+    #   note "#{fragment_info_list}"
+    # }
 
-    io_hash[:fragment_ids].each do |fid|
-      fragment = find(:sample,{id: fid})[0]
-      props = fragment.properties
+    # io_hash[:fragment_ids].each do |fid|
+    #   fragment = find(:sample,{id: fid})[0]
+    #   props = fragment.properties
 
-      # get sample ids for primers and template
-      fwd = props["Forward Primer"]
-      rev = props["Reverse Primer"]
-      template = props["Template"]
+    #   # get sample ids for primers and template
+    #   fwd = props["Forward Primer"]
+    #   rev = props["Reverse Primer"]
+    #   template = props["Template"]
 
-      # get length for each fragment
-      length = props["Length"]
-      show {
-        note "#{fragment}" + " " + "#{length}" + "#{template}"
-        note "#{fwd}" + "#{rev}"
-      }
-    end
+    #   # get length for each fragment
+    #   length = props["Length"]
+    #   show {
+    #     note "#{fragment}" + " " + "#{length}" + "#{template}"
+    #     note "#{fwd}" + "#{rev}"
+    #   }
+    #   if fwd == nil || rev == nil || template == nil || length == 0
 
+    #     show {
+    #       note "Haha"
+    #     }
+    #   end
+
+    # end
 
     mutation_nums = io_hash[:mutation_nums]
 
-    fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
-    length			    = fragment_info_list.collect { |fi| fi[:length] }
+    fragments = io_hash[:fragment_ids].collect { |fid| find(:sample, id: fid)[0]}
+    lengths = fragments.collect { |f| f.properties["Length"]}
+
+    # fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
+    # length			    = fragment_info_list.collect { |fi| fi[:length] }
     # net_length      = fragment_info_list.collect { |fi| fi[:net_length] }
     templates       = fragments.collect { |f| f.properties["Template"].in("Plasmid Stock")[0]}
     template_lengths = templates.collect { |tp| tp.sample.properties["Length"] }
     concs           = templates.collect { |tp| tp.datum[:concentration] }
-    forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-    reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
-    temperatures    = fragment_info_list.collect { |fi| fi[:tanneal] }
+    # forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
+    # reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
+    forward_primers = fragments.collect { |f| f.properties["Forward Primer"].in("Primer Aliquot")[0]}
+    reverse_primers = fragments.collect { |f| f.properties["Reverse Primer"].in("Primer Aliquot")[0]}
+    temperatures    = fragments.collect { |f| (f.properties["Forward Primer"].properties["T Anneal"] + f.properties["Reverse Primer"].properties["T Anneal"])/2 }
 
     # find the average annealing temperature
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
@@ -105,13 +116,13 @@ class Protocol
     }
 
     # find the extension time, 30 sec/kb + 30 sec
-    extension_time = (length.max)/1000.0*30 + 30
+    extension_time = (lengths.max)/1000.0*30 + 30
     mm, ss = (extension_time.to_i).divmod(60) 
 
     # find target amount in template for error prone PCR
-    mutation_nums_kb = mutation_nums.map.with_index { |m,i| m * 1000.0 / length[i] }
+    mutation_nums_kb = mutation_nums.map.with_index { |m,i| m * 1000.0 / lengths[i] }
     target_amount    = mutation_nums_kb.collect { |n| Math.exp((12.6-n)/1.9) }
-    template_amount  = target_amount.map.with_index { |t,i| t * template_lengths[i] / length[i]}
+    template_amount  = target_amount.map.with_index { |t,i| t * template_lengths[i] / lengths[i]}
     template_volume  = template_amount.map.with_index { |t,i| t / concs[i]}
 
     # find template vol and id, primer vol and id, water vol to add error prone PCR
