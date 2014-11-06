@@ -12,7 +12,8 @@ class Protocol
       #Enter the fragment sample id (not item ids) as a list, eg [2048,2049,2060,2061,2,2]
       fragment_ids: [2049,2062],
       #Enter expected number of mutations on this fragment
-      mutation_nums: [2,4]
+      mutation_nums: [2,4],
+      debug_mode: "Yes"
     }
   end
 
@@ -30,13 +31,28 @@ class Protocol
     # Collect fragment info
     fragment_info_list = []
     not_ready = []
-    mutation_nums = io_hash[:mutation_nums]
+    io_hash[:comb_1] = 2
+    io_hash[:comb_2] = 0
+
+    # making sure have the following hash indexes.
+    io_hash = io_hash.merge({ fragment_ids: [], mutation_nums: [] }) if !input[:io_hash]
+    tasks = find(:task,{ task_prototype: { name: "Mutagenized Fragment Construction" } })
+    ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
+    io_hash[:task_ids] = ready_ids
+
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      io_hash[:fragment_ids].concat task.simple_spec[:fragments]
+      io_hash[:mutation_nums].concat task.simple_spec[:mutation_nums]
+    end
 
     io_hash[:fragment_ids].each do |fid|
       info = fragment_info fid
       fragment_info_list.push info   if info
       not_ready.push fid if !info
     end
+
+    mutation_nums = io_hash[:mutation_nums]
 
     fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
     length			    = fragment_info_list.collect { |fi| fi[:length] }
@@ -53,6 +69,7 @@ class Protocol
 
     # find the extension time, 30 sec/kb + 30 sec
     extension_time = (length.max)/1000.0*30 + 30
+    mm, ss = (extension_time.to_i).divmod(60) 
 
     # find target amount in template for error prone PCR
     mutation_nums_kb = mutation_nums.map.with_index { |m,i| m * 1000.0 / length[i] }
@@ -166,7 +183,7 @@ class Protocol
     # Release the stripwells silently, since they should stay in the thermocycler
     release stripwells
 
-    io_hash[:stripwell_ids] = all_stripwells.collect { |s| s.id }
+    io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
 
     return { io_hash: io_hash }
 
