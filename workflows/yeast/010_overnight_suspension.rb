@@ -47,6 +47,7 @@ class Protocol
 
     io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
     io_hash[:volume] = input[:volume] || 2
+    io_hash[:large_volume] = 50
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
 
