@@ -64,6 +64,23 @@ class Protocol
       note "#{fragment_info_list}"
     }
 
+    io_hash[:fragment_ids].each do |fid|
+      fragment = find(:sample,{id: fid})[0]
+      props = fragment.properties
+
+      # get sample ids for primers and template
+      fwd = props["Forward Primer"]
+      rev = props["Reverse Primer"]
+      template = props["Template"]
+
+      # get length for each fragment
+      length = props["Length"]
+      show {
+        note "#{fragment}" + " " + "#{length}"
+      }
+    end
+
+
     mutation_nums = io_hash[:mutation_nums]
 
     fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
