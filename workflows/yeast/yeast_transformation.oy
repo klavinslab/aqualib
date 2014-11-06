@@ -21,7 +21,7 @@ place innoculate
 end
 
 place digest
-  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transforamtion.rb"
+  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
