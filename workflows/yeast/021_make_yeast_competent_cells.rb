@@ -42,10 +42,14 @@ class Protocol
     show{
       title "Preperation Step"
       note "Label #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
-      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"     
     }
+
+    show {
+      title "Preperation step for 100 mL cultures"
+      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
+      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+    } if io_hash[:large_volume] > 50
     
     show{
       title "Harvesting Cells"
@@ -100,8 +104,8 @@ class Protocol
       check "Estimate the pellet volume using the gradations on the side of the eppendorf tube for each tube."
       note "The 0.1 on the tube means 100 µL and each line is another 100 µL"
       (1..num).each do |x|
-        get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for first tube #{num}", default: 30
-        get "number", var: "#{x}_2", label: "Enter an estimated volume of the pellet for second tube #{num}", default: 30
+        get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for tube #{num}", default: 30
+        get "number", var: "#{x}_2", label: "If you have another tube #{num}, enter an estimated volume of the pellet for second tube #{num}", default: 0
       end
     }
 
@@ -109,7 +113,7 @@ class Protocol
       title "Pipetting FCC into 1.5 mL tubes"
       (1..num).each do |x|
         check "Add #{4*pellet_volume[:"#{x}_1".to_sym]} µL of FCC to the first tube #{x}"
-        check "Add #{4*pellet_volume[:"#{x}_2".to_sym]} µL of FCC to the second tube #{x}"
+        check "Add #{4*pellet_volume[:"#{x}_2".to_sym]} µL of FCC to the second tube #{x}" if io_hash[:large_volume] > 50
       end
       check "Vortex the tubes till cell pellet is resuspended"
     }

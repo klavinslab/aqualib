@@ -9,28 +9,42 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #input should be yeast competent cells and digested plasmids
-      "yeast_competent_ids Yeast Competent Aliquot" => [8437,8431],
+      yeast_parent_strain_ids: [2866,2866],
       #stripwell that containing digested plasmids
       "stripwell_ids Stripwell" => [11614],
       "yeast_transformed_strain_ids Yeast Strain" => [1705,1706],
-      "plasmid_ids Plasmid Stock" => [9189,9167],
+      "plasmid_stock_ids Plasmid Stock" => [9189,9167],
       debug_mode: "Yes"
     }
   end
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-  	yeast_competent_cells = io_hash[:yeast_competent_ids].collect {|yid| find(:item, id: yid )[0]}
+    
+    yeast_competent_cells = []
+    num_hash = Hash.new {|h,k| h[k] = 0 }
+    io_hash[:yeast_parent_strain_ids].each do |yid|
+      y = find(:sample, id: yid )[0]
+      num_hash[y.name] += 1
+      yeast_competent_cells.push y.in("Yeast Competent Aliquot")[num_hash[y.name]-1]
+    end
+
+    show {
+      note yeast_competent_cells.collect { |y| "#{y}"}
+      note "#{num_hash}"
+    }
+
+    take yeast_competent_cells, interactive: true, method: "boxes"
+
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
-    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
+    yeast_markers = io_hash[:plasmid_stock_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
 
     # show {
     #   title "Testing page"
@@ -48,8 +62,7 @@ class Protocol
       tab.push([y.id,yeast_transformation_mixtures[idx].id])
     end
 
-
-    take yeast_competent_cells + stripwells, interactive: true, method: "boxes"
+    take stripwells, interactive: true
 
     show {
       title "Re-label all the competent cell tubes"

@@ -10,9 +10,6 @@ class Protocol
     {
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [13011],
-      yeast_transformed_strain_ids: [],
-      plasmid_ids: [],
-      aliquot_numbers: [],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -22,26 +19,39 @@ class Protocol
   end
 
   def main
-    io_hash = {}
-    io_hash[:yeast_item_ids] = input[:yeast_item_ids]
-    io_hash[:aliquot_numbers] = input[:aliquot_numbers]
-    io_hash[:yeast_transformed_strain_ids] = input[:yeast_transformed_strain_ids]
-    io_hash[:plasmid_ids] = input[:plasmid_ids]
-    io_hash[:debug_mode] = input[:debug_mode]
-    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
-    io_hash[:volume] = input[:volume] || 2
-
-    volume = io_hash[:volume]
-    media_type = io_hash[:media_type]
-
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash[:debug_mode] = input[:debug_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+    # making sure have the following hash indexes.
+    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }) if !input[:io_hash]
+
+    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
+    ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
+    io_hash[:task_ids] = ready_ids
+
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
+      io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
+      io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
+    end
+
+    show {
+      note "#{io_hash}"
+    }
+
+    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
+    io_hash[:volume] = input[:volume] || 2
+    media_type = io_hash[:media_type]
+    volume = io_hash[:volume]
 
     # find all yeast items and related types
-    yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+    yeast_items = io_hash[:yeast_parent_strain_ids].uniq.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
 
     # group into different types using Hash
     yeast_type_hash = Hash.new {|h,k| h[k] = [] }
@@ -95,7 +105,7 @@ class Protocol
 
     io_hash[:yeast_overnight_ids] = overnights.collect {|x| x.id}
     
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
   end
 
 end  

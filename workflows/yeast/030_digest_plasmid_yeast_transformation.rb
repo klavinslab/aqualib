@@ -10,13 +10,12 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_ids: [9189,11546,11547],
+      plasmid_stock_ids: [9189,11546,11547],
       debug_mode: "Yes"
     }
   end
   
   def main
-
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
@@ -24,24 +23,13 @@ class Protocol
         true
       end
     end
-    plasmids_to_digest = io_hash[:plasmid_ids].collect{|pid| find(:item, id: pid )[0]}
-    plasmids_to_take = plasmids_to_digest.uniq
+    plasmid_stocks = io_hash[:plasmid_stock_ids].collect{|pid| find(:item, id: pid )[0]}
 
-
-    take plasmids_to_take, interactive: true, method: "boxes"
+    take plasmid_stocks, interactive: true, method: "boxes"
     
     cut_smart= choose_sample "Cut Smart", take: true
-
-    digestions=[]
     
-    plasmids_to_digest.each do |plasmid|
-        
-        j = produce new_sample plasmid.sample.name, of: "Plasmid", as: "Digested Plasmid"
-        digestions.push(j)
-        
-    end    
-    
-    stripwells = produce spread digestions, "Stripwell", 1, 12
+    stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
 
     show {
       warning "In the following step you will take PmeI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
@@ -49,9 +37,9 @@ class Protocol
     
     pme1= choose_sample "PmeI", take: true
     
-    water = 42*plasmids_to_digest.length*1.3
-    buffer = 5*plasmids_to_digest.length*1.3
-    enzyme = 1*plasmids_to_digest.length*1.3
+    water = 42*plasmid_stocks.length*1.3
+    buffer = 5*plasmid_stocks.length*1.3
+    enzyme = 1*plasmid_stocks.length*1.3
     
     show {
       title "Make master mix"
@@ -74,7 +62,7 @@ class Protocol
       end
     }
     
-    load_samples( ["Plasmid, 2 µL"], [plasmids_to_digest], stripwells ) {
+    load_samples( ["Plasmid, 2 µL"], [plasmid_stocks], stripwells ) {
       note "Add 2 µL of each plasmid into the stripwell indicated."
       warning "Use a fresh pipette tip for each transfer."
     }
@@ -92,7 +80,7 @@ class Protocol
     end
     
     release stripwells
-    release plasmids_to_take, interactive: true, method: "boxes"
+    release plasmid_stocks, interactive: true, method: "boxes"
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
     return { io_hash: io_hash }

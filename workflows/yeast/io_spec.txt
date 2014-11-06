@@ -21,6 +21,14 @@ needed to complete the protocol. For example, the following code will accept bot
   end
 
 ====================================
+// this is for the yeast transformation metacol
+{
+  yeast_transformed_strain_ids: [],
+  plasmid_stock_ids: [],
+  yeast_parent_strain_ids: [],
+  
+
+}
 
 //this is for the yeast verification metacol
 {
