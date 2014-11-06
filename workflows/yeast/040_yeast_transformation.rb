@@ -26,7 +26,7 @@ class Protocol
         true
       end
     end
-    
+
     yeast_competent_cells = []
     num_hash = Hash.new {|h,k| h[k] = 0 }
     io_hash[:yeast_parent_strain_ids].each do |yid|
@@ -154,7 +154,10 @@ class Protocol
           check "Pour the beads into a waste bead container"
           check "Discard above 1.5 mL tubes"
         }
-        release mixtures
+        mixtures.each do |m|
+          m.mark_as_deleted
+          m.save
+        end
       end
     end
 
