@@ -111,7 +111,7 @@ class Protocol
     end
 
     show {
-      note "yeast_transformation_mixtures_markers"
+      note "#{yeast_transformation_mixtures_markers}"
     }
 
     yeast_plates = []
