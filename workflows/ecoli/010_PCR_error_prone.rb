@@ -56,6 +56,9 @@ class Protocol
 
     io_hash[:fragment_ids].each do |fid|
       info = fragment_info fid
+      show {
+        note "#{info}"
+      }
       fragment_info_list.push info   if info
       not_ready.push fid if !info
     end
