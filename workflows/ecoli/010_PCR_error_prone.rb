@@ -50,6 +50,10 @@ class Protocol
       io_hash[:mutation_nums].concat task.simple_spec[:mutation_nums]
     end
 
+    show {
+      note "#{io_hash}"
+    }
+    
     io_hash[:fragment_ids].each do |fid|
       info = fragment_info fid
       fragment_info_list.push info   if info
