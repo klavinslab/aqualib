@@ -40,6 +40,10 @@ class Protocol
     ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
     io_hash[:task_ids] = ready_ids
 
+    show {
+      note "#{io_hash}"
+    }
+
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       io_hash[:fragment_ids].concat task.simple_spec[:fragments]
