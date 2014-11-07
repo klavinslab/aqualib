@@ -8,6 +8,7 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       #Enter the item id that you are going to start overnight with
       yeast_item_ids: [13011],
       #media_type could be YPAD or SC or anything you'd like to start with
@@ -23,23 +24,28 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash[:task_mode] = input[:task_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    # making sure have the following hash indexes.
-    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [], task_mode: "Yes" }) if !input[:io_hash]
+    # making sure have the following hash indexes if its started from metacol or its task mode is transformation
+    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }) if !input[:io_hash] || io_hash[:task_mode].downcase == "transformation" 
 
     yeast_items = []
 
-    if io_hash[:task_mode].downcase == "yes"
+    if io_hash[:task_mode].downcase == "transformation"
       tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
       ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
       io_hash[:task_ids] = ready_ids
-
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        show {
+          note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
+          note "#{io_hash}"
+        }
+
         io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
         io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
         io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
