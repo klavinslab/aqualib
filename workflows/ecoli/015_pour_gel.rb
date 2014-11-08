@@ -141,6 +141,13 @@ class Protocol
 
     release stripwells
 
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"pcr")
+      end
+    end
+
     io_hash[:gel_ids] = gel_ids
 
     return { io_hash: io_hash }

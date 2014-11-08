@@ -50,63 +50,16 @@ class Protocol
       io_hash[:mutation_nums].concat task.simple_spec[:mutation_nums]
     end
 
-    # show {
-    #   note "#{io_hash}"
-    # }
-
-    # io_hash[:fragment_ids].each do |fid|
-    #   info = fragment_info fid
-    #   show {
-    #     note "#{info}"
-    #   }
-    #   fragment_info_list.push info   if info
-    #   not_ready.push fid if !info
-    # end
-
-    # show {
-    #   note "#{fragment_info_list}"
-    # }
-
-    # io_hash[:fragment_ids].each do |fid|
-    #   fragment = find(:sample,{id: fid})[0]
-    #   props = fragment.properties
-
-    #   # get sample ids for primers and template
-    #   fwd = props["Forward Primer"]
-    #   rev = props["Reverse Primer"]
-    #   template = props["Template"]
-
-    #   # get length for each fragment
-    #   length = props["Length"]
-    #   show {
-    #     note "#{fragment}" + " " + "#{length}" + "#{template}"
-    #     note "#{fwd}" + "#{rev}"
-    #   }
-    #   if fwd == nil || rev == nil || template == nil || length == 0
-
-    #     show {
-    #       note "Haha"
-    #     }
-    #   end
-
-    # end
-
     mutation_nums = io_hash[:mutation_nums]
 
-    fragments = io_hash[:fragment_ids].collect { |fid| find(:sample, id: fid)[0]}
-    lengths = fragments.collect { |f| f.properties["Length"]}
-
-    # fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
-    # length			    = fragment_info_list.collect { |fi| fi[:length] }
-    # net_length      = fragment_info_list.collect { |fi| fi[:net_length] }
-    templates       = fragments.collect { |f| f.properties["Template"].in("Plasmid Stock")[0]}
+    fragments        = io_hash[:fragment_ids].collect { |fid| find(:sample, id: fid)[0]}
+    lengths          = fragments.collect { |f| f.properties["Length"]}
+    templates        = fragments.collect { |f| f.properties["Template"].in("Plasmid Stock")[0]}
     template_lengths = templates.collect { |tp| tp.sample.properties["Length"] }
-    concs           = templates.collect { |tp| tp.datum[:concentration] }
-    # forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-    # reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
-    forward_primers = fragments.collect { |f| f.properties["Forward Primer"].in("Primer Aliquot")[0]}
-    reverse_primers = fragments.collect { |f| f.properties["Reverse Primer"].in("Primer Aliquot")[0]}
-    temperatures    = fragments.collect { |f| (f.properties["Forward Primer"].properties["T Anneal"] + f.properties["Reverse Primer"].properties["T Anneal"])/2 }
+    concs            = templates.collect { |tp| tp.datum[:concentration] }
+    forward_primers  = fragments.collect { |f| f.properties["Forward Primer"].in("Primer Aliquot")[0]}
+    reverse_primers  = fragments.collect { |f| f.properties["Reverse Primer"].in("Primer Aliquot")[0]}
+    temperatures     = fragments.collect { |f| (f.properties["Forward Primer"].properties["T Anneal"] + f.properties["Reverse Primer"].properties["T Anneal"])/2 }
 
     # find the average annealing temperature
     tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
@@ -135,7 +88,7 @@ class Protocol
     show {
       title "Fragment Information"
       note "This protocol will build the following fragments with expected input mutation numbers:"
-      note (fragments.map.with_index { |f,i| " #{f} with #{mutation_nums[i]} bps mutations" })
+      note (fragments.map.with_index { |f,i| " #{f} with #{mutation_nums[i]} bp mutations" })
       note ("The amount in ng for each template needed to be add are:" )
       note (template_amount.collect { |t| "#{t.round(2)}"  })
       #note (net_length.collect { |l| "#{l}"})
@@ -230,6 +183,13 @@ class Protocol
 
     # Release the stripwells silently, since they should stay in the thermocycler
     release stripwells
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"pcr")
+      end
+    end
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
 
