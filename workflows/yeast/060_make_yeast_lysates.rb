@@ -41,6 +41,8 @@ class Protocol
       io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
     end
 
+    raise "Incorrect inputs, yeast_plate_ids size does not match num_colonies size. They need to be one to one correspondence." if io_hash[:yeast_plate_ids].length != io_hash[:num_colonies].length
+
   	show {
   		title "Protocol information"
   		note "This protocol makes yeast lysates in stripwell tubes"
