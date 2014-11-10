@@ -1,3 +1,4 @@
+# this protocol is for starting overnight suspensions for yeast transformation tasks
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
@@ -9,14 +10,11 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #Enter the item id that you are going to start overnight with
-      yeast_item_ids: [13011],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "2",
-      debug_mode: "Yes",
-      task_mode: "No"
+      debug_mode: "Yes"
     }
   end
 
@@ -24,14 +22,18 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode] || "No"
-    io_hash[:task_mode] = input[:task_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    # making sure have the following hash indexes if its started from metacol or its task mode is transformation
-    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }) if !input[:io_hash] || io_hash[:task_mode].downcase == "transformation"
+    # set up io_hash
+    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] })
+    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
+    io_hash[:volume] = input[:volume] || 2
+    media_type = io_hash[:media_type]
+    volume = io_hash[:volume]
+    io_hash[:large_volume] = 50
     # process yeast transformation tasks ready and waiting based on information provided.
     tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
     task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
@@ -50,36 +52,24 @@ class Protocol
       end
     end # task_ids
 
-
-    yeast_items = []
-    if io_hash[:task_mode].downcase == "transformation"
-      tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-      io_hash[:task_ids] = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        show {
-          note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
-          note "#{io_hash}"
-        }
-        io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
-        io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
-      end
-      # find all yeast items and related types
-      yeast_items = io_hash[:yeast_parent_strain_ids].uniq.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
-    else
-      yeast_items = io_hash[:yeast_item_ids].uniq.collect {|yid| find(:item, id: yid )[0]}
+    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
+    io_hash[:task_ids] = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      show {
+        note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
+        note "#{io_hash}"
+      }
+      io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
+      io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
+      io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
     end
+    # find all yeast items and related types
+    yeast_items = io_hash[:yeast_parent_strain_ids].uniq.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
 
     show {
       note "#{io_hash}"
     }
-
-    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
-    io_hash[:volume] = input[:volume] || 2
-    io_hash[:large_volume] = 50
-    media_type = io_hash[:media_type]
-    volume = io_hash[:volume]
 
     # group into different types using Hash
     yeast_type_hash = Hash.new {|h,k| h[k] = [] }
@@ -94,7 +84,7 @@ class Protocol
 
     show {
       title "Protocol information"
-      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for yeast transformation tasks"
     }
 
     overnights = []
@@ -129,6 +119,13 @@ class Protocol
       }
       release values, interactive: true, method: "boxes"
       release overnight, interactive: true, method: "boxes"
+    end
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"overnight")
+      end
     end
 
     io_hash[:yeast_overnight_ids] = overnights.collect {|x| x.id}
