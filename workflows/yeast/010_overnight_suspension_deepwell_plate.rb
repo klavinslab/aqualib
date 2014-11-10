@@ -38,7 +38,7 @@ class Protocol
       title "Protocol information"
       note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions into Eppendorf Deepwell Plate 96"
     }
-    deepwells = produce spread yeast_items, "Eppendorf Deepwell Plate 96", 12, 8
+    deepwells = produce spread yeast_items, "Eppendorf Deepwell Plate 96", 8, 12
     load_samples( ["Yeast items"], [
         yeast_items,
       ], deepwells )
