@@ -7,8 +7,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      comb_1: 2,
-      comb_2: 0,
+      comb_1: "6 thick",
+      comb_2: "6 thick",
       percentage: 1,
       stripwell_ids: [28848]
     }
@@ -17,15 +17,9 @@ class Protocol
   def main
 
     #   percentage: number, "Enter the percentage gel to make (e.g. 1 = 1%)"
-    #   comb_1: number, "Enter '1' for 6 thin lanes. Enter '2' for 6 thick lanes. Enter '3' for 10 thin lanes. Enter '4' for 10 thick lanes"
-    #   comb_2: number, "Enter '0' for no second comb. Enter '1' for 6 thin lanes. Enter '2' for 6 thick lanes. Enter '3' for 10 thin lanes. Enter '4' for 10 thick lanes"
+    #   comb_1, comb_2: string, Enter '0' for no lanes,  "Enter '6 thin' for 6 thin lanes. Enter '6 thick' for 6 thick lanes. Enter '10 thin' for 10 thin lanes. Enter '10 thick' for 10 thick lanes"
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    comb_1 = io_hash[:comb_1] || 2
-    comb_2 = io_hash[:comb_2] || 2
-    percentage = io_hash[:percentage] || 1
-    stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
-
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -33,10 +27,27 @@ class Protocol
       end
     end
     
+    comb_1 = io_hash[:comb_1] || "6 thick"
+    comb_2 = io_hash[:comb_2] || "6 thick"
+    comb_1 = comb_1.split(' ')
+    comb_1 = comb_2.split(' ')
+    raise "Incorrect inputs, comb_1 and comb_2 should be the same size, both 6 or 10. You can choose thin or thick for each one though" if comb_2[0] != 0 && comb_1[0] != comb_2[0]
+    percentage = io_hash[:percentage] || 1
+    stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
+
     take stripwells
 
     num_samples = stripwells.inject(0) { |sum,sw| sum + sw.num_samples }
-    num_gels = ( num_samples / 10.0 ).ceil
+    cols = comb_1[0]
+    if comb_2[0] == 0
+      num_wells_per_gel = comb_1[0] - 1
+      rows = 1
+    else
+      num_wells_per_gel = comb_1[0] - 1 + comb_2[0] - 1
+      rows = 2
+    end
+
+    num_gels = ( num_samples / num_wells_per_gel.to_f ).ceil
 
     show {
       title "#{num_gels} 50 mL agarose gel(s) for #{num_samples} sample(s)"
@@ -68,52 +79,32 @@ class Protocol
       # image "gel_add_gelgreen"
     }
 
-    # release [ agarose, gel_green ], interactive: true
-
     gel_ids = []
 
     (1..num_gels).each do |gel_number|
 
-      # gel_box = choose_object "49 mL Gel Box With Casting Tray (clean)"
-
-      combs = [ "n/a", "6-well", "6-well", "10-well", "10-well"   ]
-      sides = [ "n/a", "thinner", "thicker", "thinner", "thicker" ]
-
       show {
         title "Gel Number #{gel_number}, add top comb"
         check "Go get a 49 mL Gel Box With Casting Tray (clean)"
-        check "Retrieve a #{combs[comb_1]} purple comb from A7.325"
+        check "Retrieve a #{comb_1[0]}-well purple comb from A7.325"
         check "Position the gel box with the electrodes facing away from you. Add a purple comb to the side of the casting tray nearest the side of the gel box."
-        check "Put the #{sides[comb_1]} side of the comb down."
+        check "Put the #{comb_1[1]} side of the comb down."
         note "Make sure the comb is well-situated in the groove of the casting tray."
         # image "gel_comb_placement"
       }
 
-      unless comb_2 == 0
+      unless comb_2[0] == 0
         show {
           title "Gel Number #{gel_number}, add bottom comb"
-          check "Retrieve a #{combs[comb_2]} purple comb from A7.325"
+          check "Retrieve a #{comb_2[0]}-well purple comb from A7.325"
           check "Position the gel box with the electrodes facing away from you. Add a purple comb to the center of the casting tray."
-          check "Put the #{sides[comb_2]} side of the comb down."
+          check "Put the #{comb_2[1]} side of the comb down."
           note "Make sure the comb is well-situated in the groove of the casting tray."
         # image "gel_comb_placement"
         }
       end
 
-      if comb_1 == 1 || comb_1 == 2
-        cols = 6
-      else
-        cols = 10
-      end
-
-      if comb_2 == 0
-        rows = 1
-      else
-        rows = 2
-      end
-
       gel = produce new_collection "50 mL #{percentage} Percent Agarose Gel in Gel Box", rows, cols
-      # release [ gel_box ]
       gel.move "A7.325"
 
       show {

@@ -25,8 +25,8 @@ class Protocol
       end
     end
 
-    io_hash[:comb_1] = 3
-    io_hash[:comb_2] = 3
+    io_hash[:comb_1] = "6 thin"
+    io_hash[:comb_2] = "6 thin"
     io_hash[:volume] = 10 # volume for PCR reaction
 
     # making sure have the following hash indexes.
