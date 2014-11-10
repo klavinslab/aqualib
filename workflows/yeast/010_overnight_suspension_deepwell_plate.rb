@@ -43,6 +43,8 @@ class Protocol
         yeast_items,
       ], deepwells )
     release yeast_items, interactive: true
+    io_hash[:deepwell_ids] = deepwells.collect {|d| d.id}
+    return { io_hash: io_hash }
   end # main
 
 end # Protocol
