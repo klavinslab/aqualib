@@ -15,8 +15,7 @@ class Protocol
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "2",
-      debug_mode: "Yes",
-      task_mode: "No"
+      debug_mode: "Yes"
     }
   end
 
@@ -30,46 +29,8 @@ class Protocol
         true
       end
     end
-    # making sure have the following hash indexes if its started from metacol or its task mode is transformation
-    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }) if !input[:io_hash] || io_hash[:task_mode].downcase == "transformation"
-    # process yeast transformation tasks ready and waiting based on information provided.
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-    task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      ready_yeast_strains = []
-      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
-        y = find(:sample, id: yid)[0]
-        # check if glycerol stock and plasmid stock are ready
-        ready_yeast_strains.push y if y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 && y.properties["Plasmid"].in("Plasmid Stock").length > 0
-      end
-      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
-        set_task_status(task,"ready")
-      else
-        set_task_status(task, "waiting for ingredients")
-      end
-    end # task_ids
-
-
     yeast_items = []
-    if io_hash[:task_mode].downcase == "transformation"
-      tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-      io_hash[:task_ids] = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        show {
-          note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
-          note "#{io_hash}"
-        }
-        io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
-        io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
-      end
-      # find all yeast items and related types
-      yeast_items = io_hash[:yeast_parent_strain_ids].uniq.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
-    else
-      yeast_items = io_hash[:yeast_item_ids].uniq.collect {|yid| find(:item, id: yid )[0]}
-    end
+    yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
 
     show {
       note "#{io_hash}"
@@ -77,7 +38,6 @@ class Protocol
 
     io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
     io_hash[:volume] = input[:volume] || 2
-    io_hash[:large_volume] = 50
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
 
@@ -94,7 +54,7 @@ class Protocol
 
     show {
       title "Protocol information"
-      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for general purposes."
     }
 
     overnights = []
