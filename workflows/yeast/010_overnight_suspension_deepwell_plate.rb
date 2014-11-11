@@ -15,8 +15,7 @@ class Protocol
       media_type: "800 mL SC liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "1",
-      debug_mode: "Yes",
-      task_mode: "No"
+      debug_mode: "Yes"
     }
   end
 
@@ -24,21 +23,21 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode] || "No"
-    io_hash[:task_mode] = input[:task_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+    yeast_items = io_hash[:yeast_item_ids].collect { |yid| find(:item, id: yid )[0] }
+    yeast_strains = yeast_items.collect { |y| y.sample}
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
     take yeast_items, interactive: true
     show {
       title "Protocol information"
-      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions into Eppendorf Deepwell Plate 96"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions into Eppendorf 96 Deepwell Plate"
     }
-    deepwells = produce spread yeast_items, "Eppendorf Deepwell Plate 96", 8, 12
+    deepwells = produce spread yeast_strains, "Eppendorf 96 Deepwell Plate", 8, 12
     load_samples( ["Yeast items"], [
         yeast_items,
       ], deepwells )

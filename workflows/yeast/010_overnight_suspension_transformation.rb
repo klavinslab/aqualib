@@ -56,16 +56,30 @@ class Protocol
     io_hash[:task_ids] = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      show {
-        note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
-        note "#{io_hash}"
-      }
+      # show {
+      #   note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
+      #   note "#{io_hash}"
+      # }
       io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
       io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
       io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
     end
+    # find how many yeast competent cell aliquots needed for the transformation and decide whether to start overnight or not.
+    yeast_parent_strain_num_hash = Hash.new {|h,k| h[k] = 0 }
+    io_hash[:yeast_parent_strain_ids].each do |yid|
+      yeast_parent_strain_num_hash[yid] += 1
+    end
+    yeast_strain_need_overnight_ids = []
+    yeast_parent_strain_num_hash.each do |yid,num|
+      y = find(:sample, id: yid)[0]
+      yeast_strain_need_overnight_ids.push yid unless y.in("Yeast Competent Aliquot").length >= num
+    end
+    show {
+      note "#{yeast_parent_strain_num_hash}"
+      note "#{yeast_strain_need_overnight_ids}"
+    }
     # find all yeast items and related types
-    yeast_items = io_hash[:yeast_parent_strain_ids].uniq.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
+    yeast_items = yeast_strain_need_overnight_ids.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
 
     show {
       note "#{io_hash}"
@@ -77,10 +91,10 @@ class Protocol
       yeast_type_hash[y.object_type.name].push y
     end
 
-    show {
-      title "Testing page"
-      note "#{yeast_type_hash}"
-    }
+    # show {
+    #   title "Testing page"
+    #   note "#{yeast_type_hash}"
+    # }
 
     show {
       title "Protocol information"
@@ -124,7 +138,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"overnight")
+        set_task_status(task,"ready")
       end
     end
 

@@ -3,7 +3,7 @@ argument
 end
 
 place startovernight
-protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+protocol: "aqualib:workflows/yeast/010_overnight_suspension_transformation.rb"
   argument
     debug_mode: debug_mode
   end

@@ -48,8 +48,8 @@ class Protocol
   	}
   	diluted_yeast_overnights.each do |y|
   		y.location = "30 C shaker incubator"
-          y.save
-      end
+      y.save
+    end
   	release yeast_overnights, interactive: true
   	release diluted_yeast_overnights, interactive: true
       
