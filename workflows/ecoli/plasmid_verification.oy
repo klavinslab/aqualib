@@ -17,7 +17,7 @@ place miniprep
   protocol: "aqualib:workflows/ecoli/070_miniprep.rb"
   group: "technicians"
   marked: false
-  start: now()
+  start: hours(12)
   window: hours(1)
 end
 
@@ -33,7 +33,7 @@ place upload
   protocol: "aqualib:workflows/ecoli/080_upload_sequencing_results.rb"
   group: "technicians"
   marked: false
-  start: now()
+  start: hours(12)
   window: hours(1)
 end
 

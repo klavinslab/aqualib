@@ -33,7 +33,7 @@ place image
   protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
   group: "technicians"
   marked: false
-  start: hours(12)
+  start: hours(18)
   window: hours(1)
 end
 
