@@ -1,7 +1,5 @@
 # To do list for build_fragments
-# Make 1 ng/uL plasmid stock [solved]
 # Feedback on which fragments ingredients are missing.
-# Change tasks status while progressing
 
 argument
   debug_mode: string, "Yes or No"
@@ -41,7 +39,7 @@ place run_gel
   protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
   group: "technicians"
   marked: false
-  start: now()
+  start: minutes(15)
   window: hours(1)
 end
 
