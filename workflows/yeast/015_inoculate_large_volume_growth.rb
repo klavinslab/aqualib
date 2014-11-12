@@ -66,6 +66,13 @@ class Protocol
       table tab
     }
 
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"large volume growth")
+      end
+    end
+
     release yeast_overnights, interactive: true, method: "boxes"
   	release yeast_cultures, interactive: true, method: "boxes"
     io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}  

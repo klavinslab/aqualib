@@ -16,7 +16,7 @@ end
 place innoculate
   protocol: "aqualib:workflows/yeast/015_inoculate_large_volume_growth.rb"
   group: "technicians"
-  start: now()
+  start: hours(18)
   window: hours(20)
 end
 

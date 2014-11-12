@@ -82,6 +82,13 @@ class Protocol
     release stripwells
     release plasmid_stocks, interactive: true, method: "boxes"
 
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"plasmid digested")
+      end
+    end
+
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
     return { io_hash: io_hash }
     
