@@ -52,27 +52,49 @@ class Protocol
 
     colony_number = show {
       title "Estimate colony numbers"
-      note "Estimate colony numbers for each plate and enter in the following."
+      note "Estimate colony numbers for each plate and enter in the following. Double check if you think there is no colony on the plate, enter 0 for no colony plate."
       plates.each do |p|
         get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
       end
     }
 
+    plates.each do |p|
+      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
+      p.save
+    end
+
+    # Sort plates into discarded list and stored list based on num_colony
+    discarded_plates = plates.select { |p| p.datum[:num_colony] == 0 }
+    stored_plates = plates.select { |p| p.datum[:num_colony] > 0 }
+
+    show {
+      title "Discard plate that has no colony on it"
+      note "Discard the following plates that has no colony on it."
+      note discarded_plates.collect{ |p| "#{p}"}
+    }
+
+    discarded_plates.each do |p|
+      p.mark_as_deleted
+      p.save
+    end
+
     location_plate = show {
-      title "Parafilm plate"
-      note "Parafilm each plate and store them in an available box in deli-fridge. Enter the number of the box in the following (DFP.0-DFP.7)"
+      title "Parafilm and store plate"
+      note "Parafilm the following plates"
+      note stored_plates.collect{ |p| "#{p}"}
+      note "Store them in an available box in deli-fridge. Enter the label of the box in the following (DFP.0-DFP.7)"
       get "text", var: "x", label: "Enter the label of box you put in", default: "DFP.0"
     }
 
-    # updates plates datum and location
+    # update stored plates datum and location
 
-    plates.each do |p|
+    stored_plates.each do |p|
       p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
       p.location = location_plate[:x]
       p.save
     end
 
-    release plates, interactive: true
+    release plates
 
     # Set tasks in the io_hash to be plate imaged.
     if io_hash[:task_ids]
