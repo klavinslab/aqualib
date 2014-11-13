@@ -1,4 +1,4 @@
-Ecoli Workflow Documentation: How to do cloning the Aquarium way!
+Ecoli and Yeast Cloning Workflow
 ===
 
 To do list
