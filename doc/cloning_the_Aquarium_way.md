@@ -1,5 +1,4 @@
-How to do cloning the Aquarium way
--- Tasks and workflows in Aquarium
+Cloning the Aquarium way
 ===
 
 Fragment Construction
