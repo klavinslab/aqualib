@@ -105,7 +105,7 @@ class Protocol
 
     yeast_type_hash.each do |key,values|
       overnight = values.collect {|v| produce new_sample v.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
-      move overnight "30 C shaker incubator"
+      move overnight, "30 C shaker incubator"
       overnights.concat overnight
       show {
         title "Media preparation in media bay"

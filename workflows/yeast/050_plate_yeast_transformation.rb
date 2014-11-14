@@ -41,7 +41,7 @@ class Protocol
 
     yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
-    move yeast_plates "30 C incubator"
+    move yeast_plates, "30 C incubator"
 
     tab = [["Yeast Transformation Mixtures id","Plate id"]]
     yeast_transformation_mixtures.each_with_index do |y,idx|
