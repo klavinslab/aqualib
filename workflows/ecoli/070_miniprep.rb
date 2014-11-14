@@ -35,7 +35,8 @@ class Protocol
     verify_growth = show {
       title "Check if overnights have growth"
       overnights.each do |x|
-      select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
+        select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
+      end
     }
 
     overnights.delete_if{ |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
