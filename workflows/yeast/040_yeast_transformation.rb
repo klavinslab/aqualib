@@ -35,10 +35,10 @@ class Protocol
       yeast_competent_cells.push y.in("Yeast Competent Aliquot")[num_hash[y.name]-1]
     end
 
-    show {
-      note yeast_competent_cells.collect { |y| "#{y}"}
-      note "#{num_hash}"
-    }
+    # show {
+    #   note yeast_competent_cells.collect { |y| "#{y}"}
+    #   note "#{num_hash}"
+    # }
 
     take yeast_competent_cells, interactive: true, method: "boxes"
 
