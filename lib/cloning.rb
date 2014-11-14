@@ -90,7 +90,7 @@ module Cloning
       end
 
     # change tasks status based on whether the fragments are ready and the plasmid info entered is correct.
-      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length
+      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && find(:sample, id:t.simple_spec[:plasmid])[0]
         t.status = "ready"
         t.save
         # show {
