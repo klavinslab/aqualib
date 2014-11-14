@@ -120,7 +120,9 @@ class Protocol
 
     volumes = []
     (1..num).each do |x|
-      volumes.push (4.6)*(pellet_volume[:"#{x}_1".to_sym]+pellet_volume[:"#{x}_2".to_sym])
+      volume = 4.6*pellet_volume[:"#{x}_1".to_sym]
+      volume += pellet_volume[:"#{x}_2".to_sym] if io_hash[:large_volume] > 50
+      volumes.push volume
     end
 
     num_of_aliquots = volumes.collect {|v| (v/50.0).floor}
