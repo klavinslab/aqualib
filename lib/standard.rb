@@ -165,4 +165,14 @@ module Standard
 	  	end
   end
 
+  def move items, new_location
+    # takes items (array or single objects) and move location to new_location
+    new_location = new_location.to_s
+    items = [items] unless items.kind_of?(Array)
+    items.each do |i|
+      raise "Must be Item or Array of Items to move" unless i.class == Item
+      i.location = new_location
+      i.save
+    end
+  end # move
 end
