@@ -46,17 +46,15 @@ class Protocol
     tab = [["Yeast Transformation Mixtures id","Plate id"]]
     yeast_transformation_mixtures.each_with_index do |y,idx|
       tab.push([y.id,yeast_plates[idx].id])
-      y.mark_as_deleted
-      y.save
     end
 
     show{
       title "Plating"
-      check "Label plates with the following ids"
-      note (yeast_plates.collect{|y| "#{y.id}"})
+      check "Grab #{yeast_plates.length} +G418 plates. Label plates with the following ids"
+      note (yeast_plates.collect{|y| "#{y}"})
       check "Flip the plate and add 4-5 glass beads to it"
       check "Add 200 µL of the transformation mixture from the tube according to the following table"
-      table tab
+      table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: "y.id", check: true } })
     }
 
     show{

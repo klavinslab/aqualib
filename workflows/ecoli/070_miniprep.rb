@@ -121,10 +121,7 @@ class Protocol
   	end
 
     # change overnights location to DFP.4
-    overnights.each do |overnight|
-      overnight.location = "DFP.4"
-      overnight.save
-    end
+    move overnights, "DFP.4"
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"
