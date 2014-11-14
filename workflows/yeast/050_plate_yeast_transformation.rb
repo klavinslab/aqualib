@@ -13,7 +13,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_transformation_mixture_ids: [12293,28398,28400],
+      yeast_transformation_mixture_ids: [13000,13001,13574],
       debug_mode: "Yes"
     }
   end
@@ -66,10 +66,7 @@ class Protocol
     }
     
     release yeast_plates, interactive: true
-    yeast_transformation_mixtures.each do |y|
-      y.mark_as_deleted
-      y.save
-    end
+    delete yeast_transformation_mixtures
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
