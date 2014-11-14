@@ -83,7 +83,7 @@ class Protocol
 
     show {
       title "Re-label all the competent cell tubes"
-      table [["Old id","New id"]].concat(yeast_competent_cells.collect {|y| y.id }.zip yeast_transformation_mixtures.collect { |y| { content: y.id, check: true}})
+      table [["Old id","New id"]].concat(yeast_competent_cells.collect {|y| y.id }.zip yeast_transformation_mixtures.collect { |y| { content: y.id, check: true } })
     }
 
     stripwells.each do |stripwell|
@@ -150,7 +150,7 @@ class Protocol
           title "Plating"
           check "Pour 3-10 sterile beads to each plate"
           check "Transfer 200 µL from each 1.5 mL tube to corresponding -#{key.upcase} plate using the following table"
-          table tab.transpose
+          table tab
           check "Shake the plate to spread the sample over the surface until dry."
           check "Pour the beads into a waste bead container"
           check "Discard above 1.5 mL tubes"
