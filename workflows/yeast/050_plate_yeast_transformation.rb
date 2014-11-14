@@ -13,7 +13,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_transformation_mixture_ids: [13000,13001,13574],
+      yeast_transformation_mixture_ids: [12293],
       debug_mode: "Yes"
     }
   end
@@ -54,7 +54,7 @@ class Protocol
       note (yeast_plates.collect{|y| "#{y}"})
       check "Flip the plate and add 4-5 glass beads to it"
       check "Add 200 µL of the transformation mixture from the tube according to the following table"
-      table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: "y.id", check: true } })
+      table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
     }
 
     show{
