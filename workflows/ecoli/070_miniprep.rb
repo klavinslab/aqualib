@@ -29,8 +29,16 @@ class Protocol
     end
 
     # Find all overnights and take them
-    overnights = overnight_ids.collect{|oid| find(:item,id:oid)[0]}
+    overnights = overnight_ids.collect{ |oid| find(:item,id:oid)[0] }
     take overnights, interactive: true
+
+    verify_growth = show {
+      title "Check if overnights have growth"
+      overnights.each do |x|
+      select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
+    }
+
+    overnights.delete_if{ |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
     
     num = overnights.length
     num_arr = *(1..num)

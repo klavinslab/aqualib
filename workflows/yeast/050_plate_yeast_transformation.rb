@@ -86,8 +86,8 @@ class Protocol
         set_task_status(task,"plated")
       end
     end
-    io_hash[:yeast_plate_ids] = [] if !io_hash[:yeast_plate_ids]
-    io_hash[:yeast_plate_ids].concat yeast_plates.collect { |p| p.id }
+    io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
+    io_hash[:plate_ids].concat yeast_plates.collect { |p| p.id }
     return { io_hash: io_hash }
   end # main
   

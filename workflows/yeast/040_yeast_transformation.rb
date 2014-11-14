@@ -187,7 +187,7 @@ class Protocol
         set_task_status(task,"transformed")
       end
     end
-    io_hash[:yeast_plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
+    io_hash[:plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
     io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_markers["kan"].collect {|x| x.id} if yeast_transformation_mixtures_markers["kan"]
     return { io_hash: io_hash }
 

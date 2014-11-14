@@ -26,6 +26,7 @@ needed to complete the protocol. For example, the following code will accept bot
   yeast_transformed_strain_ids: [],
   plasmid_stock_ids: [],
   yeast_parent_strain_ids: [],
+  plate_ids: [], transformed yeast plate ids
   
 
 }
