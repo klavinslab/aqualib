@@ -23,15 +23,17 @@ class Protocol
         true
       end
     end
-    plasmid_stocks = io_hash[:plasmid_stock_ids].collect{|pid| find(:item, id: pid )[0]}
+    plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
+    plasmids = plasmid_stocks.collect { |p| p.sample}
 
     take plasmid_stocks, interactive: true, method: "boxes"
     
     cut_smart= choose_sample "Cut Smart", take: true
     
-    stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
+    stripwells = produce spread plasmids, "Stripwell", 1, 12
 
     show {
+      title "Grab an ice block"
       warning "In the following step you will take PmeI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
     }
     
