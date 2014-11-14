@@ -167,10 +167,7 @@ class Protocol
       #   title "Place in 30 C incubator"
       #   check "Place all #{yeast_plates.length} plates with id #{(yeast_plates.collect {|x| x.id}).join(", ")} into 30 C incubator"
       # }
-      yeast_plates.each do |y|
-        y.location = "30 C incubator"
-        y.save
-      end
+      move yeast_plates, "30 C incubator"
       release yeast_plates, interactive: true
     end
 

@@ -41,15 +41,7 @@ class Protocol
 
     yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
-    yeast_plates.each do |y|
-      y.location = "30 C incubator"
-      y.save
-    end
-
-    yeast_transformation_mixtures.each do |y|
-      y.location = "DFP"
-      y.save
-    end
+    move yeast_plates "30 C incubator"
 
     tab = [["Yeast Transformation Mixtures id","Plate id"]]
     yeast_transformation_mixtures.each_with_index do |y,idx|
