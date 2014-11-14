@@ -83,7 +83,7 @@ class Protocol
 
     show {
       title "Re-label all the competent cell tubes"
-      table tab.transpose
+      table [["Old id","New id"]].concat(yeast_competent_cells.collect {|y| y.id }.zip yeast_transformation_mixtures.collect { |y| { content: y.id, check: true}})
     }
 
     stripwells.each do |stripwell|
@@ -111,9 +111,9 @@ class Protocol
       end
     end
 
-    show {
-      note "#{yeast_transformation_mixtures_markers}"
-    }
+    # show {
+    #   note "#{yeast_transformation_mixtures_markers}"
+    # }
 
     yeast_plates = []
     yeast_transformation_mixtures_markers.each do |key, mixtures|
