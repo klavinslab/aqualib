@@ -34,12 +34,15 @@ class Protocol
 
     verify_growth = show {
       title "Check if overnights have growth"
+      note "Choose No for the overnight that does not have growth and throw them away or put in the clean station."
       overnights.each do |x|
         select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
       end
     }
 
-    overnights.delete_if{ |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
+    overnights_to_delete = overnights.select { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
+    delete overnights_to_delete
+    overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
     
     num = overnights.length
     num_arr = *(1..num)
