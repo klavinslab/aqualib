@@ -10,7 +10,7 @@ class Protocol
       comb_1: "6 thick",
       comb_2: "6 thick",
       percentage: 1,
-      stripwell_ids: [28848],
+      stripwell_ids: [30632],
       debug_mode: "Yes"
     }
   end
@@ -59,32 +59,30 @@ class Protocol
     }
 
     gel_volume = 50.0
-    agarose_mass = num_gels * (percentage / 100.0) * gel_volume
+    agarose_mass = (percentage / 100.0) * gel_volume
     error = (agarose_mass * 0.05).round 5
-
-    show {
-      title "Pour gel"
-      check "Grab a flask from on top of the microwave M2."
-      check "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
-      check "Get a graduated cylinder from on top of the microwave. Measure and add #{num_gels*50} mL of 1X TAE from jug J2 to the flask."
-      check "Use a paper towel to handle the flask. Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
-      note "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
-      warning "Work in the gel room, wear gloves and eye protection all the time"
-    }
-
-    gel_green_volume = num_gels * gel_volume / 10.0  # in µL
-
-    show {
-      title "Add #{gel_green_volume} µL GelGreen"
-      note "Using a 10 µL pipetter, take up #{gel_green_volume} µL of GelGreen into the pipet tip. Expel the GelGreen directly into the molten agar (under the surface), then swirl to mix."
-      warning "GelGreen is supposedly safe, but stains DNA and can transit cell membranes (limit your exposure)."
-      warning "GelGreen is photolabile. Limit its exposure to light by putting it back in the box."
-      # image "gel_add_gelgreen"
-    }
 
     gel_ids = []
 
     (1..num_gels).each do |gel_number|
+    
+      show {
+        title "Pour gel"
+        check "Grab a flask from on top of the microwave M2."
+        check "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
+        check "Get a graduated cylinder from on top of the microwave. Measure and add 50 mL of 1X TAE from jug J2 to the flask."
+        check "Use a paper towel to handle the flask. Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
+        note "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
+        warning "Work in the gel room, wear gloves and eye protection all the time"
+      }
+
+      show {
+        title "Add 5 µL GelGreen"
+        note "Using a 10 µL pipetter, take up 5 µL of GelGreen into the pipet tip. Expel the GelGreen directly into the molten agar (under the surface), then swirl to mix."
+        warning "GelGreen is supposedly safe, but stains DNA and can transit cell membranes (limit your exposure)."
+        warning "GelGreen is photolabile. Limit its exposure to light by putting it back in the box."
+        # image "gel_add_gelgreen"
+      }
 
       show {
         title "Gel Number #{gel_number}, add top comb"
@@ -112,13 +110,10 @@ class Protocol
 
       show {
         title "Pour and label the gel"
-        note "Using a gel pouring autoclave glove, pour agarose from the flask into the casting tray. Pour slowly and in a corner for best results. Pop any bubbles with a 10 µL pipet tip."
+        note "Using a gel pouring autoclave glove, pour agarose from one flask into the casting tray. Pour slowly and in a corner for best results. Pop any bubbles with a 10 µL pipet tip."
         note "Write id #{gel} on piece of lab tape and affix it to the side of the gel box."
         note "Leave the gel to location A7.325 to solidify."
-        if num_gels != 1
-          warning "Make sure to use only 1/#{num_gels} of the agarose"
-        end
-        image "gel_pouring"
+        # image "gel_pouring"
       }
 
       release [ gel ]
