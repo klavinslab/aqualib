@@ -18,6 +18,32 @@ class Protocol
     }
   end
 
+  def yeast_transformation_status
+    # process yeast transformation tasks ready and waiting based on information provided.
+    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
+    task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      ready_yeast_strains = []
+      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
+        y = find(:sample, id: yid)[0]
+        # check if glycerol stock and plasmid stock are ready
+        ready_yeast_strains.push y if (y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0) && y.properties["Plasmid"].in("Plasmid Stock").length > 0
+      end
+      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
+        set_task_status(task,"ready")
+      else
+        set_task_status(task, "waiting for ingredients")
+      end
+    end # task_ids
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
+      plated_ids: (tasks.select { |t| t.status == "plated" }).collect { |t| t.id },
+      done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
+    }
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -34,26 +60,9 @@ class Protocol
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
     io_hash[:large_volume] = 50
-    # process yeast transformation tasks ready and waiting based on information provided.
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-    task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      ready_yeast_strains = []
-      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
-        y = find(:sample, id: yid)[0]
-        # check if glycerol stock and plasmid stock are ready
-        ready_yeast_strains.push y if y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 && y.properties["Plasmid"].in("Plasmid Stock").length > 0
-      end
-      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
-        set_task_status(task,"ready")
-      else
-        set_task_status(task, "waiting for ingredients")
-      end
-    end # task_ids
-
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-    io_hash[:task_ids] = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
+    # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
+    yeast_transformation = yeast_transformation_status
+    io_hash[:task_ids] = yeast_transformation[:ready_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       # show {
@@ -78,8 +87,15 @@ class Protocol
       note "#{yeast_parent_strain_num_hash}"
       note "#{yeast_strain_need_overnight_ids}"
     }
-    # find all yeast items and related types
-    yeast_items = yeast_strain_need_overnight_ids.collect {|yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]}
+    # find all yeast items and related types, find Yeast Glycerol Stock, if nothing, find Yeast Plate
+    yeast_items = []
+    yeast_strain_need_overnight_ids.each do |yid|
+      if find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0
+        yeast_items.push find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0]
+      elsif find(:sample, id: yid )[0].in("Yeast Plate").length > 0
+        yeast_items.push find(:sample, id: yid )[0].in("Yeast Plate")[0]
+      end
+    end
 
     show {
       note "#{io_hash}"

@@ -15,4 +15,4 @@ task.user.member?
 - [x] Image and plates delete.
 - [ ] Multi channel gels.
 - [ ] Directly take user login name intitials in the sequencing tasks.
-- [ ] Create protocol to check task status.
+- [ ] Create protocol to shuffle and check task status.
