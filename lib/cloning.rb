@@ -189,12 +189,13 @@ module Cloning
         ready_yeast_strains.push y if (y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0) && y.properties["Plasmid"].in("Plasmid Stock").length > 0
       end
       if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
-        set_task_status(task,"ready")
+        task.status = "ready"
+        task.save
       else
-        set_task_status(task, "waiting for ingredients")
+        task.status = "waiting for ingredients"
+        task.save
       end
     end # task_ids
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
     return {
       waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
