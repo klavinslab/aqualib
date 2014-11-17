@@ -78,17 +78,13 @@ class Protocol
     plasmid_stock_ids = []
     primer_ids = []
     initials = []
-    idx = 0
-    io_hash[:primer_ids].each_with_index do |pids,i|
-      unless pids == []
-        unless find(:item, id: io_hash[:plasmid_stock_ids][idx])[0].datum[:concentration] == 0
-          primer_ids.concat pids
-          (1..pids.length).each do
-            plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
-            initials.push io_hash[:initials][i]
-          end
+    io_hash[:primer_ids].each_with_index do |pids,idx|
+      unless find(:item, id: io_hash[:plasmid_stock_ids][idx])[0].datum[:concentration] == 0
+        primer_ids.concat pids
+        (1..pids.length).each do
+          plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
+          initials.push io_hash[:initials][idx]
         end
-        idx += 1
       end
     end
 
