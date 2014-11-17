@@ -194,6 +194,7 @@ module Cloning
         set_task_status(task, "waiting for ingredients")
       end
     end # task_ids
+    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
     return {
       waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
