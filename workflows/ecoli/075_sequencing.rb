@@ -78,6 +78,9 @@ class Protocol
     plasmid_stock_ids = []
     primer_ids = []
     initials = []
+    show {
+      note "#{io_hash}"
+    }
     io_hash[:primer_ids].each_with_index do |pids,idx|
       unless find(:item, id: io_hash[:plasmid_stock_ids][idx])[0].datum[:concentration] == 0
         primer_ids.concat pids
