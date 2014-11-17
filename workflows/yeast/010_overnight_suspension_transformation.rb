@@ -18,32 +18,6 @@ class Protocol
     }
   end
 
-  def yeast_transformation_status
-    # process yeast transformation tasks ready and waiting based on information provided.
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-    task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      ready_yeast_strains = []
-      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
-        y = find(:sample, id: yid)[0]
-        # check if glycerol stock and plasmid stock are ready
-        ready_yeast_strains.push y if (y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0) && y.properties["Plasmid"].in("Plasmid Stock").length > 0
-      end
-      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
-        set_task_status(task,"ready")
-      else
-        set_task_status(task, "waiting for ingredients")
-      end
-    end # task_ids
-    return {
-      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
-      plated_ids: (tasks.select { |t| t.status == "plated" }).collect { |t| t.id },
-      done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
-    }
-  end
-
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -61,8 +35,8 @@ class Protocol
     volume = io_hash[:volume]
     io_hash[:large_volume] = 50
     # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
-    yeast_transformation = yeast_transformation_status
-    io_hash[:task_ids] = yeast_transformation[:ready_ids]
+    yeast_transformation = yeast_transformation_status # call yeast_transformation_status to process first
+    io_hash[:task_ids] = yeast_transformation_status[:ready_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       # show {
