@@ -35,7 +35,6 @@ class Protocol
     volume = io_hash[:volume]
     io_hash[:large_volume] = 50
     # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
-    yeast_transformation = yeast_transformation_status # call yeast_transformation_status to process first
     io_hash[:task_ids] = yeast_transformation_status[:ready_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]

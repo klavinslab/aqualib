@@ -179,9 +179,9 @@ module Cloning
   def yeast_transformation_status
     # process yeast transformation tasks ready and waiting based on information provided.
     tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
-    task_ids = (tasks.select { |t| t.status == "ready" || t.status == "waiting for ingredients" }).collect { |t| t.id }
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
+    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    ready = tasks.select { |t| t.status == "ready" }
+    (waiting + ready).each do |task|
       ready_yeast_strains = []
       task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
         y = find(:sample, id: yid)[0]
