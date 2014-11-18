@@ -7,7 +7,7 @@ class PluginInterface < PluginInterfaceBase
     jobs = Job.includes(:group).where("pc >= -1")
 
     jobs.each { |j| 
-      g = Group.find(j.group_id)
+      g = j.group
       j[:submitted_login] = User.find(j.submitted_by).login
       j[:group_name] = g.name
       if !(j.pc == -1 && now <= j.desired_start_time) && g.member?(@view.current_user.id)
