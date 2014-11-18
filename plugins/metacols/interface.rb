@@ -6,7 +6,7 @@ class PluginInterface < PluginInterfaceBase
       m.login = m.user.login
       m.date = (view.time_ago_in_words m.updated_at) + " ago"
     end
-    return { metacols: metacols.attriubtes, current_user: @view.current_user }
+    return { metacols: metacols, current_user: @view.current_user }
   end
 
 end
