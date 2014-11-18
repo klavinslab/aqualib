@@ -8,7 +8,7 @@ Plugin.prototype.settings = function() {
 
   if ( ! $.cookie('params') ) {
     this.window = 7;   // days
-    this.tick = 4;     // hours
+    this.tick = 8;     // hours
     this.refresh = 60; // seconds
     $.cookie('params',{window: 7, tick: 4, refresh: 60});
   } else {
