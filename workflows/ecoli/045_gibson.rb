@@ -147,7 +147,7 @@ class Protocol
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots and label them with ids"
-      note "Take #{gibson_results.length} Gibson Aliquots from SF2.100"
+      note "Take #{gibson_results.length} Gibson Aliquots from SF2.100, put on an ice block."
       note "Label each Gibson Aliquot with the following ids using round dot labels"
       note (gibson_results.collect {|g| "#{g}"})
     }

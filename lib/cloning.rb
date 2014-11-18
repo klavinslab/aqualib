@@ -70,7 +70,7 @@ module Cloning
       # show {
       #     note "#{t.simple_spec}"
       # }
-      t[:fragments] = { ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
+      t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
 
       t.simple_spec[:fragments].each do |fid|
 
@@ -79,6 +79,8 @@ module Cloning
         # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
         if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
           t[:fragments][:ready_to_use].push fid
+        elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] == 0
+          t[:fragments][:not_ready_to_use].push fid
         elsif !info
           t[:fragments][:not_ready_to_build].push fid
         # elsif info[:stocks].length > 0

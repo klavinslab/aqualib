@@ -113,7 +113,7 @@ class Protocol
           note "#{transformed_aliquots.collect {|t| t.id}}"
         }
         transformed_aliquots.each do |t|
-          t.location = "30 C incubator"
+          t.location = "37 C incubator"
           t.save
         end
         release transformed_aliquots
