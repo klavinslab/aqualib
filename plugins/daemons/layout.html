@@ -1,0 +1,32 @@
+<div class='plugin with-header'>
+
+  <header class='navbar navbar-fixed-top'>
+    <h2>Server Status <span class='pull-right' id='timestamp' style='color: green'></span></h2>
+  </header>
+
+  <div id="main">
+      <table class='table' style='margin-top: 10px'>
+      <tr>
+        <td>Krill Status</td>
+        <td id='alert'><span id='status'>Unknown</span><span id='warnings'></span></td>
+      </tr>
+      <tr>
+        <td>Krill Jobs</td>
+        <td id='jobs'></td>
+      </tr>
+      <tr>
+        <td>Krill Pids</td>
+        <td id='krill'></td>
+      </tr>
+      <tr>
+        <td>Metacol Daemon Pids</td>
+        <td id='metacol'></td>
+      </tr>
+
+    </table>
+
+    <div id='ps'></div>
+
+  </div>
+
+</div>

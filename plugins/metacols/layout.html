@@ -1,0 +1,29 @@
+<style>
+.user {
+  color: #060;
+}
+</style>
+
+<script type='template' id='metacol-table'> 
+  <table class='table'>
+    <tr>
+      <th>Id</th>
+      <th>Path</th>
+      <th>Submitted by</th>
+      <th>Last update</th>
+    </tr>
+  </table>
+</script>
+
+<div class='plugin with-header'>
+  <header class='navbar navbar-fixed-top'>
+    <ul class="nav">
+      <li><h2>Active Metacols</h2></li>
+    </ul>
+    <h2 class='pull-right'>
+      <input type='checkbox' id='limit-to-current-user' name='limit-to-current-user' class='nice-check'></input>
+      <span class='user' id="current-user"></span>
+    </h2>
+  </header>
+  <div id="main"></div>
+</div>

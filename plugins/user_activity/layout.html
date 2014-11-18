@@ -1,0 +1,31 @@
+<style>
+  #days {
+    font-size: 16pt;
+    width: 50px;
+    padding: 1px;
+    line-height: 1.2;
+    border: 1pt solid #eee;
+  }
+  .bar {
+    background: orange;
+    padding-left: 2px;
+    position:relative;
+  }
+</style>
+
+<script type='template' id='activity-table'> 
+  <table class='table'>
+    <tr>
+      <th>User</th>
+      <th>No. Jobs</th>
+      <th>Most Recent</th>
+    </tr>
+  </table>
+</script>
+
+<div class='plugin with-header'>
+  <header class="navbar navbar-fixed-top">
+    <h2>User Activity, Last <input id='days' value=0></input> Days</h2>
+  </header>
+  <div id="main"></div>
+</div>
