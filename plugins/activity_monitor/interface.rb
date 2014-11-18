@@ -6,7 +6,7 @@ class PluginInterface < PluginInterfaceBase
     now = Time.now
     since = Time.at(params[:since])
 
-    return { 
+    result = { 
       start: since,
       timestamp: now,
       jobs: Job.where("updated_at >= ? AND updated_at < ? AND pc = -2", since, now)
@@ -16,6 +16,8 @@ class PluginInterface < PluginInterfaceBase
     }
 
     @view.logger.info "BBBBBBB"
+
+    return result
 
   end
 
