@@ -107,7 +107,7 @@ Plugin.prototype.get_data = function(since) {
 
   this.ajax({since:since/1000},function(result) {
     if ( result.error ) {
-      $('#main').append('<p><b>Interface Error: </b>'+result.error+'</p>');
+      $('#data').append('<p><b>Interface Error: </b>'+result.error+'</p>');
       that.period(-1);
     } else {
       console.log(result);
