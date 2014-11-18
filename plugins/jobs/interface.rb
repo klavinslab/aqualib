@@ -8,15 +8,15 @@ class PluginInterface < PluginInterfaceBase
 
     jobs.each { |j| 
       g = j.group
-      j[:submitted_login] = User.find(j.submitted_by).login
-      j[:group_name] = g.name
+      j.submitted_login = User.find(j.submitted_by).login
+      j.group_name = g.name
       if !(j.pc == -1 && now <= j.desired_start_time) && g.member?(@view.current_user.id)
         j.start =  j.start_link("<i class='icon-play'></i>",confirm:true)
       else
         j.start = ""
       end
-      j[:metacol_id] = j.metacol ? j.metacol.id : -1
-      j[:last_update] = (view.time_ago_in_words j.updated_at) + " ago"
+      j.metacol_id = j.metacol ? j.metacol.id : -1
+      j.last_update = (view.time_ago_in_words j.updated_at) + " ago"
     }
 
     return {
