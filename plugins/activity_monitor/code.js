@@ -17,9 +17,9 @@ Plugin.prototype.settings = function() {
   } );
 
   $("#save-settings").click(function() { 
-    that.window = parseInt($("#window").val());
-    that.tick = parseInt($("#tick").val());
-    that.refresh = parseInt($("#refresh").val()); 
+    that.window = parseFloat($("#window").val());
+    that.tick = parseFloat($("#tick").val());
+    that.refresh = parseFloat($("#refresh").val()); 
     $("#data").css('display','block');
     $("#settings").css('display','none');
     that.init();
