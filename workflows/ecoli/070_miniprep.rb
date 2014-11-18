@@ -57,7 +57,7 @@ class Protocol
         io_hash[:initials][idx] = nil if verify_growth[:"verify#{overnights[idx].id}".to_sym] == "No"
       end
     end
-    io_hash[:initials] = io_hash[:initials].compcat
+    io_hash[:initials] = io_hash[:initials].compact
 
 
     overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
