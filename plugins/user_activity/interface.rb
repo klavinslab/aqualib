@@ -4,7 +4,7 @@ class PluginInterface < PluginInterfaceBase
 
     num = params[:num] ? params[:num] : 7
 
-    latest_jobs = Job.where("created_at > ? AND user_id >= 0", Time.now-num.days)
+    latest_jobs = Job.include(:user).where("created_at > ? AND user_id >= 0", Time.now-num.days)
 
     users = (latest_jobs.collect { |j| { login: j.user.login, id: j.user.id } }).uniq
 
