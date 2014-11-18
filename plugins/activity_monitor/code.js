@@ -4,9 +4,18 @@ DAY = 24*HOUR;
 Plugin.prototype.settings = function() {
   var that = this;
 
-  this.window = 7;   // days
-  this.tick = 4;     // hours
-  this.refresh = 60;   // seconds
+  $.cookie.json = true;
+
+  if ( ! $.cookie('params') ) {
+    this.window = 7;   // days
+    this.tick = 4;     // hours
+    this.refresh = 60; // seconds
+    $.cookie('params',{window: 7, tick: 4, refresh: 60});
+  } else {
+    this.window = $.cookie('params').window;
+    this.tick = $.cookie('params').tick;     
+    this.refresh = $.cookie('params').refresh;
+  }
 
   $("#info").click(function() { 
     $("#window").val(that.window);
@@ -20,6 +29,7 @@ Plugin.prototype.settings = function() {
     that.window = parseFloat($("#window").val());
     that.tick = parseFloat($("#tick").val());
     that.refresh = parseFloat($("#refresh").val()); 
+    $.cookie('params',{window: that.window, tick: that.tick, refresh: that.refresh});    
     $("#data").css('display','block');
     $("#settings").css('display','none');
     that.init();
