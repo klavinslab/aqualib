@@ -2,7 +2,7 @@ class PluginInterface < PluginInterfaceBase
 
   def data params
 
-    metacols = Metacol.includes(:user).where(status: "RUNNING").collect { |m| m.attributes }
+    metacols = Metacol.includes(:user).where(status: "RUNNING")
 
     metacols.each do |m|
       m[:login] = m.user.login
