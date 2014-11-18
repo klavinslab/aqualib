@@ -137,34 +137,51 @@ class Protocol
     take fragment_stocks.flatten(1), interactive: true,  method: "boxes"
 
     # produce Gibson reaction results ids
+    # gibson_results = []
+    # io_hash[:plasmid_ids].each_with_index do |pid,idx|
+    #   plasmid = find(:sample,{id: pid})[0]
+    #   gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
+    #   gibson_results = gibson_results.push gibson_result
+    # end
+
+    # Take Gibson aliquots and label with Gibson Reaction Result ids
+    show {
+      title "Take Gibson Aliquots"
+      note "Take #{io_hash[:plasmid_ids].length} Gibson Aliquots from SF2.100, put on an ice block."
+      # note "Label each Gibson Aliquot with the following ids using round dot labels"
+      # note (gibson_results.collect {|g| "#{g}"})
+      warning "Keep all gibson aliquots cool on ice."
+    }
+
+    # following loop is to show a table of setting up each Gibson reaction to the user
     gibson_results = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
       gibson_results = gibson_results.push gibson_result
-    end
-
-    # Take Gibson aliquots and label with Gibson Reaction Result ids
-    show {
-      title "Take Gibson Aliquots and label them with ids"
-      note "Take #{gibson_results.length} Gibson Aliquots from SF2.100, put on an ice block."
-      note "Label each Gibson Aliquot with the following ids using round dot labels"
-      note (gibson_results.collect {|g| "#{g}"})
-      warning "Keep all gibson aliquots cool on ice."
-    }
-
-    # following loop is to show a table of setting up each Gibson reaction to the user
-    gibson_results.each_with_index do |g,idx|
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
-        tab.push(["#{g}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
+        tab.push(["#{gibson_result}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
       end
       show {
-          title "Load Gibson Reaction #{g}"
+          title "Load Gibson Reaction #{gibson_result}"
+          note "Lable an unused gibson aliquot as #{gibson_result}."
           note "Make sure the gibson aliquot is thawed before pipetting."
           table tab
-        } 
+        }  
     end
+
+    # gibson_results.each_with_index do |g,idx|
+    #   tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
+    #   fragment_stocks[idx].each_with_index do |f,m|
+    #     tab.push(["#{g}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
+    #   end
+    #   show {
+    #       title "Load Gibson Reaction #{g}"
+    #       note "Make sure the gibson aliquot is thawed before pipetting."
+    #       table tab
+    #     } 
+    # end
 
     # Place all reactions in 50 C heat block
     show {
