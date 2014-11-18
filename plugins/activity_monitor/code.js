@@ -108,7 +108,7 @@ Plugin.prototype.get_data = function(since) {
       $('#main').append('<p><b>Interface Error: </b>'+result.error+'</p>');
       that.period(-1);
     } else {
-      // console.log(result);
+      console.log(result);
       that.last_update = new Date(result.timestamp).getTime();
       that.update_bins(result);
       that.render(result);
