@@ -4,7 +4,7 @@ class PluginInterface < PluginInterfaceBase
 
     now = Time.now
 
-    jobs = Job.includes(:group).where("pc >= -1")
+    jobs = Job.includes(:groups).where("pc >= -1")
 
     jobs.each { |j| 
       g = Group.find(j.group_id)
