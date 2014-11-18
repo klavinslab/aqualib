@@ -61,7 +61,7 @@ Plugin.prototype.update_bins = function(data) {
   var n = this.bins.length-1;
 
   // add new bin if needed
-  while ( this.last_update >= this.bins[n].to ) {
+  if ( this.last_update >= this.bins[n].to ) {
     this.bins.push ( { from: this.bins[n].to, to: this.bins[n].to + this.tick*HOUR, jobs: [] } )
     this.bins.shift;
   }
