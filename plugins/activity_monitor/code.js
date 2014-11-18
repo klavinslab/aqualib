@@ -58,6 +58,8 @@ Plugin.prototype.init= function() {
   this.last_update = 0;
   this.get_data(now-this.window*DAY);
 
+  console.log('here');
+
   if ( this.window > 1 ) {
     $("#info").html("Last " + this.window + " days");
   } else {
