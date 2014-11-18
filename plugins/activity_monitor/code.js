@@ -123,6 +123,8 @@ Plugin.prototype.update = function(data) {
 
 Plugin.prototype.render = function(data) {
 
+  console.log('render');
+
   var jobs=[];
   var samples=[];
 
