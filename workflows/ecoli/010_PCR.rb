@@ -28,11 +28,11 @@ class Protocol
   end
 
   def main
-    io_hash = {}
-    # io_hash = input if input[:io_hash].empty?
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash[:debug_mode] = input[:debug_mode] || "No"
     # re define the debug function based on the debug_mode input
-    if io_hash[:debug_mode] == "Yes"
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
@@ -50,11 +50,10 @@ class Protocol
       note "#{fragment_construction[:fragments][:not_ready_to_build]}"
     }
     fragment_from_construction_ids = []
-    fragment_construction[:ready_ids].each do |tid|
+    io_hash[:task_ids] = fragment_construction[:ready_ids]
+    io_hash[:task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       fragment_from_construction_ids.concat ready_task.simple_spec[:fragments]
-      ready_task.status = "running"
-      ready_task.save
     end
 
     # Pull info from protocol input
@@ -197,10 +196,17 @@ class Protocol
 
     # Release all stripwells silently, since they should stay in the thermocycler
     release all_stripwells
+    
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"pcr")
+      end
+    end
 
     io_hash[:stripwell_ids] = all_stripwells.collect { |s| s.id }
 
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
 
   end
 

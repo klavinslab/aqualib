@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the gibson result ids as a list
-      gibson_result_ids: [13002,13003,13004,13005,12197],
+      "gibson_result_ids Gibson Reaction Result" => [13002,13003,13004,13005,12197],
       debug_mode: "Yes"
     }
   end #arguments
@@ -71,7 +71,7 @@ class Protocol
       show {
         title "Prepare #{num} 1.5 mL tubes and pipetters"
         check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-        check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
+        check "Set your 3 pipettors to be 2 µL, 42 µL, and 350 µL."
         check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
       }
 
@@ -142,7 +142,14 @@ class Protocol
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
     io_hash[:plate_ids] = plates.collect { |p| p.id }
 
-    return {io_hash: io_hash}
+    # Set tasks in the io_hash to be transformed
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"transformed")
+      end
+    end
+    return { io_hash: io_hash }
 
   end #main
 

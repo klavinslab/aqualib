@@ -75,8 +75,6 @@ class Protocol
         ready_task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
         io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
-        ready_task.status = "running"
-        ready_task.save
       end
     end
     io_hash[:task_ids] = ready_task_ids
@@ -92,6 +90,15 @@ class Protocol
     # show {
     #   note "#{fragment_stocks_flatten.collect {|f| f.id}}"
     # }
+
+    fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
+
+    show {
+      title "Inform user to enter fragment length info"
+      note "The following fragment stocks need length info to be entered in the fragment sample page"
+      note fragment_stocks_need_length_info.collect { |f| "#{f}" }
+      note "Proceed until all the fragmment length info entered."
+    } if fragment_stocks_need_length_info.length > 0
 
     fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| !f.datum[:concentration]}
     if fragment_stocks_need_to_measure.length > 0
@@ -172,7 +179,12 @@ class Protocol
     }
 
     release gibson_results, interactive: true,  method: "boxes"
-
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"gibson")
+      end
+    end
     io_hash[:gibson_result_ids] = gibson_results.collect {|g| g.id}
     return { io_hash: io_hash }
   end

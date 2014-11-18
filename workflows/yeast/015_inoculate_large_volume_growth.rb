@@ -16,7 +16,7 @@ class Protocol
       #Enter the overnight ids that you are going to start overnight with
       "yeast_overnight_ids Yeast Overnight Suspension" => [8437,8431,8426],
       #Enter the media type you are going to use
-      large_volume: 100,
+      large_volume: 50,
       media_type: "800 mL YPAD liquid (sterile)",
       debug_mode: "Yes"
     }
@@ -24,13 +24,13 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    large_volume = io_hash[:large_volume]
+    large_volume = io_hash[:large_volume] || 50
   	yeast_overnights = io_hash[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
     # show {
     #   note(yeast_overnights.collect {|x| x.id})
@@ -66,10 +66,17 @@ class Protocol
       table tab
     }
 
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"large volume growth")
+      end
+    end
+
     release yeast_overnights, interactive: true, method: "boxes"
   	release yeast_cultures, interactive: true, method: "boxes"
     io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}  
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
   end
 
 end  

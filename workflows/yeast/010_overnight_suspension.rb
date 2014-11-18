@@ -8,11 +8,9 @@ class Protocol
 
   def arguments
     {
+      io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_item_ids: [13011,13010,13022,13023,13024,8437,8431,8426,13022,13023,13024,28703,28702,28701,28700,13012,13013,13014,13015],
-      yeast_transformed_strain_ids: [],
-      plasmid_ids: [],
-      aliquot_numbers: [],
+      yeast_item_ids: [13011],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -22,26 +20,26 @@ class Protocol
   end
 
   def main
-    io_hash = {}
-    io_hash[:yeast_item_ids] = input[:yeast_item_ids]
-    io_hash[:aliquot_numbers] = input[:aliquot_numbers]
-    io_hash[:yeast_transformed_strain_ids] = input[:yeast_transformed_strain_ids]
-    io_hash[:plasmid_ids] = input[:plasmid_ids]
-    io_hash[:debug_mode] = input[:debug_mode]
-    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
-    io_hash[:volume] = input[:volume] || 2
-
-    volume = io_hash[:volume]
-    media_type = io_hash[:media_type]
-
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash[:task_mode] = input[:task_mode] || "No"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-
-    # find all yeast items and related types
+    yeast_items = []
     yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
+
+    show {
+      note "#{io_hash}"
+    }
+
+    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
+    io_hash[:volume] = input[:volume] || 2
+    media_type = io_hash[:media_type]
+    volume = io_hash[:volume]
 
     # group into different types using Hash
     yeast_type_hash = Hash.new {|h,k| h[k] = [] }
@@ -56,7 +54,7 @@ class Protocol
 
     show {
       title "Protocol information"
-      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for general purposes."
     }
 
     overnights = []
@@ -95,7 +93,7 @@ class Protocol
 
     io_hash[:yeast_overnight_ids] = overnights.collect {|x| x.id}
     
-    return {io_hash: io_hash}
+    return { io_hash: io_hash }
   end
 
 end  

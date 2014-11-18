@@ -40,6 +40,7 @@ needed to complete the protocol. For example, the following code will accept bot
   lane_volumes: [], //one entry per lane, 
   gel_slice_ids: [], // each slice is an item
   fragment_stock_ids:[],  // made by gel purify
+  task_ids: [], //task ids associated with fragment met
   //note: nanodrop is depricated now in gel purify
 }
 

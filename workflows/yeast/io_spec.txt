@@ -21,6 +21,15 @@ needed to complete the protocol. For example, the following code will accept bot
   end
 
 ====================================
+// this is for the yeast transformation metacol
+{
+  yeast_transformed_strain_ids: [],
+  plasmid_stock_ids: [],
+  yeast_parent_strain_ids: [],
+  plate_ids: [], transformed yeast plate ids
+  
+
+}
 
 //this is for the yeast verification metacol
 {
@@ -30,5 +39,7 @@ needed to complete the protocol. For example, the following code will accept bot
   stripwell_ids: [] // colony pcr stripwell ids for yeast lysates which will be used for pour gel and run gel
   yeast_sample_ids: [] // yeast sample ids corresponding to each well in the stripwell
   debug_mode: "" // if the protocol or metacol is in debug_mode
+  task_ids: [] // tasks ids associated with the metacol
+  volume: // colony PCR reaction volume
 }
 

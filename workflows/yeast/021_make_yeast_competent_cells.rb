@@ -40,12 +40,16 @@ class Protocol
     num = cultures.length
 
     show{
-      title "Preperation Step"
+      title "Prepare tubes"
       note "Label #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
-      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"     
     }
+
+    show {
+      title "Preperation another set of tubes"
+      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
+      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+    } if io_hash[:large_volume] > 50
     
     show{
       title "Harvesting Cells"
@@ -100,36 +104,40 @@ class Protocol
       check "Estimate the pellet volume using the gradations on the side of the eppendorf tube for each tube."
       note "The 0.1 on the tube means 100 µL and each line is another 100 µL"
       (1..num).each do |x|
-        get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for first tube #{num}", default: 30
-        get "number", var: "#{x}_2", label: "Enter an estimated volume of the pellet for second tube #{num}", default: 30
+        get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for tube #{x}", default: 80
+        get "number", var: "#{x}_2", label: "If you have another tube #{x}, enter an estimated volume of the pellet for another tube #{x}", default: 80 if io_hash[:large_volume] > 50
       end
     }
 
     show {
       title "Pipetting FCC into 1.5 mL tubes"
       (1..num).each do |x|
-        check "Add #{4*pellet_volume[:"#{x}_1".to_sym]} µL of FCC to the first tube #{x}"
-        check "Add #{4*pellet_volume[:"#{x}_2".to_sym]} µL of FCC to the second tube #{x}"
+        check "Add #{4*pellet_volume[:"#{x}_1".to_sym]} µL of FCC to tube #{x}"
+        check "Add #{4*pellet_volume[:"#{x}_2".to_sym]} µL of FCC to another tube #{x}" if io_hash[:large_volume] > 50
       end
       check "Vortex the tubes till cell pellet is resuspended"
     }
 
     volumes = []
     (1..num).each do |x|
-      volumes.push (4.5)*(pellet_volume[:"#{x}_1".to_sym]+pellet_volume[:"#{x}_2".to_sym])
+      volume = 4.6*pellet_volume[:"#{x}_1".to_sym]
+      volume += pellet_volume[:"#{x}_2".to_sym] if io_hash[:large_volume] > 50
+      volumes.push volume
     end
 
     num_of_aliquots = volumes.collect {|v| (v/50.0).floor}
 
     yeast_compcell_aliquots = []
     cultures.each_with_index do |culture,idx|
+      yeast_compcell_aliquots_temp = []
       (1..num_of_aliquots[idx]).each do |i|
         yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
         yeast_compcell_aliquots.push yeast_compcell_aliquot
+        yeast_compcell_aliquots_temp.push yeast_compcell_aliquot
       end
       show {
         title "Aliquoting competent cells from 1.5 mL tube #{idx+1}"
-        check "Label #{num_of_aliquots[idx]} empty 1.5 mL tubes with the following ids #{yeast_compcell_aliquots.collect {|y| y.id}}"
+        check "Label #{num_of_aliquots[idx]} empty 1.5 mL tubes with the following ids #{yeast_compcell_aliquots_temp.collect {|y| y.id}}"
         check "Add 50 µL from tube #{idx+1} to each newly labled tube"
       }
     end

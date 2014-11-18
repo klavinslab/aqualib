@@ -96,24 +96,24 @@ class Protocol
     # def debug
     #   true
     # end
-    x = input[:x]
-    y = input[:y]
-    plasmid_x1 = find(:item, id: 123)
+    # x = input[:x]
+    # y = input[:y]
+    # plasmid_x1 = find(:item, id: 123)
 
 
-    take plasmid_x1
-    data = show {
-    title "An input example"
-    get "text", var: "y_data", label: "Enter a string", default: "Hello World"
-    get "number", var: "z_data", label: "Enter a number", default: 555
-    }
-    y_data = data[:y_data]
-    z_data = data[:z_data]
-    show {
-      title "Hello World!"
-      note "y is #{y} and x is #{x}"
-      note "y_data is #{y_data} and z_data is #{z_data}"
-    }
+    # take plasmid_x1
+    # data = show {
+    # title "An input example"
+    # get "text", var: "y_data", label: "Enter a string", default: "Hello World"
+    # get "number", var: "z_data", label: "Enter a number", default: 555
+    # }
+    # y_data = data[:y_data]
+    # z_data = data[:z_data]
+    # show {
+    #   title "Hello World!"
+    #   note "y is #{y} and x is #{x}"
+    #   note "y_data is #{y_data} and z_data is #{z_data}"
+    # }
     # fid = input[:fid]
     # fragment = find(:sample,{id: fid})[0]
     # stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted" }
@@ -129,10 +129,16 @@ class Protocol
     # show {
     #   note "#{stocks[1].location}"
     # }
+    x = find(:sample, id: 1018)[0].properties["Length"]
+    show {
+        note "#{x}"
+    }
+
+    
 
 
 
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true, multiple: true 
+    # phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true, multiple: true 
 
 #    take [phusion_stock_item], interactive: true, method: "boxes" 
 

@@ -165,4 +165,24 @@ module Standard
 	  	end
   end
 
+  def move items, new_location
+    # takes items (array or single objects) and move location to new_location
+    new_location = new_location.to_s
+    items = [items] unless items.kind_of?(Array)
+    items.each do |i|
+      raise "Must be Item or Array of Items to move" unless i.class == Item
+      i.location = new_location
+      i.save
+    end
+  end # move
+
+  def delete items
+    # invoke mark_as_deleted for each item in items
+    items = [items] unless items.kind_of?(Array)
+    items.each do |i|
+      raise "Must be Item or Array of Items to delete" unless i.class == Item
+      i.mark_as_deleted
+      i.save
+    end
+  end # delete
 end

@@ -1,18 +1,10 @@
 argument
-  plasmid_ids: generic, "List of plasmid ids"
-  yeast_item_ids: generic, "List of yeast strain item ids that you are going to transform plasmid into"
-  aliquot_numbers: number array, "List of number of aliquots to make from each yeast item"
-  yeast_transformed_strain_ids: generic, "List of transformed yeast strain ids"
   debug_mode: string, "Yes or No"
 end
 
 place startovernight
-protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+protocol: "aqualib:workflows/yeast/010_overnight_suspension_transformation.rb"
   argument
-    plasmid_ids: plasmid_ids
-    yeast_item_ids: yeast_item_ids
-    aliquot_numbers: aliquot_numbers
-    yeast_transformed_strain_ids: yeast_transformed_strain_ids
     debug_mode: debug_mode
   end
   group: "technicians"
@@ -24,19 +16,19 @@ end
 place innoculate
   protocol: "aqualib:workflows/yeast/015_inoculate_large_volume_growth.rb"
   group: "technicians"
-  start: now()
+  start: hours(18)
   window: hours(20)
 end
 
 place digest
-  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transforamtion.rb"
+  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transformation.rb"
   group: "technicians"
   start: now()
   window: hours(20)
 end
 
 place makecompcell
-  protocol: "aqualib:workflows/yeast/020_make_yeast_competent_cells_fresh.rb"
+  protocol: "aqualib:workflows/yeast/021_make_yeast_competent_cells.rb"
   group: "technicians"
   start: now()
   window: hours(20)
@@ -52,20 +44,29 @@ end
 place plate
   protocol: "aqualib:workflows/yeast/050_plate_yeast_transformation.rb"
   group: "technicians"
-  start: now()
+  start: hours(3)
   window: hours(20)
 end
 
+place image
+  protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
+  group: "technicians"
+  marked: false
+  start: hours(48)
+  window: hours(10)
+end
 
 wire startovernight => innoculate
 wire innoculate => digest
 wire digest => makecompcell
 wire makecompcell => transformation
 wire transformation => plate
+wire plate => image
 
 transition [ startovernight ] => [ innoculate ] when !error(0) && completed(0) end
 transition [ innoculate ] => [ digest ] when !error(0) && completed(0) end
 transition [ digest ] => [ makecompcell ] when !error(0) && completed(0) end
 transition [ makecompcell ] => [ transformation ] when !error(0) && completed(0) end
 transition [ transformation ] => [ plate ] when !error(0) && completed(0) end
-transition [ plate ] => [] when !error(0) && completed(0) end
+transition [ plate ] => [ image ] when !error(0) && completed(0) end
+transition [ image ] => [] when !error(0) && completed(0) end

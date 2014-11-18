@@ -29,10 +29,22 @@ class Protocol
     end
 
     # Find all overnights and take them
-    overnights = overnight_ids.collect{|oid| find(:item,id:oid)[0]}
+    overnights = overnight_ids.collect{ |oid| find(:item,id:oid)[0] }
     take overnights, interactive: true
+
+    verify_growth = show {
+      title "Check if overnights have growth"
+      note "Choose No for the overnight that does not have growth and throw them away or put in the clean station."
+      overnights.each do |x|
+        select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
+      end
+    }
+
+    overnights_to_delete = overnights.select { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
+    delete overnights_to_delete
+    overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
     
-    num=overnights.length
+    num = overnights.length
     num_arr = *(1..num)
     
     show{
@@ -110,6 +122,9 @@ class Protocol
   		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume }
       ps.save
   	end
+
+    # change overnights location to DFP.4
+    move overnights, "DFP.4"
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"
@@ -117,8 +132,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        task.status = "plasmid extracted"
-        task.save
+        set_task_status(task,"plasmid extracted")
       end
     end
     # Return io_hash

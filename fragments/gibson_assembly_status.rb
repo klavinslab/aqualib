@@ -12,7 +12,7 @@ class Protocol
 
 	  	title "Gibson Assemblies in the Pipeline"
 
-	  	note "Assemblies"
+	  	note "Gibson Assemblies"
 	  	table [ 
 	  		[ "Under Construction", gas[:assemblies][:under_construction].to_s ], 
 			[ "Waiting for Ingredients", gas[:assemblies][:waiting_for_ingredients].to_s ],

@@ -22,12 +22,13 @@ class Protocol
 		io_hash = input if input[:io_hash].empty?
 		gel_slice_ids = io_hash[:gel_slice_ids]
 
-		if io_hash[:debug_mode] == "Yes"
-			def debug
-				true
-			end
-		end
-
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
+    
 		gel_slices = find(:item, id: gel_slice_ids)
 		gel_slice_lengths = gel_slices.collect {|gs| gs.sample.properties["Length"]}
 
@@ -77,6 +78,7 @@ class Protocol
 		}
 
 		show {
+			title "Add isopropanol"
 			note "Add isopropanol according to the following table. Pipette up and down to mix"
 			table [["Gel slice", "Isopropanol"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
 		} if (iso_volumes.select { |v| v > 0 }).length > 0
@@ -120,7 +122,8 @@ class Protocol
 		
 		concs = show {
 			title "Measure DNA Concentration"
-			check "Elute DNA into 1.5 mL tubes by spinning at top speed (> 17,900 xg) for one minute, discard the columns."
+			check "Elute DNA into 1.5 mL tubes by spinning at top speed (> 17,900 xg) for one minute, keep the columns."
+			check "Pipette the flow through (30 µL) onto the center of the column, spin again at top speed (> 17,900 xg) for one minute. Discard the columns this time."
 			check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
 			fragment_stocks.each do |fs|
 				get "number", var: "c#{fs.id}", label: "Enter a number for tube #{fs.id}", default: 30.2
@@ -128,7 +131,7 @@ class Protocol
 		}
 
 		fragment_stocks.each do |fs|
-			fs.datum = {concentration: concs[:"c#{fs.id}".to_sym], volume: 28}
+			fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28 }
 			fs.save
 		end
 
@@ -140,8 +143,15 @@ class Protocol
 		gas = gibson_assembly_status
 
 		release fragment_stocks, interactive: true, method: "boxes"
+    if io_hash[:task_ids]
+	    io_hash[:task_ids].each do |tid|
+	      task = find(:task, id: tid)[0]
+	      set_task_status(task,"done")
+	    end
+	  end
+
 		io_hash[:fragment_stock_ids] = fragment_stocks.collect{|fs| fs.id}
-		return {io_hash: io_hash}
+		return { io_hash: io_hash }
 
   end # main
 

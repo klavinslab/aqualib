@@ -56,18 +56,19 @@ class Protocol
 
   def arguments
     {
-    io_hash: {},
-    initials: ["YY","YY"],
-    plasmid_stock_ids: [29489,29490],
-    primer_ids: [[2575,2569],[2054,2569]],
-    debug_mode: "Yes"
+      io_hash: {},
+      initials: ["YY","YY"],
+      plasmid_stock_ids: [29489,29490],
+      primer_ids: [[2575,2569],[2054,2569]],
+      debug_mode: "Yes"
     }
   end
  
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    if io_hash[:debug_mode] == "Yes"
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
@@ -77,11 +78,16 @@ class Protocol
     plasmid_stock_ids = []
     primer_ids = []
     initials = []
+    show {
+      note "#{io_hash}"
+    }
     io_hash[:primer_ids].each_with_index do |pids,idx|
-      primer_ids.concat pids
-      (1..pids.length).each do
-        plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
-        initials.push io_hash[:initials][idx]
+      unless find(:item, id: io_hash[:plasmid_stock_ids][idx])[0].datum[:concentration] == 0
+        primer_ids.concat pids
+        (1..pids.length).each do
+          plasmid_stock_ids.push io_hash[:plasmid_stock_ids][idx]
+          initials.push io_hash[:initials][idx]
+        end
       end
     end
 
@@ -90,10 +96,12 @@ class Protocol
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
-        primer_ids.concat pids
-        (1..pids.length).each do
-          plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
-          initials.push ready_task.simple_spec[:initials]
+        unless find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0].datum[:concentration] == 0
+          primer_ids.concat pids
+          (1..pids.length).each do
+            plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
+            initials.push ready_task.simple_spec[:initials]
+          end
         end
       end
       # show {
@@ -129,7 +137,6 @@ class Protocol
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-
     plasmid_lengths = plasmid_stocks.collect{|pls| pls.sample.properties["Length"]}
     plasmid_concs = plasmid_stocks.collect{|pls| pls.datum[:concentration]}
     plasmid_volume_list = []
@@ -176,12 +183,15 @@ class Protocol
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
+    stripwells.each do |sw|
+      sw.mark_as_deleted
+      sw.save
+    end
     # Set tasks in the io_hash to be send to sequencing
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        task.status = "send to sequencing"
-        task.save
+        set_task_status(task,"send to sequencing")
       end
     end
     # Return all info

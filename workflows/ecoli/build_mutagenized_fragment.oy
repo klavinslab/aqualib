@@ -1,12 +1,9 @@
-# To do list for build_fragments
-# Feedback on which fragments ingredients are missing.
-
 argument
   debug_mode: string, "Yes or No"
 end
 
-place dilute_plasmid_stock
-  protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
+place pcr
+  protocol: "aqualib:workflows/ecoli/010_PCR_error_prone.rb"
   group: "technicians"
   argument
     debug_mode: debug_mode
@@ -16,15 +13,8 @@ place dilute_plasmid_stock
   window: hours(1)
 end
 
-place pcr
-  protocol: "aqualib:workflows/ecoli/010_PCR.rb"
-  group: "technicians"
-  argument
-    debug_mode: debug_mode
-  end
+place wait_for_pcr
   marked: false
-  start: now()
-  window: hours(1)
 end
 
 place pour_gel
@@ -39,15 +29,19 @@ place run_gel
   protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
   group: "technicians"
   marked: false
-  start: minutes(15)
+  start: now()
   window: hours(1)
+end
+
+place wait_for_gel
+  marked: false
 end
 
 place cut_gel
   protocol: "aqualib:workflows/ecoli/030_cut_gel.rb"
   group: "technicians"
   marked: false
-  start: minutes(30)
+  start: now()
   window: hours(1)
 end
 
@@ -64,10 +58,9 @@ wire pour_gel => run_gel
 wire run_gel => cut_gel
 wire cut_gel => purify_gel
 
-
-transition [dilute_plasmid_stock] => [ pcr ] when !error(0) && completed (0) end
-transition [ pcr ] => [ pour_gel ] when !error(0) && completed(0) end
-transition [ pour_gel ] => [ run_gel ] when !error(0) && completed(0) end
-transition [ run_gel ] => [ cut_gel ] when !error(0) && completed(0) end
+transition [ pcr ] => [ wait_for_pcr, pour_gel ] when !error(0) && completed(0) end
+transition [ wait_for_pcr, pour_gel ] => [ run_gel ] when completed(0) && !error(1) && completed(1) end
+transition [ run_gel ] => [ wait_for_gel ] when !error(0) && completed(0) end
+transition [ wait_for_gel ] => [ cut_gel ] when !error(0) && completed(0) end
 transition [ cut_gel ] => [ purify_gel ] when !error(0) && completed (0) end
 transition [ purify_gel ] => [] when !error(0) && completed (0) end

@@ -18,9 +18,6 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    show {
-      note "#{io_hash}"
-    }
     lysate_stripwells = io_hash[:lysate_stripwell_ids].collect { |sid| collection_from sid }
     yeast_lysates = io_hash[:yeast_sample_ids].collect { |yid| find(:sample, id: yid)[0]}
     if io_hash[:debug_mode].downcase == "yes"
@@ -100,6 +97,13 @@ class Protocol
     release lysate_stripwells, interactive: true
 
     release forward_primers + reverse_primers, interactive: true, method: "boxes"
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id:tid)[0]
+        set_task_status(task,"pcr")
+      end
+    end
 
     io_hash[:stripwell_ids] = pcr_stripwells.collect { |s| s.id }
     return { io_hash: io_hash }

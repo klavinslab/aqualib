@@ -79,7 +79,8 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
-    if io_hash[:debug_mode] == "Yes"
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
@@ -113,8 +114,16 @@ class Protocol
   end
 
   release slices, interactive: true, method: "boxes"
+  
+  if io_hash[:task_ids]
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"gel cut")
+    end
+  end
+
   io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
-  return {io_hash: io_hash}
+  return { io_hash: io_hash }
 end
 
 end

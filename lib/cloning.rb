@@ -17,9 +17,9 @@ module Cloning
     # get length for each fragment
     length = props["Length"]
 
-    if fwd == nil || rev == nil || template == nil
+    if fwd == nil || rev == nil || template == nil || length == 0
 
-      return nil # Whoever entered this fragment didn't provide infor on how to make it
+      return nil # Whoever entered this fragment didn't provide enough information on how to make it
 
     else
 
@@ -76,8 +76,8 @@ module Cloning
 
         info = fragment_info fid
 
-        # First check if there already exists fragment stock, if so, it's ready to build.
-        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0
+        # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
+        if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
           t[:fragments][:ready_to_use].push fid
         elsif !info
           t[:fragments][:not_ready_to_build].push fid
@@ -89,15 +89,15 @@ module Cloning
 
       end
 
-    # change tasks status based on whether the fragments are ready.
-      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length
+    # change tasks status based on whether the fragments are ready and the plasmid info entered is correct.
+      if t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && find(:sample, id:t.simple_spec[:plasmid])[0]
         t.status = "ready"
         t.save
         # show {
         #   note "status changed to ready"
         #   note "#{t.id}"
         # }
-      elsif t[:fragments][:ready_to_use].length < t.simple_spec[:fragments].length
+      else
         t.status = "waiting for fragments"
         t.save
         # show {
@@ -175,6 +175,70 @@ module Cloning
       running_ids: running.collect {|t| t.id}
     }
   end ### fragment_construction_status
+  
+  def yeast_transformation_status
+    # process yeast transformation tasks ready and waiting based on information provided.
+    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
+    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    ready = tasks.select { |t| t.status == "ready" }
+    (waiting + ready).each do |task|
+      ready_yeast_strains = []
+      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
+        y = find(:sample, id: yid)[0]
+        # check if glycerol stock and plasmid stock are ready
+        ready_yeast_strains.push y if (y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0) && y.properties["Plasmid"].in("Plasmid Stock").length > 0
+      end
+      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
+        task.status = "ready"
+        task.save
+      else
+        task.status = "waiting for ingredients"
+        task.save
+      end
+    end # task_ids
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
+      plated_ids: (tasks.select { |t| t.status == "plated" }).collect { |t| t.id },
+      done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
+    }
+  end ### yeast_transformation_status
+
+  def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
+
+    raise "Empty collection list" unless collections.length > 0
+
+    heading = [ [ "#{collections[0].object_type.name}", "Location" ] + headings ]
+    i = 0
+
+    collections.each do |col|
+      
+      tab = []
+      m = col.matrix
+
+      (0..m.length-1).each do |r|
+        (0..m[r].length-1).each do |c|
+          if i < ingredients[0].length
+            if m.length == 1
+              loc = "#{c+1}"
+            else
+              loc = "#{r+1},#{c+1}"
+            end
+            tab.push( [ col.id, loc ] + ingredients.collect { |ing| { content: ing[i], check: true } } )
+          end
+          i += 1
+        end
+      end
+
+      show {
+          title "Load #{col.object_type.name} #{col.id}"
+          table heading + tab
+        }
+    end
+
+  end
+
+
 
 end
 

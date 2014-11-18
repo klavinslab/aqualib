@@ -13,7 +13,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_transformation_mixture_ids: [12293,28398,28400],
+      yeast_transformation_mixture_ids: [12293],
       debug_mode: "Yes"
     }
   end
@@ -30,7 +30,7 @@ class Protocol
     yeast_transformation_mixtures = io_hash[:yeast_transformation_mixture_ids].collect {|tid| find(:item, id: tid )[0]}
     take yeast_transformation_mixtures, interactive: true
     
-    show{
+    show {
       title "Resuspend in water"
       check "Spin down all the tubes in a small table top centrifuge for ~1 minute"
       check "Pipette off supernatant being careful not to disturb yeast pellet"
@@ -41,30 +41,20 @@ class Protocol
 
     yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
-    yeast_plates.each do |y|
-      y.location = "30 C incubator"
-      y.save
-    end
-
-    yeast_transformation_mixtures.each do |y|
-      y.location = "DFP"
-      y.save
-    end
+    move yeast_plates, "30 C incubator"
 
     tab = [["Yeast Transformation Mixtures id","Plate id"]]
     yeast_transformation_mixtures.each_with_index do |y,idx|
       tab.push([y.id,yeast_plates[idx].id])
-      y.mark_as_deleted
-      y.save
     end
 
     show{
       title "Plating"
-      check "Label plates with the following ids"
-      note (yeast_plates.collect{|y| "#{y.id}"})
+      check "Grab #{yeast_plates.length} +G418 plates. Label plates with the following ids"
+      note (yeast_plates.collect{|y| "#{y}"})
       check "Flip the plate and add 4-5 glass beads to it"
       check "Add 200 µL of the transformation mixture from the tube according to the following table"
-      table tab
+      table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
     }
 
     show{
@@ -76,12 +66,15 @@ class Protocol
     }
     
     release yeast_plates, interactive: true
-    yeast_transformation_mixtures.each do |y|
-      y.mark_as_deleted
-      y.save
+    delete yeast_transformation_mixtures
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"plated")
+      end
     end
-    io_hash[:yeast_plate_ids] = [] if !io_hash[:yeast_plate_ids]
-    io_hash[:yeast_plate_ids].concat yeast_plates.collect { |p| p.id }
+    io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
+    io_hash[:plate_ids].concat yeast_plates.collect { |p| p.id }
     return { io_hash: io_hash }
   end # main
   
