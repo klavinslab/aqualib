@@ -3,7 +3,7 @@ Cloning the Aquarium way
 
 Fragment Construction
 ---
-#### How does it work?
+#### How it works?
 The Fragment Construction workflow takes fragment sample id as input and produces corresponding fragment stock as output. In detail, the workflow can be started by scheduling build_fragment metacol, it pools all the fragment sample ids submitted to the Fragment Construction task, build each fragment using the information entered into the sample field through the process of PCR, pour gel, run gel, cut gel and purify gel.
 
 For each fragment sample, it finds the 1ng/µL plasmid stock of the template defined in the sample field, if 1ng/µL plasmid stock is not existed, it will try to dilute from the plasmid stock if there is any. It also finds the primer aliquot for the forward primer and reverse primer. It averages the T Anneal data in the forward and reverse primer field and uses the average as the desired annealing temperature for the PCR. The workflow groups all PCRs into 3 temperatures, 70 C, 67 C, 64 C based on the desired annealing temperature. The workflow runs the PCR reactions for all fragments based on all above information and stocks it finds, then pours number of gels based on number of PCR reactions, runs the gel and then cut the gel based on the length info in the fragment field, finnally purifies the gel and results in a fragment stock with concentration recorded in the datum field and placed in the M20 boxes. If a gel band does not match the length info, the corresponding gel lane will not be cut and no fragment stock will be produced for that fragment.
