@@ -4,9 +4,18 @@ DAY = 24*HOUR;
 Plugin.prototype.settings = function() {
   var that = this;
 
-  this.window = 7;   // days
-  this.tick = 4;     // hours
-  this.refresh = 60;   // seconds
+  $.cookie.json = true;
+
+  if ( ! $.cookie('params') ) {
+    this.window = 7;   // days
+    this.tick = 8;     // hours
+    this.refresh = 60; // seconds
+    $.cookie('params',{window: 7, tick: 4, refresh: 60});
+  } else {
+    this.window = $.cookie('params').window;
+    this.tick = $.cookie('params').tick;     
+    this.refresh = $.cookie('params').refresh;
+  }
 
   $("#info").click(function() { 
     $("#window").val(that.window);
@@ -20,6 +29,7 @@ Plugin.prototype.settings = function() {
     that.window = parseFloat($("#window").val());
     that.tick = parseFloat($("#tick").val());
     that.refresh = parseFloat($("#refresh").val()); 
+    $.cookie('params',{window: that.window, tick: that.tick, refresh: that.refresh});    
     $("#data").css('display','block');
     $("#settings").css('display','none');
     that.init();
@@ -34,7 +44,7 @@ Plugin.prototype.settings = function() {
 
 Plugin.prototype.init= function() {
 
-  console.log([this.window,this.tick,this.refresh]);
+  //console.log([this.window,this.tick,this.refresh]);
 
   var now = new Date().getTime();
   var that = this;
@@ -61,7 +71,7 @@ Plugin.prototype.update_bins = function(data) {
   var n = this.bins.length-1;
 
   // add new bin if needed
-  while ( this.last_update >= this.bins[n].to ) {
+  if ( this.last_update >= this.bins[n].to ) {
     this.bins.push ( { from: this.bins[n].to, to: this.bins[n].to + this.tick*HOUR, jobs: [] } )
     this.bins.shift;
   }
@@ -95,15 +105,17 @@ Plugin.prototype.get_data = function(since) {
 
   this.ajax({since:since/1000},function(result) {
     if ( result.error ) {
-      $('#main').append('<p><b>Interface Error: </b>'+result.error+'</p>');
+      $('#data').append('<p><b>Interface Error: </b>'+result.error+'</p>');
       that.period(-1);
     } else {
-      // console.log(result);
+      //console.log(result);
       that.last_update = new Date(result.timestamp).getTime();
       that.update_bins(result);
       that.render(result);
     }  
   });
+
+  //console.log('ajax request made');
 
 }
 
@@ -112,6 +124,8 @@ Plugin.prototype.update = function(data) {
 }
 
 Plugin.prototype.render = function(data) {
+
+  //console.log('render');
 
   var jobs=[];
   var samples=[];
