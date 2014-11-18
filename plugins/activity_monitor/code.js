@@ -6,7 +6,7 @@ Plugin.prototype.settings = function() {
 
   this.window = 7;   // days
   this.tick = 4;     // hours
-  this.refresh = 5;   // seconds
+  this.refresh = 60;   // seconds
 
   $("#info").click(function() { 
     $("#window").val(that.window);
