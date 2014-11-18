@@ -44,7 +44,7 @@ Plugin.prototype.settings = function() {
 
 Plugin.prototype.init= function() {
 
-  console.log([this.window,this.tick,this.refresh]);
+  //console.log([this.window,this.tick,this.refresh]);
 
   var now = new Date().getTime();
   var that = this;
@@ -110,14 +110,14 @@ Plugin.prototype.get_data = function(since) {
       $('#data').append('<p><b>Interface Error: </b>'+result.error+'</p>');
       that.period(-1);
     } else {
-      console.log(result);
+      //console.log(result);
       that.last_update = new Date(result.timestamp).getTime();
       that.update_bins(result);
       that.render(result);
     }  
   });
 
-  console.log('ajax request made');
+  //console.log('ajax request made');
 
 }
 
@@ -127,7 +127,7 @@ Plugin.prototype.update = function(data) {
 
 Plugin.prototype.render = function(data) {
 
-  console.log('render');
+  //console.log('render');
 
   var jobs=[];
   var samples=[];

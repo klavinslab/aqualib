@@ -2,7 +2,6 @@ class PluginInterface < PluginInterfaceBase
 
   def data params
 
-    @view.logger.info "AAAAAA"
     now = Time.now
     since = Time.at(params[:since])
 
@@ -14,8 +13,6 @@ class PluginInterface < PluginInterfaceBase
       samples: Sample.where("created_at >= ? AND created_at < ?", since, now)
         .collect { |s| { updated_at: s.updated_at, id: s.id } },
     }
-
-    @view.logger.info "BBBBBBB"
 
     return result
 
