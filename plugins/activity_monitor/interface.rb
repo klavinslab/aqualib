@@ -1,7 +1,7 @@
 class PluginInterface < PluginInterfaceBase
 
   def data params
-    @viewlogger.info "AAAAAA"
+    @view.logger.info "AAAAAA"
     now = Time.now
     since = Time.at(params[:since])
     return { 
