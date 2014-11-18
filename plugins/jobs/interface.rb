@@ -4,7 +4,7 @@ class PluginInterface < PluginInterfaceBase
 
     now = Time.now
 
-    jobs = Job.includes(:group => :memberships).where("pc >= -1")
+    jobs = Job.includes(:metacol,:group => :memberships).where("pc >= -1")
 
     jobs.each { |j| 
       g = j.group
