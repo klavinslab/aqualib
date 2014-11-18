@@ -117,6 +117,8 @@ Plugin.prototype.get_data = function(since) {
     }  
   });
 
+  console.log('ajax request made');
+
 }
 
 Plugin.prototype.update = function(data) {
