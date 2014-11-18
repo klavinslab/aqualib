@@ -16,6 +16,7 @@ class PluginInterface < PluginInterfaceBase
         j[:start] = ""
       end
       j[:metacol_id] = j.metacol ? j.metacol.id : -1
+      j[:last_update] = (view.time_ago_in_words j.updated_at) + " ago"
     }
 
     return {

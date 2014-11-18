@@ -6,7 +6,7 @@ Plugin.prototype.settings = function() {
 
   this.window = 7;   // days
   this.tick = 4;     // hours
-  this.refresh = 5;   // seconds
+  this.refresh = 60;   // seconds
 
   $("#info").click(function() { 
     $("#window").val(that.window);
@@ -17,9 +17,9 @@ Plugin.prototype.settings = function() {
   } );
 
   $("#save-settings").click(function() { 
-    that.window = parseInt($("#window").val());
-    that.tick = parseInt($("#tick").val());
-    that.refresh = parseInt($("#refresh").val()); 
+    that.window = parseFloat($("#window").val());
+    that.tick = parseFloat($("#tick").val());
+    that.refresh = parseFloat($("#refresh").val()); 
     $("#data").css('display','block');
     $("#settings").css('display','none');
     that.init();
@@ -61,7 +61,7 @@ Plugin.prototype.update_bins = function(data) {
   var n = this.bins.length-1;
 
   // add new bin if needed
-  if ( this.last_update >= this.bins[n].to ) {
+  while ( this.last_update >= this.bins[n].to ) {
     this.bins.push ( { from: this.bins[n].to, to: this.bins[n].to + this.tick*HOUR, jobs: [] } )
     this.bins.shift;
   }
