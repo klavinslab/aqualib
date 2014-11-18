@@ -152,6 +152,7 @@ class Protocol
       end
     end
     # Return io_hash
+    io_hash[:overnight_ids] = overnights.collect { |o| o.id }
     io_hash[:plasmid_stock_ids] = plasmid_stocks.collect { |p| p.id}
     return { io_hash: io_hash }
   end # main
