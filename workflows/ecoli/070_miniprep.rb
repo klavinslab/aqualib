@@ -42,8 +42,15 @@ class Protocol
 
     overnights_to_delete = overnights.select { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
     delete overnights_to_delete
+
+    if io_hash[:primer_ids]
+      io_hash[:primer_ids].each_with_index do |pids,idx|
+        io_hash[:primer_ids].delete_at(idx) if verify_growth[:"verify#{overnights[idx].id}".to_sym] == "No"
+      end
+    end
+
     overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
-    
+
     num = overnights.length
     num_arr = *(1..num)
     

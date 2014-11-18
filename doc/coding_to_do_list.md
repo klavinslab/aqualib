@@ -16,3 +16,4 @@ task.user.member?
 - [ ] Multi channel gels.
 - [ ] Directly take user login name intitials in the sequencing tasks.
 - [ ] Create protocol to shuffle and check task status.
+- [ ] Yeast overnight suspenstion transformation versio takes plates into source.
