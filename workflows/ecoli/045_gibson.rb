@@ -150,6 +150,7 @@ class Protocol
       note "Take #{gibson_results.length} Gibson Aliquots from SF2.100, put on an ice block."
       note "Label each Gibson Aliquot with the following ids using round dot labels"
       note (gibson_results.collect {|g| "#{g}"})
+      warning "Keep all gibson aliquots cool on ice."
     }
 
     # following loop is to show a table of setting up each Gibson reaction to the user
@@ -160,6 +161,7 @@ class Protocol
       end
       show {
           title "Load Gibson Reaction #{g}"
+          note "Make sure the gibson aliquot is thawed before pipetting."
           table tab
         } 
     end
