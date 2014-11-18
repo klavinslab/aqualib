@@ -47,7 +47,7 @@ class Protocol
     fragment_construction = fragment_construction_status
     show {
       title "Not ready fragment ids"
-      note "#{fragment_construction[:fragments][:not_ready_to_build]}"
+      note "#{fragment_construction[:fragments][:not_ready_to_build]}" if fragment_construction[:fragments]
     }
     fragment_from_construction_ids = []
     io_hash[:task_ids] = fragment_construction[:ready_ids]
