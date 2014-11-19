@@ -58,6 +58,8 @@ class Protocol
       io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
       io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
     end
+    raise "Incorrect inputs, plate_ids and num_colonies must have the same length." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
+    raise "Incorrect inputs, plate_ids and primer_ids must have the same length." if io_hash[:plate_ids].length != io_hash[:primer_ids].length
     # Parse out plate_ids, num_colonies, initials for plasmid that has marker info entered.
     info_needed_plate_ids = []
     plate_ids = []
