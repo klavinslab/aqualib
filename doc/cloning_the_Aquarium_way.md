@@ -18,6 +18,9 @@ To submit a Fragment Construction task, go to Tasks/Fragment Constructions, clic
 
 Gibson Assembly
 ---
+#### How it works?
+The Gibson Assembly workflow takes 
+
 
 Plasmid Verficiation
 ---
