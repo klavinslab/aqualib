@@ -19,6 +19,9 @@ class Protocol
       not_ready_to_build_fragment_ids = gs[:fragments][:not_ready_to_build].uniq
       plasmid_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:plasmid] }
       plasmids = plasmid_ids.collect { |pid| find(:sample, id: pid)[0]}
+      # show {
+      #   note "#{plasmids[0]}"
+      # }
       # fragments = fragment_ids.collect { |fids| fids.collect { |fid| "#{find(:sample, id: fid)[0]}" }[0] }
       # show {
       #   note "#{fragment_ids}"

@@ -30,7 +30,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      ids: [30437,30473],
+      ids: [1141,1142],
       debug_mode: "Yes"
     }
   end
@@ -46,14 +46,19 @@ class Protocol
     end
     items = io_hash[:ids].collect {|id| find(:item, id:id)[0]}
     take items, interactive: true
+    stripwells = produce spread items, "Stripwell", 1, 1
     samples = items.collect { |i| i.sample }
     show {
       title "Test page"
       note items.collect { |i| "#{i.class}"}
+      note stripwells.collect { |s| "#{s.class}"+" #{s}"}
+      note stripwells.collect { |s| "#{s}"}
+      note items.collect { |i| "#{i}"}
+      note samples.collect { |s| "#{s}"}
     }
     move items, "30 C incubator"
     move items[0], "456 incuabtor"
-    delete items
+    # delete items
     release items, interactive: true
   end
 end
