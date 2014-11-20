@@ -98,9 +98,10 @@ class Protocol
 
     # Set tasks in the io_hash to be plate imaged.
     if io_hash[:task_ids]
-      io_hash[:task_ids].each do |tid|
+      io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"imaged and stored in fridge")
+        set_task_status(task,"imaged and stored in fridge") if colony_number[:"c#{plates[idx].id}".to_sym] > 0
+        set_task_status(task,"no colonies") if colony_number[:"c#{plates[idx].id}".to_sym] == 0
       end
     end
     return { io_hash: io_hash }
