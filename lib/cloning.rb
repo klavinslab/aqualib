@@ -188,7 +188,9 @@ module Cloning
       task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
         y = find(:sample, id: yid)[0]
         # check if glycerol stock and plasmid stock are ready
-        ready_yeast_strains.push y if (y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0) && y.properties["Plasmid"].in("Plasmid Stock").length > 0
+        parent_ready = y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0
+        plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
+        ready_yeast_strains.push y if parent_ready && plasmid_ready
       end
       if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
         task.status = "ready"

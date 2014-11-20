@@ -43,7 +43,7 @@ class Protocol
       #   note "#{io_hash}"
       # }
       io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-      io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Plasmid"].in("Plasmid Stock")[0].id }
+      io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
       io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
     end
     # find how many yeast competent cell aliquots needed for the transformation and decide whether to start overnight or not.
