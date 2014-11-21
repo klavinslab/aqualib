@@ -3,7 +3,7 @@ argument
 end
 
 place check_input
-  protocol: aqualib:workflows/test/check_tasks_inputs.rb
+  protocol: "aqualib:workflows/test/check_tasks_inputs.rb"
   group: "technicians"
   marked: true
   start: now()
