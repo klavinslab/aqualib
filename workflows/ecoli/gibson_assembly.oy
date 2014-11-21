@@ -25,7 +25,7 @@ place plate
   protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
   group: "technicians"
   marked: false
-  start: now()
+  start: minutes(30)
   window: hours(1)
 end
 
