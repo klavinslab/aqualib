@@ -104,7 +104,7 @@ class Protocol
           if colony_number[:"c#{plates[idx].id}".to_sym] > 0
             set_task_status(task,"imaged and stored in fridge") 
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
-            set_task_status(task,"no colonies") if 
+            set_task_status(task,"no colonies")
           end
         else
           set_task_status(task,"imaged and stored in fridge")
