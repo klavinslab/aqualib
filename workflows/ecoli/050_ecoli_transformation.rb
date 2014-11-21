@@ -27,11 +27,12 @@ class Protocol
     # group gibson results into hash by their bacterial marker
     gibson_result_marker_hash = Hash.new {|h,k| h[k] = [] }
     gibson_results.each do |g|
-      if g.sample.properties["Bacterial Marker"].downcase[0,3] == "amp"
-        gibson_result_marker_hash[:amp].push g
-      else
-        gibson_result_marker_hash[:non_amp].push g
-      end
+      # if g.sample.properties["Bacterial Marker"].downcase[0,3] == "amp"
+      #   gibson_result_marker_hash[:amp].push g
+      # else
+      #   gibson_result_marker_hash[:non_amp].push g
+      # end
+      gibson_result_marker_hash[:non_amp].push g  # change code to treat all as non_amp marker so as to incubate for 30 minutes in the incubator.
     end
     take gibson_results, interactive: true, method: "boxes"
 
