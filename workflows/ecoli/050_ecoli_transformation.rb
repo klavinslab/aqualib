@@ -27,7 +27,7 @@ class Protocol
     take gibson_results, interactive: true, method: "boxes"
 
     show {
-    	title "Intialize the electroporator"
+    	title "Initialize the electroporator"
     	note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
       note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
     }
@@ -51,7 +51,7 @@ class Protocol
     }
 
     show {
-      title "Prepare #{num} 1.5 mL tubes and pipetters"
+      title "Prepare #{num} 1.5 mL tubes and pipettors"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
       check "Set your 3 pipettors to be 2 µL, 42 µL, and 350 µL."
       check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
