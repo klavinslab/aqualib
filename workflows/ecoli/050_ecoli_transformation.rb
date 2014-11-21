@@ -40,14 +40,14 @@ class Protocol
     show {
       title "Retrieve and arrange an ice block"
       note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
-      image "arrange_cold_block"
+      #image "arrange_cold_block"
     }
 
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
       check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
       check "Retrieve #{num} DH5alpha electrocompetent aliquots from M80 and place it on the aluminum tube rack."
-      image "handle_electrocompetent_cells"
+      #image "handle_electrocompetent_cells"
     }
 
     show {
@@ -63,7 +63,7 @@ class Protocol
       note "If still frozen, wait till the cells have thawed to a slushy consistency."
       warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
       warning "Do not wait too long"
-      image "thawed_electrocompotent_cells"
+      #image "thawed_electrocompotent_cells"
     }
 
     show {
