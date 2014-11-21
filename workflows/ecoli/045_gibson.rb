@@ -55,9 +55,6 @@ class Protocol
     io_hash[:fragment_ids] = input[:fragment_ids] || []
     io_hash[:plasmid_ids] = input[:plasmid_ids] || []
     io_hash[:task_mode] = input[:task_mode] || "Yes"
-    # show {
-    #   note "#{io_hash}"
-    # }
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
     # Set debug based on debug_mode
@@ -86,10 +83,6 @@ class Protocol
 
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten(1).uniq
-
-    # show {
-    #   note "#{fragment_stocks_flatten.collect {|f| f.id}}"
-    # }
 
     fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
 
@@ -136,20 +129,10 @@ class Protocol
     # Take fragment stocks, since fragment stocks are array of arrays, so use the flatten(1) method.
     take fragment_stocks.flatten(1), interactive: true,  method: "boxes"
 
-    # produce Gibson reaction results ids
-    # gibson_results = []
-    # io_hash[:plasmid_ids].each_with_index do |pid,idx|
-    #   plasmid = find(:sample,{id: pid})[0]
-    #   gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
-    #   gibson_results = gibson_results.push gibson_result
-    # end
-
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots"
       note "Take #{io_hash[:plasmid_ids].length} Gibson Aliquots from SF2.100, put on an ice block."
-      # note "Label each Gibson Aliquot with the following ids using round dot labels"
-      # note (gibson_results.collect {|g| "#{g}"})
       warning "Keep all gibson aliquots cool on ice."
     }
 
@@ -170,18 +153,6 @@ class Protocol
           table tab
         }  
     end
-
-    # gibson_results.each_with_index do |g,idx|
-    #   tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
-    #   fragment_stocks[idx].each_with_index do |f,m|
-    #     tab.push(["#{g}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
-    #   end
-    #   show {
-    #       title "Load Gibson Reaction #{g}"
-    #       note "Make sure the gibson aliquot is thawed before pipetting."
-    #       table tab
-    #     } 
-    # end
 
     # Place all reactions in 50 C heat block
     show {
