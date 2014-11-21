@@ -58,7 +58,7 @@ class Protocol
     }
 
     show {
-      title "Label the electrocompetent cell"
+      title "Label electrocompetent aliquots"
       check "Label each electrocompetent aliquot with #{num_arr}."
       note "If still frozen, wait till the cells have thawed to a slushy consistency."
       warning "Transformation efficiency depends on keeping electrocompetent cells ice-cold until electroporation."
