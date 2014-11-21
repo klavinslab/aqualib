@@ -60,5 +60,14 @@ class Protocol
     move items[0], "456 incuabtor"
     # delete items
     release items, interactive: true
+
+    gibson_info = gibson_assembly_status
+    ready_task_ids = gibson_info[:ready_ids]
+    ready_task_ids.each do |tid|
+      ready_task = find(:task, id: tid)[0]
+      show {
+        note "#{ready_task.task_prototype.name}"
+      }
+    end
   end
 end

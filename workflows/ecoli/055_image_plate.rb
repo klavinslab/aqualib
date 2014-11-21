@@ -100,8 +100,15 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"imaged and stored in fridge") if colony_number[:"c#{plates[idx].id}".to_sym] > 0
-        set_task_status(task,"no colonies") if colony_number[:"c#{plates[idx].id}".to_sym] == 0
+        if task.task_prototype.name == "Gibson Assembly"
+          if colony_number[:"c#{plates[idx].id}".to_sym] > 0
+            set_task_status(task,"imaged and stored in fridge") 
+          elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
+            set_task_status(task,"no colonies") if 
+          end
+        else
+          set_task_status(task,"imaged and stored in fridge")
+        end
       end
     end
     return { io_hash: io_hash }
