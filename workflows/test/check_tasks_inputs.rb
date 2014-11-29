@@ -8,6 +8,23 @@ class Protocol
 
   def main
 
+    fs = fragment_construction_status
+    if fs[:fragments]
+      waiting_ids = fs[:waiting_ids]
+      users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
+      fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
+      ready_to_build_fragment_ids = fs[:fragments][:ready_to_build].uniq
+      not_ready_to_build_fragment_ids = fs[:fragments][:not_ready_to_build].uniq
+      fs_tab = [[ "Not ready tasks", "Tasks owner", "Fragments", "Ready to build", "Not ready to build" ]]
+      waiting_ids.each_with_index do |tid,idx|
+        fs_tab.push [ tid, users[idx], fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s ]
+      end
+      show {
+        title "Fragment Construction Status"
+        note "Ready to build means recipes and ingredients for building this fragments are complete. Not ready to build means some information or stocks are missing."
+        table fs_tab
+      }
+    end
     gs = gibson_assembly_status
     if gs[:fragments]
       waiting_ids = gs[:waiting_ids]
