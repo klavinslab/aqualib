@@ -10,7 +10,7 @@ class PluginInterface < PluginInterfaceBase
       g = j.group
       j[:submitted_login] = User.find(j.submitted_by).login
       j[:group_name] = g ? g.name : 'no group'
-      if !(j.pc == -1 && now <= j.desired_start_time) && g.member?(@view.current_user.id)
+      if !(j.pc == -1 && now <= j.desired_start_time) && (!g || g.member?(@view.current_user.id) )
         j[:start] =  j.start_link("<i class='icon-play'></i>",confirm:true)
       else
         j[:start] = ""
