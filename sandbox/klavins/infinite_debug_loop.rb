@@ -1,3 +1,7 @@
+#
+# This protocol used to crash the Krill server, but now it won't.
+#
+
 class Protocol
 
   def debug
