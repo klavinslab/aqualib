@@ -86,7 +86,7 @@ class Protocol
         end
       end
     end
-    io_hash[:task_ids] = ready_task_ids
+    io_hash[:task_ids] = perform_task_ids
 
     # Find fragment stocks into array of arrays
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
