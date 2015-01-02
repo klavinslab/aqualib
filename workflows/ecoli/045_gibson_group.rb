@@ -68,10 +68,10 @@ class Protocol
       ready_task_ids = gibson_info[:ready_ids]
       ready_task_ids.each do |tid|
         ready_task = find(:task, id: tid)[0]
-        if group == "technicians"
-          user_group == "cloning"
+        if io_hash[:group] == "technicians"
+          user_group = "cloning"
         else
-          user_group == group
+          user_group = io_hash[:group]
         end
         group_info = Group.find_by_name(user_group)
         if ready_task.user.member? group_info.id
@@ -81,6 +81,7 @@ class Protocol
           show {
             note "#{ready_task.user.login} does not belong to #{user_group}"
           }
+        end
       end
     end
     io_hash[:task_ids] = ready_task_ids
