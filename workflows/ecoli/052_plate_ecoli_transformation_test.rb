@@ -48,7 +48,7 @@ class Protocol
 	    	marker = "chlor" if marker == "chl"
 	    	selection_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
         inducer_plates = []
-        inducer_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"} if io_hash[:inducer_plate] != ""
+        inducer_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"} if io_hash[:inducer_plate] && io_hash[:inducer_plate] != ""
         plates = selection_plates + inducer_plates
 	    	all_plates.concat plates
 	    	num = transformed_aliquots.length
@@ -61,13 +61,13 @@ class Protocol
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} LB #{marker[0].upcase}#{marker[1..marker.length]} + #{io_hash[:inducer_plate]} Plate (sterile)"
           check "Label with the following ids #{inducer_plates.collect { |p| p.id }}"
-        } if io_hash[:inducer_plate] != ""
-	    	show {
+        } if io_hash[:inducer_plate] && io_hash[:inducer_plate] != ""	    	
+        show {
 	    		title "Plating"
 	    		check "Use sterile beads to plate 200 µL from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
 	    		check "Discard used transformed aliquots after plating."
 	    		table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip selection_plates.collect{ |p| { content: p.id, check: true } })
-          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip inducer_plates.collect{ |p| { content: p.id, check: true } }) if io_hash[:inducer_plate] != ""
+          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip inducer_plates.collect{ |p| { content: p.id, check: true } }) if io_hash[:inducer_plate] && io_hash[:inducer_plate] != ""
 	    	}
 	    else
 	    	show {

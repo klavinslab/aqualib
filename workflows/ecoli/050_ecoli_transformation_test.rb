@@ -12,7 +12,8 @@ class Protocol
       #Enter the gibson result ids as a list
       "gibson_result_ids Gibson Reaction Result" => [2853,2854,2958],
       debug_mode: "Yes",
-      inducer_plate: "IPTG"
+      inducer_plate: "IPTG",
+      cell_type: "DH5alpha"
     }
   end #arguments
 
@@ -47,7 +48,7 @@ class Protocol
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
       check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-      check "Retrieve #{num} MG1655 electrocompetent aliquots from M80 and place it on the aluminum tube rack."
+      check "Retrieve #{num} #{io_hash:[cell_type]} electrocompetent aliquots from M80 and place it on the aluminum tube rack."
       #image "handle_electrocompetent_cells"
     }
 
