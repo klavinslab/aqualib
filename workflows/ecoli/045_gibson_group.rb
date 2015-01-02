@@ -66,6 +66,7 @@ class Protocol
     if io_hash[:task_mode] == "Yes"
       gibson_info = gibson_assembly_status
       ready_task_ids = gibson_info[:ready_ids]
+      perform_task_ids = []
       ready_task_ids.each do |tid|
         ready_task = find(:task, id: tid)[0]
         if io_hash[:group] == "technicians"
@@ -77,6 +78,7 @@ class Protocol
         if ready_task.user.member? group_info.id
           io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
           io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
+          perform_task_ids.push tid
         else
           show {
             note "#{ready_task.user.login} does not belong to #{user_group}"
