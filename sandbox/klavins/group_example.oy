@@ -1,0 +1,27 @@
+root = "periodic/"
+
+argument
+  fragment_ids: generic, "List of fragment ids"
+  group1: group
+  group2: group
+end
+
+place daily
+  protocol: root + "tasks.rb"
+  argument
+    type: "Daily"
+  end
+  group: group1
+  marked: true
+  window: hours(24)
+end
+
+place daily
+  protocol: root + "tasks.rb"
+  argument
+    type: "Daily"
+  end
+  group: group1
+  marked: true
+  window: hours(24)
+end
