@@ -2,6 +2,7 @@ argument
   debug_mode: string, "Yes or No"
   group: group, "which group assign this metacol to"
   dna_to_transform: generic, "DNA to transform into cells"
+  inducer_plate: string, "what kind of inducer plate besides the selection plate you want to plate on"
 end
 
 place transformation
@@ -10,6 +11,7 @@ place transformation
   argument
     debug_mode: debug_mode
     gibson_result_ids: dna_to_transform
+    inducer_plate: inducer_plate
     io_hash: {}
   end
   marked: true
