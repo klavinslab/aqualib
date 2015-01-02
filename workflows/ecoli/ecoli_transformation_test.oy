@@ -5,11 +5,12 @@ argument
 end
 
 place transformation
-  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
+  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation_test.rb"
   group: group
   argument
     debug_mode: debug_mode
     gibson_result_ids: dna_to_transform
+    io_hash: {}
   end
   marked: true
   start: now()
