@@ -72,7 +72,7 @@ class Protocol
       title "Discard plate that has no colony on it"
       note "Discard the following plates that has no colony on it."
       note discarded_plates.collect{ |p| "#{p}"}
-    }
+    } if discarded_plates.length > 0
 
     discarded_plates.each do |p|
       p.mark_as_deleted
