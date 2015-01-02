@@ -1,7 +1,6 @@
 root = "periodic/"
 
 argument
-  fragment_ids: generic, "List of fragment ids"
   group1: group, "Group for daily tasks"
   group2: group, "Group for weekly tasks"
 end
