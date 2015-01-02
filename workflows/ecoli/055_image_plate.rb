@@ -52,7 +52,8 @@ class Protocol
 
     colony_number = show {
       title "Estimate colony numbers"
-      note "Estimate colony numbers for each plate and enter in the following. Double check if you think there is no colony on the plate, enter 0 for no colony plate."
+      note "Estimate colony numbers for each plate by eye or using the OpenCFU software and enter in the following."
+      warning "Double check if you think there is no colony on the plate, enter 0 for no colony plate."
       plates.each do |p|
         get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
       end
