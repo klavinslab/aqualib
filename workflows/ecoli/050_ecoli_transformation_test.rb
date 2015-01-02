@@ -48,7 +48,7 @@ class Protocol
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
       check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-      check "Retrieve #{num} #{io_hash:[cell_type]} electrocompetent aliquots from M80 and place it on the aluminum tube rack."
+      check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place it on the aluminum tube rack."
       #image "handle_electrocompetent_cells"
     }
 
