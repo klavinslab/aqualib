@@ -1,0 +1,44 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "which group assign this metacol to"
+  dna_to_transform: generic, "DNA to transform into cells"
+end
+
+place transformation
+  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    gibson_result_ids: dna_to_transform
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place plate
+  protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
+  group: group
+  marked: false
+  start: minutes(30)
+  window: hours(1)
+end
+
+place image
+  protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
+  group: group
+  marked: false
+  start: hours(18)
+  window: hours(1)
+end
+
+wire transformation => plate
+wire plate => image
+
+transition [ transformation] => [ plate ] when !error(0) && completed(0) end
+transition [ plate ] => [ image ] when !error(0) && completed(0) end
+transition [ image ] => [] when !error(0) && completed(0) end
+
+transition [ transformation ] => [ transformation ] when error(0) end
+transition [ plate ] => [ plate ] when error(0) end
+transition [ image ] => [ image ] when error(0) end

@@ -4,7 +4,7 @@ Ecoli and Yeast Cloning Workflow
 To do list
 
 - [ ] Fix deli fridge boxes inventory managment
-- [ ] How to extract user info from tasks?
+- [x] How to extract user info from tasks?
 task.user.login
 task.user.member?
 - [ ] Yeast competent aliquot management solutions, new M81 boxes?
@@ -17,3 +17,4 @@ task.user.member?
 - [ ] Directly take user login name intitials in the sequencing tasks.
 - [ ] Create protocol to shuffle and check task status.
 - [ ] Yeast overnight suspenstion transformation versio takes plates into source.
+- [ ] Work on lab class transformation metacol.
