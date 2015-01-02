@@ -2,8 +2,8 @@ root = "periodic/"
 
 argument
   fragment_ids: generic, "List of fragment ids"
-  group1: group
-  group2: group
+  group1: group, "Group for daily tasks"
+  group2: group, "Group for weekly tasks"
 end
 
 place daily
@@ -19,9 +19,9 @@ end
 place daily
   protocol: root + "tasks.rb"
   argument
-    type: "Daily"
+    type: "Weekly"
   end
-  group: group1
+  group: group2
   marked: true
   window: hours(24)
 end
