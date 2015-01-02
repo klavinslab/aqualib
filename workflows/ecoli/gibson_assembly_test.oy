@@ -1,6 +1,6 @@
 argument
   debug_mode: string, "Yes or No"
-  group: string, "which group assign this metacol to"
+  group: group, "which group assign this metacol to"
 end
 
 place check_input
@@ -12,10 +12,11 @@ place check_input
 end
 
 place gibson
-  protocol: "aqualib:workflows/ecoli/045_gibson.rb"
+  protocol: "aqualib:workflows/ecoli/045_gibson_group.rb"
   group: group
   argument
     debug_mode: debug_mode
+    group: group
   end
   marked: false
   start: now()
@@ -24,7 +25,7 @@ end
 
 place transformation
   protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -32,7 +33,7 @@ end
 
 place plate
   protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: minutes(30)
   window: hours(1)
@@ -40,7 +41,7 @@ end
 
 place image
   protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: hours(18)
   window: hours(1)

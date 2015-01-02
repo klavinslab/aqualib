@@ -36,37 +36,44 @@ class Protocol
   end
 
   def main
-    io_hash = input[:io_hash]
-    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
-    end
-    items = io_hash[:ids].collect {|id| find(:item, id:id)[0]}
-    take items, interactive: true
-    stripwells = produce spread items, "Stripwell", 1, 1
-    samples = items.collect { |i| i.sample }
-    show {
-      title "Test page"
-      note items.collect { |i| "#{i.class}"}
-      note stripwells.collect { |s| "#{s.class}"+" #{s}"}
-      note stripwells.collect { |s| "#{s}"}
-      note items.collect { |i| "#{i}"}
-      note samples.collect { |s| "#{s}"}
-    }
-    move items, "30 C incubator"
-    move items[0], "456 incuabtor"
-    # delete items
-    release items, interactive: true
+    # io_hash = input[:io_hash]
+    # io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    # io_hash[:debug_mode] = input[:debug_mode] || "No"
+    # if io_hash[:debug_mode].downcase == "yes"
+    #   def debug
+    #     true
+    #   end
+    # end
+    # items = io_hash[:ids].collect {|id| find(:item, id:id)[0]}
+    # take items, interactive: true
+    # stripwells = produce spread items, "Stripwell", 1, 1
+    # samples = items.collect { |i| i.sample }
+    # show {
+    #   title "Test page"
+    #   note items.collect { |i| "#{i.class}"}
+    #   note stripwells.collect { |s| "#{s.class}"+" #{s}"}
+    #   note stripwells.collect { |s| "#{s}"}
+    #   note items.collect { |i| "#{i}"}
+    #   note samples.collect { |s| "#{s}"}
+    # }
+    # move items, "30 C incubator"
+    # move items[0], "456 incuabtor"
+    # # delete items
+    # release items, interactive: true
 
     gibson_info = gibson_assembly_status
     ready_task_ids = gibson_info[:ready_ids]
     ready_task_ids.each do |tid|
       ready_task = find(:task, id: tid)[0]
+      group = Group.find_by_name("technicians")
       show {
         note "#{ready_task.task_prototype.name}"
+        note "#{ready_task.user.login}"
+        note "#{ready_task.user.member? group.id}"
+        note "#{group}"
+        if ready_task.user.member? group.id
+          note "#{ready_task.user.login} is in group1"
+        end
       }
     end
   end
