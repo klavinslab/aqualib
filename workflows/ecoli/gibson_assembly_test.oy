@@ -24,7 +24,7 @@ place gibson
 end
 
 place transformation
-  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
+  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation_test.rb"
   group: group
   marked: false
   start: now()
