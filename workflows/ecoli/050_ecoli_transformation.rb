@@ -11,7 +11,9 @@ class Protocol
       io_hash: {},
       #Enter the gibson result ids as a list
       "gibson_result_ids Gibson Reaction Result" => [2853,2854,2958],
-      debug_mode: "Yes"
+      debug_mode: "Yes",
+      inducer_plate: "IPTG",
+      cell_type: "DH5alpha"
     }
   end #arguments
 
@@ -26,9 +28,11 @@ class Protocol
     gibson_results = io_hash[:gibson_result_ids].collect{|gid| find(:item,{id: gid})[0]}
     take gibson_results, interactive: true, method: "boxes"
 
+    io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
+
     show {
-    	title "Initialize the electroporator"
-    	note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
+      title "Initialize the electroporator"
+      note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
       note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
     }
 
@@ -46,7 +50,7 @@ class Protocol
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
       check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-      check "Retrieve #{num} DH5alpha electrocompetent aliquots from M80 and place it on the aluminum tube rack."
+      check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place it on the aluminum tube rack."
       #image "handle_electrocompetent_cells"
     }
 
