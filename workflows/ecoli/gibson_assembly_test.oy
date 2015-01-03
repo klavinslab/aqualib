@@ -6,7 +6,7 @@ end
 place check_input
   protocol: "aqualib:workflows/test/check_tasks_inputs.rb"
   group: group
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -18,7 +18,7 @@ place gibson
     debug_mode: debug_mode
     group: group
   end
-  marked: false
+  marked: true
   start: now()
   window: hours(1)
 end
@@ -32,7 +32,7 @@ place transformation
 end
 
 place plate
-  protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
+  protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation_test.rb"
   group: group
   marked: false
   start: minutes(30)
@@ -51,7 +51,6 @@ wire gibson => transformation
 wire transformation => plate
 wire plate => image
 
-transition [ check_input ] => [ gibson ] when completed(0) end
 transition [ gibson ] => [ transformation ] when !error(0) && completed(0) end
 transition [ transformation] => [ plate ] when !error(0) && completed(0) end
 transition [ plate ] => [ image ] when !error(0) && completed(0) end
