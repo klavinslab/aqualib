@@ -82,7 +82,7 @@ class Protocol
     show {
       title "Electroporation and Rescue"
       check "Grab a 50 mL LB liquid aliquot (sterile) and loosen the cap."
-      check "Take a labeled electrocompetent aliquot, transfer mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
+      check "Take a labeled electrocompetent aliquot, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
       check "Remove the cuvette from the electroporator and QUICKLY add 1 mL of LB."
       check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
