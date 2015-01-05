@@ -34,6 +34,7 @@ class Protocol
       title "Initialize the electroporator"
       note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
       note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
+      image "initialize_electroporator"
     }
 
     transformed_aliquots = gibson_results.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
@@ -83,6 +84,7 @@ class Protocol
       check "Remove the cuvette from the electroporator and QUICKLY add 1 mL of LB."
       check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
+      image "electroporation_rescue"
     }
 
     show {
@@ -90,12 +92,14 @@ class Protocol
       check "Put all cuvettes into washing station."
       check "Discard empty electrocompetent aliquot tubes into waste bin."
       check "Return the styrofoam ice block and the aluminum tube rack."
+      image "dump_dirty_cuvettes"
     }
 
     show {
       title "Incubate the following 1.5 mL tubes"
       check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
       note "#{transformed_aliquots.collect {|t| t.id}}"
+      image "put_green_tube_holder_to_incubator"
     }
 
     move transformed_aliquots, "37 C incubator"
