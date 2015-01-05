@@ -33,7 +33,8 @@ class Protocol
     show {
       title "Initialize the electroporator"
       note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
-      note "Turn on the electroporator if it is off and set the voltage to 1250V by clicking up and down button. Click the time constant button."
+      note "Set the voltage to 1250V by clicking up and down button."
+      note " Click the time constant button to show 0.0."
       image "initialize_electroporator"
     }
 
@@ -50,8 +51,8 @@ class Protocol
 
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
-      check "Retrieve #{num} cuvettes put all inside the styrofoam touching ice block."
-      check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place it on the aluminum tube rack."
+      check "Retrieve #{num} cuvettes and put inside the styrofoam touching ice block."
+      check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place on the aluminum tube rack."
       image "handle_electrocompetent_cells"
     }
 
@@ -75,6 +76,7 @@ class Protocol
       title "Pipette plasmid into electrocompetent aliquot"
       note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
       table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_results.collect {|g| { content: g.id, check: true }}.zip num_arr)
+      image "pipette_plasmid_into_electrocompotent_cells"
     }
 
     show {
@@ -84,7 +86,6 @@ class Protocol
       check "Remove the cuvette from the electroporator and QUICKLY add 1 mL of LB."
       check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
-      image "electroporation_rescue"
     }
 
     show {
