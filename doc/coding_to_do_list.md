@@ -17,4 +17,5 @@ task.user.member?
 - [ ] Directly take user login name intitials in the sequencing tasks.
 - [ ] Create protocol to shuffle and check task status.
 - [ ] Yeast overnight suspenstion transformation versio takes plates into source.
-- [ ] Work on lab class transformation metacol.
+- [x] Work on lab class transformation metacol.
+- [ ] plate managment in image plate
