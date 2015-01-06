@@ -42,6 +42,13 @@ class Protocol
     ids = transformed_aliquots.collect {|t| t.id} 
     num = transformed_aliquots.length
     num_arr = *(1..num)
+    
+    show {
+      title "Prepare #{num} 1.5 mL tubes and pipettors"
+      check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
+      check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
+      check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
+    }
 
     show {
       title "Retrieve and arrange an ice block"
@@ -54,13 +61,6 @@ class Protocol
       check "Retrieve #{num} cuvettes and put inside the styrofoam touching ice block."
       check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place on the aluminum tube rack."
       image "handle_electrocompetent_cells"
-    }
-
-    show {
-      title "Prepare #{num} 1.5 mL tubes and pipettors"
-      check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-      check "Set your 3 pipettors to be 2 µL, 42 µL, and 350 µL."
-      check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
     }
 
     show {
@@ -82,9 +82,9 @@ class Protocol
     show {
       title "Electroporation and Rescue"
       check "Grab a 50 mL LB liquid aliquot (sterile) and loosen the cap."
-      check "Take a labeled electrocompetent aliquot, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
+      check "Take a labeled electrocompetent aliquot. Using the set 100uL pipette, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
       check "Remove the cuvette from the electroporator and QUICKLY add 1 mL of LB."
-      check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
+      check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then, using the set 1000uL pipette, transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
     }
 
