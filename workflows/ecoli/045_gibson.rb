@@ -17,7 +17,8 @@ class Protocol
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
       plasmid_ids: [],
       debug_mode: "Yes",
-      task_mode: "Yes"
+      task_mode: "Yes",
+      group: "cloning"
     }
   end
 
@@ -41,20 +42,37 @@ class Protocol
     end
   end
 
+  def task_group_filter task_ids, group
+    filtered_task_ids = []
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      if group == "technicians"
+        user_group = "cloning"
+      else
+        user_group = group
+      end
+      group_info = Group.find_by_name(user_group)
+      if task.user.member? group_info.id
+        filtered_task_ids.push tid
+      else
+        show {
+          note "#{task.user.login} does not belong to #{user_group}"
+        }
+      end
+    end
+    return filtered_task_ids
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
-    end
     # making sure have the following hash indexes.
     io_hash = io_hash.merge({ fragment_ids: [], plasmid_ids: [] }) if !input[:io_hash]
     io_hash[:debug_mode] = input[:debug_mode] || "No"
     io_hash[:fragment_ids] = input[:fragment_ids] || []
     io_hash[:plasmid_ids] = input[:plasmid_ids] || []
     io_hash[:task_mode] = input[:task_mode] || "Yes"
+    io_hash[:group]  = input[:group] || "cloning"
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
     # Set debug based on debug_mode
@@ -66,8 +84,9 @@ class Protocol
     # Pull gibson info from Gibson Assembly Task
     ready_task_ids = []
     if io_hash[:task_mode] == "Yes"
-      gibson_info = gibson_assembly_status
-      ready_task_ids = gibson_info[:ready_ids]
+      gibson_info = gibson_assembly_status      
+      # Filter out tasks by group
+      ready_task_ids = task_group_filter(gibson_info[:ready_ids], io_hash[:group])
       ready_task_ids.each do |tid|
         ready_task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
