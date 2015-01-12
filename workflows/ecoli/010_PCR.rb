@@ -51,7 +51,7 @@ class Protocol
       note "From Gibson Assembly tasks, the following are not ready #{gibson_assembly[:fragments][:not_ready_to_build]}" if gibson_assembly[:fragments]
     }
     fragment_from_construction_ids = []
-    io_hash[:task_ids] = fragment_construction[:ready_ids]
+    io_hash[:task_ids] = task_group_filter(fragment_construction[:ready_ids], io_hash[:group])
     io_hash[:task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       fragment_from_construction_ids.concat ready_task.simple_spec[:fragments]

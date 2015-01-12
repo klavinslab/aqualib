@@ -16,9 +16,9 @@ class Protocol
   end
 
   def main
-    io_hash = {}
-    # io_hash = input if input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode]
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?  
+    io_hash[:group]  = input[:group] || "technicians"
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -32,7 +32,8 @@ class Protocol
     fragment_ids.concat gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
     # Pull info from Fragment Construction tasks which fragment needs to work on
     fragment_construction = fragment_construction_status
-    fragment_construction[:waiting_ids].each do |tid|
+    waiting_ids = task_group_filter(fragment_construction[:waiting_ids], io_hash[:group])
+    waiting_ids.each do |tid|
       task = find(:task, id: tid)[0]
       fragment_ids.concat task.simple_spec[:fragments]
     end

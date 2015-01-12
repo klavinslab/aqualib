@@ -51,7 +51,7 @@ class Protocol
     io_hash[:fragment_ids] = input[:fragment_ids] || []
     io_hash[:plasmid_ids] = input[:plasmid_ids] || []
     io_hash[:task_mode] = input[:task_mode] || "Yes"
-    io_hash[:group]  = input[:group] || "cloning"
+    io_hash[:group]  = input[:group] || "technicians"
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
     # Set debug based on debug_mode
