@@ -1,5 +1,6 @@
 argument
   debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
 end
 
 place overnight
@@ -7,6 +8,7 @@ place overnight
   group: "technicians"
   argument
     debug_mode: debug_mode
+    group: group
   end
   marked: true
   start: now()
