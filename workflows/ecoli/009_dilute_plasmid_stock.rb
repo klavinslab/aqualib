@@ -88,7 +88,8 @@ class Protocol
 
   	release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
 
-  	return { plasmid_diluted_stock_ids: plasmid_diluted_stocks.collect {|p| p.id} }
+    io_hash[:plasmid_diluted_stock_ids]  = plasmid_diluted_stocks.collect {|p| p.id}
+    return { io_hash: io_hash }
 
   end
 
