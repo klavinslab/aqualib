@@ -59,6 +59,7 @@ place purify_gel
   window: hours(1)
 end
 
+wire dilute_plasmid_stock => pcr
 wire pcr => pour_gel
 wire pour_gel => run_gel
 wire run_gel => cut_gel
