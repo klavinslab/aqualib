@@ -42,27 +42,6 @@ class Protocol
     end
   end
 
-  def task_group_filter task_ids, group
-    filtered_task_ids = []
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      if group == "technicians"
-        user_group = "cloning"
-      else
-        user_group = group
-      end
-      group_info = Group.find_by_name(user_group)
-      if task.user.member? group_info.id
-        filtered_task_ids.push tid
-      else
-        show {
-          note "#{task.user.login} does not belong to #{user_group}"
-        }
-      end
-    end
-    return filtered_task_ids
-  end
-
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
