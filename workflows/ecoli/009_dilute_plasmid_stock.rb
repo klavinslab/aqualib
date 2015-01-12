@@ -49,7 +49,8 @@ class Protocol
         title "No plasmid stocks need to be diluted"
         note "Thanks for you efforts! Please work on the next protocol!"
       }
-      return { plasmid_diluted_stock_ids: [] }
+      io_hash[:plasmid_diluted_stock_ids]  = []
+      return { io_hash: io_hash }
     end
     # take all items
   	take plasmid_stocks, interactive: true, method: "boxes"
