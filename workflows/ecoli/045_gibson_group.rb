@@ -42,6 +42,27 @@ class Protocol
     end
   end
 
+  def task_group_filter task_ids, group
+    filtered_task_ids = []
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      if group == "technicians"
+        user_group = "cloning"
+      else
+        user_group = group
+      end
+      group_info = Group.find_by_name(user_group)
+      if task.user.member? group_info.id
+        filtered_task_ids.push tid
+      else
+        show {
+          note "#{task.user.login} does not belong to #{user_group}"
+        }
+      end
+    end
+    return filtered_task_ids
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -61,32 +82,18 @@ class Protocol
       end
     end
     # Pull gibson info from Gibson Assembly Task
-    # Filter out tasks by group
     ready_task_ids = []
     if io_hash[:task_mode] == "Yes"
-      gibson_info = gibson_assembly_status
-      ready_task_ids = gibson_info[:ready_ids]
-      perform_task_ids = []
+      gibson_info = gibson_assembly_status      
+      # Filter out tasks by group
+      ready_task_ids = task_group_filter(gibson_info[:ready_ids], io_hash[:group])
       ready_task_ids.each do |tid|
         ready_task = find(:task, id: tid)[0]
-        if io_hash[:group] == "technicians"
-          user_group = "cloning"
-        else
-          user_group = io_hash[:group]
-        end
-        group_info = Group.find_by_name(user_group)
-        if ready_task.user.member? group_info.id
-          io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
-          io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
-          perform_task_ids.push tid
-        else
-          show {
-            note "#{ready_task.user.login} does not belong to #{user_group}"
-          }
-        end
+        io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
+        io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
       end
     end
-    io_hash[:task_ids] = perform_task_ids
+    io_hash[:task_ids] = ready_task_ids
 
     # Find fragment stocks into array of arrays
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}

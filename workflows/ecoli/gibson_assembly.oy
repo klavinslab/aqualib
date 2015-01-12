@@ -1,5 +1,6 @@
 argument
   debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
 end
 
 place check_input
@@ -15,6 +16,7 @@ place gibson
   group: "technicians"
   argument
     debug_mode: debug_mode
+    group: group
   end
   marked: false
   start: now()
