@@ -38,9 +38,9 @@ module Cloning
       else
 
         if params[:item_choice]
-          fwd_item_to_return = choose_sample fwd.name, object_type: "Primer Aliquot"
-          rev_item_to_return = choose_sample rev.name, object_type: "Primer Aliquot"
-          template_item_to_return = choose_sample template.name, object_type: template_items[0].object_type.name
+          fwd_item_to_return = choose_sample fwd_items[0].sample.name, object_type: "Primer Aliquot"
+          rev_item_to_return = choose_sample rev_items[0].sample.name, object_type: "Primer Aliquot"
+          template_item_to_return = choose_sample template_items[0].sample.name, object_type: template_items[0].object_type.name
         else
           fwd_item_to_return = fwd_items[0]
           rev_item_to_return = rev_items[0]
