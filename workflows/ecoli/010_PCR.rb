@@ -79,17 +79,21 @@ class Protocol
     end
 
     all_fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
-    all_templates       = fragment_info_list.collect { |fi| fi[:template] }
-    all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-    all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
-    all_templates_names       = fragment_info_list.collect { |fi| fi[:template].sample.name }
-    all_forward_primers_names = fragment_info_list.collect { |fi| fi[:fwd].sample.name }
-    all_reverse_primers_names = fragment_info_list.collect { |fi| fi[:rev].sample.name }
+    # if group is not technician, it will show all the choose sample pages.
+    if io_hash[:group] == "technician"
+      all_templates       = fragment_info_list.collect { |fi| fi[:template] }
+      all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
+      all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
+    else
+      all_templates_names       = fragment_info_list.collect { |fi| fi[:template].sample.name }
+      all_forward_primers_names = fragment_info_list.collect { |fi| fi[:fwd].sample.name }
+      all_reverse_primers_names = fragment_info_list.collect { |fi| fi[:rev].sample.name }
 
-    all_templates = all_templates_names.collect { |x| choose_sample x }
-    all_forward_primers  = all_forward_primers_names.collect { |x| choose_sample x}
-    all_reverse_primers = all_reverse_primers_names.collect { |x| choose_sample x}
+      all_templates = all_templates_names.collect { |x| choose_sample x, object_type: "1 ng/µL Plasmid Stock"}
+      all_forward_primers  = all_forward_primers_names.collect { |x| choose_sample x, object_type: "Primer Aliquot"}
+      all_reverse_primers = all_reverse_primers_names.collect { |x| choose_sample x, object_type: "Primer Aliquot"}
+    end
 
     if all_fragments.length == 0
       show {
