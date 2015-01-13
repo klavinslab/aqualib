@@ -8,7 +8,7 @@ end
 
 place dilute_plasmid_stock
   protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
-  group: "technicians"
+  group: group
   argument
     debug_mode: debug_mode
     group: group
@@ -21,7 +21,7 @@ end
 
 place pcr
   protocol: "aqualib:workflows/ecoli/010_PCR.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -29,7 +29,7 @@ end
 
 place pour_gel
   protocol: "aqualib:workflows/ecoli/015_pour_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -37,7 +37,7 @@ end
 
 place run_gel
   protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: minutes(15)
   window: hours(1)
@@ -45,7 +45,7 @@ end
 
 place cut_gel
   protocol: "aqualib:workflows/ecoli/030_cut_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: minutes(30)
   window: hours(1)
@@ -53,7 +53,7 @@ end
 
 place purify_gel
   protocol: "aqualib:workflows/ecoli/035_gel_purify.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
