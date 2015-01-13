@@ -25,12 +25,12 @@ module Standard
 		params = ({ multiple: false, quantity: 1, take: false, object_type: false }).merge p
 		params[:multiple] = true if params[:quantity] > 1
 
-    if params[:object_type]
+    # if params[:object_type]
 		  # options = find(:item, { object_type: {name: params[:object_type]}, sample: {name: sample_name} }).reject { |i| /eleted/ =~ i.location }
       options = find(:item, sample: {name :sample_name}).reject { |i| /eleted/ =~ i.location }
-    else
+    # else
       options = find(:item, sample: {name :sample_name}).reject { |i| /eleted/ =~ i.location }
-    end
+    # end
 
 		raise "No choices found for #{sample_name}" if options.length == 0
 
