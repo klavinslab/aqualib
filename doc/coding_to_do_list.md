@@ -16,6 +16,7 @@ task.user.member?
 - [ ] Multi channel gels.
 - [ ] Directly take user login name intitials in the sequencing tasks.
 - [ ] Create protocol to shuffle and check task status.
-- [ ] Yeast overnight suspenstion transformation versio takes plates into source.
+- [ ] Yeast overnight suspenstion transformation version takes plates into source.
 - [x] Work on lab class transformation metacol.
 - [ ] plate managment in image plate
+
