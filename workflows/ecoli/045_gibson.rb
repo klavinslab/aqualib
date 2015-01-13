@@ -75,7 +75,12 @@ class Protocol
     io_hash[:task_ids] = ready_task_ids
 
     # Find fragment stocks into array of arrays
-    fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+    if io_hash[:group] == "technician"
+      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+    else
+      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name object_type: "Fragment Stock"}}
+    end
+
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
