@@ -22,7 +22,7 @@ module Standard
       user_shows = []
     end
 
-		params = ({ multiple: false, quantity: 1, take: false, object_type: type }).merge p
+		params = ({ multiple: false, quantity: 1, take: false, object_type: false }).merge p
 		params[:multiple] = true if params[:quantity] > 1
 
     if params[:object_type]
