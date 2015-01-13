@@ -206,10 +206,10 @@ module Standard
       group_info = Group.find_by_name(user_group)
       if task.user.member? group_info.id
         filtered_task_ids.push tid
-      else
-        show {
-          note "#{task.user.login} does not belong to #{user_group}"
-        }
+      # else
+      #   show {
+      #     note "#{task.user.login} does not belong to #{user_group}"
+      #   }
       end
     end
     return filtered_task_ids
