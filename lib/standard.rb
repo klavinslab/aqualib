@@ -22,16 +22,10 @@ module Standard
       user_shows = []
     end
 
-		params = ({ multiple: false, quantity: 1, take: false, object_type: false }).merge p
+		params = ({ multiple: false, quantity: 1, take: false, object_type: type }).merge p
 		params[:multiple] = true if params[:quantity] > 1
 
-    # if params[:object_type]
-		  # options = find(:item, { object_type: {name: params[:object_type]}, sample: {name: sample_name} }).reject { |i| /eleted/ =~ i.location }
-      options = find(:item, sample: {name :sample_name}).reject { |i| /eleted/ =~ i.location }
-    # else
-      options = find(:item, sample: {name :sample_name}).reject { |i| /eleted/ =~ i.location }
-    # end
-
+		options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
 		raise "No choices found for #{sample_name}" if options.length == 0
 
 		choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
