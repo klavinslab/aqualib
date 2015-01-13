@@ -1,11 +1,13 @@
 module Cloning
 
-  def fragment_info fid
+  def fragment_info fid, p={}
 
     # This method returns information about the ingredients needed to make the fragment with id fid.
     # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template (1 ng/µL Plasmid Stock). It also computes the annealing temperature.
 
     # find the fragment and get its properties
+    params = ({ item_choice: false }).merge p
+
     fragment = find(:sample,{id: fid})[0]
     props = fragment.properties
 
@@ -35,6 +37,16 @@ module Cloning
 
       else
 
+        if params[:item_choice]
+          fwd_item_to_return = choose_sample fwd.name, object_type: "Primer Aliquot"
+          rev_item_to_return = choose_sample rev.name, object_type: "Primer Aliquot"
+          template_item_to_return = choose_sample, template.name, object_type: template_items[0].object_type
+        else
+          fwd_item_to_return = fwd_items[0]
+          rev_item_to_return = rev_items[0]
+          template_item_to_return = template_items[0]
+        end
+
         # compute the annealing temperature
         t1 = fwd_items[0].sample.properties["T Anneal"] || 70.0
         t2 = rev_items[0].sample.properties["T Anneal"] || 70.0
@@ -46,9 +58,9 @@ module Cloning
           fragment: fragment,
           stocks: stocks,
           length: length,
-          fwd: fwd_items[0],
-          rev: rev_items[0],
-          template: template_items[0],
+          fwd: fwd_item_to_return,
+          rev: rev_item_to_return,
+          template: template_item_to_return,
           tanneal: (t1+t2)/2.0
         }
 
