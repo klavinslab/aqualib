@@ -30,6 +30,7 @@ module Standard
     else
       options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
     end
+    
 		raise "No choices found for #{sample_name}" if options.length == 0
 
 		choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
