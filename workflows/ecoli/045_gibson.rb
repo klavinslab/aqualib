@@ -63,9 +63,9 @@ class Protocol
     # Pull gibson info from Gibson Assembly Task
     ready_task_ids = []
     if io_hash[:task_mode] == "Yes"
-      gibson_info = gibson_assembly_status      
       # Filter out tasks by group
-      ready_task_ids = task_group_filter(gibson_info[:ready_ids], io_hash[:group])
+      gibson_info = gibson_assembly_status group: io_hash[:group]      
+      ready_task_ids = gibson_info[:ready_ids]
       ready_task_ids.each do |tid|
         ready_task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
