@@ -39,9 +39,9 @@ class Protocol
     end
 
     # Pull info from Gibson Assembly Tasks
-    gibson_assembly = gibson_assembly_status
+    gibson_assembly = gibson_assembly_status group: io_hash[:group]
     fragment_from_gibson_ids = []
-    #fragment_from_gibson_ids = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
+    fragment_from_gibson_ids = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
     
     # Pull info from Fragment Construction Tasks
     fragment_construction = fragment_construction_status

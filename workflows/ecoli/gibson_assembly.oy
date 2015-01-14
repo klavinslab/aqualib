@@ -5,7 +5,7 @@ end
 
 place check_input
   protocol: "aqualib:workflows/test/check_tasks_inputs.rb"
-  group: "technicians"
+  group: group
   marked: true
   start: now()
   window: hours(1)
@@ -13,7 +13,7 @@ end
 
 place gibson
   protocol: "aqualib:workflows/ecoli/045_gibson.rb"
-  group: "technicians"
+  group: group
   argument
     debug_mode: debug_mode
     group: group
@@ -25,7 +25,7 @@ end
 
 place transformation
   protocol: "aqualib:workflows/ecoli/050_ecoli_transformation.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -33,7 +33,7 @@ end
 
 place plate
   protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: minutes(30)
   window: hours(1)
@@ -41,7 +41,7 @@ end
 
 place image
   protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: hours(18)
   window: hours(1)

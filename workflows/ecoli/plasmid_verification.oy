@@ -5,7 +5,7 @@ end
 
 place overnight
   protocol: "aqualib:workflows/ecoli/060_start_overnight_plate.rb"
-  group: "technicians"
+  group: group
   argument
     debug_mode: debug_mode
     group: group
@@ -17,7 +17,7 @@ end
 
 place miniprep
   protocol: "aqualib:workflows/ecoli/070_miniprep.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: hours(12)
   window: hours(1)
@@ -25,7 +25,7 @@ end
 
 place sequencing
   protocol: "aqualib:workflows/ecoli/075_sequencing.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -33,7 +33,7 @@ end
 
 place upload
   protocol: "aqualib:workflows/ecoli/080_upload_sequencing_results.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: hours(12)
   window: hours(1)

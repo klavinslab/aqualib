@@ -70,10 +70,22 @@ module Cloning
 
   end # # # # # # # 
 
-  def gibson_assembly_status
+  def gibson_assembly_status p={}
 
     # find all un done gibson assembly tasks ans arrange them into lists by status
-    tasks = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    params = ({ group: false }).merge p
+    tasks_all = find(:task,{task_prototype: { name: "Gibson Assembly" }})
+    tasks = []
+    # filter out tasks based on group input
+    if params[:group]
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_all.each do |t|
+        tasks.push t if t.user.member? group_info.id
+      end
+    else
+      tasks = tasks_all
+    end
     waiting = tasks.select { |t| t.status == "waiting for fragments" }
     ready = tasks.select { |t| t.status == "ready" }
 
