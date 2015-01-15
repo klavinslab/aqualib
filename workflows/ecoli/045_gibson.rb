@@ -141,16 +141,10 @@ class Protocol
 
     # following loop is to show a table of setting up each Gibson reaction to the user
     gibson_results = []
-    fragment_gibson_results = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
-      target = find(:sample,{id: pid})[0]
-      if target.sample_type.name == "Plasmid"
-        gibson_result = produce new_sample target.name, of: "Plasmid", as: "Gibson Reaction Result" 
-        gibson_results.push gibson_result
-      elsif target.sample_type.name == "Fragment"
-        gibson_result = produce new_sample target.name, of: "Fragment", as: "Fragment Gibson Reaction Result"
-        fragment_gibson_results.push gibson_result
-      end
+      plasmid = find(:sample,{id: pid})[0]
+      gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
+      gibson_results = gibson_results.push gibson_result
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
         tab.push(["#{gibson_result}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
@@ -177,24 +171,14 @@ class Protocol
       timer initial: { hours: 0, minutes: 60, seconds: 0}
     }
 
-    release gibson_results + fragment_gibson_results, interactive: true,  method: "boxes"
-    # only pass task ids associated with plasmids that are going to be transformed and plated.
-    new_task_ids = []
+    release gibson_results, interactive: true,  method: "boxes"
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        target = find(:sample,{ id: task.simple_spec[:plasmid] })[0]
-        if target.sample_type.name == "Plasmid"
-          set_task_status(task,"gibson")
-          new_task_ids.push tid
-        elsif target.sample_type.name == "Fragment"
-          set_task_status(task,"fragment assembled")
-        end
+        set_task_status(task,"gibson")
       end
     end
-    io_hash[:task_ids] = new_task_ids
-    io_hash[:gibson_result_ids] = gibson_results.collect { |g| g.id }
-    io_hash[:fragment_gibson_results] = fragment_gibson_results.collect { |g| g.id }
+    io_hash[:gibson_result_ids] = gibson_results.collect {|g| g.id}
     return { io_hash: io_hash }
   end
 
