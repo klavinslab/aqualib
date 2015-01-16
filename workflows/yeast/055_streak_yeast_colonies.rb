@@ -1,4 +1,4 @@
-# streak yeast plates
+# streak yeast plates from colonies
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
