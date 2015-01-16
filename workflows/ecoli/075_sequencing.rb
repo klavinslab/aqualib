@@ -73,6 +73,7 @@ class Protocol
         true
       end
     end
+    io_hash[:task_ids] = [] unless io_hash[:task_ids] # set default of io_hash[:task_ids]
     batch_initials = "MP"
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
@@ -111,8 +112,7 @@ class Protocol
       # show {
       #   note "#{ready_task.spec}"
       # }
-      ready_task.status = "send to sequencing"
-      ready_task.save
+      io_hash[:task_ids].push tid
     end
     if plasmid_stock_ids.length == 0
       show {
