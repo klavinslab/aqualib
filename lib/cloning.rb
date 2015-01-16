@@ -38,7 +38,7 @@ module Cloning
       elsif template.sample_type.name == "E coli strain"
         template_items = template.in "E coli Lysate"
       elsif template.sample_type.name == "Yeast Strain"
-        template_items = "Lysate"
+        template_items = template.in "Lysate"
       end
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
