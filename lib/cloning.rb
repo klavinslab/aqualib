@@ -28,8 +28,18 @@ module Cloning
       # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
       rev_items = rev.in "Primer Aliquot"
-      template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
-      template_items = template.in "1 ng/µL Fragment Stock" if template.sample_type.name == "Fragment"
+      if template.sample_type.name == "Plasmid"
+        template_items = template.in "1 ng/µL Plasmid Stock"
+        if template_items.length == 0 && template.in("Plasmid Stock").length == 0
+          template_items = template.in "Gibson Reaction Result"
+        end
+      elsif template.sample_type.name == "Fragment"
+        template_items = template.in "1 ng/µL Fragment Stock"
+      elsif template.sample_type.name == "E coli strain"
+        template_items = template.in "E coli Lysate"
+      elsif template.sample_type.name == "Yeast Strain"
+        template_items = "Lysate"
+      end
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
 

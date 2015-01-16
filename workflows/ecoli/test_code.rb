@@ -30,20 +30,20 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      ids: [1141,1142],
+      ids: [3217],
       debug_mode: "Yes"
     }
   end
 
   def main
-    # io_hash = input[:io_hash]
-    # io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    # io_hash[:debug_mode] = input[:debug_mode] || "No"
-    # if io_hash[:debug_mode].downcase == "yes"
-    #   def debug
-    #     true
-    #   end
-    # end
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
     # items = io_hash[:ids].collect {|id| find(:item, id:id)[0]}
     # take items, interactive: true
     # stripwells = produce spread items, "Stripwell", 1, 1
@@ -61,20 +61,32 @@ class Protocol
     # # delete items
     # release items, interactive: true
 
-    gibson_info = gibson_assembly_status
-    ready_task_ids = gibson_info[:ready_ids]
-    ready_task_ids.each do |tid|
-      ready_task = find(:task, id: tid)[0]
-      group = Group.find_by_name("technicians")
-      show {
-        note "#{ready_task.task_prototype.name}"
-        note "#{ready_task.user.login}"
-        note "#{ready_task.user.member? group.id}"
-        note "#{group}"
-        if ready_task.user.member? group.id
-          note "#{ready_task.user.login} is in group1"
-        end
-      }
-    end
-  end
-end
+    # gibson_info = gibson_assembly_status
+    # ready_task_ids = gibson_info[:ready_ids]
+    # ready_task_ids.each do |tid|
+    #   ready_task = find(:task, id: tid)[0]
+    #   group = Group.find_by_name("technicians")
+    #   show {
+    #     note "#{ready_task.task_prototype.name}"
+    #     note "#{ready_task.user.login}"
+    #     note "#{ready_task.user.member? group.id}"
+    #     note "#{group}"
+    #     if ready_task.user.member? group.id
+    #       note "#{ready_task.user.login} is in group1"
+    #     end
+    #   }
+    # end
+
+    fragment = find(:sample,{ id: io_hash[:ids][0] })[0]
+    props = fragment.properties
+    template = props["Template"]
+    template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
+    template_items = template.in "Gibson Reaction Result"
+    show {
+      title "Test"
+      note "#{template_items[0]}"
+    }
+
+
+  end # main
+end # Protocol
