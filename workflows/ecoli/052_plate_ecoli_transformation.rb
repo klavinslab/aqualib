@@ -24,6 +24,7 @@ class Protocol
       end
     end
     io_hash[:inducer_plate] = "" unless io_hash[:inducer_plate]
+    
     all_transformed_aliquots = io_hash[:transformed_aliquots_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_transformed_aliquots.length == 0
       show {
@@ -88,6 +89,7 @@ class Protocol
         set_task_status(task,"plated")
       end
     end
+
     return { io_hash: io_hash }
   end # main
 

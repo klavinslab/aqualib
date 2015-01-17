@@ -44,7 +44,7 @@ class Protocol
       tab.push([y.id,yeast_plates[idx].id])
     end
 
-    show{
+    show {
       title "Plating"
       check "Grab #{yeast_plates.length} +G418 plates. Label plates with the following ids"
       note (yeast_plates.collect{|y| "#{y}"})
@@ -53,7 +53,7 @@ class Protocol
       table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
     }
 
-    show{
+    show {
       title "Shake and incubate"
       check "Shake the plates in all directions to evenly spread the culture over its surface till dry"
       check "Discard the beads in a used beads container"
@@ -63,6 +63,7 @@ class Protocol
     
     release yeast_plates, interactive: true
     delete yeast_transformation_mixtures
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
@@ -71,6 +72,7 @@ class Protocol
     end
     io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
     io_hash[:plate_ids].concat yeast_plates.collect { |p| p.id }
+    
     return { io_hash: io_hash }
   end # main
   
