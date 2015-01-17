@@ -9,12 +9,11 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #Enter the gibson result ids as a list
       transformed_aliquots_ids: [11815,11816,11817,12282,3648],
       debug_mode: "Yes",
       inducer_plate: "IPTG"
     }
-  end #arguments
+  end
 
   def main
     io_hash = input[:io_hash]
@@ -38,10 +37,6 @@ class Protocol
     all_transformed_aliquots.each do |t|
       transformed_aliquot_marker_hash[t.sample.properties["Bacterial Marker"].downcase[0,3]].push t
     end
-
-    # show {
-    #   note "#{transformed_aliquot_marker_hash}"
-    # }
 
     all_plates = []
     transformed_aliquot_marker_hash.each do |marker, transformed_aliquots|
@@ -80,7 +75,6 @@ class Protocol
     end
 
     move all_plates, "37 C incubator"
-
     delete all_transformed_aliquots
 
     release all_plates, interactive: true if all_plates.length > 0

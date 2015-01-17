@@ -6,10 +6,6 @@ class Protocol
   include Standard
   include Cloning
 
-  def debug
-    false
-  end
-
   def arguments
     {
       io_hash: {},
@@ -78,4 +74,4 @@ class Protocol
     return { io_hash: io_hash }
   end # main
   
-end
+end # Protocol
