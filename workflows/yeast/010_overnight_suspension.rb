@@ -32,9 +32,9 @@ class Protocol
     yeast_items = []
     yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
 
-    show {
-      note "#{io_hash}"
-    }
+    # show {
+    #   note "#{io_hash}"
+    # }
 
     io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
     io_hash[:volume] = input[:volume] || 2
@@ -47,10 +47,10 @@ class Protocol
       yeast_type_hash[y.object_type.name].push y
     end
 
-    show {
-      title "Testing page"
-      note "#{yeast_type_hash}"
-    }
+    # show {
+    #   title "Testing page"
+    #   note "#{yeast_type_hash}"
+    # }
 
     show {
       title "Protocol information"

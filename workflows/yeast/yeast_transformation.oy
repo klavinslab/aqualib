@@ -1,5 +1,6 @@
 argument
   debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
 end
 
 place startovernight
@@ -7,7 +8,7 @@ protocol: "aqualib:workflows/yeast/010_overnight_suspension_transformation.rb"
   argument
     debug_mode: debug_mode
   end
-  group: "technicians"
+  group: group
   marked: true
   start: now()
   window: hours(20)
@@ -15,42 +16,42 @@ end
 
 place innoculate
   protocol: "aqualib:workflows/yeast/015_inoculate_large_volume_growth.rb"
-  group: "technicians"
+  group: group
   start: hours(18)
   window: hours(20)
 end
 
 place digest
   protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transformation.rb"
-  group: "technicians"
+  group: group
   start: now()
   window: hours(20)
 end
 
 place makecompcell
   protocol: "aqualib:workflows/yeast/021_make_yeast_competent_cells.rb"
-  group: "technicians"
+  group: group
   start: now()
   window: hours(20)
 end
 
 place transformation
   protocol: "aqualib:workflows/yeast/040_yeast_transformation.rb"
-  group: "technicians"
+  group: group
   start: now()
   window: hours(20)
 end
 
 place plate
   protocol: "aqualib:workflows/yeast/050_plate_yeast_transformation.rb"
-  group: "technicians"
+  group: group
   start: hours(3)
   window: hours(20)
 end
 
 place image
   protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: hours(48)
   window: hours(10)

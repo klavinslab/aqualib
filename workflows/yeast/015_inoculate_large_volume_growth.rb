@@ -65,7 +65,6 @@ class Protocol
       title "Inoculate yeast overnights into flasks"
       table tab
     }
-
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
@@ -73,8 +72,13 @@ class Protocol
       end
     end
 
-    release yeast_overnights, interactive: true, method: "boxes"
+    delete yeast_overnights
   	release yeast_cultures, interactive: true, method: "boxes"
+    show {
+      title "Discard yeast overnights"
+      note "Discard yeast overnights with the following ids."
+      note "#{io_hash[:yeast_overnight_ids]}"
+    }
     io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}  
     return { io_hash: io_hash }
   end

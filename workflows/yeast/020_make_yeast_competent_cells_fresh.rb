@@ -1,3 +1,4 @@
+# make fresh yeast competent cells and not freeze
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 

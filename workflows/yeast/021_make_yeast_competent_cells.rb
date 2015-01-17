@@ -1,3 +1,4 @@
+# make yeast competent cells and freeze
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
@@ -11,6 +12,7 @@ class Protocol
       io_hash: {},
       yeast_culture_ids: [8429,8427],
       volumes: [100,100],
+      large_volume: 50,
       debug_mode: "Yes"
     }
   end
@@ -148,16 +150,16 @@ class Protocol
       note "Recycle all 50 mL tubes by putting into a bin near the sink."
     }
 
+    delete cultures
+
     show {
       title "Put into styrofoam holders in styrofoam box at M80"
       check "Place the 1.5mL tubes in styrofoam holders."
       check "Put into the styrofoam box and place in M80 for 10 minutes"
     }
 
-    release cultures, interactive: true
-
     show {
-      title "Wait and then retrive all 1.5 mL tubes from Styrofoam box at M80"
+      title "Wait and then retrive all 1.5 mL tubes from styrofoam box at M80"
       timer initial: { hours: 0, minutes: 10, seconds: 0}
       check "Retrive all 1.5 mL tubes from Styrofoam box at M80"
       note "Put back into M80 boxes according to the next release pages."

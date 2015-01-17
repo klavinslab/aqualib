@@ -79,10 +79,9 @@ class Protocol
       end
     end
 
-    all_plates.each do |p|
-      p.location = "37 C incubator"
-      p.save
-    end
+    move all_plates, "37 C incubator"
+
+    delete all_transformed_aliquots
 
     release all_plates, interactive: true if all_plates.length > 0
     io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
