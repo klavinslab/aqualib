@@ -12,7 +12,7 @@ class Protocol
       io_hash: {},
       elution_volume: 50,
       overnight_ids: [12389,12388,12387],
-      debug_mode: "no"
+      debug_mode: "No"
     }
   end
 

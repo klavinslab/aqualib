@@ -23,7 +23,7 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062],
-      debug_mode: "Yes",
+      debug_mode: "No",
       group: "cloning"
     }
   end

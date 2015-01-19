@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       genewiz_tracking_no: "",
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
  

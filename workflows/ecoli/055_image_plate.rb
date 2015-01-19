@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       #Enter the plate ids as a list
       plate_ids: [3798,3797,3799],
-      debug_mode: "Yes",
+      debug_mode: "No",
       image_option: "Yes"
     }
   end #arguments

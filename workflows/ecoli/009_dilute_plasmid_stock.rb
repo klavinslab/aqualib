@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       plasmid_stock_ids: [5392,5389,5350],
       fragment_ids: [],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 

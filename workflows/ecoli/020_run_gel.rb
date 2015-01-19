@@ -9,6 +9,7 @@ class Protocol
       io_hash: {},
       stripwell_ids: [28339],
       gel_ids: [28276],
+      debug_mode: "No",
       volume: 50       # The volume of PCR fragment to load in µL
     }
   end

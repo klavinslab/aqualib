@@ -60,7 +60,7 @@ class Protocol
       initials: ["YY","YY"],
       plasmid_stock_ids: [29489,29490],
       primer_ids: [[2575,2569],[2054,2569]],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
  

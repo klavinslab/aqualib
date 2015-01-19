@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       "overnight_ids TB Overnight of Plasmid" =>[0],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
   
