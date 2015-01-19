@@ -11,7 +11,8 @@ class Protocol
       io_hash: {},
       #Enter the plate ids as a list
       plate_ids: [3798,3797,3799],
-      debug_mode: "Yes"
+      debug_mode: "Yes",
+      image_option: "Yes"
     }
   end #arguments
 
@@ -23,6 +24,7 @@ class Protocol
         true
       end
     end
+    io_hash[:image_option] = "Yes" unless io_hash[:image_option]
     plates = io_hash[:plate_ids].collect { |x| find(:item, id: x)[0] }
     show {
       title "Work in the gel room"
@@ -31,24 +33,27 @@ class Protocol
       warning "Be sure to wear gloves"
     }
     take plates, interactive: true
-    show {
-      title "Imaging guide"
-      bullet "Place the agar part of the plate inverted on the transilluminator. Place the camera hood on the transilluminator. Turn on transilluminator by sliding you hand into the hood."
-      bullet "Open EOS Utility software on the desktop, and click Camera Settings/Remote Shooting"
-      bullet "In the pop up window EOS Rebel T3, make sure the settings are 2'', F4.5, ISO100, Tungsten(light bulb icon), S1."
-      bullet "Click Live View shoot, view live plate picture in the Remote Live View Window, physically adjust the camera zoom lens to make sure plate takes up the image field of view."
-      bullet "Try Test Shooting, if the test shooting image is not focused or the software shows Focus failure, go to the Remote Live View Window, in the focus section, adjust the focus by clicking the <<< << < > >> >>> buttons until the live image looks focused. Then go back to the EOS Rebel T3 window and click the the black round shutter botton."
-    }
 
-    show {
-      title "Upload images"
-      note "Take a picture for each plate, rename and upload following instructions below."
-      plates.each do |p|
-        check "Rename the image for plate #{p.id} as plate_#{p.id} and upload here:"
-        upload var: "plate_#{p.id}"
-        p.save
-      end
-    }
+    if io_hash[:image_option] == "Yes"
+      show {
+        title "Imaging guide"
+        bullet "Place the agar part of the plate inverted on the transilluminator. Place the camera hood on the transilluminator. Turn on transilluminator by sliding you hand into the hood."
+        bullet "Open EOS Utility software on the desktop, and click Camera Settings/Remote Shooting"
+        bullet "In the pop up window EOS Rebel T3, make sure the settings are 2'', F4.5, ISO100, Tungsten(light bulb icon), S1."
+        bullet "Click Live View shoot, view live plate picture in the Remote Live View Window, physically adjust the camera zoom lens to make sure plate takes up the image field of view."
+        bullet "Try Test Shooting, if the test shooting image is not focused or the software shows Focus failure, go to the Remote Live View Window, in the focus section, adjust the focus by clicking the <<< << < > >> >>> buttons until the live image looks focused. Then go back to the EOS Rebel T3 window and click the the black round shutter botton."
+      }
+
+      show {
+        title "Upload images"
+        note "Take a picture for each plate, rename and upload following instructions below."
+        plates.each do |p|
+          check "Rename the image for plate #{p.id} as plate_#{p.id} and upload here:"
+          upload var: "plate_#{p.id}"
+          p.save
+        end
+      }
+    end
 
     colony_number = show {
       title "Estimate colony numbers"
@@ -81,17 +86,17 @@ class Protocol
 
     location_plate = show {
       title "Parafilm and store plate"
-      note "Parafilm the following plates"
-      note stored_plates.collect{ |p| "#{p}"}
-      note "Store them in an available box in deli-fridge. Enter the label of the box in the following (DFP.0-DFP.7)"
-      get "text", var: "x", label: "Enter the label of box you put in", default: "DFP.0"
+      note "Parafilm the following plates, place them in an available spot in the deli-fridge boxes or stacks, then enter their specific locations. It could be a box like DFP.0 or a location in the stacks like DFP.0.0.20."
+      stored_plates.each do |p|
+        get "text", var: "c#{p.id}", label: "Enter the location for plate #{p.id}", default: "DFP.0.0.0"
+      end
     }
 
     # update stored plates datum and location
 
     stored_plates.each do |p|
       p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
-      p.location = location_plate[:x]
+      p.location = location_plate[:"c#{p.id}".to_sym]
       p.save
     end
 

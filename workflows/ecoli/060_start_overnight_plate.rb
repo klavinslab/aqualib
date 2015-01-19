@@ -31,7 +31,8 @@ class Protocol
       initials: ["YY","YY","YY"],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
-      debug_mode: "Yes"
+      debug_mode: "Yes",
+      group: "cloning"
     }
   end #arguments
 
