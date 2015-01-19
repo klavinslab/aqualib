@@ -11,7 +11,7 @@ class Protocol
       comb_2: "6 thick",
       percentage: 1,
       stripwell_ids: [30632],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 

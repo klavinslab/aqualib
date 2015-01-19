@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       transformed_aliquots_ids: [11815,11816,11817,12282,3648],
-      debug_mode: "Yes",
+      debug_mode: "No",
       inducer_plate: "IPTG"
     }
   end

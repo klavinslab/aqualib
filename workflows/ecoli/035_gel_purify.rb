@@ -13,7 +13,7 @@ class Protocol
 		{
 			io_hash: {},
 			gel_slice_ids: [],
-			debug_mode: "Yes"
+			debug_mode: "No"
 		}
 	end
 

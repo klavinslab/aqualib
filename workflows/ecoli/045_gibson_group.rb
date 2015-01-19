@@ -16,7 +16,7 @@ class Protocol
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
       plasmid_ids: [],
-      debug_mode: "Yes",
+      debug_mode: "No",
       task_mode: "Yes",
       group: "cloning"
     }

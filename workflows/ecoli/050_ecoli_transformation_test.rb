@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       #Enter the gibson result ids as a list
       "gibson_result_ids Gibson Reaction Result" => [2853,2854,2958],
-      debug_mode: "Yes",
+      debug_mode: "No",
       inducer_plate: "IPTG",
       cell_type: "DH5alpha"
     }

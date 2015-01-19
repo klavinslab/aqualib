@@ -13,7 +13,7 @@ class Protocol
       fragment_ids: [2049,2062],
       #Enter expected number of mutations on this fragment
       mutation_nums: [2,4],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 

@@ -7,7 +7,7 @@ class Protocol
     {
       io_hash: {},
       gel_ids: [28420],
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 
