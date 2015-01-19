@@ -163,10 +163,6 @@ class Protocol
     end
 
     if yeast_plates.length > 0
-      # show {
-      #   title "Place in 30 C incubator"
-      #   check "Place all #{yeast_plates.length} plates with id #{(yeast_plates.collect {|x| x.id}).join(", ")} into 30 C incubator"
-      # }
       move yeast_plates, "30 C incubator"
       release yeast_plates, interactive: true
     end

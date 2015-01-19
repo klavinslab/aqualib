@@ -7,7 +7,7 @@ argument
 end
 
 place transformation
-  protocol: "aqualib:workflows/ecoli/050_ecoli_transformation_test.rb"
+  protocol: "aqualib:workflows/sandbox/050_ecoli_transformation_test.rb"
   group: group
   argument
     debug_mode: debug_mode
@@ -22,7 +22,7 @@ place transformation
 end
 
 place plate
-  protocol: "aqualib:workflows/ecoli/052_plate_ecoli_transformation_test.rb"
+  protocol: "aqualib:workflows/sandbox/052_plate_ecoli_transformation_test.rb"
   group: group
   marked: false
   start: minutes(30)

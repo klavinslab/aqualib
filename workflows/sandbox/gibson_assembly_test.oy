@@ -12,7 +12,7 @@ place check_input
 end
 
 place gibson
-  protocol: "aqualib:workflows/ecoli/045_gibson_group.rb"
+  protocol: "aqualib:workflows/sandbox/045_gibson_group.rb"
   group: group
   argument
     debug_mode: debug_mode
