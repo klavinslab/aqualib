@@ -23,7 +23,7 @@ class Protocol
         true
       end
     end
-    io_hash[:inducer_plate] = "" unless io_hash[:inducer_plate]
+    io_hash[:inducer_plate] = io_hash[:inducer_plate] || ""
     
     all_transformed_aliquots = io_hash[:transformed_aliquots_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_transformed_aliquots.length == 0

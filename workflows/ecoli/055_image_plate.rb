@@ -24,7 +24,7 @@ class Protocol
         true
       end
     end
-    io_hash[:image_option] = "Yes" unless io_hash[:image_option]
+    io_hash[:image_option] = io_hash[:image_option] || "Yes"
     plates = io_hash[:plate_ids].collect { |x| find(:item, id: x)[0] }
     show {
       title "Work in the gel room"

@@ -14,7 +14,8 @@ class Protocol
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "2",
-      debug_mode: "Yes"
+      debug_mode: "Yes",
+      group: "cloning"
     }
   end
 

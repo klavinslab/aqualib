@@ -15,7 +15,7 @@ class Protocol
       media_type: "800 mL SC liquid (sterile)",
       #The volume of the overnight suspension to make
       volume: "1",
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 
