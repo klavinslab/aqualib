@@ -23,12 +23,16 @@ class Protocol
         true
       end
     end
-    plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
+    if io_hash[:group] == "technicians" || "cloning" || "admin"
+      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
+    else
+      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name object_type: "Plasmid Stock" }
+    end
     plasmids = plasmid_stocks.collect { |p| p.sample}
 
     take plasmid_stocks, interactive: true, method: "boxes"
     
-    cut_smart= choose_sample "Cut Smart", take: true
+    cut_smart = choose_sample "Cut Smart", take: true
     
     stripwells = produce spread plasmids, "Stripwell", 1, 12
 
@@ -37,7 +41,7 @@ class Protocol
       warning "In the following step you will take PmeI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
     }
     
-    pme1= choose_sample "PmeI", take: true
+    pmeI = choose_sample "PmeI", take: true
     
     water = 42*plasmid_stocks.length*1.3
     buffer = 5*plasmid_stocks.length*1.3
@@ -53,7 +57,7 @@ class Protocol
       warning "Keep the master mix in an ice block while doing the next steps"
     }
     
-    release [pme1] + [cut_smart], interactive: true, method: "boxes"
+    release [pmeI] + [cut_smart], interactive: true, method: "boxes"
     
     show {
       title "Prepare Stripwell Tubes"
