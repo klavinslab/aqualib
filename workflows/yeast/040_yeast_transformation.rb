@@ -94,11 +94,11 @@ class Protocol
       title "Vortex strongly and heat shock"
       check "Vortex each tube on highest settings for 45 seconds"
       check "Place all aliquots on 42 C heat block for 15 minutes"
-      timer initial: { hours: 0, minutes: 15, seconds: 0}
     }
 
     show {
-      title "Spin down"
+      title "Retrive tubes and spin down"
+      timer initial: { hours: 0, minutes: 15, seconds: 0}
       check "Retrive all #{yeast_transformation_mixtures.length} tubes from 42 C heat block."
       check "Spin the tube down for 20 seconds on a small tabletop centrifuge."
       check "Remove all the supernatant carefully with a 1000 µL pipettor (~400 µL total)"
@@ -144,7 +144,8 @@ class Protocol
           check "Grab #{mixtures.length} -#{key.upcase} #{"plate".pluralize(mixtures.length)} from B0.110"
           check "Label each plate with #{(yeast_plates_sub.collect {|x| x.id}).join(", ")}"
           check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
-          check "Add 600 µL of MG water to the each tube and vortex for 20 seconds"
+          check "Add 200 µL of MG water to the each tube and vortex for 20 seconds."
+          check "If hard to vortex, rake the tube accross a tube rack to resuspend."
         }
         show {
           title "Plating"
@@ -167,11 +168,7 @@ class Protocol
       release yeast_plates, interactive: true
     end
 
-    # delete all competent cells and stripwells
-    (yeast_competent_cells + stripwells).each do |y|
-      y.mark_as_deleted
-      y.save
-    end
+    delete yeast_competent_cells + stripwells
 
     release [peg] + [lioac] + [ssDNA], interactive: true
     if io_hash[:task_ids]
