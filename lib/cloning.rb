@@ -82,7 +82,7 @@ module Cloning
 
   def gibson_assembly_status p={}
 
-    # find all un done gibson assembly tasks ans arrange them into lists by status
+    # find all un done gibson assembly tasks and arrange them into lists by status
     params = ({ group: false }).merge p
     tasks_all = find(:task,{task_prototype: { name: "Gibson Assembly" }})
     tasks = []
@@ -212,9 +212,21 @@ module Cloning
     }
   end ### fragment_construction_status
   
-  def yeast_transformation_status
-    # process yeast transformation tasks ready and waiting based on information provided.
-    tasks = find(:task,{ task_prototype: { name: "Yeast Transformation" } })
+  def yeast_transformation_status p={}
+    # find all yeast transformation tasks and arrange them into lists by status
+    params = ({ group: false }).merge p
+    tasks_all = find(:task,{task_prototype: { name: "Yeast Transformation" }})
+    tasks = []
+    # filter out tasks based on group input
+    if params[:group]
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_all.each do |t|
+        tasks.push t if t.user.member? group_info.id
+      end
+    else
+      tasks = tasks_all
+    end
     waiting = tasks.select { |t| t.status == "waiting for ingredients" }
     ready = tasks.select { |t| t.status == "ready" }
     (waiting + ready).each do |task|

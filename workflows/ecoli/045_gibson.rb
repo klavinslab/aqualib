@@ -47,11 +47,11 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     # making sure have the following hash indexes.
     io_hash = io_hash.merge({ fragment_ids: [], plasmid_ids: [] }) if !input[:io_hash]
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
-    io_hash[:fragment_ids] = input[:fragment_ids] || []
-    io_hash[:plasmid_ids] = input[:plasmid_ids] || []
-    io_hash[:task_mode] = input[:task_mode] || "Yes"
-    io_hash[:group]  = input[:group] || "technicians"
+    io_hash[:debug_mode] = io_hash[:debug_mode] || "No"
+    io_hash[:fragment_ids] = io_hash[:fragment_ids] || []
+    io_hash[:plasmid_ids] = io_hash[:plasmid_ids] || []
+    io_hash[:task_mode] = io_hash[:task_mode] || "Yes"
+    io_hash[:group]  = io_hash[:group] || "technicians"
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
     # Set debug based on debug_mode
@@ -75,7 +75,7 @@ class Protocol
     io_hash[:task_ids] = ready_task_ids
 
     # Find fragment stocks into array of arrays
-    if io_hash[:group] == "technicians"
+    if io_hash[:group] == "technicians" || "cloning" || "admin"
       fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
     else
       fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name, object_type: "Fragment Stock"}}

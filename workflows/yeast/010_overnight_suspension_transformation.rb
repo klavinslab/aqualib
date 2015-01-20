@@ -35,14 +35,12 @@ class Protocol
     media_type = io_hash[:media_type]
     volume = io_hash[:volume]
     io_hash[:large_volume] = 50
+    io_hash[:group] = io_hash[:group] || "technicians"
     # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
-    io_hash[:task_ids] = yeast_transformation_status[:ready_ids]
+    yeast_transformation_info = yeast_transformation_status group: io_hash[:group]
+    io_hash[:task_ids] = yeast_transformation_info[:ready_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      # show {
-      #   note "#{task.simple_spec[:yeast_transformed_strain_ids]}"
-      #   note "#{io_hash}"
-      # }
       io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
       io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
       io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
