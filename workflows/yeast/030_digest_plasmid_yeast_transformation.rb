@@ -73,12 +73,14 @@ class Protocol
       title "Incubate"
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
       separator
-      check "Place the stripwells into a small green tube holder and then place in the 37 C incubator at B15.320."
+      check "Place the stripwells into a small green tube holder and then place in 37 C incubator at B15.320."
       image "put_green_tube_holder_to_incubator"
     }
     
-    move stripwells "37 C incubator"
-    
+    stripwells.each do |sw|
+      sw.move "37 C incubator at B15.320"
+    end
+
     release stripwells
     release plasmid_stocks, interactive: true, method: "boxes"
 
@@ -90,7 +92,6 @@ class Protocol
     end
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
-
     return { io_hash: io_hash }
     
   end

@@ -169,7 +169,10 @@ class Protocol
     end
 
     delete yeast_competent_cells
-    delete stripwells
+    stripwells.each do |sw|
+      sw.mark_as_deleted
+      sw.save
+    end
 
     release [peg] + [lioac] + [ssDNA], interactive: true
     if io_hash[:task_ids]
