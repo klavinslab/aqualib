@@ -24,6 +24,7 @@ class Protocol
     end
 
     yeast_transformation_mixtures = io_hash[:yeast_transformation_mixture_ids].collect {|tid| find(:item, id: tid )[0]}
+    yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
     if yeast_transformation_mixtures.length == 0
       show {
@@ -41,10 +42,6 @@ class Protocol
         check "Resuspend the pellet by vortexing the tube throughly"
         warning "Make sure the pellet is resuspended and there are no cells stuck to the bottom of the tube"
       }
-
-      yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
-
-      move yeast_plates, "30 C incubator"
 
       tab = [["Yeast Transformation Mixtures id","Plate id"]]
       yeast_transformation_mixtures.each_with_index do |y,idx|
@@ -67,7 +64,8 @@ class Protocol
         check "Throw away transformation mixture tubes"
         check "Put the plates with the agar side up in the 30C incubator"
       }
-      
+
+      move yeast_plates, "30 C incubator"
       release yeast_plates, interactive: true
       delete yeast_transformation_mixtures
     end
