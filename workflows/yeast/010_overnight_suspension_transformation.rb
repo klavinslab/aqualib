@@ -29,7 +29,7 @@ class Protocol
       end
     end
     # set up io_hash default values
-    io_hash = ({ media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50 }).merge io_hash
+    io_hash = ({ media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50, yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }).merge io_hash
     # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
     yeast_transformation_info = yeast_transformation_status group: io_hash[:group]
     io_hash[:task_ids] = yeast_transformation_info[:ready_ids]
