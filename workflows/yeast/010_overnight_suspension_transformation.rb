@@ -28,14 +28,8 @@ class Protocol
         true
       end
     end
-    # set up io_hash
-    io_hash = io_hash.merge({ yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] })
-    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
-    io_hash[:volume] = input[:volume] || 2
-    media_type = io_hash[:media_type]
-    volume = io_hash[:volume]
-    io_hash[:large_volume] = 50
-    io_hash[:group] = io_hash[:group] || "technicians"
+    # set up io_hash default values
+    io_hash = ({ media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50 }).merge io_hash
     # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
     yeast_transformation_info = yeast_transformation_status group: io_hash[:group]
     io_hash[:task_ids] = yeast_transformation_info[:ready_ids]
@@ -55,10 +49,6 @@ class Protocol
       y = find(:sample, id: yid)[0]
       yeast_strain_need_overnight_ids.push yid unless y.in("Yeast Competent Aliquot").length >= num
     end
-    show {
-      note "#{yeast_parent_strain_num_hash}"
-      note "#{yeast_strain_need_overnight_ids}"
-    }
     # find all yeast items and related types, find Yeast Glycerol Stock, if nothing, find Yeast Plate
     yeast_items = []
     yeast_strain_need_overnight_ids.each do |yid|
@@ -68,10 +58,6 @@ class Protocol
         yeast_items.push find(:sample, id: yid )[0].in("Yeast Plate")[0]
       end
     end
-
-    show {
-      note "#{io_hash}"
-    }
 
     # group into different types using Hash
     yeast_type_hash = Hash.new {|h,k| h[k] = [] }
@@ -86,7 +72,7 @@ class Protocol
 
     show {
       title "Protocol information"
-      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for yeast transformation tasks"
+      note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for yeast transformation tasks."
     }
 
     overnights = []
@@ -98,7 +84,7 @@ class Protocol
       show {
         title "Media preparation in media bay"
         check "Grab #{overnight.length} of 14 mL Test Tube"
-        check "Add #{volume} mL of #{media_type} to each empty 14 mL test tube using serological pipette"
+        check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty 14 mL test tube using serological pipette."
         check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
         check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
       }
@@ -114,7 +100,7 @@ class Protocol
         when "Yeast Plate"
           bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
         end
-        table [["Yeast item id","14 mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
+        table [["Yeast item id","14 mL tube"]].concat(values.collect { |v| "#{v}" }.zip overnight.collect { |o| { content: o.id, check: true } })
       }
       release values, interactive: true, method: "boxes"
       release overnight, interactive: true, method: "boxes"

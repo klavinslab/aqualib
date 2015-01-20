@@ -33,51 +33,46 @@ class Protocol
     
     cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item, id:cid)[0]}
     take cultures, interactive: true
-    
-    culture_labels=[["Flask Label","50 mL Tube Number"]]
-    cultures.each_with_index do |culture,idx|
-      culture_labels.push([culture.id,idx+1])
-    end
-    
+
     num = cultures.length
 
     show{
       title "Prepare tubes"
-      note "Label #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"     
+      note "Label #{num} 1.5 mL tubes with #{(1..num).to_a}"
+      note "Label #{num} 50 mL falcon tubes with #{(1..num).to_a}"     
     }
 
     show {
       title "Preperation another set of tubes"
-      note "Label another set of #{cultures.length} 1.5 mL tubes with #{(1..cultures.length).to_a}"
-      note "Label another set of #{cultures.length} 50 mL falcon tubes with #{(1..cultures.length).to_a}"
+      note "Label another set of #{num} 1.5 mL tubes with #{(1..num).to_a}"
+      note "Label another set of #{num} 50 mL falcon tubes with #{(1..num).to_a}"
     } if io_hash[:large_volume] > 50
     
     show{
-      title "Harvesting Cells"
-      check "Pour contents of flask into the labeled 50 mL falcon tube according to the tabel below"
-      note "It does not matter if you do not get the foam into the tubes"
-      table culture_labels
+      title "Pour cells into 50 mL tubes"
+      check "Pour all contents from the flask into the labeled 50 mL falcon tube according to the tabel below. Left over foams are OK."
+      table [["Flask Label","50 mL Tube Number"]].concat(cultures.collect { |c| c.id } .zip (1..num).to_a) 
     }
     
     show{
-      title "Harvesting Cells"
+      title "Centrifuge at 3000xg for 5 min"
+      note "If you have never used the big centrifuge before, or are unsure about any aspect of what you have just done. ASK A MORE EXPERIENCED LAB MEMBER BEFORE YOU HIT START!"
       check "Balance the 50 mL tubes so that they all weigh approximately (within 0.1g) the same."
       check "Load the 50 mL tubes into the large table top centerfuge such that they are balanced."
       check "Set the speed to 3000xg" 
       check "Set the time to 5 minutes"
       warning "MAKE SURE EVERYTHING IS BALANCED"
       check "Hit start"
-      note "If you have never used the centerfuge before, or are unsure about any aspect of what you have just done ASK A MORE EXPERIENCED LAB MEMBER BEFORE YOU HIT START!"
+      
     }
     
     show{
-      title "Harvesting Cells"
-      check "After spin take out 50 mL tubes and take them in a rack to the sink at the tube washing station without shaking tubes and pour out liquid from tubes in one smooth motion so as not to disturb cell pellet then recap tubes and take back to bench."
+      title "Pour out supernatant"
+      check "After spin, take out 50 mL tubes and take them in a rack to the sink at the tube washing station without shaking tubes. Pour out liquid from tubes in one smooth motion so as not to disturb cell pellet then recap tubes and take back to bench."
     }
     
     show{
-      title "Making cells competent: Water wash"
+      title "Water washing"
       check "Add 1 mL of molecular grade water to each 50 mL tube and recap"
       check "Vortex the tubes till cell pellet is resuspended"
       check "Aliquot 1.5 mL from each 50 mL tube into the corresponding labeled 1.5 mL tube that has the same label number."
@@ -85,7 +80,7 @@ class Protocol
     }
     
     show{
-      title "Water wash"
+      title "Water washing"
       check "Spin down all 1.5 mL tubes for 20 seconds or till cells are pelleted."
       check "Use a pipette and remove the supernatant from each tube without disturbing the cell pellet."
       check "Add 1 mL of molecular grade water to each 1.5 mL tube and recap."
@@ -96,6 +91,7 @@ class Protocol
 
     show {
       title "Prepare Frozen Competent Cell Solution (FCC Solution)"
+      note "Take an existing FCC solution stock if there is one, if none, prepare with the following steps."
       check "Grab a 15 mL Falcon tube."
       check "Add 500 µL of DMSO, 500 µL of glyerol, 4 mL of molecular grade water."
       check "Mix by vortexing."
@@ -104,7 +100,7 @@ class Protocol
     pellet_volume = show {
       title "Estimate pellet volume"
       check "Estimate the pellet volume using the gradations on the side of the eppendorf tube for each tube."
-      note "The 0.1 on the tube means 100 µL and each line is another 100 µL"
+      note "The 0.1 on the tube means 100 µL and each line is another 100 µL."
       (1..num).each do |x|
         get "number", var: "#{x}_1", label: "Enter an estimated volume of the pellet for tube #{x}", default: 80
         get "number", var: "#{x}_2", label: "If you have another tube #{x}, enter an estimated volume of the pellet for another tube #{x}", default: 80 if io_hash[:large_volume] > 50

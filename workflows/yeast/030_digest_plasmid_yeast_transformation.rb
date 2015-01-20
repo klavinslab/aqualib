@@ -48,7 +48,7 @@ class Protocol
       check "Label a new eppendorf tube MM."
       check "Add #{water.round(1)} µL of water to the tube."
       check "Add #{buffer.round(1)} µL of the cutsmart buffer to the tube."
-      check "Add #{enzyme.round(1)} µL of the Pme1 to the tube."
+      check "Add #{enzyme.round(1)} µL of the PmeI to the tube."
       check "Vortex for 20-30 seconds"
       warning "Keep the master mix in an ice block while doing the next steps"
     }
@@ -58,8 +58,8 @@ class Protocol
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
-        check "Label a new stripwell with the id #{sw}. Just use a full size stripwell."
-        check "Pipette 48 µL of MM made in previous step into wells" + sw.non_empty_string + "."
+        check "Label a new stripwell with the id #{sw}. Use enough number of wells to write down the id number."
+        check "Pipette 48 µL from tube MM into wells" + sw.non_empty_string + "."
         separator
       end
     }
@@ -70,16 +70,14 @@ class Protocol
     }
     
     incubate = show {
-      title "Start the reactions"
+      title "Incubate"
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
       separator
-      check "Place the stripwells into a small green tube holder and then place in 37 C incubator at B15.320."
-      # TODO: image: "thermal_cycler_home"
+      check "Place the stripwells into a small green tube holder and then place in the 37 C incubator at B15.320."
+      image "put_green_tube_holder_to_incubator"
     }
     
-    stripwells.each do |sw|
-      sw.move "37 C incubator at B15.320"
-    end
+    move stripwells "37 C incubator"
     
     release stripwells
     release plasmid_stocks, interactive: true, method: "boxes"
@@ -92,6 +90,7 @@ class Protocol
     end
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
+
     return { io_hash: io_hash }
     
   end

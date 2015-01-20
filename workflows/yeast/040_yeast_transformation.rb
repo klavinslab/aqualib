@@ -168,7 +168,8 @@ class Protocol
       release yeast_plates, interactive: true
     end
 
-    delete yeast_competent_cells + stripwells
+    delete yeast_competent_cells
+    delete stripwells
 
     release [peg] + [lioac] + [ssDNA], interactive: true
     if io_hash[:task_ids]

@@ -32,9 +32,6 @@ class Protocol
     end
     large_volume = io_hash[:large_volume] || 50
   	yeast_overnights = io_hash[:yeast_overnight_ids].collect{|yid| find(:item, id: yid )[0]}
-    # show {
-    #   note(yeast_overnights.collect {|x| x.id})
-    # }
   	yeast_cultures = []
   	yeast_overnights.each do |y|
   		yeast_culture = produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast 50ml culture"
@@ -59,7 +56,7 @@ class Protocol
     
     tab = [["Flask ids","Yeast Overnight ids","Volume (µL)"]]
     yeast_overnights.each_with_index do |y,idx|
-      tab.push(["#{yeast_cultures[idx].id}","#{y.id}",{ content: "#{large_volume/50} mL", check: true }])
+      tab.push(["#{yeast_cultures[idx].id}",{ content: "#{y.id}", check: true },{ content: "#{large_volume/50} mL" }])
     end
     show {
       title "Inoculate yeast overnights into flasks"
@@ -73,12 +70,13 @@ class Protocol
     end
 
     delete yeast_overnights
-  	release yeast_cultures, interactive: true, method: "boxes"
     show {
       title "Discard yeast overnights"
       note "Discard yeast overnights with the following ids."
-      note "#{io_hash[:yeast_overnight_ids]}"
+      note yeast_overnights.collect { |y| "#{y}"}
     }
+    release yeast_overnights
+  	release yeast_cultures, interactive: true, method: "boxes"
     io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}  
     return { io_hash: io_hash }
   end
