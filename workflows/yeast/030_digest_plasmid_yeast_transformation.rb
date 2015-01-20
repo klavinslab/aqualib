@@ -11,7 +11,8 @@ class Protocol
     {
       io_hash: {},
       plasmid_stock_ids: [9189,11546,11547],
-      debug_mode: "Yes"
+      debug_mode: "Yes",
+      group: "yang"
     }
   end
   
@@ -23,10 +24,11 @@ class Protocol
         true
       end
     end
-    if io_hash[:group] == "technicians" || "cloning" || "admin"
+
+    if io_hash[:group] == ("technicians" || "cloning" || "admin")
       plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
     else
-      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name object_type: "Plasmid Stock" }
+      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name, object_type: "Plasmid Stock" }
     end
     plasmids = plasmid_stocks.collect { |p| p.sample}
 
@@ -77,12 +79,12 @@ class Protocol
       title "Incubate"
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
       separator
-      check "Place the stripwells into a small green tube holder and then place in 37 C incubator at B15.320."
+      check "Place the stripwells into a small green tube holder and then place in 37 C incubator."
       image "put_green_tube_holder_to_incubator"
     }
     
     stripwells.each do |sw|
-      sw.move "37 C incubator at B15.320"
+      sw.move "37 C incubator"
     end
 
     release stripwells

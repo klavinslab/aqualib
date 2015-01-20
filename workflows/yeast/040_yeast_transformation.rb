@@ -35,11 +35,10 @@ class Protocol
       yeast_competent_cells.push y.in("Yeast Competent Aliquot")[num_hash[y.name]-1]
     end
 
-    # show {
-    #   note yeast_competent_cells.collect { |y| "#{y}"}
-    #   note "#{num_hash}"
-    # }
-
+    if io_hash[:group] != ("technicians" || "cloning" || "admin")
+      yeast_competent_cells = io_hash[:yeast_parent_strain_ids].collect{ |yid| choose_sample find(:item, id: yid )[0].name, object_type: "Yeast Competent Aliquot" }
+    end
+    
     take yeast_competent_cells, interactive: true, method: "boxes"
 
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
