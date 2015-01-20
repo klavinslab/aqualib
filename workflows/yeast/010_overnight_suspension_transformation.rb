@@ -49,6 +49,7 @@ class Protocol
       y = find(:sample, id: yid)[0]
       yeast_strain_need_overnight_ids.push yid unless y.in("Yeast Competent Aliquot").length >= num
     end
+
     # find all yeast items and related types, find Yeast Glycerol Stock, if nothing, find Yeast Plate
     yeast_items = []
     yeast_strain_need_overnight_ids.each do |yid|
@@ -65,15 +66,17 @@ class Protocol
       yeast_type_hash[y.object_type.name].push y
     end
 
-    # show {
-    #   title "Testing page"
-    #   note "#{yeast_type_hash}"
-    # }
-
     show {
       title "Protocol information"
       note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions for yeast transformation tasks."
     }
+
+    if yeast_strain_need_overnight_ids.length == 0
+      show {
+        title "No overnights need to be prepared"
+        note "No overnights need to be prepared, the competent cells needed for the transformation are already in stock. Thanks for you effort!"
+      }
+    end
 
     overnights = []
 

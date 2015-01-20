@@ -28,9 +28,14 @@ class Protocol
       end
     end
 
-    # water = choose_object "50 mL Molecular Grade Water aliquot"
-    # take [water], interactive: true
-    
+    io_hash = { yeast_competent_ids: [] }.merge io_hash
+    if io_hash[:yeast_culture_ids].length == []
+      show {
+        title "No competent cells need to be made"
+        note "No competent cells need to be made. Thanks for you effort!"
+      }
+      return {io_hash: io_hash}
+    end
     cultures = io_hash[:yeast_culture_ids].collect {|cid| find(:item, id:cid)[0]}
     take cultures, interactive: true
 

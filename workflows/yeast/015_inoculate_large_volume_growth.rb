@@ -39,7 +39,15 @@ class Protocol
       yeast_culture.save
   		yeast_cultures.push yeast_culture
   	end
-
+    io_hash = ({ yeast_culture_ids: [] }).merge io_hash
+    if yeast_overnights.length == 0
+      show {
+        title "No inoculation required"
+        note "No inoculation required. Thanks for you effort!"
+      }
+      return { io_hash: io_hash }
+    end
+    
     media_type = io_hash[:media_type]
     media = choose_object(media_type, take: true)
 
@@ -76,8 +84,9 @@ class Protocol
       note yeast_overnights.collect { |y| "#{y}"}
     }
     release yeast_overnights
-  	release yeast_cultures, interactive: true, method: "boxes"
-    io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}  
+    release yeast_cultures, interactive: true, method: "boxes"
+    io_hash[:yeast_culture_ids] = yeast_cultures.collect {|x| x.id}
+
     return { io_hash: io_hash }
   end
 
