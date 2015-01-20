@@ -29,7 +29,7 @@ class Protocol
     end
 
     io_hash = { yeast_competent_ids: [] }.merge io_hash
-    if io_hash[:yeast_culture_ids].length == []
+    if io_hash[:yeast_culture_ids].length == 0
       show {
         title "No competent cells need to be made"
         note "No competent cells need to be made. Thanks for you effort!"
