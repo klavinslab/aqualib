@@ -6,6 +6,8 @@ class Protocol
   include Standard
   include Cloning
 
+
+
   def arguments
     {
       io_hash: {},
@@ -44,6 +46,7 @@ class Protocol
       unless marker == ""
         marker = "chlor" if marker == "chl"
         selection_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
+        selection_plates_with_initials = selection_plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
         inducer_plates = []
         inducer_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"} unless io_hash[:inducer_plate] == ""
         plates = selection_plates + inducer_plates
@@ -52,7 +55,7 @@ class Protocol
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} LB+#{marker[0].upcase}#{marker[1..marker.length]} Plate (sterile)"
-          check "Label with the following ids #{selection_plates.collect { |p| p.id }}"
+          check "Label with the following ids #{selection_plates_with_initials}"
         }
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"

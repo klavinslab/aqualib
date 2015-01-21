@@ -1,6 +1,19 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
+class String
+  # return the initials of first name and last name
+  def initials
+    full_name = self.split
+    begin
+      cap_initials = name[0][0].upcase + name[1][0].upcase
+    rescue
+      cap_initials = ""
+    end
+    return cap_initials
+  end
+end
+
 class Protocol
 
   include Standard
@@ -26,6 +39,16 @@ class Protocol
       i.save
     end
   end # delete
+
+  def initials str
+    full_name = str.split
+    begin
+      cap_initials = full_name[0][0].upcase + full_name[1][0].upcase
+    rescue 
+      cap_initials = ""
+    end
+    return cap_initials
+  end
 
   def arguments
     {
@@ -82,9 +105,12 @@ class Protocol
     template = props["Template"]
     template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
     template_items = template.in "Gibson Reaction Result"
+    #init = initials(template_items[0].sample.user.name)
+    init = initials("Yaoyu")
     show {
       title "Test"
       note "#{template_items[0]}"
+      note init
     }
 
 

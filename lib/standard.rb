@@ -191,6 +191,17 @@ module Standard
     end
   end # delete
 
+  # return the initials of first name and last name
+  def name_initials str
+    full_name = str.split
+    begin
+      cap_initials = full_name[0][0].upcase + full_name[1][0].upcase
+    rescue 
+      cap_initials = ""
+    end
+    return cap_initials
+  end
+
   def task_group_filter task_ids, group
     # filter out task_ids based on group parameter
     # current rule is if group is "technicians", it will return task_ids belong to "cloning", if group is 
