@@ -14,7 +14,9 @@ class Protocol
 
   def arguments
     {
-      io_hash: {}
+      io_hash: {},
+      debug_mode: "No",
+      group: "cloning"
     }
   end
 

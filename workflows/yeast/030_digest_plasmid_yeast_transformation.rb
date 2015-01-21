@@ -25,11 +25,22 @@ class Protocol
       end
     end
 
+    io_hash = { stripwell_ids: [] }.merge io_hash
+    
+    if io_hash[:plasmid_stock_ids].length == 0
+      show {
+        title "No plasmid digestion required"
+        note "No plasmid digestion required. Thanks for you effort!"
+      }
+      return { io_hash: io_hash }
+    end
+
     if io_hash[:group] == ("technicians" || "cloning" || "admin")
       plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
     else
       plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name, object_type: "Plasmid Stock" }
     end
+
     plasmids = plasmid_stocks.collect { |p| p.sample}
 
     take plasmid_stocks, interactive: true, method: "boxes"
