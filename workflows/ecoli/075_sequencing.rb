@@ -129,6 +129,9 @@ class Protocol
     num = primer_ids.length
     plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
     primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]} 
+    if io_hash[:group] != ("technicians" || "cloning" || "admin")
+      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid ).name, object_type: "Primer Aliquot" }
+    end
     genewiz = show {
       title "Create a Genewiz order"
       check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
