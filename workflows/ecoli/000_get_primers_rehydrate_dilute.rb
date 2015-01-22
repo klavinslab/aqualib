@@ -45,6 +45,7 @@ class Protocol
       show {
         title "Wait 15 minutes and call again"
       } if answer == "No"
+      
     end
 
     primer_stocks = []

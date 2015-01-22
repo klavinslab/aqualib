@@ -286,9 +286,57 @@ module Cloning
         }
     end
 
-  end
+  end ### yeast_transformation_status
 
+  def sequencing_status p={}
+    params = ({ group: false }).merge p
+    tasks_all = find(:task,{task_prototype: { name: "Sequencing" }})
+    tasks = []
+    # filter out tasks based on group input
+    if params[:group]
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_all.each do |t|
+        tasks.push t if t.user.member? group_info.id
+      end
+    else
+      tasks = tasks_all
+    end
+    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    ready = tasks.select { |t| t.status == "ready" }
+    running = tasks.select { |t| t.status == "send to sequencing" }
+    done = tasks.select { |t| t.status == "results back" }
 
+    # cycling through waiting and ready to make sure primer aliquots are in place
+
+    (waiting + ready).each do |t|
+
+      t[:primers] = { ready: [], no_aliquot: [] }
+
+      t.simple_spec[:primer_ids].each do |prid|
+        if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
+          t[:primers][:ready].push prid
+        else
+          t[:primers][:no_aliquot].push prid
+        end
+      end
+
+      if t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
+        t.status = "ready"
+        t.save
+      else
+        t.status = "waiting for ingredients"
+        t.save
+      end
+    end
+
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
+      running_ids: running.collect { |t| t.id },
+      done_ids: done.collect { |t| t.id }
+    }
+  end ### sequencing_status
 
 end
 
