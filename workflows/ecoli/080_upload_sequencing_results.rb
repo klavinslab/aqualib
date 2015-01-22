@@ -1,5 +1,5 @@
-needs "protocols/mutagenesis_workflow/lib/standard"
-needs "protocols/mutagenesis_workflow/lib/cloning"
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
   

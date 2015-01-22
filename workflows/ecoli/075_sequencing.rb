@@ -1,6 +1,6 @@
 # first version by David, refactored and task enabled by Yaoyu
-needs "protocols/mutagenesis_workflow/lib/standard"
-needs "protocols/mutagenesis_workflow/lib/cloning"
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
   
@@ -58,9 +58,10 @@ class Protocol
     {
       io_hash: {},
       initials: ["YY","YY"],
-      plasmid_stock_ids: [29489,29490],
+      plasmid_stock_ids: [15417,15418],
       primer_ids: [[2575,2569],[2054,2569]],
-      debug_mode: "No"
+      debug_mode: "No",
+      group: "yang"
     }
   end
  
@@ -79,9 +80,9 @@ class Protocol
     plasmid_stock_ids = []
     primer_ids = []
     initials = []
-    show {
-      note "#{io_hash}"
-    }
+    # show {
+    #   note "#{io_hash}"
+    # }
     idx = 0
     io_hash[:primer_ids].each_with_index do |pids|
       unless pids == []
@@ -127,11 +128,6 @@ class Protocol
     end
 
     num = primer_ids.length
-    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
-    primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]} 
-    if io_hash[:group] != ("technicians" || "cloning" || "admin")
-      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid ).name, object_type: "Primer Aliquot" }
-    end
     genewiz = show {
       title "Create a Genewiz order"
       check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
@@ -143,6 +139,11 @@ class Protocol
       check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
+    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
+    primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]} 
+    if io_hash[:group] != ("technicians" || "cloning" || "admin")
+      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
+    end
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
     plasmid_lengths = plasmid_stocks.collect{|pls| pls.sample.properties["Length"]}
     plasmid_concs = plasmid_stocks.collect{|pls| pls.datum[:concentration]}
@@ -178,7 +179,7 @@ class Protocol
     end
     }
 
-    load_samples_variable_vol_seq( ["Molecular Grade Water", "Plasmid", "Primer"], [
+    load_samples_variable_vol( ["Molecular Grade Water", "Plasmid", "Primer"], [
         water_volume_list,
         plasmids_with_volume,
         primers_with_volume
