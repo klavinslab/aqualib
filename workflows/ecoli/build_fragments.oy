@@ -1,6 +1,3 @@
-# To do list for build_fragments
-# Feedback on which fragments ingredients are missing.
-
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"

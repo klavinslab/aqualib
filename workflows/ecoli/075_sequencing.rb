@@ -7,9 +7,20 @@ class Protocol
   include Standard
   include Cloning
 
-  def sequencing_status
-    # find all fragment construction tasks and arrange them into lists by status
-    tasks = find(:task,{task_prototype: { name: "Sequencing" }})
+  def sequencing_status p={}
+    params = ({ group: false }).merge p
+    tasks_all = find(:task,{task_prototype: { name: "Sequencing" }})
+    tasks = []
+    # filter out tasks based on group input
+    if params[:group]
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_all.each do |t|
+        tasks.push t if t.user.member? group_info.id
+      end
+    else
+      tasks = tasks_all
+    end
     waiting = tasks.select { |t| t.status == "waiting for ingredients" }
     ready = tasks.select { |t| t.status == "ready" }
     running = tasks.select { |t| t.status == "send to sequencing" }
@@ -97,8 +108,9 @@ class Protocol
       end
     end
 
-    sequencing_info = sequencing_status
+    sequencing_info = sequencing_status group: io_hash[:group]
     io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
+    io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
