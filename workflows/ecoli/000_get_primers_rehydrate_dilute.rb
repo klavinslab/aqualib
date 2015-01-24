@@ -73,22 +73,29 @@ class Protocol
           title "Grab one primer tube"
           get "number", var: "primer_id", label: "Enter primer ID number, which is listed before the primer's name on the side of the tube.", default: 2054
           get "number", var: "mole", label: "Enter the number of moles of primer in the tube, in nm. This is written toward the bottom of the tube, below the MW.", default: 10
-          select [ "No", "Yes" ], var: "choice", label: "Does the primer name has [ND] before the primer ID number?", default: 0
         }
         primer_id = primer[:primer_id]
         primer_mole = primer[:mole]
-        primer_dilute = primer[:choice]
         primer_sample = find(:sample,{id: primer_id})[0]
 
         if primer_sample.sample_type.name == "Primer"
           primer_stock = produce new_sample primer_sample.name, of: "Primer", as: "Primer Stock"
           primer_stocks.push primer_stock
-          primer_stocks_to_dilute.push primer_stock if primer_dilute == "No"
-          show {
-            title "Rehydrate the primer"
-            note "Add #{primer_mole*10} µL of TE into the primer tube"
-            note "Label the tube with #{primer_stock} using white dot label"
-          }
+          if primer_stock.sample.properties["Anneal Sequence"][1] != "*"
+            show {
+              title "Rehydrate the primer"
+              note "Add #{primer_mole*10} µL of TE into the primer tube"
+              note "Label the tube with #{primer_stock} using white dot label"
+            }
+            primer_stocks_to_dilute.push primer_stock 
+          else
+            show {
+              title "Rehydrate the primer"
+              note "Add #{primer_mole*10} µL of water into the primer tube"
+              note "Label the tube with #{primer_stock} using white dot label"
+              warning "Add water to this sample, not TE!"
+            }
+          end
           i += 1
         else
           primer_check = show {
@@ -123,11 +130,11 @@ class Protocol
           title "Grab #{primer_aliquots.length} 1.5 mL tubes"
           check "Grab #{primer_aliquots.length} 1.5 mL tubes, label with following ids."
           check primer_aliquots.collect { |p| "#{p}"}
-          check "Add 90 µL of water into each tube."
+          check "Add 90 µL of water into each above tube."
         }
         show {
           title "Make primer aliquots"
-          note "Add 10 µL from primer stocks into each tube using the following table."
+          note "Add 10 µL from primer stocks into each primer aliquot tube using the following table."
           table [["Primer Aliquot id", "Primer Stock, 10 µL"]].concat (primer_aliquots.collect { |p| "#{p}"}.zip primer_stocks_to_dilute.collect { |p| { content: p.id, check: true } })
         }
       end
