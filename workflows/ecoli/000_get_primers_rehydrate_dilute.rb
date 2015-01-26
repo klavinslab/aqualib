@@ -7,6 +7,7 @@ class Protocol
 
   include Standard
   include Cloning
+  require 'set'
 
   def debug
     false
@@ -28,6 +29,8 @@ class Protocol
         true
       end
     end
+    io_hash = { primer_ids:[] }.merge io_hash
+
     answer = "No"
     arrived = "No"
 
@@ -50,6 +53,7 @@ class Protocol
 
     primer_stocks = []
     primer_stocks_to_dilute = []
+    primer_aliquots = []
     if answer == "Yes"
       show {
         title "Go the biochem store to pick up primers"
@@ -122,8 +126,6 @@ class Protocol
         }
       end
 
-      primer_aliquots = []
-
       if primer_stocks_to_dilute.length > 0
         primer_aliquots = primer_stocks_to_dilute.collect { |p| produce new_sample p.sample.name, of: "Primer", as: "Primer Aliquot" }
         show {
@@ -138,10 +140,19 @@ class Protocol
           table [["Primer Aliquot id", "Primer Stock, 10 µL"]].concat (primer_aliquots.collect { |p| "#{p}"}.zip primer_stocks_to_dilute.collect { |p| { content: p.id, check: true } })
         }
       end
-
-      release primer_stocks + primer_aliquots, interactive: true,  method: "boxes"
+    end
+    release primer_stocks + primer_aliquots, interactive: true,  method: "boxes"
+    primer_ids = primer_stocks.collect { |x| x.sample.id }
+    if io_hash[:primer_ids].to_set.subset? primer_ids.to_set
+      if io_hash[:task_ids]
+        io_hash[:task_ids].each do |tid|
+          task = find(:task, id: tid)[0]
+          set_task_status(task,"received and stocked")
+        end
+      end
     end
 
+    return { io_hash: io_hash }
 
   end
 

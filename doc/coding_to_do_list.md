@@ -18,5 +18,5 @@ task.user.member?
 - [x] Create protocol to shuffle and check task status.
 - [ ] Yeast overnight suspenstion transformation version takes plates into source.
 - [x] Work on lab class transformation metacol.
-- [ ] Improve yeast transformation related protocols based on Michelle's suggestions.
+- [x] Improve yeast transformation related protocols based on Michelle's suggestions.
 
