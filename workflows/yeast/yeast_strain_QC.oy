@@ -1,12 +1,14 @@
 argument
   debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
 end
 
 place lysate
   protocol: "aqualib:workflows/yeast/060_make_yeast_lysates.rb"
-  group: "technicians"
+  group: group
   argument
     debug_mode: debug_mode
+    group: group
   end
   marked: true
   start: now()
@@ -15,7 +17,7 @@ end
 
 place pcr
   protocol: "aqualib:workflows/yeast/070_yeast_colony_PCR.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -23,7 +25,7 @@ end
 
 place pour_gel
   protocol: "aqualib:workflows/ecoli/015_pour_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -31,7 +33,7 @@ end
 
 place run_gel
   protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)
@@ -39,7 +41,7 @@ end
 
 place image_gel
   protocol: "aqualib:workflows/ecoli/025_image_gel.rb"
-  group: "technicians"
+  group: group
   marked: false
   start: now()
   window: hours(1)

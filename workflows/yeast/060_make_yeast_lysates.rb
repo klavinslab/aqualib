@@ -11,7 +11,8 @@ class Protocol
       io_hash: {},
   		yeast_plate_ids: [13578,13579],
   		num_colonies: [3,3],
-  		debug_mode: "Yes"
+  		debug_mode: "No",
+      group: "cloning"
   	}
   end
 
@@ -34,7 +35,7 @@ class Protocol
 
     tasks = find(:task,{ task_prototype: { name: "Yeast Strain QC" } })
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
-    io_hash[:task_ids] = waiting_ids
+    io_hash[:task_ids] = task_group_filter(waiting_ids, io_hash[:group])
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
