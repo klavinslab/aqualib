@@ -48,11 +48,8 @@ class Protocol
     show {
       title "Discard overnights"
       check "Discard the used overnight suspensions. For glass tubes, place in the washing station. For plastic tubes, press the cap to seal and throw into biohazard boxes."
-      overnights.each do |o|
-        o.mark_as_deleted
-        o.save
-      end
     }
+    delete overnights
     release [glycerol], interactive: true
     release glycerol_stocks, interactive: true, method: "boxes"
     io_hash[:glycerol_stock_ids] = glycerol_stocks.collect { |g| g.id }

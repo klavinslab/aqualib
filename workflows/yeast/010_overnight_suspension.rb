@@ -91,7 +91,7 @@ class Protocol
       release overnight, interactive: true, method: "boxes"
     end
 
-    io_hash[:yeast_overnight_ids] = overnights.collect {|x| x.id}
+    io_hash[:overnight_ids] = overnights.collect {|x| x.id}
     
     return { io_hash: io_hash }
   end
