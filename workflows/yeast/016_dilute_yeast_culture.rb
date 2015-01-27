@@ -31,7 +31,7 @@ class Protocol
 
     yeast_overnights = io_hash[:yeast_overnight_ids].collect { |y| find(:item, id: y)[0] }
     yeast_samples = yeast_overnights.collect { |y| y.sample }
-    tube_arrays = produce spread yeast_samples, "TubeArray", 1, 12
+    #tube_arrays = produce spread yeast_samples, "TubeArray", 1, 12
     diluted_yeast_overnights = yeast_overnights.collect{ |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
   	show {
   		title "Media preparation in media bay"
