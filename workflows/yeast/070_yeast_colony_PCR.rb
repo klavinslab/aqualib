@@ -30,7 +30,7 @@ class Protocol
     reverse_primers = yeast_lysates.collect { |y| find(:sample, id: y)[0].properties["QC Primer2"].in("Primer Aliquot")[0] }
     if io_hash[:group] != ("technicians" || "cloning" || "admin")
       forward_primers = yeast_lysates.collect { |y| choose_sample find(:sample, id: y)[0].properties["QC Primer1"].name, object_type: "Primer Aliquot" }
-      reverse_primers = yeast_lysates.collect { |y| choose_samplefind(:sample, id: y)[0].properties["QC Primer2"].name, object_type: "Primer Aliquot" }
+      reverse_primers = yeast_lysates.collect { |y| choose_sample find(:sample, id: y)[0].properties["QC Primer2"].name, object_type: "Primer Aliquot" }
     end
     fwd_temp = forward_primers.collect {|f| f.sample.properties["T Anneal"]}
     rev_temp = reverse_primers.collect {|r| r.sample.properties["T Anneal"]}
