@@ -57,3 +57,10 @@ transition [ pcr ] => [ pour_gel ] when !error(0) && completed(0) end
 transition [ pour_gel ] => [ run_gel ] when !error(0) && completed(0) end
 transition [ run_gel ] => [ image_gel ] when !error(0) && completed(0) end
 transition [ image_gel ] => [] when !error(0) && completed(0) end
+
+# restart if errored out
+transition [ lysate ] => [ lysate ] when error(0) end
+transition [ pcr ] => [ pcr ] when error(0) end
+transition [ pour_gel ] => [ pour_gel ] when error(0) end
+transition [ run_gel ] => [ run_gel ] when error(0) end
+transition [ image_gel ] => [ image_gel ] when error(0) end

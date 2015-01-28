@@ -72,3 +72,12 @@ transition [ makecompcell ] => [ transformation ] when !error(0) && completed(0)
 transition [ transformation ] => [ plate ] when !error(0) && completed(0) end
 transition [ plate ] => [ image ] when !error(0) && completed(0) end
 transition [ image ] => [] when !error(0) && completed(0) end
+
+# restart if errored out
+transition [ startovernight ] => [ startovernight ] when error(0) end
+transition [ innoculate ] => [ innoculate ] when error(0) end
+transition [ digest ] => [ digest ] when error(0) end
+transition [ makecompcell ] => [ makecompcell ] when error(0) end
+transition [ transformation ] => [ transformation ] when error(0) end
+transition [ plate ] => [ plate ] when error(0) end
+transition [ image ] => [ image ] when error(0) end
