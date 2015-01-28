@@ -24,8 +24,9 @@ class Protocol
     end
     overnights = io_hash[:overnight_ids].collect {|id| find(:item, id: id )[0]}
     take overnights, interactive: true
+    name_glycerol_hash = { "Plasmid" => "Plasmid Glycerol Stock", "Yeast Strain" => "Yeast Glycerol Stock", "E coli strain" => "E coli Glycerol Stock" }
     glycerol = choose_object "50 percent Glycerol (sterile)", take: true
-    glycerol_stocks = overnights.collect { |y| produce new_sample y.sample.name, of: y.sample.sample_type.name, as: y.sample.sample_type.name.split[0]+" Glycerol Stock" }
+    glycerol_stocks = overnights.collect { |y| produce new_sample y.sample.name, of: y.sample.sample_type.name, as: name_glycerol_hash[y.sample.sample_type.name] }  
 
     show {
       title "Prepare glycerol in cryo tubes."
