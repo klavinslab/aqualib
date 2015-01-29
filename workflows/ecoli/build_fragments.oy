@@ -1,5 +1,6 @@
 argument
   debug_mode: string, "Yes or No"
+  item_choice_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
 end
 
@@ -8,6 +9,7 @@ place dilute_plasmid_stock
   group: group
   argument
     debug_mode: debug_mode
+    item_choice_mode: item_choice_mode
     group: group
     io_hash: {}
   end
