@@ -25,6 +25,7 @@ class Protocol
       "fragment_ids Fragment" => [2061,2062],
       debug_mode: "No",
       task_mode: "Yes",
+      item_choice_mode: "No",
       group: "cloning"
     }
   end
@@ -32,14 +33,13 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash = { task_mode: "Yes", debug_mode: "No", item_choice_mode: "No", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-
-    io_hash = { task_mode: "Yes", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
 
     if io_hash[:task_mode] == "Yes"
       # Pull info from Gibson Assembly Tasks
@@ -76,10 +76,10 @@ class Protocol
     not_ready = []
 
     io_hash[:fragment_ids].each do |fid|
-      if io_hash[:group] == ("technicians" || "cloning" || "admin")
-        info = fragment_info fid
-      else
+      if io_hash[:item_choice_mode].downcase == "yes"
         info = fragment_info fid, item_choice: true
+      else
+        info = fragment_info fid
       end
       fragment_info_list.push info   if info
       not_ready.push fid if !info
