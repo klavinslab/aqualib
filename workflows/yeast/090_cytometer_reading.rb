@@ -40,8 +40,8 @@ class Protocol
     release yeast_deepwell_plates, interactive: true
     show {
       title "Cytometer reading"
-      check "Go to the software, click eject plate if the cytometer plate holder is not outside."
-      check "Place the loaded u-bottom plate on the plate holder"
+      check "Go to the software, click Eject Plate if the CSampler holder is not outside."
+      check "Place the loaded u-bottom plate on the CSampler holder"
       check "Click new workspace, choose the following settings."
       check "Click autorun."
     }

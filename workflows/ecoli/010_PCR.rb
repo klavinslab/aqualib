@@ -24,6 +24,7 @@ class Protocol
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062],
       debug_mode: "No",
+      task_mode: "Yes",
       group: "cloning"
     }
   end
@@ -38,34 +39,36 @@ class Protocol
       end
     end
 
-    # Pull info from Gibson Assembly Tasks
-    gibson_assembly = gibson_assembly_status group: io_hash[:group]
-    fragment_from_gibson_ids = []
-    fragment_from_gibson_ids = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
-    
-    # Pull info from Fragment Construction Tasks
-    fragment_construction = fragment_construction_status
-    show {
-      title "Not ready fragment ids"
-      note "From Fragment Construction tasks, the following are not ready #{fragment_construction[:fragments][:not_ready_to_build]}" if fragment_construction[:fragments]
-      note "From Gibson Assembly tasks, the following are not ready #{gibson_assembly[:fragments][:not_ready_to_build]}" if gibson_assembly[:fragments]
-    }
-    fragment_from_construction_ids = []
-    io_hash[:task_ids] = task_group_filter(fragment_construction[:ready_ids], io_hash[:group])
-    io_hash[:task_ids].each do |tid|
-      ready_task = find(:task, id: tid)[0]
-      fragment_from_construction_ids.concat ready_task.simple_spec[:fragments]
+    io_hash = { task_mode: "Yes", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
+
+    if io_hash[:task_mode] == "Yes"
+      # Pull info from Gibson Assembly Tasks
+      gibson_assembly = gibson_assembly_status group: io_hash[:group]
+      io_hash[:fragment_from_gibson_ids] = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
+      
+      # Pull info from Fragment Construction Tasks
+      fragment_construction = fragment_construction_status
+      show {
+        title "Not ready fragment ids"
+        note "From Fragment Construction tasks, the following are not ready #{fragment_construction[:fragments][:not_ready_to_build]}" if fragment_construction[:fragments]
+        note "From Gibson Assembly tasks, the following are not ready #{gibson_assembly[:fragments][:not_ready_to_build]}" if gibson_assembly[:fragments]
+      }
+      io_hash[:task_ids] = task_group_filter(fragment_construction[:ready_ids], io_hash[:group])
+      io_hash[:task_ids].each do |tid|
+        ready_task = find(:task, id: tid)[0]
+        io_hash[:fragment_from_construction_ids].concat ready_task.simple_spec[:fragments]
+      end
     end
 
     # Pull info from protocol input
-    fragment_from_protocol_ids = input[:fragment_ids] || []
-    io_hash[:fragment_ids] = (fragment_from_gibson_ids + fragment_from_construction_ids + fragment_from_protocol_ids).uniq
+    io_hash[:fragment_from_protocol_ids] = input[:fragment_ids] || []
+    io_hash[:fragment_ids] = (io_hash[:fragment_from_gibson_ids] + io_hash[:fragment_from_construction_ids]).uniq + io_hash[:fragment_from_protocol_ids]
 
     show {
       title "List of fragment ids ready to build"
-      note "From Gibson Assembly tasks the following #{fragment_from_gibson_ids}"
-      note "From Fragment Construction tasks the following #{fragment_from_construction_ids}"
-      note "From protocol, the following #{fragment_from_protocol_ids}"
+      note "From Gibson Assembly tasks the following #{io_hash[:fragment_from_gibson_ids]}"
+      note "From Fragment Construction tasks the following #{io_hash[:fragment_from_construction_ids]}"
+      note "From protocol, the following #{io_hash[:fragment_from_protocol_ids]}"
     }
 
     # Collect fragment info
@@ -73,7 +76,7 @@ class Protocol
     not_ready = []
 
     io_hash[:fragment_ids].each do |fid|
-      if io_hash[:group] == "technicians"
+      if io_hash[:group] == ("technicians" || "cloning" || "admin")
         info = fragment_info fid
       else
         info = fragment_info fid, item_choice: true
@@ -86,7 +89,6 @@ class Protocol
     all_templates       = fragment_info_list.collect { |fi| fi[:template] }
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
-
 
     if all_fragments.length == 0
       show {
