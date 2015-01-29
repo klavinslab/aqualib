@@ -44,15 +44,16 @@ class Protocol
     media_str = (1..yeast_items.length).collect { |y| "#{io_hash[:volume]} mL"}
     load_samples_variable_vol( ["#{io_hash[:media_type]}","Yeast items"], [
         media_str, yeast_items_str,
-      ], deepwells ) {
-          note "Put a breathable sealing film on the plate after inoculation."
-        }
+      ], deepwells ) 
+    show {
+      title "Seal the plate with a breathable sealing film"
+      note "Put a breathable sealing film on the plate after inoculation."
+    }
     deepwells.each do |d|
-      d.location = "37 C shaker incubator"
+      d.location = "30 C shaker incubator"
       d.save
     end
-    release yeast_items, interactive: true
-    release deepwells, interactive: true
+    release deepwells + yeast_items, interactive: true
     io_hash[:deepwell_ids] = deepwells.collect {|d| d.id}
     return { io_hash: io_hash }
   end # main

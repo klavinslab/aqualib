@@ -37,11 +37,14 @@ class Protocol
       task = find(:task, id: tid)[0]
       fragment_ids.concat task.simple_spec[:fragments]
     end
+    show {
+      note "#{fragment_ids}"
+    }
     plasmids = fragment_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
     # remove redundant plasmids 
     plasmids = plasmids.compact.uniq
-    plasmids_need_to_dilute = plasmids.select{ |p| p.in(p.sample.sample_type.name + " Stock").length > 0 && p.in("1 ng/µL " + p.sample.sample_type.name + " Stock").length == 0 }
-    plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in(p.sample.sample_type.name + " Stock")[0] }
+    plasmids_need_to_dilute = plasmids.select{ |p| p.in(p.sample_type.name + " Stock").length > 0 && p.in("1 ng/µL " + p.sample_type.name + " Stock").length == 0 }
+    plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in(p.sample_type.name + " Stock")[0] }
     # concat with input to this protocol if input[:plasmid_stock_ids] is defined
   	plasmid_stocks.concat input[:plasmid_stock_ids].collect{ |fid| find(:item, id: fid)[0] } if input[:plasmid_stock_ids]
     if plasmid_stocks.length == 0
