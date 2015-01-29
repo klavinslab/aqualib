@@ -37,9 +37,6 @@ class Protocol
       task = find(:task, id: tid)[0]
       fragment_ids.concat task.simple_spec[:fragments]
     end
-    show {
-      note "#{fragment_ids}"
-    }
     plasmids = fragment_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
     # remove redundant plasmids 
     plasmids = plasmids.compact.uniq
