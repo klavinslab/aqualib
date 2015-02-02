@@ -14,6 +14,7 @@ class Protocol
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL SC liquid (sterile)",
       inducers: ["10 µM auxin"],
+      dilution_rate: 0.01,
       #The volume of the overnight suspension to make
       volume: "1000",
       debug_mode: "No"
@@ -61,7 +62,7 @@ class Protocol
       d.save
     end
     release deepwells + yeast_items.uniq, interactive: true
-    io_hash[:deepwell_ids] = deepwells.collect {|d| d.id}
+    io_hash[:deepwell_plate_ids] = deepwells.collect {|d| d.id}
     return { io_hash: io_hash }
   end # main
 
