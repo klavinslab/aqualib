@@ -26,13 +26,21 @@ class Protocol
         true
       end
     end
+    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [] }.merge io_hash
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
-    take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
     show {
       title "Protocol information"
       note "This protocol is used to take cytometer readings from deepwell plates using u-bottom plates."
     }
+    if io_hash[:yeast_ubottom_plate_ids] == []
+      yeast_ubottom_plates = yeast_deepwell_plates.collect { produce new_collection "96 U-bottom Well Plate", 8, 12 }
+      show {
+        title "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate"
+        note "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate and label with #{yeast_ubottom_plates.collect { |y| y.id }}."
+      }
+    end
+    take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
     transfer( yeast_deepwell_plates, yeast_ubottom_plates ) {
       title "Transfer #{io_hash[:volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."

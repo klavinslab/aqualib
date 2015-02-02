@@ -9,11 +9,11 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      deepwell_ids: [],
-      yeast_overnight_ids: [],
+      deepwell_plate_ids: [32311],
       media_type: "800 mL SC liquid (sterile)",
-      volume: 1,
-      inducer: "beta-estradiol",
+      volume: 1000,
+      dilution_rate: 0.01,
+      inducers: ["20 µM auxin"],
       debug_mode: "Yes"
     }
   end
@@ -27,26 +27,38 @@ class Protocol
         true
       end
     end
-    media_type = io_hash[:media_type]
-    volume = io_hash[:volume]
-    inducer = io_hash[:inducer] || ""
-    yeast_overnights = io_hash[:yeast_overnight_ids].collect { |y| find(:item, id: y)[0] }
-    yeast_samples = yeast_overnights.collect { |y| y.sample }
-    deepwells = produce spread yeast_samples, "Eppendorf 96 Deepwell Plate", 8, 12
-    load_samples( ["Yeast overnights"], [
-        yeast_overnights,
-      ], deepwells )
+    io_hash = { deepwell_plate_ids: [] }.merge io_hash
+    deepwell_plates = io_hash[:deepwell_plate_ids].collect { |i| collection_from i }
+    yeast_deepwell_plates = deepwell_plates.collect { produce new_collection "Eppendorf 96 Deepwell Plate", 8, 12 }
+    take deepwell_plates, interactive: true
     show {
-      title "Add inducer"
-      note "Add 1 µL of 100 µM #{inducer} into each tube"
-    } if inducer.length > 0
-    deepwells.each do |x|
-      x.location = "30 C shaker incubator"
-      x.save
+      title "Take new deepwell plates"
+      note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.collect {|d| d.id}}."
+      yeast_deepwell_plates.each_with_index do |y,idx|
+        note "Add #{io_hash[:volume]*(1-io_hash[:dilution_rate])} µL of #{io_hash[:media_type]} into wells #{deepwell_plates[idx].non_empty_string}."
+      end
+    }
+    show {
+      title "Vortex the deepwell plates."
+      note "Vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 7 for about 20 seconds."
+    }
+    transfer( deepwell_plates, yeast_deepwell_plates ) {
+      title "Transfer #{io_hash[:volume]*io_hash[:dilution_rate]} µL"
+      note "Using either 6 channel pipettor or single pipettor."
+    }
+    show {
+      title "Place the deepwell plates in the washing station"
+      note "Place the following deepwell plates #{deepwell_plates.collect { |d| d.id }} in the washing station "
+    }
+    deepwell_plates.each do |d|
+      d.mark_as_deleted
+      d.save
     end
-    release yeast_overnights, interactive: true
-    release deepwells, interactive: true
-    io_hash[:deepwell_ids] = deepwells.collect {|d| d.id}
+    yeast_deepwell_plates.each do |d|
+      d.location = "30 C shaker incubator"
+      d.save
+    end
+    release yeast_deepwell_plates, interactive: true
     return { io_hash: io_hash }
   end # main
 end # main
