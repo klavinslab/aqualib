@@ -12,7 +12,7 @@ class Protocol
      # destinations. Every time a source or destination is used up, advance to 
      # another step.    
 
-     opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[1,1],[]] } }.merge options
+     opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] } }.merge options
 
      if block_given?
        user_shows = ShowBlock.new.run(&Proc.new) 
@@ -120,7 +120,7 @@ class Protocol
         true
       end
     end
-    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[1,1],[]] }, debug_mode: "No" }.merge io_hash
+    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge io_hash
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     show {
