@@ -6,14 +6,108 @@ class Protocol
   include Standard
   include Cloning
 
+  def transfer sources, destinations, options={}
+
+     # go through each well of the sources and transfer it to the next empty well of
+     # destinations. Every time a source or destination is used up, advance to 
+     # another step.    
+
+     opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[1,1],[]] } }.merge options
+
+     if block_given?
+       user_shows = ShowBlock.new.run(&Proc.new) 
+     else
+       user_shows = []
+     end
+
+     # source and destination indices
+     s=0
+     d=0
+
+     # matrix indices
+     sr,sc = (opts[:range_to_read][:from][0][0]||1)-1,(opts[:range_to_read][:from][0][1]||1)-1
+     dr,dc = 0,0
+     unless destinations[0].matrix[dr][dc] == -1
+       dr,dc = destinations[0].next 0, 0, skip_non_empty: true
+     end
+
+     routing = []
+
+     while sr != nil
+
+       # add to routing table
+       routing.push({from:[sr,sc],to:[dr,dc]})
+
+       # increase sr,sc,dr,dc
+       sr,sc =      sources[s].next sr, sc, skip_non_empty: false
+       dr,dc = destinations[d].next dr, dc, skip_non_empty: true
+
+       show {
+        note "source location "+"#{[sr,sc]}"
+        note "dest location "+"#{[dr,dc]}"
+        note "source "+"#{s}"
+        note "dest "+"#{d}"
+        note "from "+"#{[(opts[:range_to_read][:from][s][0]||1)-1,(opts[:range_to_read][:from][s][1]||1)-1]}"
+        note "to "+"#{[(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]}"
+       }
+
+       # if either is nil or if the source well is empty or if the source well has reached its range
+       if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]
+
+         # display 
+         show {
+           title "Transfer from #{sources[s].object_type.name} #{sources[s].id} to #{destinations[d].object_type.name} #{destinations[d].id}"
+           transfer sources[s], destinations[d], routing
+           raw user_shows
+         }
+
+         # update destination collection
+         routing.each do |r|
+           destinations[d].set r[:to][0], r[:to][1], Sample.find(sources[s].matrix[r[:from][0]][r[:from][1]])
+         end
+
+         destinations[d].save
+
+         # clear routing for next step
+         routing = []
+
+         # BUGFIX by Yaoyu Yang
+         # return if sources[s].matrix[sr][sc] == -1
+         # 
+         if (sr && sources[s].matrix[sr][sc] == -1) or !sr or [sr,sc] == [(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]
+           s += 1
+           return unless s < sources.length
+           sr,sc = (opts[:range_to_read][:from][s][0]||1)-1,(opts[:range_to_read][:from][s][1]||1)-1
+         end
+         # END BUGFIX
+
+         # update destination indices
+         if !dc
+           d += 1
+           return unless d < destinations.length
+           dr,dc = 0,0
+           unless destinations[d].matrix[dr][dc] == -1
+             dr,dc = destinations[d].next 0, 0, skip_non_empty: true
+           end
+         end
+
+       end
+
+     end
+
+     return
+
+  end # transfer
+
   def arguments
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_deepwell_plate_ids: [32147],
-      yeast_ubottom_plate_ids: [32179],
+      yeast_deepwell_plate_ids: [32147,32313],
+      range_to_read: { from: [[1,1],[1,2]], to: [[1,2],[1,3]] },
+      yeast_ubottom_plate_ids: [32316,32316],
       volume: 100,
-      debug_mode: "No"
+      debug_mode: "Yes"
     }
   end
 
@@ -41,7 +135,7 @@ class Protocol
       }
     end
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
-    transfer( yeast_deepwell_plates, yeast_ubottom_plates ) {
+    transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read] ) {
       title "Transfer #{io_hash[:volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }

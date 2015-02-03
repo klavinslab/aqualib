@@ -13,11 +13,13 @@ class Protocol
       yeast_item_ids: [13011,15872],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL SC liquid (sterile)",
-      inducers: ["10 µM auxin"],
+      inducers: [["10 µM auxin","20 µM auxin"],["10 µM auxin","10 nM b-e"]],
       dilution_rate: 0.01,
       #The volume of the overnight suspension to make
       volume: "1000",
-      debug_mode: "No"
+      task_mode: "Yes",
+      group: "cloning",
+      debug_mode: "Yes"
     }
   end
 
@@ -31,11 +33,15 @@ class Protocol
       end
     end
     io_hash = { inducers: [] }.merge io_hash
-    yeast_items = io_hash[:yeast_item_ids].collect { |yid| find(:item, id: yid )[0] }
-    inducer_additions = io_hash[:yeast_item_ids].collect { "None" }
-    io_hash[:inducers].each do |inducer|
-      yeast_items.concat io_hash[:yeast_item_ids].collect { |yid| find(:item, id: yid )[0] }
-      inducer_additions.concat io_hash[:yeast_item_ids].collect { "#{inducer}" }
+    yeast_items = []
+    inducer_additions = []
+    io_hash[:yeast_item_ids].each_with_index do |yid,idx|
+      yeast_items.push find(:item, id: yid )[0]
+      inducer_additions.push "None"
+      io_hash[:inducers][idx].each do |inducer|
+        yeast_items.push find(:item, id: yid )[0]
+        inducer_additions.push inducer
+      end
     end
     yeast_strains = yeast_items.collect { |y| y.sample }
     take yeast_items.uniq, interactive: true
