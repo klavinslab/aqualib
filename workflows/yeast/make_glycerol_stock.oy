@@ -1,0 +1,32 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place overnight_suspension
+  protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place glycerol_stock
+  protocol: "aqualib:workflows/ecoli/085_glycerol_stock.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+wire overnight_suspension => glycerol_stock
+
+transition [overnight_suspension] => [ glycerol_stock ] when !error(0) && completed (0) end
+transition [ glycerol_stock ] => [] when !error(0) && completed (0) end
+
+transition [ overnight_suspension ] => [ overnight_suspension ] when error(0) end
+transition [ glycerol_stock ] => [ glycerol_stock ] when error(0) end
