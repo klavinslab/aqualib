@@ -16,7 +16,7 @@ class Protocol
       inducers: [["10 µM auxin","20 µM auxin"],["10 µM auxin","10 nM b-e"]],
       dilution_rate: 0.01,
       #The volume of the overnight suspension to make
-      volume: "1000",
+      volume: 1000,
       task_mode: "Yes",
       group: "cloning",
       debug_mode: "Yes"
