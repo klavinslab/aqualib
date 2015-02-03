@@ -32,7 +32,7 @@ class Protocol
         true
       end
     end
-    io_hash = { inducers: [], yeast_item_ids:[], inducers: [], task_mode: "Yes" }.merge io_hash
+    io_hash = { inducers: [], yeast_item_ids:[], inducers: [], task_mode: "Yes", volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)" }.merge io_hash
     if io_hash[:task_mode] == "Yes"
       tasks = find(:task,{ task_prototype: { name: "Cytometer Reading" } })
       waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}

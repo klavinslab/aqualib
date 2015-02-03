@@ -25,7 +25,7 @@ end
 
 place read
   protocol: "aqualib:workflows/ecoli/090_cytometer_reading.rb"
-  group: group
+  group: admin
   marked: false
   start: now()
   window: hours(1)
