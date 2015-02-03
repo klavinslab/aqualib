@@ -114,13 +114,13 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash = { debug_mode: "No" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [] }.merge io_hash
+    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[1,1],[]] }, debug_mode: "No" }.merge io_hash
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     show {
