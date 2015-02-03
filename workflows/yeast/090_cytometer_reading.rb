@@ -12,7 +12,7 @@ class Protocol
      # destinations. Every time a source or destination is used up, advance to 
      # another step.    
 
-     opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] } }.merge options
+     opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge options
 
      if block_given?
        user_shows = ShowBlock.new.run(&Proc.new) 
@@ -49,7 +49,7 @@ class Protocol
         note "dest "+"#{d}"
         note "from "+"#{[(opts[:range_to_read][:from][s][0]||1)-1,(opts[:range_to_read][:from][s][1]||1)-1]}"
         note "to "+"#{[(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]}"
-       }
+       } if opts[:debug_mode].downcase == "yes"
 
        # if either is nil or if the source well is empty or if the source well has reached its range
        if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]
@@ -135,7 +135,7 @@ class Protocol
       }
     end
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
-    transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read] ) {
+    transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
       title "Transfer #{io_hash[:volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }
@@ -154,6 +154,12 @@ class Protocol
       check "Click autorun."
     }
     release yeast_ubottom_plates, interactive: true
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"cytometer read")
+      end
+    end
     io_hash[:yeast_ubottom_plates_ids] = yeast_ubottom_plates.collect {|d| d.id}
     return { io_hash: io_hash }
   end # main

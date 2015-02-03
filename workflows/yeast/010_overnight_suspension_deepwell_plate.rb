@@ -32,7 +32,17 @@ class Protocol
         true
       end
     end
-    io_hash = { inducers: [] }.merge io_hash
+    io_hash = { inducers: [], yeast_item_ids:[], inducers: [[]]}.merge io_hash
+    if io_hash[:task_mode] == "Yes"
+      tasks = find(:task,{ task_prototype: { name: "Cytometer Reading" } })
+      waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
+      io_hash[:task_ids] = task_group_filter(waiting_ids, io_hash[:group])
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:yeast_item_ids].concat task.simple_spec[:item_ids]
+        io_hash[:inducers].concat task.simple_spec[:inducers]
+      end
+    end
     yeast_items = []
     inducer_additions = []
     io_hash[:yeast_item_ids].each_with_index do |yid,idx|
@@ -68,6 +78,12 @@ class Protocol
       d.save
     end
     release deepwells + yeast_items.uniq, interactive: true
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"overnight")
+      end
+    end
     io_hash[:deepwell_plate_ids] = deepwells.collect {|d| d.id}
     return { io_hash: io_hash }
   end # main

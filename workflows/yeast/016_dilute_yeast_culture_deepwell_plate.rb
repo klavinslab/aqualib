@@ -62,6 +62,12 @@ class Protocol
       d.save
     end
     release yeast_deepwell_plates, interactive: true
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"diluted")
+      end
+    end
     io_hash[:yeast_deepwell_plate_ids] = yeast_deepwell_plates.collect { |d| d.id }
     return { io_hash: io_hash }
   end # main
