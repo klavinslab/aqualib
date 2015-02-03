@@ -32,6 +32,9 @@ class Protocol
     yeast_deepwell_plates = deepwell_plates.collect { produce new_collection "Eppendorf 96 Deepwell Plate", 8, 12 }
     take deepwell_plates, interactive: true
     show {
+      note "#{io_hash}"
+    } if io_hash[:debug_mode].downcase == "yes"
+    show {
       title "Take new deepwell plates"
       note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.collect {|d| d.id}}."
       yeast_deepwell_plates.each_with_index do |y,idx|
@@ -59,6 +62,7 @@ class Protocol
       d.save
     end
     release yeast_deepwell_plates, interactive: true
+    io_hash[:yeast_deepwell_plate_ids] = yeast_deepwell_plates.collect { |d| d.id }
     return { io_hash: io_hash }
   end # main
 end # main
