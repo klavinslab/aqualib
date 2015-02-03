@@ -19,7 +19,7 @@ place dilute
   protocol: "aqualib:workflows/yeast/016_dilute_yeast_culture_deepwell_plate.rb"
   group: group
   marked: false
-  start: now()
+  start: hours(18)
   window: hours(1)
 end
 
@@ -27,7 +27,7 @@ place read
   protocol: "aqualib:workflows/ecoli/090_cytometer_reading.rb"
   group: admin
   marked: false
-  start: now()
+  start: hours(5)
   window: hours(1)
 end
 
