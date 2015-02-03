@@ -33,7 +33,7 @@ class Protocol
     take deepwell_plates, interactive: true
     show {
       note "#{io_hash}"
-    } if io_hash[:debug_mode].downcase == "yes"
+    }
     show {
       title "Take new deepwell plates"
       note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.collect {|d| d.id}}."
