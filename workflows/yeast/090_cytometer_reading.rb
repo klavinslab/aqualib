@@ -103,11 +103,11 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_deepwell_plate_ids: [32147,32313],
-      range_to_read: { from: [[1,1],[1,2]], to: [[1,2],[1,3]] },
-      yeast_ubottom_plate_ids: [32316,32316],
+      yeast_deepwell_plate_ids: [32147],
+      range_to_read: { from: [[1,1]], to: [[1,2]] },
+      yeast_ubottom_plate_ids: [32316],
       volume: 100,
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 
@@ -140,13 +140,20 @@ class Protocol
       note "Using either 6 channel pipettor or single pipettor."
     }
     release yeast_deepwell_plates, interactive: true
+    job_id = jid
     show {
       title "Cytometer reading"
       check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside."
       check "Place the loaded u-bottom plate on the CSampler holder"
       check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, click the check boxes if not checked. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, the wells you just chose should turn to a different color."
-      check "Click autorun, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as ."
-      check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there is still empty wells. Discard the plate if it is full."
+      check "Click autorun, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as #{job_id}."
+    }
+    show {
+      title "Eject plate and export data"
+      check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
+      check "Click File/Export ALL Samples as FCS"
+      check "Go to Desktop, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder. Upload this zip file here."
+      upload var: "cytometry_#{job_id}"
     }
     show {
       title "Clean run"
