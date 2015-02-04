@@ -42,6 +42,8 @@ class Protocol
        sr,sc =      sources[s].next sr, sc, skip_non_empty: false
        dr,dc = destinations[d].next dr, dc, skip_non_empty: true
 
+       sr_end, sc_end = sources[s].next (opts[:range_to_read][:to][s][0]||0)-1, (opts[:range_to_read][:to][s][1]||0)-1, skip_non_empty: false
+
        show {
         note "source location "+"#{[sr,sc]}"
         note "dest location "+"#{[dr,dc]}"
@@ -52,7 +54,7 @@ class Protocol
        } if opts[:debug_mode].downcase == "yes"
 
        # if either is nil or if the source well is empty or if the source well has reached its range
-       if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]
+       if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [sr_end, sc_end]
 
          # display 
          show {
@@ -74,7 +76,7 @@ class Protocol
          # BUGFIX by Yaoyu Yang
          # return if sources[s].matrix[sr][sc] == -1
          # 
-         if (sr && sources[s].matrix[sr][sc] == -1) or !sr or [sr,sc] == [(opts[:range_to_read][:to][s][0]||0)-1,opts[:range_to_read][:to][s][1]]
+         if (sr && sources[s].matrix[sr][sc] == -1) or !sr or [sr,sc] == [sr_end, sc_end]
            s += 1
            return unless s < sources.length
            sr,sc = (opts[:range_to_read][:from][s][0]||1)-1,(opts[:range_to_read][:from][s][1]||1)-1
@@ -104,7 +106,7 @@ class Protocol
       io_hash: {},
       #Enter the item id that you are going to start overnight with
       yeast_deepwell_plate_ids: [32147],
-      range_to_read: { from: [[1,1]], to: [[1,2]] },
+      range_to_read: { from: [[1,1]], to: [[1,12]] },
       yeast_ubottom_plate_ids: [32316],
       volume: 100,
       debug_mode: "No"
@@ -145,8 +147,8 @@ class Protocol
       title "Cytometer reading"
       check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside."
       check "Place the loaded u-bottom plate on the CSampler holder"
-      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, click the check boxes if not checked. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, the wells you just chose should turn to a different color."
-      check "Click autorun, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as #{job_id}."
+      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, click the check boxes if not checked. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as #{job_id}. And the wells you just chose should turn to a different color."
+      check "Click Autorun."
     }
     show {
       title "Eject plate and export data"
