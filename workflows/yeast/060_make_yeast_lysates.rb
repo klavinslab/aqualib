@@ -31,7 +31,7 @@ class Protocol
     io_hash[:volume] = 10 # volume for PCR reaction
 
     # making sure have the following hash indexes.
-    io_hash = io_hash.merge({ yeast_plate_ids: [], num_colonies: [] }) if !input[:io_hash]
+    io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
 
     tasks = find(:task,{ task_prototype: { name: "Yeast Strain QC" } })
     waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
