@@ -142,16 +142,17 @@ class Protocol
     release yeast_deepwell_plates, interactive: true
     show {
       title "Cytometer reading"
-      check "Go to the software, click Eject Plate if the CSampler holder is not outside."
+      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside."
       check "Place the loaded u-bottom plate on the CSampler holder"
-      check "Click new workspace, choose the following settings."
-      check "Click autorun."
+      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, click the check boxes if not checked. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, the wells you just chose should turn to a different color."
+      check "Click autorun, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as ."
+      check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there is still empty wells. Discard the plate if it is full."
     }
     show {
       title "Clean run"
       check "Click open workspace, go to MyDocuments folder to find clean_regular_try.c6t file and open it."
-      check "Put the cleaning 24 well plate on the plate holder, make sure there is still liquid left in tubes at D4, D5, D6. Replace with a full reagnent tube if tube has lower than 50 µL of liquid in it."
-      check "Click autorun."
+      check "Put the cleaning 24 well plate on the plate holder, make sure there is still liquid left in tubes at D4, D5, D6. Replace it with a full reagnent tube with the same letter written on its top if any tube has lower than 50 µL of liquid in it."
+      check "Click autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
     }
     release yeast_ubottom_plates, interactive: true
     if io_hash[:task_ids]
