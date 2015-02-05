@@ -71,3 +71,11 @@ transition [ pour_gel ] => [ run_gel ] when !error(0) && completed(0) end
 transition [ run_gel ] => [ cut_gel ] when !error(0) && completed(0) end
 transition [ cut_gel ] => [ purify_gel ] when !error(0) && completed (0) end
 transition [ purify_gel ] => [] when !error(0) && completed (0) end
+
+transition [ dilute_plasmid_stock ] => [ dilute_plasmid_stock ] when error(0) end
+transition [ pcr ] => [ pcr ] when error(0) end
+transition [ pour_gel ] => [ pour_gel ] when error(0) end
+transition [ run_gel ] => [ run_gel ] when error(0) end
+transition [ cut_gel ] => [ cut_gel ] when error(0) end
+transition [ purify_gel ] => [ purify_gel ] when error(0) end
+
