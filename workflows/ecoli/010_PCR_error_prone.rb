@@ -32,7 +32,7 @@ class Protocol
     fragment_info_list = []
     not_ready = []
     io_hash[:comb_1] = "6 thick"
-    io_hash[:comb_2] = 0
+    io_hash[:comb_2] = "0"
 
     # making sure have the following hash indexes.
     io_hash = { fragment_ids: [], mutation_nums: [] }.merge io_hash
