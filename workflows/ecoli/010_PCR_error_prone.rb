@@ -31,7 +31,7 @@ class Protocol
     # Collect fragment info
     fragment_info_list = []
     not_ready = []
-    io_hash[:comb_1] = 2
+    io_hash[:comb_1] = "6 thick"
     io_hash[:comb_2] = 0
 
     # making sure have the following hash indexes.
