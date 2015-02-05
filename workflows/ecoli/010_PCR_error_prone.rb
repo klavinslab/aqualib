@@ -20,7 +20,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    io_hash = { debug_mode: "No" }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -35,7 +35,7 @@ class Protocol
     io_hash[:comb_2] = 0
 
     # making sure have the following hash indexes.
-    io_hash = io_hash.merge({ fragment_ids: [], mutation_nums: [] }) if !input[:io_hash]
+    io_hash = { fragment_ids: [], mutation_nums: [] }.merge io_hash
     tasks = find(:task,{ task_prototype: { name: "Mutagenized Fragment Construction" } })
     ready_ids = (tasks.select { |t| t.status == "ready" }).collect { |t| t.id }
     io_hash[:task_ids] = ready_ids
