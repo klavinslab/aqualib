@@ -30,8 +30,8 @@ class Protocol
     
     comb_1 = io_hash[:comb_1] || "6 thick"
     comb_2 = io_hash[:comb_2] || "6 thick"
-    comb_1 = comb_1.split(' ') if comb_1.length > 1
-    comb_2 = comb_2.split(' ') if comb_2.length > 1
+    comb_1 = comb_1.split(' ')
+    comb_2 = comb_2.split(' ')
     comb_1[0] = comb_1[0].to_i
     comb_2[0] = comb_2[0].to_i
     raise "Incorrect inputs, comb_1 and comb_2 should be the same size, both 6 or 10. You can choose thin or thick for each one though" if comb_2[0] != 0 && comb_1[0] != comb_2[0]
