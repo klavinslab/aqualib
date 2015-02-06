@@ -9,6 +9,7 @@ place tasks_inputs
   argument
     debug_mode: "Yes"
     group: group
+    task_name: "Glycerol Stock"
   end
   marked: true
   start: now()
