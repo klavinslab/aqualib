@@ -37,6 +37,9 @@ module Cloning
         template_items = template.in "1 ng/µL Fragment Stock"
       elsif template.sample_type.name == "E coli strain"
         template_items = template.in "E coli Lysate"
+        if template_items.length == 0
+          template_items = template.in "Genome Prep"
+        end
       elsif template.sample_type.name == "Yeast Strain"
         template_items = template.in "Lysate"
       end

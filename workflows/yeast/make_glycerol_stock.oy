@@ -3,14 +3,22 @@ argument
   group: group, "choose the group to assign this metacol"
 end
 
-place overnight_suspension
-  protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
   argument
-    debug_mode: debug_mode
+    debug_mode: "Yes"
     group: group
   end
   marked: true
+  start: now()
+  window: hours(1)
+end
+
+place overnight_suspension
+  protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+  group: group
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -23,9 +31,11 @@ place glycerol_stock
   window: hours(1)
 end
 
+wire tasks_inputs => overnight_suspension
 wire overnight_suspension => glycerol_stock
 
-transition [overnight_suspension] => [ glycerol_stock ] when !error(0) && completed (0) end
+transition [ tasks_inputs ] => [ overnight_suspension ] when !error(0) && completed (0) end
+transition [ overnight_suspension ] => [ glycerol_stock ] when !error(0) && completed (0) end
 transition [ glycerol_stock ] => [] when !error(0) && completed (0) end
 
 transition [ overnight_suspension ] => [ overnight_suspension ] when error(0) end

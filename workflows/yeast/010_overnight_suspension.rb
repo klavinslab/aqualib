@@ -22,8 +22,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
-    io_hash[:task_mode] = input[:task_mode] || "No"
+    io_hash = { debug_mode: "No", yeast_item_ids: [], overnight_ids: [], volume: 2, media_type: "800 mL YPAD liquid (sterile)" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -35,6 +34,13 @@ class Protocol
     # show {
     #   note "#{io_hash}"
     # }
+    if yeast_items.empty?
+      show {
+        title "No overnights need to be made"
+        note "No overnights need to be made, thanks for your effort!"
+      }
+      return { io_hash: io_hash }
+    end
 
     io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
     io_hash[:volume] = input[:volume] || 2
@@ -69,7 +75,7 @@ class Protocol
       show {
         title "Media preparation in media bay"
         check "Grab #{overnight.length} of 14 mL Test Tube"
-        check "Add #{volume} mL of #{media_type} to each empty 14 mL test tube using serological pipette"
+        check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty 14 mL test tube using serological pipette"
         check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
         check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
       }
@@ -91,7 +97,7 @@ class Protocol
       release overnight, interactive: true, method: "boxes"
     end
 
-    io_hash[:overnight_ids] = overnights.collect {|x| x.id}
+    io_hash[:overnight_ids] = io_hash[:overnight_ids].concat overnights.collect {|x| x.id}
     
     return { io_hash: io_hash }
   end
