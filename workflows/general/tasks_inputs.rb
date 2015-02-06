@@ -93,7 +93,7 @@ class Protocol
         if find(:item, id: id)[0].object_type.name.downcase.include? "overnight"
           io_hash[:overnight_ids].push id
         elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
-          io_hash[:plate_ids].push id
+          io_hash[:item_ids].push id
         end
       end
     else
