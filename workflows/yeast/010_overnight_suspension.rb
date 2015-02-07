@@ -97,6 +97,13 @@ class Protocol
       release overnight, interactive: true, method: "boxes"
     end
 
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"overnight")
+      end
+    end
+
     io_hash[:overnight_ids] = io_hash[:overnight_ids].concat overnights.collect {|x| x.id}
     
     return { io_hash: io_hash }

@@ -17,10 +17,18 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash = { debug_mode: "No", overnight_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
+    end
+    if io_hash[:overnight_ids].empty?
+      show {
+        title "No glycerol stocks need to be made"
+        note "No glycerol stocks need to be made, thanks for your effort!"
+      }
+      return { io_hash: io_hash }
     end
     overnights = io_hash[:overnight_ids].collect {|id| find(:item, id: id )[0]}
     take overnights, interactive: true
@@ -53,6 +61,12 @@ class Protocol
     delete overnights
     release [glycerol], interactive: true
     release glycerol_stocks, interactive: true, method: "boxes"
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"done")
+      end
+    end
     io_hash[:glycerol_stock_ids] = glycerol_stocks.collect { |g| g.id }
     return { io_hash: io_hash }
   end # main
