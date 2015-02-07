@@ -39,5 +39,6 @@ transition [ tasks_inputs ] => [ overnight_suspension ] when !error(0) && comple
 transition [ overnight_suspension ] => [ glycerol_stock ] when !error(0) && completed (0) end
 transition [ glycerol_stock ] => [] when !error(0) && completed (0) end
 
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight_suspension ] => [ overnight_suspension ] when error(0) end
 transition [ glycerol_stock ] => [ glycerol_stock ] when error(0) end
