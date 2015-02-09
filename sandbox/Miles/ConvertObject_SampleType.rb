@@ -1,3 +1,6 @@
+needs "aqualib/lib/Cloning"
+needs "aqualib/lib/Standard"
+
 class Protocol
   
   include Standard
