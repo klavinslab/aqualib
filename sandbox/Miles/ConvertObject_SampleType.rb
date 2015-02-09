@@ -1,14 +1,16 @@
-class protocol
+class Protocol
   
   include Standard
   include Cloning
   
   def argumnets
+    {
     #Enter the plasmid stocks ids that you wish to convert to another plasmid 
     plasmidstock_ids: [],
     
     #Enter the corresponding plasmid you would like to convert the plasmid stock too
     plasmid_ids: [],
+    }
   end
   
   def main
