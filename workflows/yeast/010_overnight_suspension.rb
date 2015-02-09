@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      item_ids: [13011],
+      yeast_item_ids: [13011],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -22,14 +22,14 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], volume: 2, media_type: "800 mL YPAD liquid (sterile)" }.merge io_hash
+    io_hash = { debug_mode: "No", yeast_item_ids: [], overnight_ids: [], volume: 2, media_type: "800 mL YPAD liquid (sterile)" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
     yeast_items = []
-    yeast_items = io_hash[:item_ids].collect {|yid| find(:item, id: yid )[0]}
+    yeast_items = io_hash[:yeast_item_ids].collect {|yid| find(:item, id: yid )[0]}
 
     # show {
     #   note "#{io_hash}"

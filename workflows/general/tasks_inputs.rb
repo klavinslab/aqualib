@@ -74,7 +74,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "" }.merge io_hash
+    io_hash = { debug_mode: "No", item_ids: [], yeast_item_ids:[], overnight_ids: [], plate_ids: [], task_name: "" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -96,7 +96,7 @@ class Protocol
         if find(:item, id: id)[0].object_type.name.downcase.include? "overnight"
           io_hash[:overnight_ids].push id
         elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
-          io_hash[:item_ids].push id
+          io_hash[:yeast_item_ids].push id
         end
       end
     else
