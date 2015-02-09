@@ -1,5 +1,5 @@
-needs "aqualib/lib/Cloning"
-needs "aqualib/lib/Standard"
+needs "aqualib/lib/cloning"
+needs "aqualib/lib/standard"
 
 class Protocol
   
