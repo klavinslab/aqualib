@@ -25,6 +25,7 @@ class Protocol
     count=0
     while count < stocks_lengths do
       stocks_full[count].sample=samps_full[count]
+      stocks_full[count].save
       count=count+1
     end
   end
