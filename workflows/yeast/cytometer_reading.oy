@@ -1,3 +1,8 @@
+# same incuder after dilution
+# how long you want after dilution to read
+# cell count before dilution
+# daily tasks
+
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
@@ -30,7 +35,6 @@ place read
   start: hours(5)
   window: hours(1)
 end
-
 
 wire overnight => dilute
 wire dilute => read

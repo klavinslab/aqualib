@@ -80,8 +80,11 @@ class Protocol
         true
       end
     end
+    show {
+      title "#{io_hash}"
+    }
 
-    tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
+    tasks = task_status name: io_hash[:task_name]
     io_hash[:task_ids] = tasks[:ready_ids]
     case io_hash[:task_name]
     when "Glycerol Stock"
