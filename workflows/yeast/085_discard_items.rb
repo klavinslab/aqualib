@@ -33,5 +33,11 @@ class Protocol
   		x.save
   	end
   	release items
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"discarded")
+      end
+    end
   end
 end
