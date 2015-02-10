@@ -2,18 +2,8 @@ class PluginInterface < PluginInterfaceBase
 
   def data params
 
-    puts "AAA"
-
     now = Time.now
     since = Time.at(params[:since])
-
-    puts "B"
-    begin
-      puts "C: #{Job.methods.sort.join(',')}"
-    rescue Exception => e
-      puts "#{e}"
-    end
-    puts "D"
 
     result = { 
       start: since,
