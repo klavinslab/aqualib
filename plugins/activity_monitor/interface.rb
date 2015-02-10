@@ -8,7 +8,11 @@ class PluginInterface < PluginInterfaceBase
     since = Time.at(params[:since])
 
     puts "B"
-    puts "C: #{Job.methods.sort.join(',')}"
+    begin
+      puts "C: #{Job.methods.sort.join(',')}"
+    rescue Exception => e
+      puts "e"
+    end
     puts "D"
 
     result = { 
