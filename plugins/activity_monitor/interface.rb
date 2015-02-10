@@ -2,6 +2,8 @@ class PluginInterface < PluginInterfaceBase
 
   def data params
 
+    raise "here"
+
     now = Time.now
     since = Time.at(params[:since])
 
