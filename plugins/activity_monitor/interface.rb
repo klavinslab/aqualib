@@ -11,7 +11,7 @@ class PluginInterface < PluginInterfaceBase
     begin
       puts "C: #{Job.methods.sort.join(',')}"
     rescue Exception => e
-      puts "e"
+      puts "#{e}"
     end
     puts "D"
 
