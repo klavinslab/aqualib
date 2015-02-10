@@ -26,9 +26,6 @@ class Protocol
       end
     end
     gibson_results = io_hash[:gibson_result_ids].collect{|gid| find(:item,{id: gid})[0]}
-    show {
-      note "#{gibson_results.join(",")}"
-    }
     take gibson_results, interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
