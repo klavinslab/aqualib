@@ -126,4 +126,4 @@ class Protocol
     return { io_hash: io_hash }
   end
 
-end  
+end 
