@@ -80,9 +80,6 @@ class Protocol
         true
       end
     end
-    show {
-      title "#{io_hash}"
-    }
 
     tasks = task_status name: io_hash[:task_name]
     io_hash[:task_ids] = tasks[:ready_ids]
@@ -107,8 +104,8 @@ class Protocol
     end
 
     show {
-      title "io_hash"
-      note "#{io_hash}"
+      title "#{io_hash[:task_name]} tasks inputs have been successfully processed!"
+      note "The io_hash is #{io_hash}"
     }
 
     return { io_hash: io_hash }
