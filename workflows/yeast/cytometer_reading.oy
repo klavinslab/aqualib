@@ -29,8 +29,8 @@ place dilute
 end
 
 place read
-  protocol: "aqualib:workflows/ecoli/090_cytometer_reading.rb"
-  group: admin
+  protocol: "aqualib:workflows/yeast/090_cytometer_reading.rb"
+  group: group
   marked: false
   start: hours(5)
   window: hours(1)
