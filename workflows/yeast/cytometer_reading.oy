@@ -1,3 +1,8 @@
+# same incuder after dilution
+# how long you want after dilution to read
+# cell count before dilution
+# daily tasks
+
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
@@ -24,13 +29,12 @@ place dilute
 end
 
 place read
-  protocol: "aqualib:workflows/ecoli/090_cytometer_reading.rb"
-  group: admin
+  protocol: "aqualib:workflows/yeast/090_cytometer_reading.rb"
+  group: group
   marked: false
   start: hours(5)
   window: hours(1)
 end
-
 
 wire overnight => dilute
 wire dilute => read
