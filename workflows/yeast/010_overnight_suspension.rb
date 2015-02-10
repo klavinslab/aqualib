@@ -34,13 +34,6 @@ class Protocol
     # show {
     #   note "#{io_hash}"
     # }
-    if yeast_items.empty?
-      show {
-        title "No overnights need to be made"
-        note "No overnights need to be made, thanks for your effort!"
-      }
-      return { io_hash: io_hash }
-    end
 
     io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
     io_hash[:volume] = input[:volume] || 2
@@ -64,37 +57,44 @@ class Protocol
     }
 
     overnights = []
-
-    yeast_type_hash.each do |key,values|
-      overnight = values.collect {|v| produce new_sample v.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
-      overnight.each do |y|
-        y.location = "30 C shaker incubator"
-        y.save
-      end
-      overnights.concat overnight
+    
+    if yeast_type_hash.empty?
       show {
-        title "Media preparation in media bay"
-        check "Grab #{overnight.length} of 14 mL Test Tube"
-        check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty 14 mL test tube using serological pipette"
-        check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
-        check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
+        title "No overnights need to be prepared"
+        note "Thanks for your effort!"
       }
-      take values, interactive: true, method: "boxes"
-      show {
-        title "Inoculation"
-        note "Inoculate yeast into 14 mL tube according to the following table."
-        case key
-        when "Yeast Glycerol Stock"
-          bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock."
-        when "Yeast Overnight Suspension"
-          bullet "Pipette 10 µL of culture into tube" 
-        when "Yeast Plate"
-          bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
+    else
+      yeast_type_hash.each do |key,values|
+        overnight = values.collect {|v| produce new_sample v.sample.name, of: "Yeast Strain", as: "Yeast Overnight Suspension"}
+        overnight.each do |y|
+          y.location = "30 C shaker incubator"
+          y.save
         end
-        table [["Yeast item id","14 mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
-      }
-      release values, interactive: true, method: "boxes"
-      release overnight, interactive: true, method: "boxes"
+        overnights.concat overnight
+        show {
+          title "Media preparation in media bay"
+          check "Grab #{overnight.length} of 14 mL Test Tube"
+          check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty 14 mL test tube using serological pipette"
+          check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
+          check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
+        }
+        take values, interactive: true, method: "boxes"
+        show {
+          title "Inoculation"
+          note "Inoculate yeast into 14 mL tube according to the following table."
+          case key
+          when "Yeast Glycerol Stock"
+            bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock."
+          when "Yeast Overnight Suspension"
+            bullet "Pipette 10 µL of culture into tube" 
+          when "Yeast Plate"
+            bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
+          end
+          table [["Yeast item id","14 mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
+        }
+        release values, interactive: true, method: "boxes"
+        release overnight, interactive: true, method: "boxes"
+      end
     end
 
     if io_hash[:task_ids]
