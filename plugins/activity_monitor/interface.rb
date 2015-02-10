@@ -2,7 +2,7 @@ class PluginInterface < PluginInterfaceBase
 
   def data params
 
-    raise "here"
+    puts "HERE!!!!!!!"
 
     now = Time.now
     since = Time.at(params[:since])
