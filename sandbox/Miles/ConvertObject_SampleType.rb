@@ -6,7 +6,7 @@ class Protocol
   include Standard
   include Cloning
   
-  def argumnets
+  def arguments
     {
     #Enter the plasmid stocks ids that you wish to convert to another plasmid 
     plasmidstock_ids: [18543],
