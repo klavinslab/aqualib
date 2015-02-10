@@ -39,6 +39,16 @@ class Protocol
           end
         end
         ready_conditions = t[:item_ids][:ready].length == t.simple_spec[:item_ids].length
+      when "Discard Item"
+        t[:item_ids] = { belong_to_user: [], not_belong_to_user: [] }
+        t.simple_spec[:item_ids].each do |id|
+          if find(:item, id: id)[0].sample.owner == t.user.login
+            t[:item_ids][:belong_to_user].push id
+          else
+            t[:item_ids][:not_belong_to_user].push id
+          end
+        end
+        ready_conditions = t[:item_ids][:belong_to_user].length == t.simple_spec[:item_ids].length
       else
         show {
           title "Under development"
@@ -66,7 +76,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Glycerol Stock",
+      task_name: "Discard Item",
       group: "technicians"
     }
   end
@@ -95,6 +105,11 @@ class Protocol
         elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
           io_hash[:yeast_item_ids].push id
         end
+      end
+    when "Discard Item"
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:item_ids].concat task.simple_spec[:item_ids]
       end
     else
       show {

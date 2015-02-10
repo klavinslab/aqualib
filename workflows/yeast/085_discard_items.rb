@@ -22,8 +22,8 @@ class Protocol
         true
       end
     end
-  	items = io_hash[:item_ids].collect { |oid| find(:item, id: oid)[0] }
-  	take items, interactive: true
+  	items = io_hash[:item_ids].collect { |id| find(:item, id: id)[0] }
+  	take items, interactive: true, method: "boxes"
   	show {
   		title "Dispose or recycle depending on the items"
   		check "For glassware contained items, 50 mL Falcon tubes, 96 deepwell plates, take to the dishwashing station. For other items, discard properly to the bioharzard box."

@@ -109,7 +109,7 @@ class Protocol
     init = initials("Yaoyu")
     show {
       title "Test"
-      note "#{template_items[0]}"
+      note "#{template_items[0]}, #{fragment.owner}"
       note init
     }
 
