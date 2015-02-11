@@ -14,7 +14,7 @@ class Protocol
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL SC liquid (sterile)",
       inducers: [["10 µM auxin","20 µM auxin"],["10 µM auxin","10 nM b-e"]],
-      when_to_add_inducer: "start"
+      when_to_add_inducer: "start",
       dilution_rate: 0.01,
       #The volume of the overnight suspension to make
       volume: 1000,
