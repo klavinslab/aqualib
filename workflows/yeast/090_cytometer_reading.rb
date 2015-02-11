@@ -105,7 +105,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_deepwell_plate_ids: [32147],
+      yeast_deepwell_plate_ids: [21498],
       range_to_read: { from: [[1,1]], to: [[1,12]] },
       yeast_ubottom_plate_ids: [32316],
       read_volume: 100,
@@ -124,17 +124,19 @@ class Protocol
     end
     io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
-    yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     show {
       title "Protocol information"
       note "This protocol is used to take cytometer readings from deepwell plates using u-bottom plates."
+      note "#{io_hash}"
     }
-    if io_hash[:yeast_ubottom_plate_ids] == []
+    if io_hash[:yeast_ubottom_plate_ids].empty?
       yeast_ubottom_plates = yeast_deepwell_plates.collect { produce new_collection "96 U-bottom Well Plate", 8, 12 }
       show {
         title "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate"
         note "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate and label with #{yeast_ubottom_plates.collect { |y| y.id }}."
       }
+    else
+      yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     end
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
     transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
