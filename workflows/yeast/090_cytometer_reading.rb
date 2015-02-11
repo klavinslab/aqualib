@@ -108,7 +108,7 @@ class Protocol
       yeast_deepwell_plate_ids: [32147],
       range_to_read: { from: [[1,1]], to: [[1,12]] },
       yeast_ubottom_plate_ids: [32316],
-      volume: 100,
+      read_volume: 100,
       debug_mode: "No"
     }
   end
@@ -122,7 +122,7 @@ class Protocol
         true
       end
     end
-    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge io_hash
+    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     show {
@@ -138,32 +138,33 @@ class Protocol
     end
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
     transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
-      title "Transfer #{io_hash[:volume]} µL"
+      title "Transfer #{io_hash[:read_volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }
     release yeast_deepwell_plates, interactive: true
     job_id = jid
     show {
       title "Cytometer reading"
-      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside."
+      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click Open Run Display first."
       check "Place the loaded u-bottom plate on the CSampler holder"
-      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, click the check boxes if not checked. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, it will popup a window to prompt you to save as a new file. Find the My Documents/Aquarium folder, save the file as #{job_id}. And the wells you just chose should turn to a different color."
-      check "Click Autorun."
+      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}. And the wells you just chose should turn to a different color."
+      check "Click Open Run Display, then click Autorun."
     }
     show {
       title "Eject plate and export data"
       check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
       check "Click File/Export ALL Samples as FCS"
-      check "Go to Desktop, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder. Upload this zip file here."
+      check "Go to Desktop, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}. Upload this zip file here."
       upload var: "cytometry_#{job_id}"
     }
     show {
       title "Clean run"
-      check "Click open workspace, go to MyDocuments folder to find clean_regular_try.c6t file and open it."
-      check "Put the cleaning 24 well plate on the plate holder, make sure there is still liquid left in tubes at D4, D5, D6. Replace it with a full reagnent tube with the same letter written on its top if any tube has lower than 50 µL of liquid in it."
+      check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it."
+      check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace each tube with a full reagnent tube with the same letter written on its lid top."
+      check "Put the cleanning 24 well plate on the CSampler."
       check "Click autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
     }
-    release yeast_ubottom_plates, interactive: true
+    release yeast_ubottom_plates
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
