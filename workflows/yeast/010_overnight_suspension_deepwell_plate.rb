@@ -14,6 +14,7 @@ class Protocol
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL SC liquid (sterile)",
       inducers: [["10 µM auxin","20 µM auxin"],["10 µM auxin","10 nM b-e"]],
+      when_to_add_inducer: "start"
       dilution_rate: 0.01,
       #The volume of the overnight suspension to make
       volume: 1000,
@@ -44,13 +45,13 @@ class Protocol
       end
     end
     yeast_items = []
-    inducer_additions = []
+    io_hash[:inducer_additions] = []
     io_hash[:yeast_item_ids].each_with_index do |yid,idx|
       yeast_items.push find(:item, id: yid )[0]
       inducer_additions.push "None"
       io_hash[:inducers][idx].each do |inducer|
         yeast_items.push find(:item, id: yid )[0]
-        inducer_additions.push inducer
+        io_hash[:inducer_additions].push inducer
       end
     end
     yeast_strains = yeast_items.collect { |y| y.sample }
@@ -67,7 +68,7 @@ class Protocol
     yeast_items_str = yeast_items.collect { |y| y.id.to_s }
     media_str = (1..yeast_items.length).collect { |y| "#{io_hash[:volume]} µL"}
     load_samples_variable_vol( ["#{io_hash[:media_type]}","Yeast items", "Inducers"], [
-        media_str, yeast_items_str,inducer_additions
+        media_str, yeast_items_str,io_hash[:inducer_additions]
       ], deepwells ) 
     show {
       title "Seal the plate with a breathable sealing film"

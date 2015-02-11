@@ -45,10 +45,13 @@ class Protocol
       title "Vortex the deepwell plates."
       note "Vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 7 for about 20 seconds."
     }
-    transfer( deepwell_plates, yeast_deepwell_plates ) {
+    transfer(deepwell_plates, yeast_deepwell_plates) {
       title "Transfer #{io_hash[:volume]*io_hash[:dilution_rate]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }
+    load_samples_variable_vol( ["Inducers"], [
+        io_hash[:inducer_additions]
+      ], yeast_deepwell_plates )
     show {
       title "Place the deepwell plates in the washing station"
       note "Place the following deepwell plates #{deepwell_plates.collect { |d| d.id }} in the washing station "
