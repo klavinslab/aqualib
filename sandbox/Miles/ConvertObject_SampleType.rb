@@ -28,6 +28,14 @@ class Protocol
     samps=input[:plasmid_ids]
     samps_full=find(:sample, id: samps)
   
+  show{
+    title samps_full
+  }
+  
+  show{
+    title stocks_full
+  }
+  
     count=0
     
     show{
