@@ -19,40 +19,25 @@ class Protocol
   def main
     stocks=input[:plasmidstock_ids]
     stocks_lengths=stocks.length
-    stocks_full=find(:item, id: stocks)
-    
-    show{
-      title stocks_lengths
-    }
+    #stocks_full=find(:item, id: stocks)
     
     samps=input[:plasmid_ids]
-    samps_full=find(:sample, id: samps)
-  
-  show{
-    title samps_full
-  }
-  
-  show{
-    title stocks_full
-  }
+    #samps_full=find(:sample, id: samps)
   
     count=0
-    
-    show{
-      title count
-    }
     while count < stocks_lengths do
-    		stocks_full[count].sample=samps_full[count]
+        stock=find(:item, id: stock[count])
+        samp=fine(:sample, id: samps[count])
+    		
     		show{
-    		  title samps_full[count].id
-    		  check stocks_full[count].id
+    		  title stock
+    		  check samp
     		}
     		
-        stocks_full[count].save
+    		stock.sample=samp
+        stock.save
+        
     	  count=count+1
-    	  show{
-    	    title count
-    	  }
   	end
   end
   
