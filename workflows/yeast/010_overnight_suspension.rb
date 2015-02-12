@@ -104,7 +104,9 @@ class Protocol
       end
     end
 
-    io_hash[:overnight_ids] = io_hash[:overnight_ids].concat overnights.collect {|x| x.id}
+    io_hash[:old_overnight_ids]  = io_hash[:overnight_ids]
+
+    io_hash[:overnight_ids] = overnights.collect {|x| x.id}
     
     return { io_hash: io_hash }
   end

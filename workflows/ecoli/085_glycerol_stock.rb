@@ -17,7 +17,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", overnight_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", overnight_ids: [], glycerol_stock_ids:[] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -68,7 +68,7 @@ class Protocol
         set_task_status(task,"done")
       end
     end
-    io_hash[:glycerol_stock_ids] = glycerol_stocks.collect { |g| g.id }
+    io_hash[:glycerol_stock_ids] = io_hash[:glycerol_stock_ids].concat glycerol_stocks.collect { |g| g.id }
     return { io_hash: io_hash }
   end # main
   

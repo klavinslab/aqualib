@@ -16,6 +16,14 @@ place tasks_inputs
   window: hours(1)
 end
 
+place glycerol_stock_pre
+  protocol: "aqualib:workflows/ecoli/085_glycerol_stock.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
 place overnight_suspension
   protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
   group: group
@@ -32,13 +40,16 @@ place glycerol_stock
   window: hours(1)
 end
 
-wire tasks_inputs => overnight_suspension
+wire tasks_inputs => glycerol_stock_pre
+wire glycerol_stock_pre => overnight_suspension
 wire overnight_suspension => glycerol_stock
 
-transition [ tasks_inputs ] => [ overnight_suspension ] when !error(0) && completed (0) end
+transition [ tasks_inputs ] => [ glycerol_stock_pre ] when !error(0) && completed (0) end
+transition [ glycerol_stock_pre ] => [ overnight_suspension ] when !error(0) && completed (0) end
 transition [ overnight_suspension ] => [ glycerol_stock ] when !error(0) && completed (0) end
 transition [ glycerol_stock ] => [] when !error(0) && completed (0) end
 
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ glycerol_stock_pre ] => [ glycerol_stock_pre ] when error(0) end
 transition [ overnight_suspension ] => [ overnight_suspension ] when error(0) end
 transition [ glycerol_stock ] => [ glycerol_stock ] when error(0) end
