@@ -37,7 +37,7 @@ class Protocol
         samp=find(:sample, id: idnumsamp)
         
         show{
-          title stock
+          title stock.id
         }
         
     		
