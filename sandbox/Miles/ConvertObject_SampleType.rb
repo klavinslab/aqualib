@@ -21,6 +21,10 @@ class Protocol
     stocks_lengths=stocks.length
     stocks_full=find(:item, id: stocks)
     
+    show{
+      title: stocks_lengths
+    }
+    
     samps=input[:plasmid_ids]
     samps_full=find(:sample, id: samps)
   
