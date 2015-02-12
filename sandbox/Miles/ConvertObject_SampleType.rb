@@ -27,7 +27,7 @@ class Protocol
     count=0
     while count < stocks_lengths do
         stock=find(:item, id: stocks[count])
-        samp=fine(:sample, id: samps[count])
+        samp=find(:sample, id: samps[count])
     		
     		show{
     		  title stock
