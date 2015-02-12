@@ -36,7 +36,7 @@ place glycerol_stock
   protocol: "aqualib:workflows/ecoli/085_glycerol_stock.rb"
   group: group
   marked: false
-  start: now()
+  start: hours(15)
   window: hours(1)
 end
 
