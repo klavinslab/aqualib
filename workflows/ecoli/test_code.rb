@@ -105,7 +105,7 @@ class Protocol
     }
     plates = io_hash[:ids].collect { |x| find(:item, id: x)[0] }
     show {
-      note "#{plate.collect { |p| p.id }}"
+      note "#{plates.collect { |p| p.id }}"
     }
 
 
