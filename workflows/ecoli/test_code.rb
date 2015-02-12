@@ -53,7 +53,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      ids: [3217],
+      ids: [21500,21501],
       debug_mode: "Yes"
     }
   end
@@ -100,18 +100,27 @@ class Protocol
     #   }
     # end
 
-    fragment = find(:sample,{ id: io_hash[:ids][0] })[0]
-    props = fragment.properties
-    template = props["Template"]
-    template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
-    template_items = template.in "Gibson Reaction Result"
-    #init = initials(template_items[0].sample.user.name)
-    init = initials("Yaoyu")
     show {
-      title "Test"
-      note "#{template_items[0]}, #{fragment.owner}"
-      note init
+      note "#{io_hash}"
     }
+    plates = io_hash[:ids].collect { |x| find(:item, id: x)[0] }
+    show {
+      note "#{plate.collect { |p| p.id }}"
+    }
+
+
+    # fragment = find(:sample,{ id: io_hash[:ids][0] })[0]
+    # props = fragment.properties
+    # template = props["Template"]
+    # template_items = template.in "1 ng/µL Plasmid Stock" if template.sample_type.name == "Plasmid"
+    # template_items = template.in "Gibson Reaction Result"
+    # #init = initials(template_items[0].sample.user.name)
+    # init = initials("Yaoyu")
+    # show {
+    #   title "Test"
+    #   note "#{template_items[0]}, #{fragment.owner}"
+    #   note init
+    # }
 
 
   end # main
