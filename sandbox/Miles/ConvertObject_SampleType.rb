@@ -43,6 +43,11 @@ class Protocol
     }
     while count < stocks_lengths do
     		stocks_full[count].sample=samps_full[count]
+    		show{
+    		  title samps_full[count].id
+    		  check stocks_full[count].id
+    		}
+    		
         stocks_full[count].save
     	  count=count+1
     	  show{
