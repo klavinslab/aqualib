@@ -26,13 +26,12 @@ class Protocol
   
     count=0
     while count < stocks_lengths do
-        stock=find(:item, id: stocks[count])
-        samp=find(:sample, id: samps[count])
-    		
-    		show{
-    		  title stock.id
-    		  check samp.id
-    		}
+        idnum=stocks[count]
+        idnumsamp=samps[count]
+        
+        stock=find(:item, id: idnum)
+        samp=find(:sample, id: idnumsamp)
+        
     		
     		stock.sample=samp
         stock.save
