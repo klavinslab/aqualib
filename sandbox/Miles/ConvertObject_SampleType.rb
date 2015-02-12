@@ -37,12 +37,12 @@ class Protocol
         samp=find(:sample, id: idnumsamp)
         
         show{
-          title stock.id
+          title stock.location
         }
         
     		
-    		stock.sample=samp
-        stock.save
+    	stock.sample=samp
+      stock.save
         
     	  count=count+1
   	end
