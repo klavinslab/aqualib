@@ -28,6 +28,10 @@ class Protocol
     while count < stocks_lengths do
         idnum=stocks[count]
         idnumsamp=samps[count]
+     show{
+       title idnum
+       check idnumsamp
+     }
         
         stock=find(:item, id: idnum)
         samp=find(:sample, id: idnumsamp)
