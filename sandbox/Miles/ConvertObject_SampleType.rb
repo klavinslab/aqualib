@@ -32,6 +32,10 @@ class Protocol
         stock=find(:item, id: idnum)
         samp=find(:sample, id: idnumsamp)
         
+        show{
+          title stock
+        }
+        
     		
     		stock.sample=samp
         stock.save
