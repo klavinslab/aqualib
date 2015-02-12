@@ -22,7 +22,7 @@ class Protocol
     stocks_full=find(:item, id: stocks)
     
     show{
-      title: stocks_lengths
+      title stocks_lengths
     }
     
     samps=input[:plasmid_ids]
