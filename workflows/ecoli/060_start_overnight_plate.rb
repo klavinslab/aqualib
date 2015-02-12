@@ -67,13 +67,7 @@ class Protocol
     num_colonies = []
     primer_ids = []
     initials = []
-    show {
-      note "#{io_hash}"
-    }
     io_hash[:plate_ids].each_with_index do |pid,idx|
-      show {
-        note "#{pid}"
-      }
       if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
         info_needed_plate_ids.push pid
       else
