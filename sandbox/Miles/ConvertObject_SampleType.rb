@@ -30,8 +30,8 @@ class Protocol
         samp=find(:sample, id: samps[count])
     		
     		show{
-    		  title stock
-    		  check samp
+    		  title stock.id
+    		  check samp.id
     		}
     		
     		stock.sample=samp
