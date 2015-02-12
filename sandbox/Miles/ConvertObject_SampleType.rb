@@ -30,8 +30,17 @@ class Protocol
   
     count=0
     while count < stocks_lengths do
+      show{
+        title count
+      }
       stocks_full[count].sample=samps_full[count]
       stocks_full[count].save
+      
+      show{
+        title stocks_full[count]
+        check samps_full[count]
+      }
+      
       count=count+1
     end
   end
