@@ -139,6 +139,10 @@ class Protocol
       yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     end
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
+    show {
+      title "Vortex the deepwell plates."
+      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
+    }
     transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
       title "Transfer #{io_hash[:read_volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."
@@ -156,7 +160,7 @@ class Protocol
       title "Eject plate and export data"
       check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
       check "Click File/Export ALL Samples as FCS"
-      check "Go to Desktop, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}. Upload this zip file here."
+      check "Go to Desktop/FCS Exports, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}. Upload this zip file here by dragging it here. After upload is done, delete the exported folder and zip file in the FCS Exports folder."
       upload var: "cytometry_#{job_id}"
     }
     show {
@@ -164,7 +168,7 @@ class Protocol
       check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it."
       check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace each tube with a full reagnent tube with the same letter written on its lid top."
       check "Put the cleanning 24 well plate on the CSampler."
-      check "Click autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
+      check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
     }
     release yeast_ubottom_plates
     if io_hash[:task_ids]
