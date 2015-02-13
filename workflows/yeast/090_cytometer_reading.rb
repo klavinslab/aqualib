@@ -141,7 +141,7 @@ class Protocol
     take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
     show {
       title "Vortex the deepwell plates."
-      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
+      note "Gently vortex the deepwell plates #{yeast_deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
     }
     transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
       title "Transfer #{io_hash[:read_volume]} µL"
