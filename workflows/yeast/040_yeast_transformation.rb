@@ -21,6 +21,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash = { debug_mode: "No", plasmid_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -43,7 +44,10 @@ class Protocol
 
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
     stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
-    yeast_markers = io_hash[:plasmid_stock_ids].collect {|pid| find(:item, id: pid )[0].sample.properties["Yeast Marker"].downcase[0,3]}
+    stripwells_array = stripwells.collect { |s| s.matrix }
+    io_hash[:plasmid_ids] = stripwells_array.flatten
+    io_hash[:plasmid_ids].delete(-1)
+    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:sample, id: pid )[0].properties["Yeast Marker"].downcase[0,3]}
 
     # show {
     #   title "Testing page"
