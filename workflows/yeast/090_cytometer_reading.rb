@@ -107,7 +107,7 @@ class Protocol
       #Enter the item id that you are going to start overnight with
       yeast_deepwell_plate_ids: [21498],
       range_to_read: { from: [[1,1]], to: [[1,12]] },
-      yeast_ubottom_plate_ids: [32316],
+      yeast_ubottom_plate_ids: [32430],
       read_volume: 100,
       debug_mode: "No"
     }
@@ -142,12 +142,15 @@ class Protocol
     show {
       title "Vortex the deepwell plates."
       note "Gently vortex the deepwell plates #{yeast_deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
+      timer initial: { hours: 0, minutes: 0, seconds: 20}
     }
-    transfer( yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode] ) {
+    transfer(yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode]) {
       title "Transfer #{io_hash[:read_volume]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }
-    release yeast_deepwell_plates, interactive: true
+    release(yeast_deepwell_plates, interactive: true) {
+      note "Put a breathable sealing film on the plate if the old sealing film has cell culture on it."
+    }
     job_id = jid
     show {
       title "Cytometer reading"
@@ -165,12 +168,18 @@ class Protocol
     }
     show {
       title "Clean run"
-      check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it."
+      check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it. It will prompt you to save a file, click No."
       check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace each tube with a full reagnent tube with the same letter written on its lid top."
       check "Put the cleanning 24 well plate on the CSampler."
       check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
     }
-    release yeast_ubottom_plates
+    release(yeast_ubottom_plates, interactive: true) {
+      if io_hash[:yeast_ubottom_plate_ids].empty?
+        check "Put a new clear film on each plate #{yeast_ubottom_plates.collect { |y| y.id }} and cross out the wells that have been used."
+      else
+        check "Put the clear film back on the plate #{yeast_ubottom_plates.collect { |y| y.id }} and cross out the wells that have been used."
+      end
+    }
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
