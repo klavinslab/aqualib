@@ -51,7 +51,7 @@ class Protocol
     move streaked_yeast_plates, "30 C incubator"
     release streaked_yeast_plates, interactive: true
 
-    io_hash[:streaked_yeast_plates_ids] = streaked_yeast_plates.collect { |x| x.id } 
+    io_hash[:plate_ids] = streaked_yeast_plates.collect { |x| x.id } 
     return { io_hash: io_hash }
 
   end # main
