@@ -18,13 +18,13 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?  
+    io_hash = input if input[:io_hash].empty?
+    io_hash = { image_option: "Yes" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    io_hash[:image_option] = io_hash[:image_option] || "Yes"
     plates = io_hash[:plate_ids].collect { |x| find(:item, id: x)[0] }
     show {
       title "Work in the gel room"
