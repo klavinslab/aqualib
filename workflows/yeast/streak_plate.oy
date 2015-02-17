@@ -1,0 +1,44 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: "Yes"
+    group: group
+    task_name: "Streak Plate"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place streak_plate
+  protocol: "aqualib:workflows/yeast/056_streak_yeast_from_glycerol_stock.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place retrieve_plate
+  protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
+  group: group
+  marked: false
+  start: hours(48)
+  window: hours(1)
+end
+
+wire tasks_inputs => streak_plate
+wire streak_plate => retrieve_plate
+
+transition [ tasks_inputs ] => [ streak_plate ] when !error(0) && completed (0) end
+transition [ streak_plate ] => [ retrieve_plate ] when !error(0) && completed (0) end
+transition [ retrieve_plate ] => [] when !error(0) && completed (0) end
+
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ streak_plate ] => [ streak_plate ] when error(0) end
+transition [ retrieve_plate ] => [ retrieve_plate ] when error(0) end
