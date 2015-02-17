@@ -107,7 +107,7 @@ class Protocol
 
     # Tell the user what we are doing
     show {
-      title "Fragment Information"
+      title "Gibson Assembly Information"
       note "This protocol will build the following plasmids using Gibson Assembly method:"
       note io_hash[:plasmid_ids].collect {|p| "#{p}"}
     }
