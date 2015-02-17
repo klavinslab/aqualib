@@ -59,7 +59,7 @@ wire gibson => transformation
 wire transformation => plate
 wire plate => image
 
-transition [ check_input ] => [ gibson ] when completed(0) end
+transition [ tasks_inputs ] => [ gibson ] when completed(0) end
 transition [ gibson ] => [ transformation ] when !error(0) && completed(0) end
 transition [ transformation] => [ plate ] when !error(0) && completed(0) end
 transition [ plate ] => [ image ] when !error(0) && completed(0) end
