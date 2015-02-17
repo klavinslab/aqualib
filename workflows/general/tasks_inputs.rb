@@ -49,6 +49,17 @@ class Protocol
           end
         end
         ready_conditions = t[:item_ids][:belong_to_user].length == t.simple_spec[:item_ids].length
+      when "Streak Plate"
+        t[:item_ids] = { ready: [], not_ready: [] }
+        accepted_object_types = ["Yeast Glycerol Stock", "Yeast Plate", "Plate"]
+        t.simple_spec[:item_ids].each do |id|
+          if accepted_object_types.include? find(:item, id: id)[0].object_type.name
+            t[:item_ids][:ready].push id
+          else
+            t[:item_ids][:not_ready].push id
+          end
+        end
+        ready_conditions = t[:item_ids][:ready].length == t.simple_spec[:item_ids].length
       else
         show {
           title "Under development"
@@ -76,7 +87,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Discard Item",
+      task_name: "Streak Plate",
       group: "technicians"
     }
   end
@@ -84,7 +95,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], yeast_item_ids:[], overnight_ids: [], plate_ids: [], task_name: "" }.merge io_hash
+    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -97,19 +108,32 @@ class Protocol
     when "Glycerol Stock"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        io_hash[:item_ids].concat task.simple_spec[:item_ids]
-      end
-      io_hash[:item_ids].each do |id|
-        if find(:item, id: id)[0].object_type.name.downcase.include? "overnight"
-          io_hash[:overnight_ids].push id
-        elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
-          io_hash[:yeast_item_ids].push id
+        task.simple_spec[:item_ids].each do |id|
+          if find(:item, id: id)[0].object_type.name.downcase.include? "overnight"
+            io_hash[:overnight_ids].push id
+          elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
+            io_hash[:item_ids].push id
+          end
         end
       end
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:item_ids].concat task.simple_spec[:item_ids]
+      end
+    when "Streak Plate"
+      io_hash[:yeast_glycerol_stock_ids] = []
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task.simple_spec[:item_ids].each do |id|
+          if find(:item, id: id)[0].object_type.name == "Yeast Glycerol Stock"
+            io_hash[:yeast_glycerol_stock_ids].concat task.simple_spec[:item_ids]
+          elsif ["Yeast Plate", "Plate"].include? find(:item, id: id)[0].object_type.name
+            io_hash[:plate_ids].concat task.simple_spec[:item_ids]
+          else 
+            io_hash[:item_ids].concat task.simple_spec[:item_ids]
+          end
+        end
       end
     else
       show {
