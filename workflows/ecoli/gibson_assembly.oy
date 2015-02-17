@@ -4,7 +4,7 @@ argument
 end
 
 place check_input
-  protocol: "aqualib:workflows/general/tasks_ipunts.rb"
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
   argument
     debug_mode: "Yes"
