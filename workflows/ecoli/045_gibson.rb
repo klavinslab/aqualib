@@ -17,8 +17,6 @@ class Protocol
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
       plasmid_ids: [],
       debug_mode: "No",
-      task_mode: "Yes",
-      group: "cloning"
     }
   end
 
@@ -45,40 +43,25 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    # making sure have the following hash indexes.
-    io_hash = io_hash.merge({ fragment_ids: [], plasmid_ids: [] }) if !input[:io_hash]
-    io_hash[:debug_mode] = io_hash[:debug_mode] || "No"
-    io_hash[:fragment_ids] = io_hash[:fragment_ids] || []
-    io_hash[:plasmid_ids] = io_hash[:plasmid_ids] || []
-    io_hash[:task_mode] = io_hash[:task_mode] || "Yes"
-    io_hash[:group]  = io_hash[:group] || "technicians"
+
+    # setup default values for io_hash.
+    io_hash = { fragment_ids: [], plasmid_ids: [], debug_mode: "No", item_choice_mode: "No" }.merge io_hash
+
     # Check if inputs are correct
     raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
+
     # Set debug based on debug_mode
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    # Pull gibson info from Gibson Assembly Task
-    ready_task_ids = []
-    if io_hash[:task_mode] == "Yes"
-      # Filter out tasks by group
-      gibson_info = gibson_assembly_status group: io_hash[:group]      
-      ready_task_ids = gibson_info[:ready_ids]
-      ready_task_ids.each do |tid|
-        ready_task = find(:task, id: tid)[0]
-        io_hash[:fragment_ids].push ready_task.simple_spec[:fragments]
-        io_hash[:plasmid_ids].push ready_task.simple_spec[:plasmid]
-      end
-    end
-    io_hash[:task_ids] = ready_task_ids
 
     # Find fragment stocks into array of arrays
-    if io_hash[:group] == ("technicians" || "cloning" || "admin")
-      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
-    else
+    if io_hash[:item_choice_mode].downcase == "yes"
       fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name, object_type: "Fragment Stock"}}
+    else
+      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
     end
 
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.

@@ -113,7 +113,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "" }.merge io_hash
+    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "", fragment_ids: [], plasmid_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -175,6 +175,11 @@ class Protocol
           note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
           table tasks_tab
         }
+      end
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:fragment_ids].push task.simple_spec[:fragments]
+        io_hash[:plasmid_ids].push task.simple_spec[:plasmid]
       end
     when "Fragment Construction"
       fs = fragment_construction_status
