@@ -60,10 +60,27 @@ class Protocol
           end
         end
         ready_conditions = t[:item_ids][:ready].length == t.simple_spec[:item_ids].length
+      when "Gibson Assembly"
+        t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
+        t.simple_spec[:fragments].each do |fid|
+          info = fragment_info fid
+          # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
+          if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
+            t[:fragments][:ready_to_use].push fid
+          elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] == 0
+            t[:fragments][:not_ready_to_use].push fid
+          elsif !info
+            t[:fragments][:not_ready_to_build].push fid
+          else
+            t[:fragments][:ready_to_build].push fid
+          end
+        end
+        ready_conditions = t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && find(:sample, id:t.simple_spec[:plasmid])[0]
       else
         show {
           title "Under development"
           note "The input checking function for this task #{params[:name]} is still under development."
+          note "#{t.id}"
         }
       end
 
@@ -78,6 +95,7 @@ class Protocol
     end
 
     return {
+      fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
     }
@@ -87,7 +105,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Streak Plate",
+      task_name: "Gibson Assembly",
       group: "technicians"
     }
   end
@@ -134,6 +152,47 @@ class Protocol
             io_hash[:item_ids].concat task.simple_spec[:item_ids]
           end
         end
+      end
+    when "Gibson Assembly"
+      if tasks[:fragments]
+        waiting_ids = tasks[:waiting_ids]
+        users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
+        fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
+        ready_to_use_fragment_ids = tasks[:fragments][:ready_to_use].uniq
+        not_ready_to_use_fragment_ids = tasks[:fragments][:not_ready_to_use].uniq
+        ready_to_build_fragment_ids = tasks[:fragments][:ready_to_build].uniq
+        not_ready_to_build_fragment_ids = tasks[:fragments][:not_ready_to_build].uniq
+        plasmid_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:plasmid] }
+        plasmids = plasmid_ids.collect { |pid| find(:sample, id: pid)[0]}
+        tasks_tab = [[ "Not ready tasks", "Tasks owner", "Plasmid", "Fragments", "Ready to build", "Not ready to build", "Length info missing" ]]
+        waiting_ids.each_with_index do |tid,idx|
+          tasks_tab.push [ tid, users[idx], "#{plasmids[idx]}", fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s,(fragment_ids[idx]&not_ready_to_use_fragment_ids).to_s ]
+        end
+        show {
+          title "Gibson Assemby Status"
+          note "Ready to build means recipes and ingredients for building this fragments are complete." 
+          note "Not ready to build means some information or stocks are missing."
+          note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
+          table tasks_tab
+        }
+      end
+    when "Fragment Construction"
+      fs = fragment_construction_status
+      if fs[:fragments]
+        waiting_ids = fs[:waiting_ids]
+        users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
+        fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
+        ready_to_build_fragment_ids = fs[:fragments][:ready_to_build].uniq
+        not_ready_to_build_fragment_ids = fs[:fragments][:not_ready_to_build].uniq
+        fs_tab = [[ "Not ready tasks", "Tasks owner", "Fragments", "Ready to build", "Not ready to build" ]]
+        waiting_ids.each_with_index do |tid,idx|
+          fs_tab.push [ tid, users[idx], fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s ]
+        end
+        show {
+          title "Fragment Construction Status"
+          note "Ready to build means recipes and ingredients for building this fragments are complete. Not ready to build means some information or stocks are missing."
+          table fs_tab
+        }
       end
     else
       show {

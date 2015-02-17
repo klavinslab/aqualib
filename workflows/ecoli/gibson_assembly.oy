@@ -4,8 +4,13 @@ argument
 end
 
 place check_input
-  protocol: "aqualib:workflows/general/check_tasks_inputs.rb"
+  protocol: "aqualib:workflows/general/tasks_ipunts.rb"
   group: group
+  argument
+    debug_mode: "Yes"
+    group: group
+    task_name: "Gibson Assembly"
+  end
   marked: true
   start: now()
   window: hours(1)
