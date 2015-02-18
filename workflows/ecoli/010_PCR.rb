@@ -34,7 +34,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { task_mode: "Yes", debug_mode: "No", item_choice_mode: "No", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
-    
+
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -74,9 +74,11 @@ class Protocol
       title "Fragment Information"
       note "This protocol will build the following fragments:"
       note (all_fragments.collect { |f| "#{f}" })
-      separator
-      note "The following fragments have missing ingredients and will not be built:"
-      note not_ready.to_s
+      if not_ready.length > 0
+        separator
+        note "The following fragments have missing ingredients and will not be built:"
+        note not_ready.to_s
+      end
     }
 
     # Take the primers and templates
