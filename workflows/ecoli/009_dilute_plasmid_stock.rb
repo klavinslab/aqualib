@@ -33,7 +33,7 @@ class Protocol
     io_hash[:fragment_ids].concat fragment_tasks[:fragments][:not_ready_to_build] if fragment_tasks[:fragments]
 
     # retrive templates info from fragments
-    plasmids = io_hash[:fragment_ids].collect{|f| find(:sample, id: f)[0].properties["Template"]}
+    plasmids = io_hash[:fragment_ids].collect{ |f| find(:sample, id: f)[0].properties["Template"] }
 
     # remove redundant plasmids and figure out templates that need to be diluted
     plasmids = plasmids.compact.uniq
@@ -56,7 +56,7 @@ class Protocol
     take plasmid_stocks, interactive: true, method: "boxes"
 
     # measure concentration for those have no concentration recorded in datum field
-    plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
+    plasmid_stocks_need_to_measure = plasmid_stocks.select { |f| !f.datum[:concentration] }
     while plasmid_stocks_need_to_measure.length > 0
       data = show {
         title "Nanodrop the following plasmid/fragment stocks."
@@ -68,7 +68,7 @@ class Protocol
         ps.datum = {concentration: data[:"c#{ps.id}".to_sym]}
         ps.save
       end
-      plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
+      plasmid_stocks_need_to_measure = plasmid_stocks.select { |f| !f.datum[:concentration] }
     end
 
     # collect all concentrations
@@ -76,7 +76,7 @@ class Protocol
     water_volumes = concs.collect {|c| c-1}
 
     # produce 1 ng/µL Plasmid Stocks
-    plasmid_diluted_stocks = plasmid_stocks.collect {|f| produce new_sample f.sample.name, of: f.sample.sample_type.name, as: ("1 ng/µL " + f.sample.sample_type.name + " Stock") }
+    plasmid_diluted_stocks = plasmid_stocks.collect { |f| produce new_sample f.sample.name, of: f.sample.sample_type.name, as: ("1 ng/µL " + f.sample.sample_type.name + " Stock") }
 
     # build a checkable table for user
     tab = [["Newly labled tube","Plasmid/Fragment stock, 1 µL","Water volume"]]
