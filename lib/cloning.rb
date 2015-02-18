@@ -440,11 +440,15 @@ module Cloning
 
     end
 
-    return {
-      fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
+    return_hash = { 
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
+
+    task_status_hash[:fragments] = ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Gibson Assembly", "Fragment Construction"].include? params[:name]
+
+    return task_status_hash
+
   end ### task_status
 
 end
