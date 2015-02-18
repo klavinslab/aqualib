@@ -8,7 +8,7 @@ place tasks_inputs
   protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
   argument
-    debug_mode: "Yes"
+    debug_mode: debug_mode
     group: group
     item_choice_mode: item_choice_mode
     task_name: "Fragment Construction"

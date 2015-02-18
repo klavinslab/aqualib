@@ -9,7 +9,7 @@ place tasks_inputs
   protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
   argument
-    debug_mode: "Yes"
+    debug_mode: debug_mode
     group: group
     item_choice_mode: item_choice_mode
     image_option: image_option
@@ -23,10 +23,6 @@ end
 place gibson
   protocol: "aqualib:workflows/ecoli/045_gibson.rb"
   group: group
-  argument
-    debug_mode: debug_mode
-    group: group
-  end
   marked: false
   start: now()
   window: hours(1)

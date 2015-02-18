@@ -7,7 +7,7 @@ place tasks_inputs
   protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
   argument
-    debug_mode: "Yes"
+    debug_mode: debug_mode
     group: group
     task_name: "Discard Item"
   end
