@@ -18,7 +18,7 @@ class Protocol
   def main
 
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { group: "technicians", debug_mode: "Yes", fragment_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -94,7 +94,7 @@ class Protocol
   	release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
 
     io_hash[:plasmid_diluted_stock_ids]  = plasmid_diluted_stocks.collect {|p| p.id}
-    
+
     return { io_hash: io_hash }
 
   end
