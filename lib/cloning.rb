@@ -443,7 +443,7 @@ module Cloning
     return {
       fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
   end ### task_status
 
