@@ -29,7 +29,8 @@ class Protocol
     # pull not ready to build fragments from Gibson Assembly tasks and Fragment Construction tasks
     gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
     fragment_tasks = task_status name: "Fragment Construction", group: io_hash[:group]
-    io_hash[:fragment_ids].concat gibson_tasks[:fragments][:not_ready_to_build] + fragment_tasks[:fragments][:not_ready_to_build]
+    io_hash[:fragment_ids].concat gibson_tasks[:fragments][:not_ready_to_build] if gibson_tasks[:fragments]
+    io_hash[:fragment_ids].concat fragment_tasks[:fragments][:not_ready_to_build] if fragment_tasks[:fragments]
 
     # retrive templates info from fragments
     plasmids = io_hash[:fragment_ids].collect{|f| find(:sample, id: f)[0].properties["Template"]}
