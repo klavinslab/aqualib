@@ -13,7 +13,7 @@ place dilute_plasmid_stock
     item_choice_mode: item_choice_mode
     task_name: "Fragment Construction"
   end
-  marked: false
+  marked: true
   start: now()
   window: hours(1)
 end
@@ -21,7 +21,7 @@ end
 place tasks_inputs
   protocol: "aqualib:workflows/general/tasks_inputs.rb"
   group: group
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
