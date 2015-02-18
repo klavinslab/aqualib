@@ -90,8 +90,8 @@ class Protocol
         io_hash[:plasmid_ids].push task.simple_spec[:plasmid]
       end
     when "Fragment Construction"
-      fs = fragment_construction_status
-      if fs[:fragments]
+      fs = task_status name: "Fragment Construction", group: io_hash[:group]
+      if fs[:fragments][:not_ready_to_build].length > 0
         waiting_ids = fs[:waiting_ids]
         users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
         fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
