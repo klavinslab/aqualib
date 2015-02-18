@@ -16,6 +16,7 @@ class Protocol
   end
 
   def main
+
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     io_hash = { group: "technicians", debug_mode: "Yes", fragment_ids: [] }.merge io_hash
@@ -24,13 +25,23 @@ class Protocol
         true
       end
     end
+
+    # pull not ready to build fragments from Gibson Assembly tasks and Fragment Construction tasks
+    gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
+    fragment_tasks = task_status name: "Fragment Construction", group: io_hash[:group]
+    io_hash[:fragment_ids].concat gibson_tasks[:fragments][:not_ready_to_build] + fragment_tasks[:fragments][:not_ready_to_build]
+
+    # retrive templates info from fragments
     plasmids = io_hash[:fragment_ids].collect{|f| find(:sample, id: f)[0].properties["Template"]}
-    # remove redundant plasmids 
+
+    # remove redundant plasmids and figure out templates that need to be diluted
     plasmids = plasmids.compact.uniq
     plasmids_need_to_dilute = plasmids.select{ |p| p.in(p.sample_type.name + " Stock").length > 0 && p.in("1 ng/µL " + p.sample_type.name + " Stock").length == 0 }
     plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in(p.sample_type.name + " Stock")[0] }
+
     # concat with input to this protocol if input[:plasmid_stock_ids] is defined
   	plasmid_stocks.concat input[:plasmid_stock_ids].collect{ |fid| find(:item, id: fid)[0] } if input[:plasmid_stock_ids]
+
     if plasmid_stocks.length == 0
       show {
         title "No plasmid or fragment stocks need to be diluted"
@@ -39,8 +50,10 @@ class Protocol
       io_hash[:plasmid_diluted_stock_ids]  = []
       return { io_hash: io_hash }
     end
+
     # take all items
   	take plasmid_stocks, interactive: true, method: "boxes"
+
     # measure concentration for those have no concentration recorded in datum field
     plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
     while plasmid_stocks_need_to_measure.length > 0
@@ -56,11 +69,14 @@ class Protocol
       end
       plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
     end
+
     # collect all concentrations
     concs = plasmid_stocks.collect {|f| f.datum[:concentration].to_f}
   	water_volumes = concs.collect {|c| c-1}
+
     # produce 1 ng/µL Plasmid Stocks
     plasmid_diluted_stocks = plasmid_stocks.collect {|f| produce new_sample f.sample.name, of: f.sample.sample_type.name, as: ("1 ng/µL " + f.sample.sample_type.name + " Stock") }
+
     # build a checkable table for user
     tab = [["Newly labled tube","Plasmid/Fragment stock, 1 µL","Water volume"]]
   	plasmid_stocks.each_with_index do |f,idx|
@@ -74,9 +90,11 @@ class Protocol
   		check "Vortex and then spin down for a few seconds"
   	}
 
+    # release all the items
   	release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
 
     io_hash[:plasmid_diluted_stock_ids]  = plasmid_diluted_stocks.collect {|p| p.id}
+    
     return { io_hash: io_hash }
 
   end
