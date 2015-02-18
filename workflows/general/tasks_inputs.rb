@@ -120,7 +120,7 @@ class Protocol
         fragment_ids_temp = io_hash[:fragment_ids].dup
         io_hash[:fragment_ids].concat task.simple_spec[:fragments]
         io_hash[:fragment_ids].uniq!
-        if io_hash[:fragment_ids].length > 3 && io_hash[:group] != "technicians"
+        if io_hash[:fragment_ids].length > 8 && io_hash[:group] != "technicians"
           limit_idx = idx
           io_hash[:fragment_ids] = fragment_ids_temp
           break
