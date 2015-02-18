@@ -41,7 +41,7 @@ class Protocol
     plasmid_stocks = plasmids_need_to_dilute.collect{ |p| p.in(p.sample_type.name + " Stock")[0] }
 
     # concat with input to this protocol if input[:plasmid_stock_ids] is defined
-  	plasmid_stocks.concat input[:plasmid_stock_ids].collect{ |fid| find(:item, id: fid)[0] } if input[:plasmid_stock_ids]
+    plasmid_stocks.concat input[:plasmid_stock_ids].collect{ |fid| find(:item, id: fid)[0] } if input[:plasmid_stock_ids]
 
     if plasmid_stocks.length == 0
       show {
@@ -53,7 +53,7 @@ class Protocol
     end
 
     # take all items
-  	take plasmid_stocks, interactive: true, method: "boxes"
+    take plasmid_stocks, interactive: true, method: "boxes"
 
     # measure concentration for those have no concentration recorded in datum field
     plasmid_stocks_need_to_measure = plasmid_stocks.select {|f| !f.datum[:concentration]}
@@ -73,26 +73,26 @@ class Protocol
 
     # collect all concentrations
     concs = plasmid_stocks.collect {|f| f.datum[:concentration].to_f}
-  	water_volumes = concs.collect {|c| c-1}
+    water_volumes = concs.collect {|c| c-1}
 
     # produce 1 ng/µL Plasmid Stocks
     plasmid_diluted_stocks = plasmid_stocks.collect {|f| produce new_sample f.sample.name, of: f.sample.sample_type.name, as: ("1 ng/µL " + f.sample.sample_type.name + " Stock") }
 
     # build a checkable table for user
     tab = [["Newly labled tube","Plasmid/Fragment stock, 1 µL","Water volume"]]
-  	plasmid_stocks.each_with_index do |f,idx|
-  		tab.push([plasmid_diluted_stocks[idx].id, { content: f.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
-  	end
-  	show {
-  		title "Make 1 ng/µL Plasmid/Fragment Stocks"
-  		check "Grab #{plasmid_stocks.length} 1.5 mL tubes, label them with #{plasmid_diluted_stocks.collect {|f| f.id}}"
-  		check "Add plasmid stocks and water into newly labeled 1.5 mL tubes following the table below"
-  		table tab
-  		check "Vortex and then spin down for a few seconds"
-  	}
+    plasmid_stocks.each_with_index do |f,idx|
+      tab.push([plasmid_diluted_stocks[idx].id, { content: f.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
+    end
+    show {
+      title "Make 1 ng/µL Plasmid/Fragment Stocks"
+      check "Grab #{plasmid_stocks.length} 1.5 mL tubes, label them with #{plasmid_diluted_stocks.collect {|f| f.id}}"
+      check "Add plasmid stocks and water into newly labeled 1.5 mL tubes following the table below"
+      table tab
+      check "Vortex and then spin down for a few seconds"
+    }
 
     # release all the items
-  	release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
+    release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
 
     io_hash[:plasmid_diluted_stock_ids]  = plasmid_diluted_stocks.collect {|p| p.id}
 
