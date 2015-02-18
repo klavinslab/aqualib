@@ -135,8 +135,8 @@ class Protocol
     end
 
     show {
-      title "#{io_hash[:task_name]} tasks inputs have been successfully processed!"
-      note "The io_hash is #{io_hash}"
+      title "Tasks inputs have been successfully processed!"
+      note "#{io_hash[:task_name]} tasks inputs have been successfully processed and please work on the next protocol in the flow!"
     }
 
     return { io_hash: io_hash }
