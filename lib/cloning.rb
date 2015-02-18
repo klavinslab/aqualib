@@ -347,7 +347,7 @@ module Cloning
     tasks_all = find(:task,{task_prototype: { name: params[:name] }})
     tasks = []
     # filter out tasks based on group input
-    if params[:group]
+    if params[:group] && !params[:group].empty?
       user_group = params[:group] == "technicians"? "cloning": params[:group]
       group_info = Group.find_by_name(user_group)
       tasks_all.each do |t|
