@@ -34,42 +34,13 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { task_mode: "Yes", debug_mode: "No", item_choice_mode: "No", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
+    
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-
-    if io_hash[:task_mode] == "Yes"
-      # Pull info from Gibson Assembly Tasks
-      gibson_assembly = gibson_assembly_status group: io_hash[:group]
-      io_hash[:fragment_from_gibson_ids] = gibson_assembly[:fragments][:ready_to_build] if gibson_assembly[:fragments]
-      
-      # Pull info from Fragment Construction Tasks
-      fragment_construction = fragment_construction_status
-      show {
-        title "Not ready fragment ids"
-        note "From Fragment Construction tasks, the following are not ready #{fragment_construction[:fragments][:not_ready_to_build]}" if fragment_construction[:fragments]
-        note "From Gibson Assembly tasks, the following are not ready #{gibson_assembly[:fragments][:not_ready_to_build]}" if gibson_assembly[:fragments]
-      }
-      io_hash[:task_ids] = task_group_filter(fragment_construction[:ready_ids], io_hash[:group])
-      io_hash[:task_ids].each do |tid|
-        ready_task = find(:task, id: tid)[0]
-        io_hash[:fragment_from_construction_ids].concat ready_task.simple_spec[:fragments]
-      end
-    end
-
-    # Pull info from protocol input
-    io_hash[:fragment_from_protocol_ids] = input[:fragment_ids] || []
-    io_hash[:fragment_ids] = (io_hash[:fragment_from_gibson_ids] + io_hash[:fragment_from_construction_ids]).uniq + io_hash[:fragment_from_protocol_ids]
-
-    show {
-      title "List of fragment ids ready to build"
-      note "From Gibson Assembly tasks the following #{io_hash[:fragment_from_gibson_ids]}"
-      note "From Fragment Construction tasks the following #{io_hash[:fragment_from_construction_ids]}"
-      note "From protocol, the following #{io_hash[:fragment_from_protocol_ids]}"
-    }
 
     # Collect fragment info
     fragment_info_list = []

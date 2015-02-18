@@ -76,6 +76,17 @@ class Protocol
           end
         end
         ready_conditions = t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && find(:sample, id:t.simple_spec[:plasmid])[0]
+      when "Fragment Construction"
+        t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
+        t.simple_spec[:fragments].each do |fid|
+          info = fragment_info fid
+          if !info
+            t[:fragments][:not_ready_to_build].push fid
+          else
+            t[:fragments][:ready_to_build].push fid
+          end
+        end
+        ready_conditions = t[:fragments][:ready_to_build].length == t.simple_spec[:fragments].length
       else
         show {
           title "Under development"
@@ -105,7 +116,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Gibson Assembly",
+      task_name: "Fragment Construction",
       group: "technicians"
     }
   end
@@ -120,7 +131,7 @@ class Protocol
       end
     end
 
-    tasks = task_status name: io_hash[:task_name]
+    tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
     case io_hash[:task_name]
     when "Glycerol Stock"
@@ -176,6 +187,9 @@ class Protocol
           table tasks_tab
         }
       end
+      if io_hash[:group] != "technicians"
+        io_hash[:task_ids] = io_hash[:task_ids].take(12)
+      end
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push task.simple_spec[:fragments]
@@ -199,6 +213,26 @@ class Protocol
           table fs_tab
         }
       end
+
+      # pull out fragments that need to be made from Gibson Assembly tasks
+      gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
+      io_hash[:fragment_ids].concat gibson_tasks[:fragments][:ready_to_build] if gibson_tasks[:fragments]
+      io_hash[:fragment_ids].uniq!
+
+      # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
+      limit_idx = io_hash[:task_ids].length
+      io_hash[:task_ids].each_with_index do |tid,idx|
+        task = find(:task, id: tid)[0]
+        fragment_ids_temp = io_hash[:fragment_ids].dup
+        io_hash[:fragment_ids].concat task.simple_spec[:fragments]
+        io_hash[:fragment_ids].uniq!
+        if io_hash[:fragment_ids].length > 3 && io_hash[:group] != "technicians"
+          limit_idx = idx
+          io_hash[:fragment_ids] = fragment_ids_temp
+          break
+        end
+      end
+      io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
     else
       show {
         title "Under development"

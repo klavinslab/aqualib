@@ -17,27 +17,14 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?  
-    io_hash[:group]  = input[:group] || "technicians"
+    io_hash = input if input[:io_hash].empty?
+    io_hash = { group: "technicians", debug_mode: "Yes", fragment_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    fragment_ids = []
-    # add fragment_ids from protocol or metacol
-    fragment_ids.concat input[:fragment_ids] || []
-    # Pull info from Gibson assembly tasks which fragment needs to work on
-    gibson_info = gibson_assembly_status
-    fragment_ids.concat gibson_info[:fragments][:not_ready_to_build] if gibson_info[:fragments]
-    # Pull info from Fragment Construction tasks which fragment needs to work on
-    fragment_construction = fragment_construction_status
-    waiting_ids = task_group_filter(fragment_construction[:waiting_ids], io_hash[:group])
-    waiting_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      fragment_ids.concat task.simple_spec[:fragments]
-    end
-    plasmids = fragment_ids.collect{|f| find(:sample, id: f)[0].properties["Template"]}
+    plasmids = io_hash[:fragment_ids].collect{|f| find(:sample, id: f)[0].properties["Template"]}
     # remove redundant plasmids 
     plasmids = plasmids.compact.uniq
     plasmids_need_to_dilute = plasmids.select{ |p| p.in(p.sample_type.name + " Stock").length > 0 && p.in("1 ng/µL " + p.sample_type.name + " Stock").length == 0 }
