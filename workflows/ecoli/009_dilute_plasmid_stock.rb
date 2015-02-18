@@ -83,6 +83,8 @@ class Protocol
     plasmid_stocks.each_with_index do |f,idx|
       tab.push([plasmid_diluted_stocks[idx].id, { content: f.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
     end
+
+    # display the dilution info to user
     show {
       title "Make 1 ng/µL Plasmid/Fragment Stocks"
       check "Grab #{plasmid_stocks.length} 1.5 mL tubes, label them with #{plasmid_diluted_stocks.collect {|f| f.id}}"
