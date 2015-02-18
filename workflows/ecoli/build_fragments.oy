@@ -4,16 +4,28 @@ argument
   group: group, "choose the group to assign this metacol"
 end
 
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: "Yes"
+    group: group
+    item_choice_mode: item_choice_mode
+    image_option: image_option
+    task_name: "Gibson Assembly"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
 place dilute_plasmid_stock
   protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
   group: group
   argument
     debug_mode: debug_mode
-    item_choice_mode: item_choice_mode
-    group: group
-    io_hash: {}
   end
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -58,6 +70,7 @@ place purify_gel
   window: hours(1)
 end
 
+wire tasks_inputs => dilute_plasmid_stock
 wire dilute_plasmid_stock => pcr
 wire pcr => pour_gel
 wire pour_gel => run_gel
@@ -65,13 +78,15 @@ wire run_gel => cut_gel
 wire cut_gel => purify_gel
 
 
-transition [dilute_plasmid_stock] => [ pcr ] when !error(0) && completed (0) end
+transition [ tasks_inputs ] => [ dilute_plasmid_stock ] when !error(0) && completed(0) end
+transition [ dilute_plasmid_stock ] => [ pcr ] when !error(0) && completed (0) end
 transition [ pcr ] => [ pour_gel ] when !error(0) && completed(0) end
 transition [ pour_gel ] => [ run_gel ] when !error(0) && completed(0) end
 transition [ run_gel ] => [ cut_gel ] when !error(0) && completed(0) end
 transition [ cut_gel ] => [ purify_gel ] when !error(0) && completed (0) end
 transition [ purify_gel ] => [] when !error(0) && completed (0) end
 
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ dilute_plasmid_stock ] => [ dilute_plasmid_stock ] when error(0) end
 transition [ pcr ] => [ pcr ] when error(0) end
 transition [ pour_gel ] => [ pour_gel ] when error(0) end
