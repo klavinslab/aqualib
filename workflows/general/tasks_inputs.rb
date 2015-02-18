@@ -91,7 +91,7 @@ class Protocol
       end
     when "Fragment Construction"
       fs = task_status name: "Fragment Construction", group: io_hash[:group]
-      if fs[:fragments][:not_ready_to_build].length > 0
+      if fs[:fragments] && fs[:fragments][:not_ready_to_build].length > 0
         waiting_ids = fs[:waiting_ids]
         users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
         fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }

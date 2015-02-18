@@ -447,10 +447,6 @@ module Cloning
 
     task_status_hash[:fragments] = ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Gibson Assembly", "Fragment Construction"].include? params[:name]
 
-    show {
-      note "#{task_status_hash}"
-    }
-
     return task_status_hash
 
   end ### task_status
