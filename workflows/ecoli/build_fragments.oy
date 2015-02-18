@@ -11,8 +11,7 @@ place tasks_inputs
     debug_mode: "Yes"
     group: group
     item_choice_mode: item_choice_mode
-    image_option: image_option
-    task_name: "Gibson Assembly"
+    task_name: "Fragment Construction"
   end
   marked: true
   start: now()
