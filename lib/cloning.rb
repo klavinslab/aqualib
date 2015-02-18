@@ -440,7 +440,7 @@ module Cloning
 
     end
 
-    return_hash = { 
+    task_status_hash = { 
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
