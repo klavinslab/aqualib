@@ -95,11 +95,17 @@ class Protocol
     overnights = []
     colony_plates = []
     sequencing_primer_ids = []
-    # produce overnights based on plates and num_colonies
+
+    # produce overnights based on plates and num_colonies, add datum from to track from which plate
     # produce colony_plates which duplicate num_colonies for each plate and turn into array
     # produce sequencing_primer_ids which duplicate num_colonies for each primer_ids and turn into array
     plates.each_with_index do |p,idx|
-      overnights.concat((1..num_colonies[idx]).collect { |n| produce new_sample p.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid" })
+      new_overnights = (1..num_colonies[idx]).collect { |n| produce new_sample p.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid" }
+      new_overnights.each do |x|
+        x.datum = { from: p.id }
+        x.save
+      end
+      overnights.concat new_overnights
       colony_plates.concat((1..num_colonies[idx]).collect { |n| p })
       sequencing_primer_ids.concat((1..num_colonies[idx]).collect { |n| primer_ids[idx] })
     end

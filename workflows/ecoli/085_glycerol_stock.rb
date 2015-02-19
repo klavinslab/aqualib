@@ -34,8 +34,15 @@ class Protocol
       take overnights, interactive: true
       name_glycerol_hash = { "Plasmid" => "Plasmid Glycerol Stock", "Yeast Strain" => "Yeast Glycerol Stock", "E coli strain" => "E coli Glycerol Stock" }
       glycerol = choose_object "50 percent Glycerol (sterile)", take: true
-      glycerol_stocks = overnights.collect { |y| produce new_sample y.sample.name, of: y.sample.sample_type.name, as: name_glycerol_hash[y.sample.sample_type.name] }  
 
+      # produce glycerol_stocks and set up datum to track which overnights it made from
+      glycerol_stocks = overnights.collect { |y| produce new_sample y.sample.name, of: y.sample.sample_type.name, as: name_glycerol_hash[y.sample.sample_type.name] }
+      glycerol_stocks.each_with_index do |x,idx|
+        x.datum = { from: overnights[idx].id }
+        x.save
+      end
+
+      # show the user steps to prepare glycerol stocks
       show {
         title "Prepare glycerol in cryo tubes."
         check "Take #{overnights.length} Cryo #{"tube".pluralize(overnights.length)}"
