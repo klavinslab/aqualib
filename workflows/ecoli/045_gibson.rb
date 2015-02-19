@@ -68,7 +68,7 @@ class Protocol
     fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
     # Flatten the fragment_stocks array of arrays
-    fragment_stocks_flatten = fragment_stocks.flatten(1).uniq
+    fragment_stocks_flatten = fragment_stocks.flatten.uniq
 
     fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
 
@@ -112,8 +112,8 @@ class Protocol
       note io_hash[:plasmid_ids].collect {|p| "#{p}"}
     }
 
-    # Take fragment stocks, since fragment stocks are array of arrays, so use the flatten(1) method.
-    take fragment_stocks.flatten(1), interactive: true,  method: "boxes"
+    # Take fragment stocks
+    take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
