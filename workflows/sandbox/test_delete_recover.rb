@@ -35,7 +35,7 @@ class Protocol
     end
 
     show {
-      title "After delete"
+      title "After delete, the items delete status"
       note "#{plates.collect { |p| p.deleted? }}"
     }
 
@@ -45,7 +45,7 @@ class Protocol
     end
 
     show {
-      title "Ater recover"
+      title "After recover, the items delete status"
       note "#{plates.collect { |p| p.deleted? }}"
     }
 
