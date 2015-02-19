@@ -53,7 +53,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      ids: [21500,21501],
+      "ids Yeast Plate"=> [15056],
       debug_mode: "Yes"
     }
   end
@@ -99,15 +99,30 @@ class Protocol
     #     end
     #   }
     # end
+    yeast_competent_cells = produce new_sample "U6-pGAL1-FAR1, L5G-AFB2, OK-pACT1-GEV, T4-pGAL1-GAVNY in W303alpha", of: "Yeast Strain", as: "Yeast Competent Aliquot"
+    # show {
+    #   note "#{io_hash}"
+    # }
+    # plates = find(:item, object_type: { name: "Yeast Competent Aliquot" })
+    # change_object_type = find(:item, id: 19645)[0]
+    # take plates
+    # show {
+    #   note "#{plates.collect { |p| p.id }}"
+    # }
 
-    show {
-      note "#{io_hash}"
-    }
-    plates = io_hash[:ids].collect { |x| find(:item, id: x)[0] }
-    show {
-      note "#{plates.collect { |p| p.id }}"
-    }
-
+    # plates.each do |p|
+    #   p.object_type  = change_object_type.object_type
+    #   p.save
+    # end
+    # show {
+    #   note "#{plates.collect { |p| p.object_type.name }}"
+    # }
+    # plates.each do |p|
+    #   p.mark_as_deleted
+    # end
+    # show {
+    #   note "#{plates.collect { |p| p.deleted? }}"
+    # }
 
     # fragment = find(:sample,{ id: io_hash[:ids][0] })[0]
     # props = fragment.properties
