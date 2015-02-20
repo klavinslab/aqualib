@@ -8,7 +8,7 @@ Plugin.prototype.render = function(data) {
 
     if ( data[this].length > 0 ) {
 
-      var table = aq.template('job-table');
+      var table = aq.template('job-table',{pill: this});
 
       $.each(data[this],function(j) {
 

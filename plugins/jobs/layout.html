@@ -16,7 +16,9 @@
       <th>Job</th>
       <th>Path</th>
       <th>Submitted by</th>
-      <th>Performed by</th>
+      {{ if ( pill == 'active' ) { }}
+        <th>Performed by</th>
+      {{ } }}
       <th>Group</th>
       <th>Last Update</th>
       <th></th>
@@ -29,13 +31,15 @@
     <td>{{= job }}</td>
     <td>{{= path }}</td>
     <td>{{= submitted_by }}</td>
-    <td>
-      {{ if ( typeof(user) != undefined ) { }}
-        {{= user }}
-      {{ } else { }}
-        -
-      {{ } }}
-    </td>    
+    {{ if ( pill == 'active' ) { }}
+      <td>
+        {{ if ( typeof(user) != undefined ) { }}
+          {{= user }}
+        {{ } else { }}
+          -
+        {{ } }}
+      </td>    
+    {{ } }}
     <td>{{= group }}</td>    
     <td>{{= last_update }}</td>  
     <td>{{= start_link }}</td>        
