@@ -14,7 +14,7 @@ Plugin.prototype.render = function(data) {
 
         table.append(
           aq.template('job-table-row', { 
-            pill: pill.this,
+            pill: this,
             job: aq.job_link(this.id,this.id),
             path: aq.filename(this.path) + (this.metacol_id > 0 ? " (" + aq.metacol_link(this.metacol_id) + ")" : ""),
             submitted_by: aq.user_link(this.submitted_by,this.submitted_login),
