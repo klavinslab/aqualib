@@ -30,7 +30,7 @@
     <td>{{= path }}</td>
     <td>{{= submitted_by }}</td>
     <td>
-      {{ if ( user != "undefined" ) { }}
+      {{ if ( typeof(user) != undefined ) { }}
         {{= user }}
       {{ } else { }}
         -
