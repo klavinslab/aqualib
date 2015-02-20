@@ -8,13 +8,14 @@ Plugin.prototype.render = function(data) {
 
     if ( data[this].length > 0 ) {
 
-      var table = aq.template('job-table',{ pill: this });
+      var pill = this;
+      var table = aq.template('job-table',{ pill: pill });
 
       $.each(data[this],function(j) {
 
         table.append(
           aq.template('job-table-row', { 
-            pill: this,
+            pill: pill,
             job: aq.job_link(this.id,this.id),
             path: aq.filename(this.path) + (this.metacol_id > 0 ? " (" + aq.metacol_link(this.metacol_id) + ")" : ""),
             submitted_by: aq.user_link(this.submitted_by,this.submitted_login),
