@@ -8,12 +8,13 @@ Plugin.prototype.render = function(data) {
 
     if ( data[this].length > 0 ) {
 
-      var table = aq.template('job-table',{pill: this});
+      var table = aq.template('job-table',{ pill: this });
 
       $.each(data[this],function(j) {
 
         table.append(
           aq.template('job-table-row', { 
+            pill: pill.this,
             job: aq.job_link(this.id,this.id),
             path: aq.filename(this.path) + (this.metacol_id > 0 ? " (" + aq.metacol_link(this.metacol_id) + ")" : ""),
             submitted_by: aq.user_link(this.submitted_by,this.submitted_login),
@@ -65,7 +66,7 @@ Plugin.prototype.update = function() {
 
 Plugin.prototype.limiter = function() {
 
-  var rows = $(".job-table-row",{pill:""}).filter(function() { return $(this).data("submitter") != "yes"; } );
+  var rows = $(".job-table-row").filter(function() { return $(this).data("submitter") != "yes"; } );
 
   if ( this.limit ) {
     rows.hide();
