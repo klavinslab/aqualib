@@ -85,7 +85,9 @@ Plugin.prototype.init = function() {
 
   $.each(pills,function(p) {
 
-    $('#'+pills[p]+'-pill').click(function() {
+    $('#'+pills[p]+'-pill').click(function(e) {
+        e.preventDefault();
+  e.stopImmediatePropagation();
       $('ul.nav li').removeClass('active');
       $('.job-list').css('display','none');
       $(this).parent().addClass('active');
