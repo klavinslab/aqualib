@@ -65,7 +65,7 @@ Plugin.prototype.update = function() {
 
 Plugin.prototype.limiter = function() {
 
-  var rows = $(".job-table-row").filter(function() { return $(this).data("submitter") != "yes"; } );
+  var rows = $(".job-table-row",{pill:""}).filter(function() { return $(this).data("submitter") != "yes"; } );
 
   if ( this.limit ) {
     rows.hide();
