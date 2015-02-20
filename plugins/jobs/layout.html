@@ -29,7 +29,13 @@
     <td>{{= job }}</td>
     <td>{{= path }}</td>
     <td>{{= submitted_by }}</td>
-    <td>{{= user }}</td>    
+    <td>
+      {{ if ( user != "undefined" ) { }}
+        {{= user }}
+      {{ } else { }}
+        -
+      {{ } }}
+    </td>    
     <td>{{= group }}</td>    
     <td>{{= last_update }}</td>  
     <td>{{= start_link }}</td>        
