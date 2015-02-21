@@ -40,8 +40,9 @@ class Protocol
     }
 
     plates.each do |p|
-      p.store
-      p.reload
+      # p.reload
+      # p.store
+      p.location = "DFP.4"
     end
 
     show {

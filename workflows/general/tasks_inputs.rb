@@ -27,7 +27,9 @@ class Protocol
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
+
     case io_hash[:task_name]
+
     when "Glycerol Stock"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
@@ -39,11 +41,13 @@ class Protocol
           end
         end
       end
+
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:item_ids].concat task.simple_spec[:item_ids]
       end
+
     when "Streak Plate"
       io_hash[:yeast_glycerol_stock_ids] = []
       io_hash[:task_ids].each do |tid|
@@ -58,6 +62,7 @@ class Protocol
           end
         end
       end
+
     when "Gibson Assembly"
       if tasks[:fragments]
         waiting_ids = tasks[:waiting_ids]
@@ -89,6 +94,7 @@ class Protocol
         io_hash[:fragment_ids].push task.simple_spec[:fragments]
         io_hash[:plasmid_ids].push task.simple_spec[:plasmid]
       end
+
     when "Fragment Construction"
       fs = task_status name: "Fragment Construction", group: io_hash[:group]
       if fs[:fragments] && fs[:fragments][:not_ready_to_build].length > 0
@@ -127,6 +133,17 @@ class Protocol
         end
       end
       io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
+
+    when "Plasmid Verification"
+      io_hash = { num_colonies: [], primer_ids: [], initials: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:plate_ids].concat task.simple_spec[:plate_ids]
+        io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
+        io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
+        io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
+      end
+
     else
       show {
         title "Under development"
