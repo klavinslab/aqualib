@@ -13,7 +13,6 @@ Plugin.prototype.render = function(data) {
 
       $.each(data[this],function(j) {
 
-        console.log(this);
 
         table.append(
           aq.template('job-table-row', { 
