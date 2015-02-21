@@ -434,7 +434,7 @@ module Cloning
         t.simple_spec[:plated_ids].each_with_index do |pid,idx|
           sample_check = sample_check && find(:item, id: id)[0].object_type.name == "E coli Plate of Plasmid"
           t.simple_spec[:primer_ids][idx].each do |prid|
-            sample_check = sample_check && find(:sample, id: prid)[0].sample_type.name == "Primer" && find(:sample, id: prid)[0].in "Primer Aliquot"
+            sample_check = sample_check && find(:sample, id: prid)[0].sample_type.name == "Primer" && find(:sample, id: prid)[0].in("Primer Aliquot")[0]
           end
         end
         ready_conditions = length_check && sample_check
@@ -445,7 +445,7 @@ module Cloning
           note "The input checking function for this task #{params[:name]} is still under development."
           note "#{t.id}"
         }
-        
+
       end
 
       if ready_conditions
