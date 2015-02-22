@@ -1,6 +1,21 @@
 argument
   debug_mode: string, "Yes or No"
+  item_choice_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    item_choice_mode: item_choice_mode
+    task_name: "Plasmid Verification"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
 end
 
 place overnight
@@ -10,7 +25,7 @@ place overnight
     debug_mode: debug_mode
     group: group
   end
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -39,16 +54,19 @@ place upload
   window: hours(1)
 end
 
+wire tasks_inputs => overnight
 wire overnight => miniprep
 wire miniprep => sequencing
 wire sequencing => upload
 
+transition [ tasks_inputs ] => [ overnight ]  when !error(0) && completed(0) end
 transition [ overnight ] => [ miniprep ] when !error(0) && completed(0) end
 transition [ miniprep ] => [ sequencing ] when !error(0) && completed(0) end
 transition [ sequencing] => [ upload ] when !error(0) && completed(0) end
 transition [ upload ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
 transition [ miniprep ] => [ sequencing ] when error(0) end
 transition [ sequencing ] => [ sequencing ] when error(0) end
