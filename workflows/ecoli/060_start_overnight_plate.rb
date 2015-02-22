@@ -62,7 +62,7 @@ class Protocol
       title "Bacterial Marker info required"
       note "Plasmids corresponding to the following plate_ids need to enter Bacterial Marker info."
       note "#{info_needed_plate_ids}"
-    }
+    } if info_needed_plate_ids.length > 0
 
     plates = plate_ids.collect { |x| find(:item, id: x)[0] }
     overnights = []
