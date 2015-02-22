@@ -27,6 +27,13 @@ class Protocol
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
+    show {
+      title "Task status"
+      note "For #{io_hash[:task_name]} tasks that belong to #{io_hash[:group]}:"
+      note "Ready tasks are #{tasks[:ready_ids]}"
+      note "Waiting tasks are #{tasks[:waiting_ids]}" if tasks[:waiting_ids].length > 0
+      note "There is no waiting task." if tasks[:waiting_ids].length == 0
+    }
 
     case io_hash[:task_name]
 
@@ -152,8 +159,8 @@ class Protocol
     end
 
     show {
-      title "Tasks inputs have been successfully processed!"
-      note "#{io_hash[:task_name]} tasks inputs have been successfully processed and please work on the next protocol in the flow!"
+      title "Tasks inputs processed!"
+      note "#{io_hash[:task_name]} tasks inputs have been successfully processed and please work on the next protocol in the flow! Cheers!"
     }
 
     return { io_hash: io_hash }
