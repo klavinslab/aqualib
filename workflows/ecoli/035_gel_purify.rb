@@ -46,7 +46,7 @@ class Protocol
 
 		weights = show {
 			title "Weigh each gel slice."
-			check "Zero the scale"
+			check "Zero the scale with an empty 1.5 mL tube."
 			check "Weigh each slice and enter the recorded weights in the following:"
 			gel_slices.each do |gs|
 				get "number", var: "w#{gs.id}", label: "Enter a number for tube #{gs.id}", default: 0.123
@@ -67,7 +67,7 @@ class Protocol
 
 		show{
 			title "Add the following volumes of QG buffer to the corresponding tube."
-			table [["Gel Slices", "QG Volume in µl"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes)
+			table [["Gel Slices", "QG Volume in µL"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes)
 	  }
 	
 		show {
@@ -80,7 +80,7 @@ class Protocol
 		show {
 			title "Add isopropanol"
 			note "Add isopropanol according to the following table. Pipette up and down to mix"
-			table [["Gel slice", "Isopropanol"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
+			table [["Gel slice", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
 		} if (iso_volumes.select { |v| v > 0 }).length > 0
 
 		show {
