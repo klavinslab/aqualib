@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Fragment Construction",
+      task_name: "Plasmid Verification",
       group: "technicians"
     }
   end
