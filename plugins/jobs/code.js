@@ -13,13 +13,14 @@ Plugin.prototype.render = function(data) {
 
       $.each(data[this],function(j) {
 
+
         table.append(
           aq.template('job-table-row', { 
             pill: pill,
             job: aq.job_link(this.id,this.id),
             path: aq.filename(this.path) + (this.metacol_id > 0 ? " (" + aq.metacol_link(this.metacol_id) + ")" : ""),
             submitted_by: aq.user_link(this.submitted_by,this.submitted_login),
-            user: aq.user_link(this.user,this.user_login),           
+            user: aq.user_link(this.user_id,this.user_login),           
             group: aq.group_link(this.group_id,this.group_name),
             start_link: this.start,
             last_update: this.last_update
