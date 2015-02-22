@@ -342,6 +342,10 @@ module Cloning
   end ### sequencing_status
 
   def task_status p={}
+
+    # This function is to process tasks of which the status is waiting or ready. If ready_condition of the task is met, set the status to ready, otherwise, set the status to waiting.
+    # This function takes a hash as an argument. group defines whose tasks to process based on their owners belongings to the group and name defines which task_prototype of tasks to process. For example, group: technicians, name: "Yeast Strain QC" will process all Yeast Strain QC tasks whose owners belong to a group called cloning. Another example, group: yang, name: "Fragment Construction" will process all Fragment Construction tasks whose owner belong to a group called yang.
+
     params = ({ group: false, name: "" }).merge p
     raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].length == 0
     tasks_all = find(:task,{task_prototype: { name: params[:name] }})
