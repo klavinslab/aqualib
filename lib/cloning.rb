@@ -435,9 +435,6 @@ module Cloning
           sample_check = sample_check && find(:item, id: pid)[0].object_type.name == "E coli Plate of Plasmid"
           t.simple_spec[:primer_ids][idx].each do |prid|
             sample_check = sample_check && find(:sample, id: prid)[0].sample_type.name == "Primer" && find(:sample, id: prid)[0].in("Primer Aliquot") != nil
-            show {
-              note "#{t.id} and sample_check is #{sample_check} and length_check is #{length_check}"
-            }
           end
         end
         ready_conditions = length_check && sample_check
