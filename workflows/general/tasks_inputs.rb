@@ -27,12 +27,29 @@ class Protocol
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
+
+    waiting_users = tasks[:waiting_ids].collect { |tid| find(:task, id: tid)[0].user.name }
+    ready_users = tasks[:ready_ids].collect{ |tid| find(:task, id: tid)[0].user.name }
+
     show {
+
       title "Task status"
       note "For #{io_hash[:task_name]} tasks that belong to #{io_hash[:group]}:"
-      note "Ready tasks are #{tasks[:ready_ids]}"
-      note "Waiting tasks are #{tasks[:waiting_ids]}" if tasks[:waiting_ids].length > 0
-      note "There is no waiting task." if tasks[:waiting_ids].length == 0
+
+      if tasks[:waiting_ids].length > 0
+        note "Waiting tasks are:" 
+        table [[ "Waiting task", "Tasks owner"]].concat(tasks[:waiting_ids].zip waiting_users)
+      else
+        note "No task is wating"
+      end
+
+      if tasks[:ready_ids].length > 0
+        note "Ready tasks are:"
+        table [[ "Ready tasks", "Tasks owner"]].concat(tasks[:ready_ids].zip ready_users)
+      else
+        note "No task is ready"
+      end
+      
     }
 
     case io_hash[:task_name]
