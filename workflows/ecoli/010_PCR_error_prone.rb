@@ -129,7 +129,7 @@ class Protocol
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
-        check "Label a new stripwell with the id #{sw}. Grab 5 wells for less than 5 PCRs"
+        check "Label a new stripwell with the id #{sw}. Grab 5 wells for less than 5 reactions."
         separator
       end
       # TODO: Put an image of a labeled stripwell here

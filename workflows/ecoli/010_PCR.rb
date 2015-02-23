@@ -35,7 +35,7 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { task_mode: "Yes", debug_mode: "No", item_choice_mode: "No", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
 
-    # re define the debug function based on the debug_mode input
+    # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -121,7 +121,7 @@ class Protocol
       show {
         title "Prepare Stripwell Tubes"
         stripwells.each do |sw|
-          check "Label a new stripwell with the id #{sw}."
+          check "Label a new stripwell with the id #{sw}. Grab 5 wells for less than 5 reactions."
           check "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
           separator
         end
