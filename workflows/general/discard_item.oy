@@ -17,7 +17,7 @@ place tasks_inputs
 end
 
 place discard_item
-  protocol: "aqualib:workflows/yeast/085_discard_items.rb"
+  protocol: "aqualib:workflows/general/discard_item.rb"
   group: group
   marked: false
   start: now()
