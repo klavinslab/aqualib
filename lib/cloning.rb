@@ -42,6 +42,9 @@ module Cloning
         end
       elsif template.sample_type.name == "Yeast Strain"
         template_items = template.in "Lysate"
+        if template_items.length == 0
+          template_items = template.in "Yeast cDNA"
+        end
       end
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
