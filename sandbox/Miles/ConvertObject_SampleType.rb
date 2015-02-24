@@ -31,6 +31,8 @@ class Protocol
     
         stock=find(:item, id: idnum)
         samp=find(:sample, id: idnumsamp)
+        
+        raise "Sample type needs to be the same" if stock[0].sample.sample_type.name != samp.sample_type.name
       
     	  
     	  stock[0].sample=samp[0]
