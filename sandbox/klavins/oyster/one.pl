@@ -1,3 +1,3 @@
 step
-  title: "One"
+  description: "One"
 end

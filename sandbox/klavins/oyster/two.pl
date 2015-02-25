@@ -1,3 +1,3 @@
 step
-  title: "Two"
+  description: "Two"
 end
