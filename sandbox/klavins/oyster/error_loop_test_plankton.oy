@@ -1,6 +1,6 @@
 
 place p1
-  protocol: "aqualib:sandbox/klavins/oyster/one.rb"
+  protocol: "aqualib:sandbox/klavins/oyster/one.pl"
   group: aquarium_user
   marked: true
   start: now()
@@ -8,7 +8,7 @@ place p1
 end
 
 place p2
-  protocol: "aqualib:sandbox/klavins/oyster/two.rb"
+  protocol: "aqualib:sandbox/klavins/oyster/two.pl"
   group: aquarium_user
   start: now()
   window: hours(8)
