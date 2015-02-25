@@ -94,14 +94,17 @@ class Protocol
       tab.push [primer.id.to_s + " " + primer.name, primer.properties["Overhang Sequence"] + primer.properties["Anneal Sequence"]]
     end
 
-    show {
+    idt = show {
       title "Create an IDT DNA oligos order"
       check "Go to the IDT website idtdna.com/UWBIOCHEMSTORES/, log in with the lab account. (Username: mnparks@uw.edu, password is the lab general password)."
       check "Click Custom DNA Oligos, click Bulk Input. Copy paste the following table and then click the Update button."
       table tab
       check "Click Add to Order, review the shopping cart to double check that you entered correctly. There should be #{primers.length} primers in the cart."
       check "Click Checkout, then click Continue, and then click Submit."
+      get "text", var: "order_number", label: "Enter the IDT order number below", default: 100
     }
+
+    io_hash[:order_number] = idt[:order_number]
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|

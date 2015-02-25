@@ -4,7 +4,7 @@ argument
 end
 
 place order_primer
-  protocol: "aqualib:workflows/ecoli/001_order_primers.rb"
+  protocol: "aqualib:workflows/general/order_primer.rb"
   group: group
   argument
     debug_mode: debug_mode
@@ -16,7 +16,7 @@ place order_primer
 end
 
 place get_primer
-  protocol: "aqualib:workflows/ecoli/000_get_primers_rehydrate_dilute.rb"
+  protocol: "aqualib:workflows/general/get_primer.rb"
   group: group
   marked: false
   start: hours(12)
