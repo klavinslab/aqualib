@@ -6,11 +6,76 @@ class Protocol
   include Standard
   include Cloning
 
+  def task_status_debug p={}
+
+    # This function is used to debug task_status function in cloning.rb
+
+    params = ({ group: false, name: "" }).merge p
+    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].length == 0
+    tasks_all = find(:task,{task_prototype: { name: params[:name] }})
+    tasks = []
+    # filter out tasks based on group input
+    if params[:group] && !params[:group].empty?
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_all.each do |t|
+        tasks.push t if t.user.member? group_info.id
+      end
+    else
+      tasks = tasks_all
+    end
+    waiting = tasks.select { |t| t.status == "waiting" }
+    ready = tasks.select { |t| t.status == "ready" }
+
+    # cycling through waiting and ready to make sure tasks inputs are valid
+
+    (waiting + ready).each do |t|
+
+      case params[:name]
+
+      when "Yeast Strain QC"
+        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
+        t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
+        sample_check = true
+        t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
+          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
+          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
+          if primer1 && primer2 && t.simple_spec[:num_colonies][idx] > 0
+            t[:yeast_plate_ids][:ready_to_QC].push yid
+          else
+            t[:yeast_plate_ids][:not_ready_to_QC].push yid
+          end
+        end
+
+        ready_conditions = sample_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
+      end
+
+      if ready_conditions
+        t.status = "ready"
+        t.save
+      else
+        t.status = "waiting"
+        t.save
+      end
+
+    end
+
+    task_status_hash = { 
+      waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
+    }
+
+    task_status_hash[:fragments] = ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Gibson Assembly", "Fragment Construction"].include? params[:name]
+
+    return task_status_hash
+
+  end
+
   def arguments
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Plasmid Verification",
+      task_name: "Yeast Strain QC",
       group: "technicians"
     }
   end
@@ -166,6 +231,14 @@ class Protocol
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
         io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
         io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
+      end
+
+    when "Yeast Strain QC"
+      io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
+        io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       end
 
     else

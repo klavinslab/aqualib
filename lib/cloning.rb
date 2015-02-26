@@ -446,6 +446,32 @@ module Cloning
         end
         ready_conditions = length_check && sample_check
 
+      when "Yeast Transformation"
+        t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
+        t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
+          y = find(:sample, id: yid)[0]
+          # check if glycerol stock and plasmid stock are ready
+          parent_ready = y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0 || y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Overnight Suspension").length > 0
+          plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0 if y.properties["Integrant"]
+          ready_yeast_strains.push y if parent_ready && plasmid_ready
+        end
+
+      when "Yeast Strain QC"
+        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
+        t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
+        sample_check = true
+        t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
+          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
+          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
+          if primer1 && primer2 && t.simple_spec[:num_colonies][idx] > 0
+            t[:yeast_plate_ids][:ready_to_QC].push yid
+          else
+            t[:yeast_plate_ids][:not_ready_to_QC].push yid
+          end
+        end
+
+        ready_conditions = sample_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
+
       else
         show {
           title "Under development"
