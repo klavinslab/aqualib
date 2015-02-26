@@ -19,34 +19,22 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-  	io_hash[:debug_mode] = input[:debug_mode] || "No"
+
+    # set default values
+    io_hash = { yeast_plate_ids: [], num_colonies: [], debug_mode: "No", comb_1: "10 thin", comb_2: "10 thin", volume: 10 }.merge io_hash
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
-    io_hash[:comb_1] = "10 thin"
-    io_hash[:comb_2] = "10 thin"
-    io_hash[:volume] = 10 # volume for PCR reaction
-
-    # making sure have the following hash indexes.
-    io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
-
-    tasks = find(:task,{ task_prototype: { name: "Yeast Strain QC" } })
-    waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
-    io_hash[:task_ids] = task_group_filter(waiting_ids, io_hash[:group])
-    io_hash[:task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
-      io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
-    end
-
     raise "Incorrect inputs, yeast_plate_ids size does not match num_colonies size. They need to be one to one correspondence." if io_hash[:yeast_plate_ids].length != io_hash[:num_colonies].length
 
   	show {
   		title "Protocol information"
-  		note "This protocol makes yeast lysates in stripwell tubes"
+  		note "This protocol makes yeast lysates in stripwell tubes for the following plates"
+      note "#{io_hash[:yeast_plate_ids]}"
   	}
 
   	yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
