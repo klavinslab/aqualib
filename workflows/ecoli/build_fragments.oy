@@ -5,7 +5,7 @@ argument
 end
 
 place dilute_plasmid_stock
-  protocol: "aqualib:workflows/ecoli/009_dilute_plasmid_stock.rb"
+  protocol: "aqualib:workflows/general/dilute_template_stock.rb"
   group: group
   argument
     debug_mode: debug_mode

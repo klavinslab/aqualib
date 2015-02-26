@@ -122,9 +122,9 @@ class Protocol
         title "Prepare Stripwell Tubes"
         stripwells.each do |sw|
           if sw.num_samples <= 6
-            check "Grab a new stripwell with 6 wells and lable with the id #{sw}." 
+            check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
           else
-            check "Grab a new stripwell with 12 wells and lable with the id #{sw}."
+            check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
           check "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
           separator

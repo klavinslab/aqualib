@@ -10,7 +10,6 @@ class Protocol
     {
       io_hash: {},
       plasmid_stock_ids: [5392,5389,5350],
-      fragment_ids: [],
       debug_mode: "No"
     }
   end
@@ -19,7 +18,7 @@ class Protocol
 
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { group: "technicians", debug_mode: "Yes", fragment_ids: [] }.merge io_hash
+    io_hash = { group: "technicians", debug_mode: "Yes" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -29,11 +28,11 @@ class Protocol
     # pull not ready to build fragments from Gibson Assembly tasks and Fragment Construction tasks
     gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
     fragment_tasks = task_status name: "Fragment Construction", group: io_hash[:group]
-    io_hash[:fragment_ids].concat gibson_tasks[:fragments][:not_ready_to_build] if gibson_tasks[:fragments]
-    io_hash[:fragment_ids].concat fragment_tasks[:fragments][:not_ready_to_build] if fragment_tasks[:fragments]
+    fragment_ids.concat gibson_tasks[:fragments][:not_ready_to_build] if gibson_tasks[:fragments]
+    fragment_ids.concat fragment_tasks[:fragments][:not_ready_to_build] if fragment_tasks[:fragments]
 
     # retrive templates info from fragments
-    plasmids = io_hash[:fragment_ids].collect{ |f| find(:sample, id: f)[0].properties["Template"] }
+    plasmids = fragment_ids.collect{ |f| find(:sample, id: f)[0].properties["Template"] }
 
     # remove redundant plasmids and figure out templates that need to be diluted
     plasmids = plasmids.compact.uniq
@@ -95,8 +94,6 @@ class Protocol
 
     # release all the items
     release plasmid_stocks + plasmid_diluted_stocks, interactive: true, method: "boxes"
-
-    io_hash[:plasmid_diluted_stock_ids]  = plasmid_diluted_stocks.collect {|p| p.id}
 
     return { io_hash: io_hash }
 
