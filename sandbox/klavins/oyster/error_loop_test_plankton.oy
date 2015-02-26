@@ -1,0 +1,20 @@
+
+place p1
+  protocol: "aqualib:sandbox/klavins/oyster/one.pl"
+  group: aquarium_user
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place p2
+  protocol: "aqualib:sandbox/klavins/oyster/two.pl"
+  group: aquarium_user
+  start: now()
+  window: hours(8)
+end
+
+transition [ p1 ] => [ p2 ] when !error(0) && completed(0) end
+transition [ p1 ] => [ p1 ] when error(0) && completed(0) end
+transition [ p2 ] => [] when completed(0) end
+  
