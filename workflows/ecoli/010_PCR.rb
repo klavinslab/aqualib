@@ -104,7 +104,7 @@ class Protocol
     fragment_info_temp_hash.each do |tanneal, fragment_info|
       lengths         = fragment_info.collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30 + 30
-      mm, ss = (extension_time.to_i).divmod(60) 
+      mm, ss = (extension_time.to_i).divmod(60)
 
       # # find the average annealing temperature
       # tanneal = temperatures.inject{ |sum, el| sum + el }.to_f / temperatures.size
@@ -121,7 +121,11 @@ class Protocol
       show {
         title "Prepare Stripwell Tubes"
         stripwells.each do |sw|
-          check "Label a new stripwell with the id #{sw}. Grab 5 wells for less than 5 reactions."
+          if sw.num_samples <= 6
+            check "Grab a new stripwell with 6 wells and lable with the id #{sw}." 
+          else
+            check "Grab a new stripwell with 12 wells and lable with the id #{sw}."
+          end
           check "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
           separator
         end

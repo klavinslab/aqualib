@@ -101,6 +101,7 @@ class Protocol
       table tab
       check "Click Add to Order, review the shopping cart to double check that you entered correctly. There should be #{primers.length} primers in the cart."
       check "Click Checkout, then click Continue, and then click Submit."
+      check "Go back to the main page, find the order number for the order you just placed, enter in the following."
       get "text", var: "order_number", label: "Enter the IDT order number below", default: 100
     }
 
