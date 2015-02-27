@@ -10,7 +10,6 @@ class Protocol
     {
       io_hash: {},
       lysate_stripwell_ids: [13682],
-      yeast_sample_ids: [2866,2866,2866,2866,2866,2866],
       debug_mode: "No"
     }
   end
@@ -18,13 +17,16 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    lysate_stripwells = io_hash[:lysate_stripwell_ids].collect { |sid| collection_from sid }
-    yeast_lysates = io_hash[:yeast_sample_ids].collect { |yid| find(:sample, id: yid)[0]}
+    io_hash = { lysate_stripwell_ids: [], debug_mode: "No" }
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+
+    stripwells = io_hash[:lysate_stripwell_ids].collect { |ids| ids.collect { |id| collection_from id } }
+    yeast_lysates = io_hash[:yeast_sample_ids].collect { |yid| find(:sample, id: yid)[0]}
     # find QC primers in the yeast strain properties
     forward_primers = yeast_lysates.collect { |y| find(:sample, id: y)[0].properties["QC Primer1"].in("Primer Aliquot")[0] }
     reverse_primers = yeast_lysates.collect { |y| find(:sample, id: y)[0].properties["QC Primer2"].in("Primer Aliquot")[0] }
@@ -97,7 +99,7 @@ class Protocol
       sw.move thermocycler[:name]
     end
 
-    # Release the stripwells silently, since they should stay in the thermocycler
+    # Release the pcr_stripwells silently, since they should stay in the thermocycler
     release pcr_stripwells
     release lysate_stripwells, interactive: true
 
