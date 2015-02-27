@@ -464,7 +464,7 @@ module Cloning
         t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
           primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
           primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
-          if primer1 && primer2 && t.simple_spec[:num_colonies][idx] > 0
+          if primer1 && primer2 && t.simple_spec[:num_colonies][idx].between?(0, 10)
             t[:yeast_plate_ids][:ready_to_QC].push yid
           else
             t[:yeast_plate_ids][:not_ready_to_QC].push yid
