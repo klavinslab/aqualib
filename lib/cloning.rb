@@ -421,7 +421,8 @@ module Cloning
             t[:fragments][:ready_to_build].push fid
           end
         end
-        ready_conditions = t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && find(:sample, id:t.simple_spec[:plasmid])[0]
+        plasmid_condition = find(:sample, id:t.simple_spec[:plasmid])[0] && find(:sample, id:t.simple_spec[:plasmid])[0].properties["Bacterial Marker"].length > 0
+        ready_conditions = t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && plasmid_condition
 
       when "Fragment Construction"
         t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
