@@ -99,6 +99,7 @@ class Protocol
     show {
       title "Incubate the following 1.5 mL tubes"
       check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
+      note "Retrieve all the tubes 30 minutes later by doing the following plate_ecoli_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       image "put_green_tube_holder_to_incubator"
     }

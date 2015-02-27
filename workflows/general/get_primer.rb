@@ -67,10 +67,10 @@ class Protocol
 
       rehydrate_volume = mw[:"mw_#{prid}".to_sym] * 10
       if primer_stock.sample.properties["Anneal Sequence"][1] != "*"
-        rehydrate_volume = rehydrate_volume.to_s + "µL of TE"
+        rehydrate_volume = rehydrate_volume.to_s + " µL of TE"
         primer_stocks_to_dilute.push primer_stock
       else
-        rehydrate_volume = rehydrate_volume.to_s + "µL of water"
+        rehydrate_volume = rehydrate_volume.to_s + " µL of water"
       end
 
       tab.push([prid, "#{primer_stock}", rehydrate_volume])

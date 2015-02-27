@@ -69,6 +69,7 @@ class Protocol
           table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip selection_plates.collect{ |p| { content: p.id, check: true } })
           table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]}+#{io_hash[:inducer_plate]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip inducer_plates.collect{ |p| { content: p.id, check: true } }) unless io_hash[:inducer_plate] == ""
         }
+        delete transformed_aliquots
       else
         show {
           title "No marker info found"
@@ -79,7 +80,6 @@ class Protocol
     end
 
     move all_plates, "37 C incubator"
-    delete all_transformed_aliquots
 
     release all_plates, interactive: true if all_plates.length > 0
     io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
