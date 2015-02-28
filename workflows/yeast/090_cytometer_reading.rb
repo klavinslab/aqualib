@@ -158,17 +158,19 @@ class Protocol
 
     release(yeast_deepwell_plates, interactive: true) {
       warning "Put a new breathable sealing film on the plate if the old sealing film has cell culture on it."
+      note "Breathable sealing film can be found at B5.535."
     }
 
     job_id = jid
 
     show {
       title "Cytometer reading"
-      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click Open Run Display first."
-      check "Place the loaded u-bottom plate on the CSampler holder"
-      check "Click new workspace, for Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading, enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000. Then Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}. And the wells you just chose should turn to a different color."
+      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click CLOSE RUN DISPLAY first and then click Eject Plate."
+      check "Place the loaded u-bottom plate on the CSampler holder."
+      check "Find Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading by clicking the plate layout."
+      check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000." 
+      check "Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}. And the wells you just chose should turn to a different color."
       check "Click Open Run Display, then click Autorun."
-      note "#{num_samples_to_run}"
     }
 
     estimated_time = num_samples_to_run * 30
@@ -179,7 +181,7 @@ class Protocol
       title "Eject plate and export data"
       note "The esitmated time for this cytometer run is shown below. Come back around that time."
       timer initial: { hours: 0, minutes: estimated_time_mm, seconds: estimated_time_ss}
-      check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
+      check "Wait till the cytometer says Done. Click CLOSE RUN DISPLAY, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
       check "Click File/Export ALL Samples as FCS"
       check "Go to Desktop/FCS Exports, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}. Upload this zip file here by dragging it here. After upload is done, delete the exported folder and zip file in the FCS Exports folder."
       upload var: "cytometry_#{job_id}"
@@ -190,26 +192,6 @@ class Protocol
       check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace it with a full reagnent tube with the same letter written on its lid top."
       check "Put the cleanning 24 well plate on the CSampler."
       check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
-    }
-
-    discarded_plate_ids = []
-    existing_plate_ids = []
-
-    yeast_ubottom_plates.each do |y|
-      # delete the ubottom plates if it already holds more than 90 samples in it.
-      if y.num_samples > 90
-        discarded_plate_ids.push y.id
-        y.mark_as_deleted
-        y.save
-      else
-        existing_plate_ids.push y.id
-      end
-    end
-
-    show {
-      title "Discard or return plates"
-      note "Discard the following 96 ubottom plates with id #{discarded_plate_ids}. Discard properly into biohazard box." if discarded_plate_ids.length > 0
-      note "Put a new clear film or put back the clear film on each existing plate #{existing_plate_ids} and cross out the wells that have been used. Stack the plates on the shelf with item number label facing outside." if existing_plate_ids.length > 0
     }
 
     release yeast_ubottom_plates

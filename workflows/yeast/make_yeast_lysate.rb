@@ -83,6 +83,8 @@ class Protocol
 
     pcrs.each do |t, pcr|
       pcr[:stripwells] = produce spread pcr[:yeast_samples], "Stripwell", 1, 12
+      pcr[:forward_primers] = pcr[:yeast_samples].collect { |y| y.properties["QC Primer1"] }
+      pcr[:reverse_primers] = pcr[:yeast_samples].collect { |y| y.properties["QC Primer1"] }
     end
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
@@ -144,7 +146,7 @@ class Protocol
     	title "Spin down and dilute"
     	check "Spin down all stripwells until a small pellet is visible at the bottom of the tubes."
         stripwells.each do |sw|
-	        if sw.num_samples <= 6
+          if sw.num_samples <= 6
             check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
           else
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
@@ -169,7 +171,7 @@ class Protocol
       end
     end
 
-    io_hash[:lysate_stripwell_ids] = pcrs.collect { |t, pcr| pcr[:stripwells].collect { |s| s.id } }
+    io_hash[:lysate_stripwell_ids] = stripwells.collect { |sw| sw.id }
 
     return { io_hash: io_hash }
   end
