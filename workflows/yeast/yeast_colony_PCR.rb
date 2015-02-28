@@ -28,9 +28,6 @@ class Protocol
     # find and take lystae stripwells
     lysate_stripwells = io_hash[:lysate_stripwell_ids].collect { |i| collection_from i }
     take lysate_stripwells, interactive: true
-    show {
-      note "#{lysate_stripwells}"
-    }
 
     # find yeast_samples, primer_aliquots, T Anneals
     yeast_sample_ids = lysate_stripwells.collect { |i| i.matrix }
@@ -42,8 +39,10 @@ class Protocol
     reverse_primers = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].in("Primer Aliquot")[0]} }
     tanneals = forward_primers.map.with_index { |pr, idx1| pr.map.with_index { |p, idx2| ( p.sample.properties["T Anneal"] + reverse_primers[idx1][idx2].sample.properties["T Anneal"] ) / 2 } }
 
+    primers = (forward_primers.flatten + reverse_primers.flatten).uniq
+
     # take primer aliquots
-    take (forward_primers.flatten + reverse_primers.flatten).uniq, interactive: true, method: "boxes"
+    take primers, interactive: true, method: "boxes"
 
     # Get phusion enzyme
     phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
@@ -66,10 +65,6 @@ class Protocol
       pcrs[key][:tanneals].push tanneals[idx].min.round(0)
     end
 
-    show {
-      note "#{pcrs}"
-    }
-
     # produce pcr stripwells
     pcrs.each do |t, pcr|
       pcr[:lysate_stripwells].each do |sw|
@@ -81,10 +76,6 @@ class Protocol
     end
     pcr_stripwells = pcrs.collect { |t, pcr| pcr[:pcr_stripwells] }
     pcr_stripwells.flatten!
-
-    show {
-      note "#{pcrs}"
-    }
 
     # set up pcr stripwells
     show {
@@ -164,7 +155,7 @@ class Protocol
       end
     }
 
-    release (forward_primers.flatten + reverse_primers.flatten).uniq, interactive: true, method: "boxes"
+    release primers, interactive: true, method: "boxes"
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|

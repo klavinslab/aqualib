@@ -25,7 +25,7 @@ place lysate
 end
 
 place pcr
-  protocol: "aqualib:workflows/yeast/070_yeast_colony_PCR.rb"
+  protocol: "aqualib:workflows/yeast/yeast_colony_PCR.rb"
   group: group
   marked: false
   start: now()
