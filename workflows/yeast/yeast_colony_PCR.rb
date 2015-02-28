@@ -97,12 +97,6 @@ class Protocol
     # add primers to stripwells
     pcrs.each do |t, pcr|
       pcr[:pcr_stripwells].each_with_index do |sw, idx|
-        show {
-          note "#{sw}"
-          note "#{pcr[:forward_primers][idx]}"
-          note "#{pcr[:reverse_primers][idx]}"
-        }
-
         load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
             pcr[:forward_primers][idx],
             pcr[:reverse_primers][idx]
