@@ -473,6 +473,19 @@ module Cloning
 
         ready_conditions = sample_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
 
+      when "Sequencing"
+        t[:primers] = { ready: [], no_aliquot: [] }
+
+        t.simple_spec[:primer_ids].each do |prid|
+          if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
+            t[:primers][:ready].push prid
+          else
+            t[:primers][:no_aliquot].push prid
+          end
+        end
+
+        ready_conditions = t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
+        
       else
         show {
           title "Under development"

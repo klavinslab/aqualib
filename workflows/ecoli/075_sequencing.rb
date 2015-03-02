@@ -1,4 +1,3 @@
-# first version by David, refactored and task enabled by Yaoyu
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
@@ -50,7 +49,7 @@ class Protocol
       end
     end
 
-    sequencing_info = sequencing_status group: io_hash[:group]
+    sequencing_info = task_status name: "Sequencing", group: io_hash[:group]
     io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
     io_hash[:sequencing_task_ids].each do |tid|
@@ -76,9 +75,14 @@ class Protocol
       }
       return { io_hash: io_hash }
     end
-    dna_names = []
-    plasmid_stock_ids.each_with_index do |pid,idx|
-      dna_names.push "#{pid}-" + initials[idx]
+
+    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
+    primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]}
+
+    # create order table for sequencing
+    sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
+    plasmid_stocks.each_with_index do |p,idx|
+      sequencing_tab.push ["#{p.id}-" + initials[idx], "Plasmid", p.sample.properties["Length"], primer_ids[idx]]
     end
 
     num = primer_ids.length
@@ -87,14 +91,12 @@ class Protocol
       check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
       check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
-      table [["DNA Name", "My Primer Name"]].concat (dna_names.zip primer_ids)
+      table sequencing_tab
       check "Click Save & Next, Review the form and click Next Step"
       check "Enter Quotation Number MS0721101, click Next Step"  
       check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
-    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
-    primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]} 
     if io_hash[:group] != ("technicians" || "cloning" || "admin")
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
