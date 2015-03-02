@@ -82,7 +82,12 @@ class Protocol
     # create order table for sequencing
     sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
     plasmid_stocks.each_with_index do |p,idx|
-      sequencing_tab.push ["#{p.id}-" + initials[idx], "Plasmid", p.sample.properties["Length"], primer_ids[idx]]
+      if p.sample.sample_type.name == "Plasmid"
+        dna_type = "Plasmid"
+      elsif p.sample.sample_type.name == "Fragment"
+        dna_type = "Purified PCR"
+      end
+      sequencing_tab.push ["#{p.id}-" + initials[idx], dna_type, p.sample.properties["Length"], primer_ids[idx]]
     end
 
     num = primer_ids.length
@@ -101,17 +106,23 @@ class Protocol
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-    plasmid_lengths = plasmid_stocks.collect{|pls| pls.sample.properties["Length"]}
-    plasmid_concs = plasmid_stocks.collect{|pls| pls.datum[:concentration]}
+    plasmid_concs = plasmid_stocks.collect{|pls| pls.}
     plasmid_volume_list = []
-    plasmid_lengths.each_with_index do |length, idx|
-    	if length < 6000
-    		plasmid_volume_list.push (500.0/plasmid_concs[idx]).round(1)
-    	elsif length < 10000
-    		plasmid_volume_list.push (800.0/plasmid_concs[idx]).round(1)
-    	else
-    		plasmid_volume_list.push (10000.0/plasmid_concs[idx]).round(1)
-    	end
+    plasmid_stocks.each_with_index do |p, idx|
+      length = p.sample.properties["Length"]
+      conc = p.datum[:concentration]
+      if p.sample.sample_type.name == "Plasmid" || length > 4000
+        if length < 6000
+          plasmid_volume_list.push ( 500.0 / conc ).round(1)
+        elsif length < 10000
+          plasmid_volume_list.push ( 800.0 / conc ).round(1)
+        else
+          plasmid_volume_list.push ( 10000.0 / conc ).round(1)
+        end
+      elsif p.sample.sample_type.name == "Fragment"
+        if length < 500
+          plasmid_volume_list.push (10 / conc).round(1)
+          
     end
     water_volume_list = plasmid_volume_list.collect{|v| (12.5-v).to_s + " µL"}
     plasmids_with_volume = plasmid_stock_ids.map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
