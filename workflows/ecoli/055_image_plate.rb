@@ -26,15 +26,16 @@ class Protocol
       end
     end
     plates = io_hash[:plate_ids].collect { |x| find(:item, id: x)[0] }
-    show {
-      title "Work in the gel room"
-      note "You will take images for plates using the gel room camera in this protocol."
-      check "Go log into the gel room computer"
-      warning "Be sure to wear gloves"
-    }
     take plates, interactive: true
 
     if io_hash[:image_option] == "Yes"
+      show {
+        title "Work in the gel room"
+        note "You will take images for plates using the gel room camera in this protocol."
+        check "Go log into the gel room computer"
+        warning "Be sure to wear gloves"
+      }
+
       show {
         title "Imaging guide"
         bullet "Place the agar part of the plate inverted on the transilluminator. Place the camera hood on the transilluminator. Turn on transilluminator by sliding you hand into the hood."
@@ -50,7 +51,6 @@ class Protocol
         plates.each do |p|
           check "Rename the image for plate #{p.id} as plate_#{p.id} and upload here:"
           upload var: "plate_#{p.id}"
-          p.save
         end
       }
     end
@@ -84,23 +84,22 @@ class Protocol
       p.save
     end
 
-    location_plate = show {
-      title "Parafilm and store plate"
-      note "Parafilm the following plates, place them in an available spot in the deli-fridge boxes or stacks, then enter their specific locations. It could be a box like DFP.0 or a location in the stacks like DFP.0.0.20."
-      stored_plates.each do |p|
-        get "text", var: "c#{p.id}", label: "Enter the location for plate #{p.id}", default: "DFP.0.0.0"
-      end
+    show {
+      title "Parafilm plate(s)"
+      note "Parafilm the following plate(s)."
+      note stored_plates.collect { |p| "#{p}" }
     }
 
     # update stored plates datum and location
 
     stored_plates.each do |p|
       p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
-      p.location = location_plate[:"c#{p.id}".to_sym]
       p.save
+      p.store
+      p.reload
     end
 
-    release plates
+    release plates, interactive: true
 
     # Set tasks in the io_hash to be plate imaged.
     if io_hash[:task_ids]

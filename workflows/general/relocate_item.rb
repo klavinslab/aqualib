@@ -26,7 +26,11 @@ class Protocol
         true
       end
     end
+
     items = io_hash[:ids].collect {|id| find(:item, id:id)[0]}
+
+    # items = find(:item, { object_type: { name: "E coli Plate of Plasmid" } })
+
     take items, interactive: true
 
     items.each do |i|
