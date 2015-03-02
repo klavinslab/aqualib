@@ -141,8 +141,11 @@ class Protocol
       ps.save
   	end
 
-    # change overnights location to DFP.4
-    move overnights, "DFP.4"
+    # restore overnights location to be managed by location wizard
+    overnights.each do |o|
+      o.store
+      o.reload
+    end
     
   	release overnights, interactive: true
   	release plasmid_stocks, interactive: true, method: "boxes"
