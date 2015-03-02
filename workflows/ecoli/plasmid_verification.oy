@@ -31,7 +31,7 @@ place overnight
 end
 
 place miniprep
-  protocol: "aqualib:workflows/ecoli/070_miniprep.rb"
+  protocol: "aqualib:workflows/ecoli/miniprep.rb"
   group: group
   marked: false
   start: hours(12)
