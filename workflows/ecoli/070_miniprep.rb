@@ -48,17 +48,16 @@ class Protocol
       io_hash[:primer_ids].each_with_index do |pids,idx|
         io_hash[:primer_ids][idx] = nil if verify_growth[:"verify#{overnights[idx].id}".to_sym] == "No"
       end
+      io_hash[:primer_ids] = io_hash[:primer_ids].compact
     end
-    io_hash[:primer_ids] = io_hash[:primer_ids].compact
-
+    
     # delete correspnding initials
     if io_hash[:initials]
       io_hash[:initials].each_with_index do |inits,idx|
         io_hash[:initials][idx] = nil if verify_growth[:"verify#{overnights[idx].id}".to_sym] == "No"
       end
+      io_hash[:initials] = io_hash[:initials].compact
     end
-    io_hash[:initials] = io_hash[:initials].compact
-
 
     overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
 
