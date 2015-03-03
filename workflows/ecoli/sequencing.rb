@@ -177,7 +177,7 @@ class Protocol
       plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])[0]
       tp = TaskPrototype.where("name = 'Sequencing Verification'")[0]
       t = Task.new
-      t.name = "#{plasmid_stock.sample.name}_stock_#{plasmid_stock.id}"
+      t.name = "#{plasmid_stock.sample.name}_plasmid_stock_#{plasmid_stock.id}"
       t.specification = ({
         "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ],
         "overnight_ids TB Overnight of Plasmid" => [ overnight.id ]
