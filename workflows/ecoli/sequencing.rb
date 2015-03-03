@@ -20,21 +20,20 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    io_hash = { task_ids: [], debug_mode: "No" }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    io_hash[:task_ids] = [] unless io_hash[:task_ids] # set default of io_hash[:task_ids]
     batch_initials = "MP"
+
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
     initials = []
-    # show {
-    #   note "#{io_hash}"
-    # }
+    
     idx = 0
     io_hash[:primer_ids].each_with_index do |pids|
       unless pids == []
@@ -166,11 +165,13 @@ class Protocol
       note "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
       note "Ensure that the bag is sealed, and put it into the Genewiz mailbox"
     }
+
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
     stripwells.each do |sw|
       sw.mark_as_deleted
       sw.save
     end
+
     # Set tasks in the io_hash to be send to sequencing
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
@@ -178,6 +179,7 @@ class Protocol
         set_task_status(task,"send to sequencing")
       end
     end
+
     # Return all info
     io_hash[:genewiz_tracking_no] = genewiz[:tracking_num]
     return { io_hash: io_hash }
