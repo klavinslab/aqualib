@@ -142,7 +142,7 @@ class Protocol
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        io_hash[:item_ids].concat task.simple_spec[:item_ids]
+        io_hash[:overnight_ids].concat task.simple_spec[:item_ids]
       end
 
       # Add sequence wrong items to discard
