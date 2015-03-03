@@ -106,12 +106,13 @@ class Protocol
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-    plasmid_concs = plasmid_stocks.collect{|pls| pls.}
+
+    # calculate volumes based on Genewiz guide
     plasmid_volume_list = []
     plasmid_stocks.each_with_index do |p, idx|
       length = p.sample.properties["Length"]
       conc = p.datum[:concentration]
-      if p.sample.sample_type.name == "Plasmid" || length > 4000
+      if p.sample.sample_type.name == "Plasmid" || length >= 4000
         if length < 6000
           plasmid_volume_list.push ( 500.0 / conc ).round(1)
         elsif length < 10000
@@ -122,12 +123,20 @@ class Protocol
       elsif p.sample.sample_type.name == "Fragment"
         if length < 500
           plasmid_volume_list.push (10 / conc).round(1)
-          
+        elsif length < 1000
+          plasmid_volume_list.push (20 / conc).round(1)
+        elsif length < 2000
+          plasmid_volume_list.push (40 / conc).round(1)
+        elsif length < 4000
+          plasmid_volume_list.push (60 / conc).round(1)
+        end
+      end
     end
+
     water_volume_list = plasmid_volume_list.collect{|v| (12.5-v).to_s + " µL"}
     plasmids_with_volume = plasmid_stock_ids.map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
     primers_with_volume = primer_aliquots.collect{|p| "2.5 µL of " + p.id.to_s }
-    			
+
     # show {
     # 	note (water_volume_list.collect {|p| "#{p}"})
     # 	note (plasmid_volume_list.collect {|p| "#{p}"})
@@ -150,7 +159,7 @@ class Protocol
         water_volume_list,
         plasmids_with_volume,
         primers_with_volume
-      ], stripwells ) 
+      ], stripwells )
     show {
       title "Put all stripwells in the Genewiz mailbox"
       note "Cap all of the stripwells."
