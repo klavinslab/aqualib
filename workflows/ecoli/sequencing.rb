@@ -186,10 +186,6 @@ class Protocol
       t.status = "waiting"
       t.user_id = overnight.sample.user.id
       t.save
-      show {
-        note "#{t.attributes.to_s}"
-        note "#{t.id}"
-      }
     end
 
     # Set tasks in the io_hash to be send to sequencing
