@@ -173,8 +173,8 @@ class Protocol
     end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
-      overnight = find(:item, id: overnight_id)
-      plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])
+      overnight = find(:item, id: overnight_id)[0]
+      plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])[0]
       tp = TaskPrototype.where("name = 'Sequencing Verification'")[0]
       t = Task.new
       t.name = "#{plasmid_stock.sample.name}_stock_#{plasmid_stock.id}"
