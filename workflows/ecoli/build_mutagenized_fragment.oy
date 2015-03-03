@@ -4,7 +4,7 @@ argument
 end
 
 place pcr
-  protocol: "aqualib:workflows/ecoli/010_PCR_error_prone.rb"
+  protocol: "aqualib:workflows/ecoli/PCR_error_prone.rb"
   group: "technicians"
   argument
     debug_mode: debug_mode

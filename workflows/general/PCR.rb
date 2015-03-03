@@ -11,16 +11,14 @@ class Protocol
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
       debug_mode: "Yes",
-      task_mode: "Yes",
       item_choice_mode: "No",
-      group: "technicians"
     }
   end
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { task_mode: "Yes", debug_mode: "No", item_choice_mode: "No", fragment_from_gibson_ids: [], fragment_from_construction_ids: [] }.merge io_hash # set default value of io_hash
+    io_hash = { debug_mode: "No", item_choice_mode: "No" }.merge io_hash # set default value of io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -191,15 +189,3 @@ class Protocol
   end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
