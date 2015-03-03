@@ -132,9 +132,12 @@ class Protocol
       end
     end
 
-    water_volume_list = plasmid_volume_list.collect{|v| (12.5-v).to_s + " µL"}
-    plasmids_with_volume = plasmid_stock_ids.map.with_index{|pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s}
-    primers_with_volume = primer_aliquots.collect{|p| "2.5 µL of " + p.id.to_s }
+    # set minimal volume to be 0.5 µL
+    plasmid_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
+
+    water_volume_list = plasmid_volume_list.collect{ |v| (12.5-v).to_s + " µL" }
+    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
+    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
 
     # show {
     # 	note (water_volume_list.collect {|p| "#{p}"})
