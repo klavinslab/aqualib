@@ -131,6 +131,14 @@ class Protocol
         end
       end
 
+      # Add sequence correct items to make glycerol stocks
+      seq_verifi_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
+      correct_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence correct" }
+      correct_seq_verifi_tasks.each do |task|
+        io_hash[:task_ids].push task.id
+        io_hash[:item_ids].concat task.simple_spec[:overnight_ids]
+      end
+
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
