@@ -180,7 +180,7 @@ class Protocol
       t.name = "#{plasmid_stock.sample.name}_stock_#{plasmid_stock.id}"
       t.specification = ({
         "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ],
-        "overnight TB Overnight of Plasmid" => [ overnight.id ]
+        "overnight_ids TB Overnight of Plasmid" => [ overnight.id ]
       }).to_json
       t.task_prototype_id = tp.id
       t.status = "waiting"

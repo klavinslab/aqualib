@@ -137,6 +137,15 @@ class Protocol
         io_hash[:item_ids].concat task.simple_spec[:item_ids]
       end
 
+      # Add sequence wrong items to discard
+      seq_verifi_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
+      wrong_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence wrong" }
+      wrong_seq_verifi_tasks.each do |task|
+        io_hash[:task_ids].push task.id
+        io_hash[:item_ids].concat task.simple_spec[:plasmid_stock_ids]
+        io_hash[:item_ids].concat task.simple_spec[:overnight_ids]
+      end
+
     when "Streak Plate"
       io_hash[:yeast_glycerol_stock_ids] = []
       io_hash[:task_ids].each do |tid|
