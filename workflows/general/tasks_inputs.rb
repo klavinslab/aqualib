@@ -136,13 +136,13 @@ class Protocol
       correct_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence correct" }
       correct_seq_verifi_tasks.each do |task|
         io_hash[:task_ids].push task.id
-        io_hash[:item_ids].concat task.simple_spec[:overnight_ids]
+        io_hash[:overnight_ids].concat task.simple_spec[:overnight_ids]
       end
 
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        io_hash[:overnight_ids].concat task.simple_spec[:item_ids]
+        io_hash[:item_ids].concat task.simple_spec[:item_ids]
       end
 
       # Add sequence wrong items to discard
