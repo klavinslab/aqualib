@@ -19,7 +19,7 @@ place tasks_inputs
 end
 
 place overnight
-  protocol: "aqualib:workflows/ecoli/060_start_overnight_plate.rb"
+  protocol: "aqualib:workflows/ecoli/start_overnight_plate.rb"
   group: group
   argument
     debug_mode: debug_mode
@@ -39,7 +39,7 @@ place miniprep
 end
 
 place sequencing
-  protocol: "aqualib:workflows/ecoli/075_sequencing.rb"
+  protocol: "aqualib:workflows/ecoli/sequencing.rb"
   group: group
   marked: false
   start: now()
@@ -47,7 +47,7 @@ place sequencing
 end
 
 place upload
-  protocol: "aqualib:workflows/ecoli/080_upload_sequencing_results.rb"
+  protocol: "aqualib:workflows/ecoli/upload_sequencing_results.rb"
   group: group
   marked: false
   start: hours(12)
