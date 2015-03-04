@@ -104,6 +104,15 @@ class Protocol
     if io_hash[:group] != ("technicians" || "cloning" || "admin")
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
+    plasmid_stocks.each do |p|
+      show {
+        note "plasmid stock #{p.id}"
+      }
+    end
+    primer_aliquots.each do |p|
+      show {
+        note "primer aliquot #{p.id}"
+      }
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
 
     # calculate volumes based on Genewiz guide
