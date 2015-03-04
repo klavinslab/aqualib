@@ -21,7 +21,7 @@ place tasks_inputs
 end
 
 place gibson
-  protocol: "aqualib:workflows/ecoli/045_gibson.rb"
+  protocol: "aqualib:workflows/ecoli/gibson.rb"
   group: group
   marked: false
   start: now()
