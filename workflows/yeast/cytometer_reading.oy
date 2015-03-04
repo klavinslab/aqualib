@@ -9,7 +9,7 @@ argument
 end
 
 place overnight
-  protocol: "aqualib:workflows/yeast/010_overnight_suspension_deepwell_plate.rb"
+  protocol: "aqualib:workflows/yeast/overnight_suspension_deepwell_plate.rb"
   group: group
   argument
     debug_mode: debug_mode
@@ -21,7 +21,7 @@ place overnight
 end
 
 place dilute
-  protocol: "aqualib:workflows/yeast/016_dilute_yeast_culture_deepwell_plate.rb"
+  protocol: "aqualib:workflows/yeast/dilute_yeast_culture_deepwell_plate.rb"
   group: group
   marked: false
   start: hours(18)
@@ -29,7 +29,7 @@ place dilute
 end
 
 place read
-  protocol: "aqualib:workflows/yeast/090_cytometer_reading.rb"
+  protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
   group: group
   marked: false
   start: hours(5)
