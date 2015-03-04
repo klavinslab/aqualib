@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      lower_upper_bound: [23301,25324],
-      sample_name: "mTFP_URA_W5",
+      lower_upper_bound: [9000,10000],
+      sample_name: "Any",
       object_type_name: "TB Overnight of Plasmid",
       debug_mode: "Yes"
     }
@@ -29,9 +29,11 @@ class Protocol
   	items = []
     io_hash[:item_ids].each do |id| 
       item = find(:item, id: id)[0]
-      if item
-        if item.sample.name == io_hash[:sample_name] && item.object_type.name == io_hash[:object_type_name]
-          items.push item
+      if (item != nil)
+        if (item.sample != nil)
+          if (item.sample.name == io_hash[:sample_name] || io_hash[:sample_name].downcase == "any") && item.object_type.name == io_hash[:object_type_name]
+            items.push item
+          end
         end
       end
     end
