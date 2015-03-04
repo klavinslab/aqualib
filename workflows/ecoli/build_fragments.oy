@@ -35,7 +35,7 @@ place pcr
 end
 
 place pour_gel
-  protocol: "aqualib:workflows/ecoli/015_pour_gel.rb"
+  protocol: "aqualib:workflows/ecoli/pour_gel.rb"
   group: group
   marked: false
   start: now()
@@ -43,7 +43,7 @@ place pour_gel
 end
 
 place run_gel
-  protocol: "aqualib:workflows/ecoli/020_run_gel.rb"
+  protocol: "aqualib:workflows/ecoli/run_gel.rb"
   group: group
   marked: false
   start: minutes(15)
@@ -51,7 +51,7 @@ place run_gel
 end
 
 place cut_gel
-  protocol: "aqualib:workflows/ecoli/030_cut_gel.rb"
+  protocol: "aqualib:workflows/ecoli/cut_gel.rb"
   group: group
   marked: false
   start: minutes(30)
@@ -59,7 +59,7 @@ place cut_gel
 end
 
 place purify_gel
-  protocol: "aqualib:workflows/ecoli/035_gel_purify.rb"
+  protocol: "aqualib:workflows/ecoli/purify_gel.rb"
   group: group
   marked: false
   start: now()
