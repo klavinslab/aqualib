@@ -17,7 +17,7 @@ place tasks_inputs
 end
 
 place glycerol_stock_pre
-  protocol: "aqualib:workflows/ecoli/085_glycerol_stock.rb"
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
   group: group
   marked: false
   start: now()
@@ -25,7 +25,7 @@ place glycerol_stock_pre
 end
 
 place overnight_suspension
-  protocol: "aqualib:workflows/yeast/010_overnight_suspension.rb"
+  protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
   group: group
   marked: false
   start: now()
@@ -33,7 +33,7 @@ place overnight_suspension
 end
 
 place glycerol_stock
-  protocol: "aqualib:workflows/ecoli/085_glycerol_stock.rb"
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
   group: group
   marked: false
   start: hours(15)
