@@ -172,7 +172,7 @@ class Protocol
       show {
         title "Incubate"
         note "Put all the following plates in 30 C incubator:"
-        note plates.collect { |p| "#{p}"}
+        note yeast_plates.collect { |p| "#{p}"}
       }
       move yeast_plates, "30 C incubator"
       release yeast_plates
