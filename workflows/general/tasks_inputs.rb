@@ -131,11 +131,16 @@ class Protocol
         end
       end
 
-      # Add sequence correct items to make glycerol stocks
+      # Find sequencing verification correct tasks that belongs to io_hash[:group]
       seq_verifi_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
       correct_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence correct" }
-      correct_seq_verifi_tasks.each do |task|
-        io_hash[:task_ids].push task.id
+      correct_seq_verifi_task_ids = correct_seq_verifi_tasks.collect { |t| t.id }
+      correct_seq_verifi_task_ids = task_group_filter correct_seq_verifi_task_ids, io_hash[:group]
+
+      #Add sequence correct items to glycerol stock
+      correct_seq_verifi_task_ids.each do |tid|
+        io_hash[:task_ids].push tid
+        task = find(:task, id: tid)[0]
         io_hash[:overnight_ids].concat task.simple_spec[:overnight_ids]
       end
 
@@ -145,11 +150,16 @@ class Protocol
         io_hash[:item_ids].concat task.simple_spec[:item_ids]
       end
 
-      # Add sequence wrong items to discard
+      # Find sequencing verification wrong tasks that belongs to io_hash[:group]
       seq_verifi_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
       wrong_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence wrong" }
-      wrong_seq_verifi_tasks.each do |task|
-        io_hash[:task_ids].push task.id
+      wrong_seq_verifi_task_ids = wrong_seq_verifi_tasks.collect { |t| t.id }
+      wrong_seq_verifi_task_ids = task_group_filter wrong_seq_verifi_task_ids, io_hash[:group]
+
+      # Add sequence wrong items to discard item
+      wrong_seq_verifi_task_ids.each do |tid|
+        io_hash[:task_ids].push tid
+        task = find(:task, id: tid)[0]
         io_hash[:item_ids].concat task.simple_spec[:plasmid_stock_ids]
         io_hash[:item_ids].concat task.simple_spec[:overnight_ids]
       end
@@ -265,9 +275,21 @@ class Protocol
       }
     end
 
+    tasks_tab = [[ "Task ids", "Task type", "Task name", "Tasks owner"]]
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      tasks_tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
+    end
+
     show {
       title "Tasks inputs processed!"
-      note "#{io_hash[:task_name]} tasks inputs have been successfully processed and please work on the next protocol in the flow! Cheers!"
+      note "#{io_hash[:task_name]} tasks inputs have been successfully processed!"
+      if io_hash[:task_ids].length > 0
+        note "The following tasks inputs has been processed and returned as outputs."
+        table tasks_tab
+      else
+        note "No task's inputs is returned as outputs"
+      end
     }
 
     return { io_hash: io_hash }
