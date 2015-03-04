@@ -113,6 +113,8 @@ class Protocol
       show {
         note "primer aliquot #{p.id}"
       }
+    end
+    
     take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
 
     # calculate volumes based on Genewiz guide
