@@ -20,6 +20,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?  
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -79,9 +80,16 @@ class Protocol
       end
     end
 
-    move all_plates, "37 C incubator"
+    if all_plates.length > 0
+      show {
+        title "Incubate"
+        note "Put all the following plates in 37 C incubator"
+        note all_plates.collect { |p| "#{p}"}
+      }
+      move all_plates, "37 C incubator"
+      release all_plates
+    end
 
-    release all_plates, interactive: true if all_plates.length > 0
     io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
     io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
 
