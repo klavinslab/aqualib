@@ -101,14 +101,16 @@ class Protocol
     # end
     # yeast_competent_cells = produce new_sample "U6-pGAL1-FAR1, L5G-AFB2, OK-pACT1-GEV, T4-pGAL1-GAVNY in W303alpha", of: "Yeast Strain", as: "Yeast Competent Aliquot"
     item = find(:item, id: 12103)
+    sample = find(:sample, id: 4087)[0] 
     show {
       note "#{item}"
+      note "#{sample.in("Primer Aliquot")[0] == nil}"
     }
     item1 = item[0]
-    show {
-      note "#{item.sample.properties["Bacterial Marker"].length}"
-      note "#{item.sample.user.id}"
-    }
+    # show {
+    #   note "#{item.sample.properties["Bacterial Marker"].length}"
+    #   note "#{item.sample.user.id}"
+    # }
 
     # show {
     #   note "#{io_hash}"
