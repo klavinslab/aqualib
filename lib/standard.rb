@@ -178,6 +178,7 @@ module Standard
       raise "Must be Item or Array of Items to move" unless i.class == Item
       i.location = new_location
       i.save
+      i.reload
     end
   end # move
 
