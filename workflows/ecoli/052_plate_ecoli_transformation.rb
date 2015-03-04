@@ -83,7 +83,7 @@ class Protocol
     if all_plates.length > 0
       show {
         title "Incubate"
-        note "Put all the following plates in 37 C incubator"
+        note "Put all the following plates in 37 C incubator:"
         note all_plates.collect { |p| "#{p}"}
       }
       move all_plates, "37 C incubator"
