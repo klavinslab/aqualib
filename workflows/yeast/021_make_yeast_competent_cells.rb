@@ -134,7 +134,7 @@ class Protocol
     cultures.each_with_index do |culture,idx|
       yeast_compcell_aliquots_temp = []
       (1..num_of_aliquots[idx]).each do |i|
-        yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Aliquot"
+        yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Cell"
         yeast_compcell_aliquots.push yeast_compcell_aliquot
         yeast_compcell_aliquots_temp.push yeast_compcell_aliquot
       end

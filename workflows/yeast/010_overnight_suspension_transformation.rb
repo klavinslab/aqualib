@@ -47,7 +47,7 @@ class Protocol
     yeast_strain_need_overnight_ids = []
     yeast_parent_strain_num_hash.each do |yid,num|
       y = find(:sample, id: yid)[0]
-      yeast_strain_need_overnight_ids.push yid unless y.in("Yeast Competent Aliquot").length >= num
+      yeast_strain_need_overnight_ids.push yid unless y.in("Yeast Competent Aliquot").length + y.in("Yeast Competent Cell").length >= num
     end
 
     # find all yeast items and related types, find Yeast Glycerol Stock, if nothing, find Yeast Plate

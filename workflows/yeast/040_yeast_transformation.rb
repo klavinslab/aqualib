@@ -29,15 +29,17 @@ class Protocol
     end
 
     yeast_competent_cells = []
-    num_hash = Hash.new {|h,k| h[k] = 0 }
+    aliquot_num_hash = Hash.new {|h,k| h[k] = 0 }
+    cell_num_hash = Hash.new {|h,k| h[k] = 0 }
     io_hash[:yeast_parent_strain_ids].each do |yid|
       y = find(:sample, id: yid )[0]
-      num_hash[y.name] += 1
-      yeast_competent_cells.push y.in("Yeast Competent Aliquot")[num_hash[y.name]-1]
-    end
-
-    if io_hash[:group] != ("technicians" || "cloning" || "admin")
-      yeast_competent_cells = io_hash[:yeast_parent_strain_ids].collect{ |yid| choose_sample find(:sample, id: yid )[0].name, object_type: "Yeast Competent Aliquot" }
+      aliquot_num_hash[y.name] += 1
+      if y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
+        yeast_competent_cells.push y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
+      else
+        cell_num_hash[y.name] += 1
+        yeast_competent_cells.push y.in("Yeast Competent Cell")[ cell_num_hash[y.name] - 1 ]
+      end
     end
 
     take yeast_competent_cells, interactive: true, method: "boxes"
