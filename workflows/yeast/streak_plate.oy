@@ -17,7 +17,7 @@ place tasks_inputs
 end
 
 place streak_plate
-  protocol: "aqualib:workflows/yeast/056_streak_yeast_from_glycerol_stock.rb"
+  protocol: "aqualib:workflows/yeast/streak_yeast_from_glycerol_stock.rb"
   group: group
   marked: false
   start: now()
