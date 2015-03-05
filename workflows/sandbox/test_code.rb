@@ -104,7 +104,7 @@ class Protocol
     sample = find(:sample, id: 4087)[0] 
     show {
       note "#{item.length}"
-      note "#{sample.in("Primer Aliquot")[0] != nil}"
+      note "#{sample.in("Primer Aliquot").length}"
     }
     item1 = item[0]
     # show {
