@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       "rna_ids Isolated RNA" => [15491,15492,15493],
+      "primer_ids Primer" => [4277,4277,4277],
       debug_mode: "Yes"
     }
   end
@@ -18,7 +19,7 @@ class Protocol
 
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "Yes", rna_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "Yes", rna_ids: [], primer_ids: [] }.merge io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -29,7 +30,12 @@ class Protocol
 
     rnas = io_hash[:rna_ids].collect{ |rid| find(:item, { id: rid })[0] }
     rna_samples = rnas.collect { |rna| rna.sample }
-    take rnas, interactive: true, method: "boxes"
+
+    if io_hash[:primer_ids].length > 0
+      primers = io_hash[:primer_ids].collect { |id| find(:sample, { id: id })[0].in("Primer Aliquot")[0] }
+    end
+
+    take rnas + primers, interactive: true, method: "boxes"
 
     rnas_need_to_measure = rnas.select { |rna| !rna.datum[:concentration] }
     if rnas_need_to_measure.length > 0
@@ -50,8 +56,9 @@ class Protocol
     # Set up stripwells
     stripwells = produce spread rna_samples, "Stripwell", 1, 12
 
-    rna_volumes = rnas.collect { |rna| (1000.0/rna.datum[:concentration]).to_s + " µL of " + rna.id.to_s }
-    water_volumes = rna_volumes.collect { |rna_volume| (15-rna_volume.to_f).to_s }
+    rna_volumes = rnas.collect { |rna| (1000.0/rna.datum[:concentration]).round(1).to_s + " µL of " + rna.id.to_s }
+    water_volumes = rna_volumes.collect { |rna_volume| "#{(15-rna_volume.to_f).round(1)} µL"  }
+    primer_volumes = primers.collect { |pr| "0.5 µL of #{pr}" }
 
     show {
       title "Prepare Stripwell Tubes"
@@ -65,18 +72,27 @@ class Protocol
       # TODO: Put an image of a labeled stripwell here
     }
 
-    load_samples_variable_vol( [ "Molecular Grade Water","RNA"], [
-        water_volumes,
-        rna_volumes
-      ], stripwells )
+    if io_hash[:primer_ids].length > 0
+      load_samples_variable_vol( [ "Molecular Grade Water", "RNA", "Primer"], [
+          water_volumes,
+          rna_volumes,
+          primer_volumes
+        ], stripwells )
+    else
+      load_samples_variable_vol( [ "Molecular Grade Water", "RNA"], [
+          water_volumes,
+          rna_volumes
+        ], stripwells )
+    end
 
-    release rnas, interactive: true, method: "boxes"
+    release rnas + primers, interactive: true, method: "boxes"
 
     show {
       title "Add raction mix and reverse transcriptase"
       stripwells.each do |sw|
         check "Pipette 4 µL of 5x iScript reaction mix (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
         check "Pipette 1 µL of iScript reverse transcriptase (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
+        check "Pipette 2 µL of GSP enhancer solution (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       separator
       warning "Use a new pipette tip for each pipetting! Pipette up and down to mix."
@@ -90,12 +106,16 @@ class Protocol
       check "Place the stripwells into an available thermal cycler and close the lid."
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "T1"
       separator
-      check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CDNA', make sure it has the following settings."
-      bullet "5 minutes at 25 C"
+      if io_hash[:primer_ids].length > 0
+        check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CDNASEL', make sure it has the following settings."
+      else
+        check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CDNA', make sure it has the following settings."
+        bullet "5 minutes at 25 C"
+      end
       bullet "30 minutes at 42 C"
       bullet "5 minutes at 85 C"
       bullet "Hold at 4 C"
-      note "If CDNA protocol does not exist on this thermocycler, create one by using above settings"
+      note "If the protocol does not exist on this thermocycler, create one by using above settings."
       check "Press 'run' and select 20 µL."
       # TODO: image: "thermal_cycler_home"
     }
