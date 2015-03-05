@@ -103,7 +103,7 @@ class Protocol
     item = find(:item, id: 12103)
     sample = find(:sample, id: 4087)[0] 
     show {
-      note "#{item}"
+      note "#{item.length}"
       note "#{sample.in("Primer Aliquot")[0] == nil}"
     }
     item1 = item[0]
