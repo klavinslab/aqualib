@@ -67,7 +67,7 @@ class Protocol
       check "Add #{buffer.round(1)} µL of the cutsmart buffer to the tube."
       check "Add #{enzyme.round(1)} µL of the PmeI to the tube."
       check "Vortex for 20-30 seconds"
-      warning "Keep the master mix in an ice block while doing the next steps"
+      warning "Keep the master mix in an ice block while doing the next steps".upcase
     }
     
     release [pmeI] + [cut_smart], interactive: true, method: "boxes"
