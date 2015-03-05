@@ -45,7 +45,7 @@ place plate
 end
 
 place image
-  protocol: "aqualib:workflows/ecoli/055_image_plate.rb"
+  protocol: "aqualib:workflows/ecoli/image_plate.rb"
   group: group
   marked: false
   start: hours(18)
