@@ -115,7 +115,7 @@ class Protocol
       bullet "5 minutes at 85 C"
       bullet "Hold at 4 C"
       note "If the protocol does not exist on this thermocycler, create one by using above settings."
-      check "Press 'run' and select 20 µL."
+      check "Press 'Run' and select 20 µL."
       # TODO: image: "thermal_cycler_home"
     }
 

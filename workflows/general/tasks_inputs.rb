@@ -257,7 +257,6 @@ class Protocol
         io_hash[:plate_ids].concat task.simple_spec[:plate_ids]
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
         io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
-        io_hash[:initials].concat [task.simple_spec[:initials]]*(task.simple_spec[:plate_ids].length)
       end
 
     when "Yeast Strain QC"

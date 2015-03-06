@@ -11,7 +11,6 @@ class Protocol
       io_hash: {},
       #Enter the plate ids as a list
       plate_ids: [3798,3797,3799],
-      initials: ["YY","YY","YY"],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
       debug_mode: "No",
@@ -28,7 +27,7 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash = { plate_ids: [], num_colonies: [], primer_ids: [], initials: [] }.merge io_hash
+    io_hash = { plate_ids: [], num_colonies: [], primer_ids: [] }.merge io_hash
 
     # raise errors if inputs are not valid
     raise "Incorrect inputs, plate_ids and num_colonies must have the same length." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
@@ -39,7 +38,6 @@ class Protocol
     plate_ids = []
     num_colonies = []
     primer_ids = []
-    initials = []
     io_hash[:plate_ids].each_with_index do |pid,idx|
       if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
         info_needed_plate_ids.push pid
@@ -47,16 +45,8 @@ class Protocol
         plate_ids.push pid
         num_colonies.push io_hash[:num_colonies][idx]
         primer_ids.push io_hash[:primer_ids][idx]
-        initials.push io_hash[:initials][idx]
       end
     end
-
-    initials.collect!.with_index {|x,i| [x]*num_colonies[i]}
-    initials = initials.flatten
-
-    # show {
-    #   note "#{initials}"
-    # }
 
     show {
       title "Bacterial Marker info required"
@@ -126,7 +116,6 @@ class Protocol
     io_hash[:num_colonies] = num_colonies
     io_hash[:overnight_ids] = overnights.collect { |o| o.id }
     io_hash[:primer_ids] = sequencing_primer_ids
-    io_hash[:initials] = initials
     return { io_hash: io_hash }
 
   end # main
