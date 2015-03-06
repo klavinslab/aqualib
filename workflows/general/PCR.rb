@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
+      template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
       debug_mode: "Yes",
       item_choice_mode: "No",
     }
@@ -18,7 +19,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_choice_mode: "No" }.merge io_hash # set default value of io_hash
+    io_hash = { debug_mode: "No", item_choice_mode: "No", template_stock_ids: [] }.merge io_hash # set default value of io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -39,6 +40,13 @@ class Protocol
       end
       fragment_info_list.push pcr   if pcr
       not_ready.push fid if !pcr
+    end
+
+    if io_hash[:template_stock_ids].length > 0
+      raise "Incorrect inputs, template_stock_ids size does not match fragment_ids size. They need to be one to one correspondence." if io_hash[:fragment_ids].length != io_hash[:template_stock_ids].length
+      fragment_info_list.each_with_index do |fi, idx|
+        fi[:template] = find(:item, { id: io_hash[:template_stock_ids][idx] })[0]
+      end
     end
 
     all_fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
@@ -75,16 +83,17 @@ class Protocol
     take [phusion_stock_item], interactive: true, method: "boxes" 
 
     # build a pcrs hash that group fragment pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
+    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
 
     fragment_info_list.each do |fi|
       if fi[:tanneal] >= 70
-        pcrs[70][:fragment_info].push fi
+        key = :t70
       elsif fi[:tanneal] >= 67
-        pcrs[67][:fragment_info].push fi
+        key = :t67
       else
-        pcrs[64][:fragment_info].push fi
+        key = :t64
       end
+      pcrs[key][:fragment_info].push fi
     end
 
     pcrs.each do |t, pcr|
@@ -96,6 +105,7 @@ class Protocol
       pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
       pcr[:forward_primers].concat pcr[:fragment_info].collect { |fi| fi[:fwd] }
       pcr[:reverse_primers].concat pcr[:fragment_info].collect { |fi| fi[:rev] }
+      pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
 
       # set up stripwells
       pcr[:stripwells] = produce spread pcr[:fragments], "Stripwell", 1, 12
@@ -148,16 +158,17 @@ class Protocol
     }
 
     # run the thermocycler
-    pcrs.each do |t, pcr|
+    pcrs.each do |key, pcr|
+      tanneal = pcr[:tanneals].min.round(0)
       thermocycler = show {
-        title "Start the PCRs at #{t} C"
+        title "Start the PCRs at #{tanneal} C"
         check "Place the stripwells #{pcr[:stripwells].collect { |sw| sw.id } } into an available thermal cycler and close the lid."
         get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
         separator
         check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-        check "Set the anneal temperature to #{t.round(0)}. This is the 3rd temperature."
+        check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
         check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
-        check "Press 'run' and select 50 µL."
+        check "Press 'Run' and select 50 µL."
         #image "thermal_cycler_select"
       }
       pcr[:stripwells].each do |sw|
