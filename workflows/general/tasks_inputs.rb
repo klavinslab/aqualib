@@ -251,12 +251,18 @@ class Protocol
       io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
 
     when "Plasmid Verification"
-      io_hash = { num_colonies: [], primer_ids: [], initials: [] }.merge io_hash
+      io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        io_hash[:plate_ids].concat task.simple_spec[:plate_ids]
-        io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
-        io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
+        task.simple_spec[:plate_ids].each_with_index do |pid, idx|
+          if task.simple_spec[:primer_ids][idx] != [0]
+            io_hash[:plate_ids].push pid
+            io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
+            io_hash[:primer_ids].push task.simple_spec[:primer_ids][idx]
+          else
+            io_hash[:glycerol_stock_ids].push pid
+          end
+        end
       end
 
     when "Yeast Strain QC"

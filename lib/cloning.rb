@@ -440,7 +440,7 @@ module Cloning
         length_check = t.simple_spec[:plate_ids].length == t.simple_spec[:num_colonies].length && t.simple_spec[:plate_ids].length == t.simple_spec[:primer_ids].length
         sample_check = true
         t.simple_spec[:plate_ids].each_with_index do |pid,idx|
-          sample_check = sample_check && find(:item, id: pid)[0].object_type.name == "E coli Plate of Plasmid" && find(:item, id: pid)[0].sample.properties["Bacterial Marker"].length > 0 && t.simple_spec[:num_colonies][idx].between?(0, 10)
+          sample_check = sample_check && ["E coli Plate of Plasmid", "Plasmid Glycerol Stock"].include?find(:item, id: pid)[0].object_type.name && find(:item, id: pid)[0].sample.properties["Bacterial Marker"].length > 0 && t.simple_spec[:num_colonies][idx].between?(0, 10)
           t.simple_spec[:primer_ids][idx].each do |prid|
             if prid != 0
               sample_check = sample_check && find(:sample, id: prid)[0] && find(:sample, id: prid)[0].sample_type.name == "Primer" && find(:sample, id: prid)[0].in("Primer Aliquot")[0] != nil
