@@ -27,7 +27,7 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash = { plate_ids: [], num_colonies: [], primer_ids: [] }.merge io_hash
+    io_hash = { plate_ids: [], num_colonies: [], primer_ids: [], glycerol_stock_ids: [] }.merge io_hash
 
     # raise errors if inputs are not valid
     raise "Incorrect inputs, plate_ids and num_colonies must have the same length." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
@@ -72,8 +72,20 @@ class Protocol
       colony_plates.concat((1..num_colonies[idx]).collect { |n| p })
       sequencing_primer_ids.concat((1..num_colonies[idx]).collect { |n| primer_ids[idx] })
     end
+
+    glycerol_overnights = []
+    if io_hash[:glycerol_stock_ids].length > 0
+      glycerol_overnights = io_hash[:glycerol_stock_ids].collect { |id| produce new_sample find(:item, id: id)[0].sample.name, of: "Plasmid", as: "TB Overnight of Plasmid" }
+      glycerol_overnights.each_with_index do |x, idx|
+        x.datum = { from: io_hash[:glycerol_stock_ids][idx] }
+        x.save
+      end
+    end
+
+    all_overnights = overnights + glycerol_overnights
+
     overnight_marker_hash = Hash.new {|h,k| h[k] = [] }
-    overnights.each do |x|
+    all_overnights.each do |x|
       overnight_marker_hash[x.sample.properties["Bacterial Marker"].downcase[0,3]].push x
     end
 
@@ -95,15 +107,26 @@ class Protocol
       table [["Plate id", "Overnight id"]].concat(colony_plates.collect { |p| p.id }.zip overnights.collect { |o| { content: o.id, check: true } })
     }
 
+    if io_hash[:glycerol_stock_ids].length > 0
+      glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |id| find(:item, id: id)[0]) }
+      take glycerol_stocks, interactive: true, method: "boxes"
+
+      show {
+        title "Inoculation"
+        note "Use 100 µL sterile tips to vigerously scrape the glycerol stock to get a chunk of stock, add into 14 mL tubes according to the following table."
+        table [["Glycerol stock id", "Overnight id"]].concat(glycerol_stocks.collect { |g| g.id }.zip glycerol_overnights.collect { |o| { content: o.id, check: true } })
+      }
+    end
+
     # change location to 37 C shaker incubator
 
-    overnights.each do |o|
+    all_overnights.each do |o|
       o.location = "37 C shaker incubator"
       o.save
     end
-    release overnights, interactive: true
+    release all_overnights, interactive: true
     release plates, interactive: true
-    
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id:tid)[0]
@@ -115,6 +138,7 @@ class Protocol
     io_hash[:plate_ids] = plate_ids
     io_hash[:num_colonies] = num_colonies
     io_hash[:overnight_ids] = overnights.collect { |o| o.id }
+    io_hash[:glycerol_overnight_ids] = glycerol_overnights.collect { |o| o.id }
     io_hash[:primer_ids] = sequencing_primer_ids
     return { io_hash: io_hash }
 

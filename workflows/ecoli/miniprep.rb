@@ -19,7 +19,6 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    overnight_ids = io_hash[:overnight_ids]
     elution_volume = io_hash[:elution_volume] || 50
 
     if io_hash[:debug_mode].downcase == "yes"
@@ -29,8 +28,9 @@ class Protocol
     end
 
     # Find all overnights and take them
-    overnights = overnight_ids.collect{ |oid| find(:item,id:oid)[0] }
-    take overnights, interactive: true
+    overnights = io_hash[:overnight_ids].collect{ |oid| find(:item, id: oid)[0] }
+    glycerol_overnights = io_hash[:glycerol_overnight_ids].collect { |oid| find(:item, id: oid)[0]}
+    take overnights + glycerol_overnights, interactive: true
 
     verify_growth = show {
       title "Check if overnights have growth"
@@ -38,9 +38,12 @@ class Protocol
       overnights.each do |x|
         select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
       end
+      glycerol_overnights.each do |x|
+        select ["Yes", "No"], var: "verify#{x.id}", label: "Does tube #{x.id} have growth?"
+      end
     }
 
-    overnights_to_delete = overnights.select { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
+    overnights_to_delete = (overnights + glycerol_overnights).select { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
     delete overnights_to_delete
 
     # delete correspnding primer_ids
@@ -52,8 +55,11 @@ class Protocol
     end
     
     overnights = overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
+    glycerol_overnights = glycerol_overnights.delete_if { |x| verify_growth[:"verify#{x.id}".to_sym] == "No"}
 
-    num = overnights.length
+    all_overnights = overnights + glycerol_overnights
+
+    num = all_overnights.length
     num_arr = *(1..num)
     
     show{
@@ -111,35 +117,39 @@ class Protocol
     }
     
     plasmid_stocks = overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "Plasmid Stock"}
+
+    glycerol_plasmid_stocks = glycerol_overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "Plasmid Stock"}
+
+    all_plasmid_stocks = plasmid_stocks + glycerol_plasmid_stocks
     
     show{
       title "Re-label all 1.5 mL tubes"
       note "Add a white sticker to the top of each tube and relabel them according to the following table"
-      table [["Tube number","New item id"]].concat(num_arr.zip plasmid_stocks.collect{ |p| { content: p.id, check: true } })
+      table [["Tube number","New item id"]].concat(num_arr.zip all_plasmid_stocks.collect{ |p| { content: p.id, check: true } })
     }
     
     data = show {
       title "Nanodrop all labeled 1.5 mL tubes"
-      plasmid_stocks.each do |plasmid|
+      all_plasmid_stocks.each do |plasmid|
         get "number", var: "conc#{plasmid.id}", label: "Enter concentration of #{plasmid.id}", default: 200 
       end
     }
 
     volume = elution_volume - 2
 
-  	plasmid_stocks.each_with_index do |ps,idx|
+  	all_plasmid_stocks.each_with_index do |ps,idx|
   		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume, from: overnights[idx].id }
       ps.save
   	end
 
-    # restore overnights location to be managed by location wizard
-    overnights.each do |o|
+    # restore all overnights location to be managed by location wizard
+    all_overnights.each do |o|
       o.store
       o.reload
     end
     
-  	release overnights, interactive: true
-  	release plasmid_stocks, interactive: true, method: "boxes"
+  	release all_overnights, interactive: true
+  	release all_plasmid_stocks, interactive: true, method: "boxes"
     # Set tasks in the io_hash to be plasmid extracted
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
@@ -150,6 +160,9 @@ class Protocol
     # Return io_hash
     io_hash[:overnight_ids] = overnights.collect { |o| o.id }
     io_hash[:plasmid_stock_ids] = plasmid_stocks.collect { |p| p.id}
+    io_hash[:glycerol_overnight_ids] = glycerol_overnights.collect { |o| o.id }
+    io_hash[:glycerol_plasmid_stock_ids] = glycerol_plasmid_stocks.collect { |p| p.id }
+    
     return { io_hash: io_hash }
   end # main
 end # Protocol
