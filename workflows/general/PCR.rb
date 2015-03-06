@@ -140,12 +140,11 @@ class Protocol
     # add phusion enzyme
     show {
       title "Add Master Mix"
+      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
       stripwells.each do |sw|
         check "Pipette 25 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
-      note ""
-      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
     }
 
     # run the thermocycler

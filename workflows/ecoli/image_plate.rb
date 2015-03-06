@@ -86,7 +86,7 @@ class Protocol
 
     show {
       title "Parafilm plate(s)"
-      note "Parafilm the following plate(s)."
+      note "Parafilm the following plate(s). Write the item id number on the side of the plate before parafilm them."
       note stored_plates.collect { |p| "#{p}" }
     }
 

@@ -89,13 +89,12 @@ class Protocol
 
     show {
       title "Add raction mix and reverse transcriptase"
+      warning "Use a new pipette tip for each pipetting! Pipette up and down to mix.".upcase
       stripwells.each do |sw|
         check "Pipette 4 µL of 5x iScript reaction mix (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
         check "Pipette 1 µL of iScript reverse transcriptase (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
         check "Pipette 2 µL of GSP enhancer solution (item) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
-      separator
-      warning "Use a new pipette tip for each pipetting! Pipette up and down to mix."
     }
 
     # Run the thermocycler
