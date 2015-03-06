@@ -108,7 +108,7 @@ class Protocol
     }
 
     if io_hash[:glycerol_stock_ids].length > 0
-      glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |id| find(:item, id: id)[0]) }
+      glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |id| find(:item, id: id)[0] }
       take glycerol_stocks, interactive: true, method: "boxes"
 
       show {
