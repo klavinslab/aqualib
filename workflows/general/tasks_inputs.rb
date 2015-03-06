@@ -170,7 +170,7 @@ class Protocol
         task = find(:task, id: tid)[0]
         task.simple_spec[:item_ids].each do |id|
           if find(:item, id: id)[0].object_type.name == "Yeast Glycerol Stock"
-            io_hash[:yeast_glycerol_stock_ids].concat task.simple_spec[:item_ids]
+            io_hash[:yeast_glycerol_stock_ids].push id
           elsif ["Yeast Plate", "Plate"].include? find(:item, id: id)[0].object_type.name
             io_hash[:plate_ids].concat task.simple_spec[:item_ids]
           else 
