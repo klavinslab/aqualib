@@ -85,7 +85,7 @@ class Protocol
         set_task_status(task,"overnight")
       end
     end
-    io_hash[:deepwell_plate_ids] = deepwells.collect {|d| d.id}
+    io_hash[:yeast_deepwell_plate_ids] = deepwells.collect {|d| d.id}
     return { io_hash: io_hash }
   end # main
 

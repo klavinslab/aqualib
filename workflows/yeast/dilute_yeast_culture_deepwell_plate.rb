@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      deepwell_plate_ids: [26198],
+      yeast_deepwell_plate_ids: [26198],
       media_type: "800 mL SC liquid (sterile)",
       volume: 1000,
       dilution_rate: 0.01,
@@ -27,8 +27,8 @@ class Protocol
         true
       end
     end
-    io_hash = { deepwell_plate_ids: [] }.merge io_hash
-    deepwell_plates = io_hash[:deepwell_plate_ids].collect { |i| collection_from i }
+    io_hash = { yeast_deepwell_plate_ids: [] }.merge io_hash
+    deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     yeast_deepwell_plates = deepwell_plates.collect { produce new_collection "Eppendorf 96 Deepwell Plate", 8, 12 }
     take deepwell_plates, interactive: true
     show {
@@ -75,12 +75,14 @@ class Protocol
     end
 
     release yeast_deepwell_plates, interactive: true
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"diluted")
       end
     end
+
     io_hash[:yeast_deepwell_plate_ids] = yeast_deepwell_plates.collect { |d| d.id }
     return { io_hash: io_hash }
   end # main
