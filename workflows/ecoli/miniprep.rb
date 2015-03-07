@@ -138,11 +138,8 @@ class Protocol
 
     volume = elution_volume - 2
 
-  	all_plasmid_stocks.each_with_index do |ps,idx|
-      show {
-        note "#{ps}"
-      }
-  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume, from: overnights[idx].id }
+    all_plasmid_stocks.each_with_index do |ps,idx|
+  		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume, from: all_overnights[idx].id }
       ps.save
   	end
 
