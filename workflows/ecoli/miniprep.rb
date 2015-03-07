@@ -20,6 +20,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     elution_volume = io_hash[:elution_volume] || 50
+    io_hash = { glycerol_overnight_ids: [] }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -122,7 +123,7 @@ class Protocol
 
     all_plasmid_stocks = plasmid_stocks + glycerol_plasmid_stocks
     
-    show{
+    show {
       title "Re-label all 1.5 mL tubes"
       note "Add a white sticker to the top of each tube and relabel them according to the following table"
       table [["Tube number","New item id"]].concat(num_arr.zip all_plasmid_stocks.collect{ |p| { content: p.id, check: true } })
@@ -130,14 +131,17 @@ class Protocol
     
     data = show {
       title "Nanodrop all labeled 1.5 mL tubes"
-      all_plasmid_stocks.each do |plasmid|
-        get "number", var: "conc#{plasmid.id}", label: "Enter concentration of #{plasmid.id}", default: 200 
+      all_plasmid_stocks.each do |ps|
+        get "number", var: "conc#{ps.id}", label: "Enter concentration of #{ps.id}", default: 200 
       end
     }
 
     volume = elution_volume - 2
 
   	all_plasmid_stocks.each_with_index do |ps,idx|
+      show {
+        note "#{ps}"
+      }
   		ps.datum = { concentration: data["conc#{ps.id}".to_sym], volume: volume, from: overnights[idx].id }
       ps.save
   	end
@@ -162,7 +166,7 @@ class Protocol
     io_hash[:plasmid_stock_ids] = plasmid_stocks.collect { |p| p.id}
     io_hash[:glycerol_overnight_ids] = glycerol_overnights.collect { |o| o.id }
     io_hash[:glycerol_plasmid_stock_ids] = glycerol_plasmid_stocks.collect { |p| p.id }
-    
+
     return { io_hash: io_hash }
   end # main
 end # Protocol
