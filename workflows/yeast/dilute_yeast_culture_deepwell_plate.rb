@@ -13,7 +13,7 @@ class Protocol
       media_type: "800 mL SC liquid (sterile)",
       volume: 1000,
       dilution_rate: 0.01,
-      new_inducers: [["0", "20 uM auxin", "0", "20 uM auxin", "0", "20 uM auxin"]],
+      new_inducers: ["0", "20 uM auxin", "0", "20 uM auxin", "0", "20 uM auxin"],
       debug_mode: "Yes"
     }
   end
