@@ -67,7 +67,7 @@ class Protocol
       title "Transfer overnights into 1.5 mL tubes"
       check "Label #{num} 1.5 mL tubes with 1 to #{num}"
       check "Pipette 1.5 mL of overnight cultures into the 1.5 mL tubes using the following table"
-      table [["Overnight", "1.5 mL tube"]].concat(overnights.collect {|s| { content: s.id, check: true }}.zip num_arr)
+      table [["Overnight", "1.5 mL tube"]].concat(all_overnights.collect {|s| { content: s.id, check: true }}.zip num_arr)
     }
     
     show{
