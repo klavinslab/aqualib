@@ -9,11 +9,11 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      deepwell_plate_ids: [32311],
+      deepwell_plate_ids: [26198],
       media_type: "800 mL SC liquid (sterile)",
       volume: 1000,
       dilution_rate: 0.01,
-      inducers: ["20 µM auxin"],
+      new_inducers: [["0", "20 uM auxin", "0", "20 uM auxin", "0", "20 uM auxin"]],
       debug_mode: "Yes"
     }
   end
@@ -21,7 +21,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No" }.merge io_hash
+    io_hash = { debug_mode: "No", new_inducers: [[]] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -45,25 +45,35 @@ class Protocol
       title "Vortex the deepwell plates."
       note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 7 for about 20 seconds."
     }
+
     transfer(deepwell_plates, yeast_deepwell_plates) {
       title "Transfer #{io_hash[:volume]*io_hash[:dilution_rate]} µL"
       note "Using either 6 channel pipettor or single pipettor."
     }
+
+    if io_hash[:new_inducers][0].length > 0
+      io_hash[:inducer_additions] = io_hash[:new_inducers]
+    end
+
     load_samples_variable_vol( ["Inducers"], [
         io_hash[:inducer_additions]
       ], yeast_deepwell_plates )
+
     show {
       title "Place the deepwell plates in the washing station"
       note "Place the following deepwell plates #{deepwell_plates.collect { |d| d.id }} in the washing station "
     }
+
     deepwell_plates.each do |d|
       d.mark_as_deleted
       d.save
     end
+
     yeast_deepwell_plates.each do |d|
       d.location = "30 C shaker incubator"
       d.save
     end
+
     release yeast_deepwell_plates, interactive: true
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
