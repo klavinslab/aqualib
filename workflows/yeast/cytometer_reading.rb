@@ -109,7 +109,7 @@ class Protocol
       range_to_read: { from: [[1,1]], to: [[1,12]] },
       yeast_ubottom_plate_ids: [],
       read_volume: 100,
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 
