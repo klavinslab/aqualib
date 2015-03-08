@@ -130,45 +130,6 @@ class Protocol
       note "#{io_hash}"
     }
 
-    # num_of_wells = yeast_deepwell_plates.collect { |yp| yp.num_samples }
-
-    # # initilize an array of yeast_ubottom_plates
-    # yeast_ubottom_plates = yeast_deepwell_plates.collect { 0 }
-    # idx_fullfiled =  []
-    # idx_expected = *(0..yeast_ubottom_plates.length-1)
-
-    # if io_hash[:yeast_ubottom_plate_ids].empty?
-    #   available_yeast_ubottom_plates = find(:item, { object_type: { name: "96 U-bottom Well Plate" } })
-    #   available_yeast_ubottom_plates = available_yeast_ubottom_plates.collect { |yp| yp.id }.collect { |i| collection_from i }
-    #   available_yeast_ubottom_plates.each do |yp|
-    #     available_num_of_well = yp.dimensions[0]*yp.dimensions[1] - yp.num_samples
-    #     num_of_wells.each_with_index do |n, idx|
-    #       if !idx_fullfiled.include?(idx) && available_num_of_well >= n
-    #         idx_fullfiled.push idx
-    #         yeast_ubottom_plates[idx] = yp
-    #         break
-    #       end
-    #     end
-    #     show {
-    #       note "idx_fullfiled #{idx_fullfiled}, available_num_of_well #{available_num_of_well}, yp_id #{yp.id}, available_yeast_ubottom_plates #{available_yeast_ubottom_plates}."
-    #     }
-    #     break if (idx_expected - idx_fullfiled).length == 0
-    #   end
-
-    #   idx_needed = idx_expected - idx_fullfiled
-
-    #   show {
-    #     title "Grab #{idx_needed.length} new 96 U-bottom Well Plate"
-    #     (idx_expected - idx_fullfiled).each do |x|
-    #       yeast_ubottom_plates[x] = produce new_collection "96 U-bottom Well Plate", 8, 12
-    #       note "Grab one new 96 U-bottom Well Plate and label with #{yeast_ubottom_plates[x].id}."
-    #     end
-    #   } if idx_needed.length > 0
-
-    # else
-    #   yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
-    # end
-
     yeast_deepwell_plates.each_with_index do |yeast_deepwell_plate, idx|
 
       yeast_ubottom_plate = nil
@@ -177,6 +138,7 @@ class Protocol
         yeast_ubottom_plate = collection_from io_hash[:yeast_ubottom_plate_ids][idx]
       else
 
+        # find all the available yeast ubottom plates
         available_yeast_ubottom_plates = find(:item, { object_type: { name: "96 U-bottom Well Plate" } })
         available_yeast_ubottom_plates = available_yeast_ubottom_plates.collect { |yp| yp.id }.collect { |i| collection_from i }
         available_yeast_ubottom_plates.each do |yp|
@@ -187,6 +149,7 @@ class Protocol
           end
         end
 
+        # if none has enought available wells, create new one
         if !yeast_ubottom_plate
           yeast_ubottom_plate = produce new_collection "96 U-bottom Well Plate", 8, 12
           show {
