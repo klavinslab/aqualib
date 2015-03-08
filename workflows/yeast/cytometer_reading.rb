@@ -105,94 +105,147 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_deepwell_plate_ids: [22738],
+      yeast_deepwell_plate_ids: [33362,33363],
       range_to_read: { from: [[1,1]], to: [[1,12]] },
-      yeast_ubottom_plate_ids: [21550],
+      yeast_ubottom_plate_ids: [],
       read_volume: 100,
-      debug_mode: "No"
+      debug_mode: "Yes"
     }
   end
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No" }.merge io_hash
+    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
+
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
     show {
       title "Protocol information"
       note "This protocol is used to take cytometer readings from deepwell plates using u-bottom plates."
       note "#{io_hash}"
     }
+
+    num_of_wells = yeast_deepwell_plates.collect { |yp| yp.num_samples }
+
+    # initilize an array of yeast_ubottom_plates
+    yeast_ubottom_plates = yeast_deepwell_plates.collect { 0 }
+    idx_fullfiled =  []
+    idx_expected = *(0..yeast_ubottom_plates.length-1)
+
     if io_hash[:yeast_ubottom_plate_ids].empty?
-      yeast_ubottom_plates = yeast_deepwell_plates.collect { produce new_collection "96 U-bottom Well Plate", 8, 12 }
+      available_yeast_ubottom_plates = find(:item, { object_type: { name: "96 U-bottom Well Plate" } })
+      available_yeast_ubottom_plates = available_yeast_ubottom_plates.collect { |yp| yp.id }.collect { |i| collection_from i }
+      available_yeast_ubottom_plates.each do |yp|
+        available_num_of_well = yp.dimensions[0]*yp.dimensions[1] - yp.num_samples
+        num_of_wells.each_with_index do |n, idx|
+          if !idx_fullfiled.include?(idx) && available_num_of_well >= n
+            idx_fullfiled.push idx
+            yeast_ubottom_plates[idx] = yp
+            break
+          end
+        end
+        show {
+          note "idx_fullfiled #{idx_fullfiled}, available_num_of_well #{available_num_of_well}, yp_id #{yp.id}, available_yeast_ubottom_plates #{available_yeast_ubottom_plates}."
+        }
+        break if (idx_expected - idx_fullfiled).length == 0
+      end
+
+      idx_needed = idx_expected - idx_fullfiled
+
       show {
-        title "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate"
-        note "Grab #{yeast_ubottom_plates.length} 96 U-bottom Well Plate and label with #{yeast_ubottom_plates.collect { |y| y.id }}."
-      }
+        title "Grab #{idx_needed.length} new 96 U-bottom Well Plate"
+        (idx_expected - idx_fullfiled).each do |x|
+          yeast_ubottom_plates[x] = produce new_collection "96 U-bottom Well Plate", 8, 12
+          note "Grab one new 96 U-bottom Well Plate and label with #{yeast_ubottom_plates[x].id}."
+        end
+      } if idx_needed.length > 0
+
     else
       yeast_ubottom_plates = io_hash[:yeast_ubottom_plate_ids].collect { |i| collection_from i }
     end
-    take yeast_deepwell_plates + yeast_ubottom_plates, interactive: true
-    show {
-      title "Vortex the deepwell plates."
-      note "Gently vortex the deepwell plates #{yeast_deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
-      timer initial: { hours: 0, minutes: 0, seconds: 20}
-    }
 
-    non_empty_wells = yeast_ubottom_plates.collect { |yp| yp.num_samples }.inject{|sum,x| sum + x }
+    yeast_deepwell_plates.each_with_index do |yeast_deepwell_plate, idx|
 
-    transfer(yeast_deepwell_plates, yeast_ubottom_plates, range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode]) {
-      title "Transfer #{io_hash[:read_volume]} µL"
-      note "Using either 6 channel pipettor or single pipettor."
-    }
+      yeast_ubottom_plate = yeast_ubottom_plates[idx]
 
-    non_empty_wells_after = yeast_ubottom_plates.collect { |yp| yp.num_samples }.inject{|sum,x| sum + x }
+      take [yeast_deepwell_plate] + [yeast_ubottom_plate], interactive: true
 
-    num_samples_to_run = non_empty_wells_after - non_empty_wells
+      show {
+        title "Vortex the deepwell plates."
+        note "Gently vortex the deepwell plate #{yeast_deepwell_plate.id} on a table top vortexer at settings 6 for about 20 seconds."
+        timer initial: { hours: 0, minutes: 0, seconds: 20}
+      }
 
-    release(yeast_deepwell_plates, interactive: true) {
-      warning "Put a new breathable sealing film on the plate if the old sealing film has cell culture on it."
-      note "Breathable sealing film can be found at B5.535."
-    }
+      non_empty_wells = yeast_ubottom_plate.num_samples
 
-    job_id = jid
+      transfer([yeast_deepwell_plate], [yeast_ubottom_plate], range_to_read: io_hash[:range_to_read], debug_mode: io_hash[:debug_mode]) {
+        title "Transfer #{io_hash[:read_volume]} µL"
+        note "Using either 6 channel pipettor or single pipettor."
+      }
 
-    show {
-      title "Cytometer reading"
-      check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click CLOSE RUN DISPLAY first and then click Eject Plate."
-      check "Place the loaded u-bottom plate on the CSampler holder."
-      check "Find Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading by clicking the plate layout."
-      check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000." 
-      check "Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}. And the wells you just chose should turn to a different color."
-      check "Click Open Run Display, then click Autorun."
-    }
+      non_empty_wells_after = yeast_ubottom_plate.num_samples
 
-    estimated_time = num_samples_to_run * 30
-    estimated_time_mm = estimated_time / 60
-    estimated_time_ss = estimated_time % 60
+      num_samples_to_run = non_empty_wells_after - non_empty_wells
 
-    show {
-      title "Eject plate and export data"
-      note "The esitmated time for this cytometer run is shown below. Come back around that time."
-      timer initial: { hours: 0, minutes: estimated_time_mm, seconds: estimated_time_ss}
-      check "Wait till the cytometer says Done. Click CLOSE RUN DISPLAY, then click Eject Plate. Place the plate on a location near the cytometer if there are still unused wells. Discard the plate if all wells are used."
-      check "Click File/Export ALL Samples as FCS"
-      check "Go to Desktop/FCS Exports, find the folder you just exported, it should be the folder dated by most recent time. Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}. Upload this zip file here by dragging it here. After upload is done, delete the exported folder and zip file in the FCS Exports folder."
-      upload var: "cytometry_#{job_id}"
-    }
-    show {
-      title "Clean run"
-      check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it. It will prompt you to save a file, click No."
-      check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace it with a full reagnent tube with the same letter written on its lid top."
-      check "Put the cleanning 24 well plate on the CSampler."
-      check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
-    }
+      release([yeast_deepwell_plate], interactive: true) {
+        warning "Put a new breathable sealing film on the plate if the old sealing film has cell culture on it."
+        note "Breathable sealing film can be found at B5.535."
+      }
+
+      job_id = jid
+
+      show {
+        title "Cytometer reading"
+        check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click Close Run Display first and then click Eject Plate."
+        check "Place the loaded u-bottom plate on the CSampler holder."
+        check "Find Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading by clicking the plate layout."
+        check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000." 
+        check "Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}. And the wells you just chose should turn to a different color."
+        check "Click Open Run Display, then click Autorun."
+      }
+
+      estimated_time = num_samples_to_run * 30
+      estimated_time_mm = estimated_time / 60
+      estimated_time_ss = estimated_time % 60
+
+      show {
+        title "Eject plate"
+        note "The esitmated time for this cytometer run is shown below. Come back around that time."
+        timer initial: { hours: 0, minutes: estimated_time_mm, seconds: estimated_time_ss}
+        check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate."
+      }
+
+      show {
+        title "Discard or return plates"
+        if yeast_ubottom_plate.num_samples > 90
+          note "Discard the 96 ubottom plate with id #{yeast_ubottom_plate.id}. Discard properly into biohazard box."
+        else
+          note "Put a new clear film or put back the clear film on the plate #{yeast_ubottom_plate.id} and cross out the wells that have been used. Stack the plate on the shelf with item number label facing outside."
+        end
+      }
+
+      show {
+        title "Export data"
+        check "Click File/Export ALL Samples as FCS"
+        check "Go to Desktop/FCS Exports, find the folder you just exported, it should be the folder dated by most recent time."
+        check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
+        check "Upload this zip file by dragging it here. After upload is done, delete the exported folder and zip file in the FCS Exports folder."
+        upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
+      }
+
+      show {
+        title "Clean run"
+        check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace it with a full reagnent tube with the same letter written on its lid top."
+        check "Put the cleanning 24 well plate on the CSampler."
+        check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it. It will prompt you to save a file, click No."
+        check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
+      }
+    end
 
     release yeast_ubottom_plates
 

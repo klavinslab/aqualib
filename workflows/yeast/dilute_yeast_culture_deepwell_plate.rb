@@ -43,7 +43,7 @@ class Protocol
     }
     show {
       title "Vortex the deepwell plates."
-      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 7 for about 20 seconds."
+      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
     }
 
     transfer(deepwell_plates, yeast_deepwell_plates) {
