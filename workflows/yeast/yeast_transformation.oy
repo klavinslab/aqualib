@@ -16,7 +16,7 @@ protocol: "aqualib:workflows/yeast/010_overnight_suspension_transformation.rb"
 end
 
 place innoculate
-  protocol: "aqualib:workflows/yeast/015_inoculate_large_volume_growth.rb"
+  protocol: "aqualib:workflows/yeast/inoculate_large_volume_growth.rb"
   group: group
   start: hours(18)
   window: hours(20)
