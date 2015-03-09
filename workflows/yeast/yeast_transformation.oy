@@ -30,7 +30,7 @@ place digest
 end
 
 place makecompcell
-  protocol: "aqualib:workflows/yeast/021_make_yeast_competent_cells.rb"
+  protocol: "aqualib:workflows/yeast/make_yeast_competent_cell.rb"
   group: group
   start: now()
   window: hours(20)
