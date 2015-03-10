@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       yeast_mating_strain_ids: [[3104,3099],[1879,3104]],
-      yeast_markers: [["trp","his"],["his","ura"]],
+      yeast_selective_plate_types: ["-TRP,-HIS","SC"],
       user_ids: [20, 20],
       debug_mode: "Yes"
     }
@@ -21,7 +21,7 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
 
     # set default values
-    io_hash = { yeast_mating_strain_ids: [], debug_mode: "No", yeast_markers: [], user_ids: [] }.merge io_hash
+    io_hash = { yeast_mating_strain_ids: [], debug_mode: "No", yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -29,7 +29,7 @@ class Protocol
       end
     end
 
-    raise "Incorrect inputs, yeast_mating_strain_ids size does not match yeast_markers size. They need to be one to one correspondence." if io_hash[:yeast_mating_strain_ids].length != io_hash[:yeast_markers].length
+    raise "Incorrect inputs, yeast_mating_strain_ids size does not match yeast_selective_plate_types size. They need to be one to one correspondence." if io_hash[:yeast_mating_strain_ids].length != io_hash[:yeast_selective_plate_types].length
 
     show {
       title "Protocol information"
