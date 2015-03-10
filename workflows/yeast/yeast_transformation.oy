@@ -4,7 +4,7 @@ argument
 end
 
 place startovernight
-protocol: "aqualib:workflows/yeast/010_overnight_suspension_transformation.rb"
+protocol: "aqualib:workflows/yeast/overnight_suspension_transformation.rb"
   argument
     debug_mode: debug_mode
     group: group
@@ -23,7 +23,7 @@ place innoculate
 end
 
 place digest
-  protocol: "aqualib:workflows/yeast/030_digest_plasmid_yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/digest_plasmid_yeast_transformation.rb"
   group: group
   start: now()
   window: hours(20)
@@ -37,14 +37,14 @@ place makecompcell
 end
 
 place transformation
-  protocol: "aqualib:workflows/yeast/040_yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/yeast_transformation.rb"
   group: group
   start: now()
   window: hours(20)
 end
 
 place plate
-  protocol: "aqualib:workflows/yeast/050_plate_yeast_transformation.rb"
+  protocol: "aqualib:workflows/yeast/plate_yeast_transformation.rb"
   group: group
   start: hours(3)
   window: hours(20)
