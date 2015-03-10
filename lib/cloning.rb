@@ -456,8 +456,13 @@ module Cloning
           # check if glycerol stock and plasmid stock are ready
           parent_ready = y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0 || y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Overnight Suspension").length > 0
           plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0 if y.properties["Integrant"]
-          ready_yeast_strains.push y if parent_ready && plasmid_ready
+          if parent_ready && plasmid_ready
+            t[:yeast_strains][:ready_to_build].push y 
+          else
+            t[:yeast_strains][:not_ready_to_build].push y
         end
+
+        ready_conditions = t[:yeast_strains][:ready_to_build].length == task.simple_spec[:yeast_transformed_strain_ids].length
 
       when "Yeast Strain QC"
         length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]

@@ -265,6 +265,15 @@ class Protocol
         end
       end
 
+    when "Yeast Transformation"
+      io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
+        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
+        io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
+      end
+
     when "Yeast Strain QC"
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
