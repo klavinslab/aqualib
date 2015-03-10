@@ -28,6 +28,14 @@ class Protocol
       end
     end
 
+    if io_hash[:yeast_parent_strain_ids].length == 0
+      show {
+        title "No yeast transformation required"
+        note "No yeast transformation need to be done. Thanks for your effort!"
+      }
+      return { io_hash: io_hash }
+    end
+
     yeast_competent_cells = []
     aliquot_num_hash = Hash.new {|h,k| h[k] = 0 }
     cell_num_hash = Hash.new {|h,k| h[k] = 0 }
