@@ -87,7 +87,14 @@ class Protocol
         table inoculation_tab
       }
 
+      show {
+        title "Clean up"
+        note "Discard yeast overnights with the following ids. If it is a plastic tube, push down the cap to seal the tube and discard into biohazard box. If it is a glass tube, place it in the dish washing station."
+        note yeast_overnights.collect { |y| y.id }
+      }
+
       release yeast_overnights
+      delete yeast_overnights
 
     end
 

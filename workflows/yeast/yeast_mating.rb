@@ -75,7 +75,7 @@ class Protocol
       y0 = find(:sample, id: yids[0])[0]
       y1 = find(:sample, id: yids[1])[0]
       y = Sample.new
-      y.name = "#{y0.name}, #{y1.name}2"
+      y.name = "#{y0.name}, #{y1.name}"
       y.sample_type_id = y0.sample_type_id
       y.user_id = io_hash[:user_ids][idx]
       y.description = "A diploid strain automatically generated from yeast mating."

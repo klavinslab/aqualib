@@ -79,7 +79,7 @@ class Protocol
       end
     end
 
-    #delete yeast_overnights
+    delete yeast_overnights
 
     show {
       title "Discard yeast overnights"
