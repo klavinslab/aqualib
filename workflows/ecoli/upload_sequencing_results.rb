@@ -28,6 +28,7 @@ class Protocol
       title "Upload Genewiz Sequencing Results"
       note "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       note "Find Genewiz sequencing results for Tracking Number #{genewiz_tracking_no}"
+      note "If results are not showed up yet, abort this protocol, it will automatically rescheduled."
       note "Download All Selected Trace Files and then upload the zip file here."
       upload var: "sequencing_#{genewiz_tracking_no}"
     }

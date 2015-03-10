@@ -85,9 +85,12 @@ class Protocol
     end
 
     show {
-      title "Parafilm plate(s)"
-      note "Parafilm the following plate(s). Write the item id number on the side of the plate before parafilm them."
+      title "Write id and parafilm plate(s)"
+      note "Perform the steps to the following plates."
       note stored_plates.collect { |p| "#{p}" }
+      check "Write the item id number on the side of the plate if it does not have one on the side."
+      note "This will help when you later retrieve plates from the fridge."
+      check "Parafilm each one."
     }
 
     # update stored plates datum and location
