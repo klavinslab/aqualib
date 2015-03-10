@@ -7,13 +7,13 @@ class Protocol
   include Cloning
 
   def arguments
-  	{
+    {
       io_hash: {},
-  		yeast_mating_strain_ids: [[3104,3099],[1879,3104]],
-  		yeast_markers: [["trp","his"],["his","ura"]],
+      yeast_mating_strain_ids: [[3104,3099],[1879,3104]],
+      yeast_markers: [["trp","his"],["his","ura"]],
       user_ids: [20, 20],
-  		debug_mode: "Yes"
-  	}
+      debug_mode: "Yes"
+    }
   end
 
   def main
@@ -31,13 +31,13 @@ class Protocol
 
     raise "Incorrect inputs, yeast_mating_strain_ids size does not match yeast_markers size. They need to be one to one correspondence." if io_hash[:yeast_mating_strain_ids].length != io_hash[:yeast_markers].length
 
-  	show {
-  		title "Protocol information"
-  		note "This protocol do yeast matings for the following strain pairs."
+    show {
+      title "Protocol information"
+      note "This protocol do yeast matings for the following strain pairs."
       note "#{io_hash[:yeast_mating_strain_ids]}"
-  	}
+    }
 
-  	yeast_items_group = io_hash[:yeast_mating_strain_ids].collect { |yids| yids.collect { |yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0] } }
+    yeast_items_group = io_hash[:yeast_mating_strain_ids].collect { |yids| yids.collect { |yid| find(:sample, id: yid )[0].in("Yeast Glycerol Stock")[0] } }
 
     yeast_items = yeast_items_group.flatten.uniq
 
@@ -50,9 +50,9 @@ class Protocol
       check "Add 1 mL of YPAD into each newly labled tube."
     }
 
-  	take yeast_items
+    take yeast_items
 
-    inoculation_tab = [["Gylcerol Stock ids", "Location", "1.5 mL tube ids"]]
+    inoculation_tab = [["Gylcerol Stock id", "Location", "1.5 mL tube id"]]
     yeast_items.each do |y|
       inoculation_tab.push [ { content: y.id, check: true }, y.location, y.id ]
     end
@@ -136,6 +136,7 @@ class Protocol
     end
 
     io_hash[:yeast_mated_strain_ids] = yeast_mated_strains.collect { |y| y.id }
+    io_hash[:yeast_overnight_ids] = yeast_overnights.collect { |y| y.id }
 
     return { io_hash: io_hash }
   end

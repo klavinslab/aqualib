@@ -487,6 +487,19 @@ module Cloning
         end
 
         ready_conditions = t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
+
+      when "Yeast Mating"
+        t[:yeast_strain] = { ready: [], not_valid:[] }
+
+        t.simple_spec[:yeast_mating_strain_ids].each do |yid|
+          if find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0
+            t[:yeast_strain][:ready].push yid
+          else
+            t[:yeast_strain][:not_valid].push yid
+          end
+        end
+
+        ready_conditions = t[:yeast_strain][:ready].length == 2 && t.simple_spec[:yeast_mating_strain_ids].length == 2 && t.simple_spec[:yeast_selective_plate_type].is_a?(String)
         
       else
         show {

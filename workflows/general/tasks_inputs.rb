@@ -273,6 +273,15 @@ class Protocol
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       end
 
+    when "Yeast Mating"
+      io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:yeast_mating_strain_ids].push task.simple_spec[:yeast_mating_strain_ids]
+        io_hash[:yeast_selective_plate_types].push task.simple_spec[:yeast_selective_plate_type]
+        io_hash[:user_ids].push task.user.id
+      end
+
     else
       show {
         title "Under development"
