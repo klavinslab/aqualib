@@ -41,11 +41,14 @@ class Protocol
 
     show {
       title "Grab yeast plates"
-      check "Grab #{glycerol_streaked_yeast_plates.length} of YPAD plates, label with follow ids:"
-      note glycerol_streaked_yeast_plates.collect { |p| "#{p}"}
-      if io_hash[:yeast_overnight_ids].length > 0 && io_hash[:yeast_selective_plate_types].length > 0
+      if glycerol_streaked_yeast_plates.length > 0
+        check "Grab #{glycerol_streaked_yeast_plates.length} of YPAD plates, label with follow ids:"
+        note glycerol_streaked_yeast_plates.collect { |p| "#{p}"}
+      end
+      
+      if overnight_streaked_yeast_plates.length > 0 && io_hash[:yeast_selective_plate_types].length > 0
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          check "Grab a #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
         end
       end
     }
