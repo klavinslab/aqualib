@@ -73,10 +73,10 @@ To submit a yeast strain QC task, go to Tasks/Yeast Strain QC, click New Yeast S
 Yeast Mating
 ---
 #### How it works?
-The yeast mating workflow takes two yeast strains as input and produces a mated yeast strain on a selective media plate. In detail, it uses glycerol stock from each yeast strain and inoculate each into 1 mL YPAD. Then mix them into 14 mL tube to incubate for at least 5 hrs. After incubation, it schedules a streak_yeast_plate protocol to streak the yeast on a selective media plate defined by the user from the task input. After 48 hrs, it schedules an image_plate protocol to image and store the plate.
+For each yeast mating task, the yeast mating workflow takes two yeast strains as input and produces a mated yeast strain on a selective media plate. In detail, it uses glycerol stock from each yeast strain and inoculates each into 1 mL YPAD. Then mix them into 14 mL tube to incubate for at least 5 hrs. After incubation, it schedules a streak_yeast_plate protocol to streak the yeast on a selective media plate defined by the user from the task input. After 48 hrs, it schedules an image_plate protocol to image and store the plate.
 
 #### Input requirements
-For each task, you need to enter the sample id of the two yeast strains in the **yeast_mating_strain_ids** and you are allowed to only enter two yeast strain ids. You need to make sure each strain has at least one Yeast Glycerol Stock available. You also need to specify in the **yeast_selective_plate_type** which plate you intend to plate on, for example, it could be -TRP, -HIS or -URA, -LEU, etc. You can check the input by running aqualib/workflows/general/tasks_inputs.rb and enter Yeast Mating as argument.
+For each task, you need to enter the sample id of the two yeast strains in the **yeast_mating_strain_ids** and you are allowed to only enter two yeast strain ids. You need to make sure each strain has at least one Yeast Glycerol Stock available. You also need to specify in the **yeast_selective_plate_type** which plate you intend to plate on, for example, it could be -TRP, -HIS or -URA, -LEU, etc. You can check your input by running aqualib/workflows/general/tasks_inputs.rb and enter Yeast Mating as argument.
 
 
 
