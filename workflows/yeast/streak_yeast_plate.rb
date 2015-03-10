@@ -45,7 +45,7 @@ class Protocol
       note glycerol_streaked_yeast_plates.collect { |p| "#{p}"}
       if io_hash[:yeast_overnight_ids].length > 0 && io_hash[:yeast_selective_plate_types].length > 0
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          check "Grab a #{plates_hash} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+          check "Grab a #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
         end
       end
     }
