@@ -218,10 +218,11 @@ class Protocol
 
       show {
         title "Export data"
-        check "Click File/Export ALL Samples as FCS"
-        check "Go to Desktop/FCS Exports, find the folder you just exported, it should be the folder dated by most recent time."
+        check "Go to Desktop/FCS Exports, trash all the folders and files there."
+        check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
+        check "Go to Desktop/FCS Exports, find the folder you just exported."
         check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
-        check "Upload this zip file by dragging it here. After upload is done, delete the exported folder and zip file in the FCS Exports folder."
+        check "Upload this zip file by dragging it here."
         upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
       }
 
