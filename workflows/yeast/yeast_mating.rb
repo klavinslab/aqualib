@@ -69,7 +69,6 @@ class Protocol
 
     release yeast_items
 
-
     yeast_mated_strains = []
 
     io_hash[:yeast_mating_strain_ids].each_with_index do |yids, idx|
@@ -105,8 +104,8 @@ class Protocol
 
     # prepare 14 mL tubes
     show {
-      title "Prepare #{num} 14 mL tubes"
-      check "Grab #{num} of 14 mL tubes, label with following ids"
+      title "Prepare #{yeast_items_group.length} 14 mL tubes"
+      check "Grab #{yeast_items_group.length} of 14 mL tubes, label with following ids"
       note yeast_overnights.collect { |y| y.id }
       check "Add 2 mL of YPAD to each of newly labeled tube."
     }

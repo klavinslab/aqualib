@@ -12,6 +12,7 @@ class Protocol
       io_hash: {},
       yeast_glycerol_stock_ids: [2062,2063],
       yeast_overnight_ids: [17374,17373],
+      yeast_selective_plate_types: [],
       debug_mode: "Yes"
     }
   end
@@ -19,7 +20,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", yeast_overnight_ids: [], yeast_glycerol_stock_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", yeast_overnight_ids: [], yeast_glycerol_stock_ids: [], yeast_selective_plate_types: [] }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -39,9 +40,14 @@ class Protocol
     num = streaked_yeast_plates.length
 
     show {
-      title "Grab YPAD plates"
-      check "Grab #{num} of YPAD plates, label with follow ids:"
-      note streaked_yeast_plates.collect { |p| "#{p}"}
+      title "Grab yeast plates"
+      check "Grab #{glycerol_streaked_yeast_plates.length} of YPAD plates, label with follow ids:"
+      note glycerol_streaked_yeast_plates.collect { |p| "#{p}"}
+      if io_hash[:yeast_overnight_ids].length > 0 && io_hash[:yeast_selective_plate_types].length > 0
+        io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
+          check "Grab a #{plates_hash} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+        end
+      end
     }
 
     if yeast_glycerol_stocks.length > 0
@@ -54,7 +60,7 @@ class Protocol
 
       show {
         title "Inoculation from glycerol stock"
-        check "Go to M80 area to perform following inoculation steps."
+        check "Go to M80 area to perform following inoculation steps. Grab the plate with the ids listed in the table below."
         check "Grab one glycerol stock at a time out of the M80 freezer."
         check "Use a sterile 100 µL tip with pipettor and vigerously scrape a big chuck of glycerol stock swirl onto a corner of the yeast plate agar side following the table below."
         table inoculation_tab
