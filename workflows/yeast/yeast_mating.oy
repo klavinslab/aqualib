@@ -1,0 +1,66 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    task_name: "Yeast Mating"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place yeast_mating
+  protocol: "aqualib:workflows/yeast/yeast_mating.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place streak_plate
+  protocol: "aqualib:workflows/yeast/streak_yeast_plate.rb"
+  group: group
+  marked: false
+  start: hours(6)
+  window: hours(1)
+end
+
+place image_plate
+  protocol: "aqualib:workflows/ecoli/image_plate.rb"
+  group: group
+  marked: false
+  start: hours(48)
+  window: hours(1)
+end
+
+place re_image_plate
+  protocol: "aqualib:workflows/ecoli/image_plate.rb"
+  group: group
+  marked: false
+  start: hours(5)
+  window: hours(1)
+end
+
+wire tasks_inputs => yeast_mating
+wire yeast_mating => streak_plate
+wire streak_plate => image_plate
+wire image_plate => re_image_plate
+
+transition [ tasks_inputs ] => [ yeast_mating ] when !error(0) && completed (0) end
+transition [ yeast_mating ] => [ streak_plate ] when !error(0) && completed (0) end
+transition [ streak_plate ] => [ image_plate ] when !error(0) && completed (0) end
+transition [ image_plate ] => [] when !error(0) && completed (0) end
+transition [ re_image_plate ] => [] when !error(0) && completed (0) end
+
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ yeast_mating ] => [ yeast_mating ] when error(0) end
+transition [ streak_plate ] => [ streak_plate ] when error(0) end
+transition [ image_plate ] => [ re_image_plate ] when error(0) end
+transition [ re_image_plate ] => [ re_image_plate ] when error(0) end
