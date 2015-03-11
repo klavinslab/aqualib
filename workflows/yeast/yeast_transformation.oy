@@ -33,7 +33,7 @@ place innoculate
   window: hours(20)
 end
 
-place make_plates
+place make_plate
   protocol: "aqualib:workflows/yeast/make_antibiotic_plate.rb"
   group: group
   start: now()
@@ -87,7 +87,8 @@ end
 
 wire tasks_inputs => startovernight
 wire startovernight => innoculate
-wire innoculate => digest
+wire innoculate => make_plate
+wire make_plate => digest
 wire digest => makecompcell
 wire makecompcell => transformation
 wire transformation => plate
@@ -96,7 +97,8 @@ wire image => re_image_plate
 
 transition [ tasks_inputs ] => [ startovernight ] when !error(0) && completed (0) end
 transition [ startovernight ] => [ innoculate ] when !error(0) && completed(0) end
-transition [ innoculate ] => [ digest ] when !error(0) && completed(0) end
+transition [ innoculate ] => [ make_plate ] when !error(0) && completed(0) end
+transition [ make_plate ] => [ digest ] when !error(0) && completed(0) end
 transition [ digest ] => [ makecompcell ] when !error(0) && completed(0) end
 transition [ makecompcell ] => [ transformation ] when !error(0) && completed(0) end
 transition [ transformation ] => [ plate ] when !error(0) && completed(0) end
@@ -108,6 +110,7 @@ transition [ re_image_plate ] => [] when !error(0) && completed (0) end
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ startovernight ] => [ startovernight ] when error(0) end
 transition [ innoculate ] => [ innoculate ] when error(0) end
+transition [ make_plate ] => [ make_plate ] when error(0) end
 transition [ digest ] => [ digest ] when error(0) end
 transition [ makecompcell ] => [ makecompcell ] when error(0) end
 transition [ transformation ] => [ transformation ] when error(0) end
