@@ -50,12 +50,6 @@ class Protocol
       end
     end
 
-    yeast_competent_cells.each do |y|
-      show {
-        note "#{y}"
-      }
-    end
-
     take yeast_competent_cells, interactive: true, method: "boxes"
 
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
