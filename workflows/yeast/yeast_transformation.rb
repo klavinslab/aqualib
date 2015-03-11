@@ -9,10 +9,10 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_parent_strain_ids: [2866,2866],
+      yeast_parent_strain_ids: [29,2866,29,2866],
       #stripwell that containing digested plasmids
-      "stripwell_ids Stripwell" => [11614],
-      "yeast_transformed_strain_ids Yeast Strain" => [1705,1706],
+      "stripwell_ids Stripwell" => [33613],
+      "yeast_transformed_strain_ids Yeast Strain" => [1705,1706,5079,5079],
       "plasmid_stock_ids Plasmid Stock" => [9189,9167],
       debug_mode: "Yes"
     }
@@ -36,28 +36,61 @@ class Protocol
       return { io_hash: io_hash }
     end
 
+    # parse out a list of plasmid sample ids from stripwels
+    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    stripwells_array = stripwells.collect { |s| s.matrix }
+    io_hash[:plasmid_ids] = stripwells_array.flatten
+    io_hash[:plasmid_ids].delete(-1)
+
     yeast_competent_cells = []
+    yeast_competent_cells_full = [] # an array of yeast_competent_cells include nils.
+    no_competent_cell_yeast_transformed_strain_ids = []
     aliquot_num_hash = Hash.new {|h,k| h[k] = 0 }
     cell_num_hash = Hash.new {|h,k| h[k] = 0 }
-    io_hash[:yeast_parent_strain_ids].each do |yid|
+    io_hash[:yeast_parent_strain_ids].each_with_index do |yid, idx|
       y = find(:sample, id: yid )[0]
       aliquot_num_hash[y.name] += 1
       if y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
-        yeast_competent_cells.push y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
+        competent_cell = y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
       else
         cell_num_hash[y.name] += 1
-        yeast_competent_cells.push y.in("Yeast Competent Cell")[ cell_num_hash[y.name] - 1 ]
+        competent_cell = y.in("Yeast Competent Cell")[ cell_num_hash[y.name] - 1 ]
       end
+
+      if competent_cell
+        yeast_competent_cells.push competent_cell
+        yeast_competent_cells_full.push competent_cell.id
+      else
+        yeast_competent_cells_full.push "NA"
+        no_competent_cell_yeast_transformed_strain_ids.push io_hash[:yeast_transformed_strain_ids][idx]
+        io_hash[:yeast_transformed_strain_ids][idx] = nil
+        io_hash[:plasmid_ids][idx] = nil
+      end
+
+    end
+
+    io_hash[:yeast_transformed_strain_ids].compact!
+    io_hash[:plasmid_ids].compact!
+
+    if no_competent_cell_yeast_transformed_strain_ids.length > 0
+      show {
+        title "Some transformations can not be done"
+        note "Transformation for the following yeast strain can not be performed since there is not enough competent cell."
+        note no_competent_cell_yeast_transformed_strain_ids
+      }
+    end
+
+    if yeast_competent_cells.length == 0
+      show {
+        title "No yeast transformation required"
+        note "No yeast transformation need to be done. Thanks for your effort!"
+      }
+      return { io_hash: io_hash }
     end
 
     take yeast_competent_cells, interactive: true, method: "boxes"
 
     yeast_transformation_mixtures = io_hash[:yeast_transformed_strain_ids].collect {|yid| produce new_sample find(:sample, id: yid)[0].name, of: "Yeast Strain", as: "Yeast Transformation Mixture"}
-    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
-    stripwells_array = stripwells.collect { |s| s.matrix }
-    io_hash[:plasmid_ids] = stripwells_array.flatten
-    io_hash[:plasmid_ids].delete(-1)
-    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:sample, id: pid )[0].properties["Yeast Marker"].downcase[0,3]}
 
     # show {
     #   title "Testing page"
@@ -77,7 +110,6 @@ class Protocol
 
     take stripwells, interactive: true
 
-
     show {
       title "Yeast transformation preparation"
       check "Spin down all the Yeast Competent Aliquots on table top centrifuge for 20 seconds"
@@ -88,7 +120,7 @@ class Protocol
       warning "The order of reagents added is super important for suceess of transformation."
     }
 
-    load_samples(["Yeast Competent Aliquot"],[yeast_competent_cells], stripwells) {
+    load_samples_variable_vol(["Yeast Competent Aliquot"],[yeast_competent_cells_full], stripwells) {
       title "Load 50 µL from each well into corresponding yeast aliquot"
       note "Pieptte 50 µL from each well into corresponding yeast aliquot"
       note "Discard the stripwell into waste bin."
@@ -117,6 +149,7 @@ class Protocol
       check "Remove all the supernatant carefully with a 1000 µL pipettor (~400 µL total)"
     }
 
+    yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:sample, id: pid )[0].properties["Yeast Marker"].downcase[0,3]}
     yeast_transformation_mixtures_markers = Hash.new {|h,k| h[k] = [] }
     yeast_transformation_mixtures.each_with_index do |y,idx|
       yeast_markers.uniq.each do |mk|
@@ -179,7 +212,7 @@ class Protocol
     if yeast_plates.length > 0
       show {
         title "Incubate"
-        note "Put all the following plates in 30 C incubator:"
+        note "Put all the following plates in the 30 C incubator:"
         note yeast_plates.collect { |p| "#{p}"}
       }
       move yeast_plates, "30 C incubator"
@@ -187,10 +220,6 @@ class Protocol
     end
 
     delete yeast_competent_cells
-    stripwells.each do |sw|
-      sw.mark_as_deleted
-      sw.save
-    end
 
     release [peg] + [lioac] + [ssDNA], interactive: true
     if io_hash[:task_ids]
