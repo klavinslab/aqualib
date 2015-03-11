@@ -460,6 +460,7 @@ module Cloning
             t[:yeast_strains][:ready_to_build].push y 
           else
             t[:yeast_strains][:not_ready_to_build].push y
+          end
         end
 
         ready_conditions = t[:yeast_strains][:ready_to_build].length == task.simple_spec[:yeast_transformed_strain_ids].length
