@@ -75,7 +75,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Strain QC",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end
@@ -266,7 +266,7 @@ class Protocol
       end
 
     when "Yeast Transformation"
-      io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }
+      io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
