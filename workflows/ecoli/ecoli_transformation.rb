@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the gibson result ids as a list
-      "gibson_result_ids Gibson Reaction Result" => [2853,2854,2958],
+      "gibson_result_ids Gibson Reaction Result" => [2853,2853,2853],
       debug_mode: "No",
       inducer_plate: "IPTG",
       cell_type: "DH5alpha"
@@ -25,7 +25,7 @@ class Protocol
         true
       end
     end
-    gibson_results = io_hash[:gibson_result_ids].collect{|gid| find(:item,{id: gid})[0]}
+    gibson_results = io_hash[:gibson_result_ids].collect{ |gid| find(:item,{id: gid})[0] }
     take gibson_results, interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
