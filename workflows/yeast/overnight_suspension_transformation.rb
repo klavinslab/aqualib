@@ -22,14 +22,15 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash[:debug_mode] = input[:debug_mode] || "No"
+    # set up io_hash default values
+    io_hash = { media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50, yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [], debug_mode: "No" }.merge io_hash
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    # set up io_hash default values
-    io_hash = { media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50, yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
+
 
     # find how many yeast competent cell aliquots needed for the transformation and decide whether to start overnight or not.
     yeast_parent_strain_num_hash = Hash.new {|h,k| h[k] = 0 }
