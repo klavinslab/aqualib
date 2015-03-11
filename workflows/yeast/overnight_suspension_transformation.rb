@@ -31,7 +31,6 @@ class Protocol
       end
     end
 
-
     # find how many yeast competent cell aliquots needed for the transformation and decide whether to start overnight or not.
     yeast_parent_strain_num_hash = Hash.new {|h,k| h[k] = 0 }
     io_hash[:yeast_parent_strain_ids].each do |yid|
