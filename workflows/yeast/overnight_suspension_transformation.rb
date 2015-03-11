@@ -29,16 +29,8 @@ class Protocol
       end
     end
     # set up io_hash default values
-    io_hash = ({ media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50, yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }).merge io_hash
-    # pull info from yeast transformation tasks using yeast_transformation_status function in cloning.rb
-    yeast_transformation_info = yeast_transformation_status group: io_hash[:group]
-    io_hash[:task_ids] = yeast_transformation_info[:ready_ids]
-    io_hash[:task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-      io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
-      io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
-    end
+    io_hash = { media_type: "800 mL YPAD liquid (sterile)", volume: 2, group: "technicians", large_volume: 50, yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
+
     # find how many yeast competent cell aliquots needed for the transformation and decide whether to start overnight or not.
     yeast_parent_strain_num_hash = Hash.new {|h,k| h[k] = 0 }
     io_hash[:yeast_parent_strain_ids].each do |yid|

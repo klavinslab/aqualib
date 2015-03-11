@@ -70,6 +70,19 @@ class Protocol
     return task_status_hash
 
   end
+  
+  # a function that returns a table of task information
+  def task_info_table task_ids
+
+    tab = [[ "Task ids", "Task type", "Task name", "Tasks owner"]]
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
+    end
+
+    return tab
+
+  end
 
   def arguments
     {
@@ -84,6 +97,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "", fragment_ids: [], plasmid_ids: [] }.merge io_hash
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -93,8 +107,8 @@ class Protocol
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
 
-    waiting_users = tasks[:waiting_ids].collect { |tid| find(:task, id: tid)[0].user.name }
-    ready_users = tasks[:ready_ids].collect{ |tid| find(:task, id: tid)[0].user.name }
+    wating_tab = task_info_table tasks[:waiting_ids]
+    ready_tab = task_info_table tasks[:ready_ids]
 
     show {
 
@@ -102,15 +116,16 @@ class Protocol
       note "For #{io_hash[:task_name]} tasks that belong to #{io_hash[:group]}:"
 
       if tasks[:waiting_ids].length > 0
-        note "Waiting tasks are:" 
-        table [[ "Waiting task", "Tasks owner"]].concat(tasks[:waiting_ids].zip waiting_users)
+        note "Waiting tasks:"
+        note "If your desired to run task still stays in waiting, abort this protocol, it will be automatically rescheduled. Fix the task input problem and rerun this protocol."
+        table wating_tab
       else
         note "No task is wating"
       end
 
       if tasks[:ready_ids].length > 0
-        note "Ready tasks are:"
-        table [[ "Ready tasks", "Tasks owner"]].concat(tasks[:ready_ids].zip ready_users)
+        note "Ready tasks:"
+        table ready_tab
       else
         note "No task is ready"
       end
@@ -298,11 +313,7 @@ class Protocol
       }
     end
 
-    tasks_tab = [[ "Task ids", "Task type", "Task name", "Tasks owner"]]
-    io_hash[:task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      tasks_tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
-    end
+    tasks_tab = task_info_table(io_hash[:task_ids])
 
     show {
       title "Tasks inputs processed!"
