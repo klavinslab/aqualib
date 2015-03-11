@@ -1,16 +1,27 @@
 argument
   debug_mode: string, "Yes or No"
+  image_option: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
 end
 
-place startovernight
-protocol: "aqualib:workflows/yeast/overnight_suspension_transformation.rb"
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
   argument
     debug_mode: debug_mode
     group: group
+    image_option: image_option
+    task_name: "Yeast Transformation"
   end
-  group: group
   marked: true
+  start: now()
+  window: hours(1)
+end
+
+place startovernight
+  protocol: "aqualib:workflows/yeast/overnight_suspension_transformation.rb"
+  group: group
+  marked: false
   start: now()
   window: hours(20)
 end
@@ -58,13 +69,24 @@ place image
   window: hours(10)
 end
 
+place re_image_plate
+  protocol: "aqualib:workflows/ecoli/image_plate.rb"
+  group: group
+  marked: false
+  start: hours(5)
+  window: hours(1)
+end
+
+wire tasks_inputs => startovernight
 wire startovernight => innoculate
 wire innoculate => digest
 wire digest => makecompcell
 wire makecompcell => transformation
 wire transformation => plate
 wire plate => image
+wire image => re_image_plate
 
+transition [ tasks_inputs ] => [ startovernight ] when !error(0) && completed (0) end
 transition [ startovernight ] => [ innoculate ] when !error(0) && completed(0) end
 transition [ innoculate ] => [ digest ] when !error(0) && completed(0) end
 transition [ digest ] => [ makecompcell ] when !error(0) && completed(0) end
@@ -72,12 +94,15 @@ transition [ makecompcell ] => [ transformation ] when !error(0) && completed(0)
 transition [ transformation ] => [ plate ] when !error(0) && completed(0) end
 transition [ plate ] => [ image ] when !error(0) && completed(0) end
 transition [ image ] => [] when !error(0) && completed(0) end
+transition [ re_image_plate ] => [] when !error(0) && completed (0) end
 
 # restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ startovernight ] => [ startovernight ] when error(0) end
 transition [ innoculate ] => [ innoculate ] when error(0) end
 transition [ digest ] => [ digest ] when error(0) end
 transition [ makecompcell ] => [ makecompcell ] when error(0) end
 transition [ transformation ] => [ transformation ] when error(0) end
 transition [ plate ] => [ plate ] when error(0) end
-transition [ image ] => [ image ] when error(0) end
+transition [ image ] => [ re_image_plate ] when error(0) end
+transition [ re_image_plate ] => [ re_image_plate ] when error(0) end
