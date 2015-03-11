@@ -463,7 +463,7 @@ module Cloning
           end
         end
 
-        ready_conditions = t[:yeast_strains][:ready_to_build].length == task.simple_spec[:yeast_transformed_strain_ids].length
+        ready_conditions = t[:yeast_strains][:ready_to_build].length == t.simple_spec[:yeast_transformed_strain_ids].length
 
       when "Yeast Strain QC"
         length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
