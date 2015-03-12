@@ -66,7 +66,7 @@ class Protocol
     # tell the user what we are doing
     show {
       title "Fragment Information"
-      note "This protocol will build the following fragments:"
+      note "This protocol will build the following #{all_fragments.length} fragments:"
       note (all_fragments.collect { |f| "#{f.id}" })
       if not_ready.length > 0
         separator

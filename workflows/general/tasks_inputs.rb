@@ -74,7 +74,7 @@ class Protocol
   # a function that returns a table of task information
   def task_info_table task_ids
 
-    tab = [[ "Task ids", "Task type", "Task name", "Tasks owner"]]
+    tab = [[ "Task ids", "Task type", "Task name", "Task owner"]]
     task_ids.each do |tid|
       task = find(:task, id: tid)[0]
       tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
@@ -158,6 +158,7 @@ class Protocol
         task = find(:task, id: tid)[0]
         io_hash[:overnight_ids].concat task.simple_spec[:overnight_ids]
       end
+      io_hash[:size] = io_hash[:overnight_ids].length + io_hash[:item_ids].length
 
     when "Discard Item"
       io_hash[:task_ids].each do |tid|
@@ -178,6 +179,7 @@ class Protocol
         io_hash[:item_ids].concat task.simple_spec[:plasmid_stock_ids]
         io_hash[:item_ids].concat task.simple_spec[:overnight_ids]
       end
+      io_hash[:size] = io_hash[:item_ids].length
 
     when "Streak Plate"
       io_hash[:yeast_glycerol_stock_ids] = []
@@ -193,6 +195,7 @@ class Protocol
           end
         end
       end
+      io_hash[:size] = io_hash[:plate_ids].length
 
     when "Gibson Assembly"
       if tasks[:fragments]
@@ -225,6 +228,7 @@ class Protocol
         io_hash[:fragment_ids].push task.simple_spec[:fragments]
         io_hash[:plasmid_ids].push task.simple_spec[:plasmid]
       end
+      io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Fragment Construction"
       fs = task_status name: "Fragment Construction", group: io_hash[:group]
@@ -264,6 +268,7 @@ class Protocol
         end
       end
       io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
+      io_hash[:size] = io_hash[:fragment_ids].length
 
     when "Plasmid Verification"
       io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [] }.merge io_hash
@@ -279,6 +284,7 @@ class Protocol
           end
         end
       end
+      io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } + io_hash[:glycerol_stock_ids].length
 
     when "Yeast Transformation"
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
@@ -288,6 +294,7 @@ class Protocol
         io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
         io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
       end
+      io_hash[:size] = io_hash[:yeast_transformed_strain_ids].length
 
     when "Yeast Strain QC"
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
@@ -296,6 +303,7 @@ class Protocol
         io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       end
+      io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
 
     when "Yeast Mating"
       io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
@@ -305,6 +313,7 @@ class Protocol
         io_hash[:yeast_selective_plate_types].push task.simple_spec[:yeast_selective_plate_type]
         io_hash[:user_ids].push task.user.id
       end
+      io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
 
     else
       show {
@@ -319,7 +328,7 @@ class Protocol
       title "Tasks inputs processed!"
       note "#{io_hash[:task_name]} tasks inputs have been successfully processed!"
       if io_hash[:task_ids].length > 0
-        note "The following tasks inputs has been processed and returned as outputs."
+        note "The following tasks inputs has been processed and returned as outputs. There are #{io_hash[:size]} #{io_hash[:task_name].pluralize(io_hash[:size])} to do."
         table tasks_tab
       else
         note "No task's inputs is returned as outputs"
