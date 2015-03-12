@@ -239,10 +239,6 @@ class Protocol
         }
 
         # automatically submit primer order tasks if both primer stock and primer aliquot are missing
-        show {
-          note not_ready_to_build_fragment_ids.kind_of?(Array)
-        }
-
         need_to_order_primer_ids = missing_primer(not_ready_to_build_fragment_ids)
 
         show {
