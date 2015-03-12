@@ -84,11 +84,29 @@ class Protocol
 
   end
 
+  # a function that find primers that need to be ordered for a list of fragment ids, return a list of primer ids that need to be ordered.
+  def missing_primer fids
+
+    primers = []
+    fids.each do |fid|
+      fragment = find(:sample, id: fid )[0]
+      fwd = fragment.properties["Forward Primer"]
+      rev = fragment.properties["Reverse Primer"]
+      primers.push fwd.id if fwd && (fwd.in("Primer Aliquot").length == 0) && (fwd.in("Primer Stock").length == 0)
+      primers.push rev.id if rev && (rev.in("Primer Aliquot").length == 0) && (rev.in("Primer Stock").length == 0)
+    end
+
+    return primers.uniq
+
+  end
+
+
+
   def arguments
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Transformation",
+      task_name: "Gibson Assembly",
       group: "technicians"
     }
   end
@@ -219,7 +237,20 @@ class Protocol
           note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
           table tasks_tab
         }
+
+        # automatically submit primer order tasks if both primer stock and primer aliquot are missing
+        show {
+          note not_ready_to_build_fragment_ids.kind_of?(Array)
+        }
+
+        need_to_order_primer_ids = missing_primer(not_ready_to_build_fragment_ids)
+
+        show {
+          note need_to_order_primer_ids
+        }
+
       end
+
       if io_hash[:group] != "technicians"
         io_hash[:task_ids] = io_hash[:task_ids].take(12)
       end
