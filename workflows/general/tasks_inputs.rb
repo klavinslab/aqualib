@@ -312,9 +312,7 @@ class Protocol
         end
       end
 
-      if io_hash[:num_colonies].length > 0
-        io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } + io_hash[:glycerol_stock_ids].length
-      end
+      io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
 
     when "Yeast Transformation"
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
