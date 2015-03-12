@@ -298,7 +298,7 @@ class Protocol
       io_hash[:size] = io_hash[:fragment_ids].length
 
     when "Plasmid Verification"
-      io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [] }.merge io_hash
+      io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:plate_ids].each_with_index do |pid, idx|
@@ -311,7 +311,10 @@ class Protocol
           end
         end
       end
-      io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } + io_hash[:glycerol_stock_ids].length
+
+      if io_hash[:num_colonies].length > 0
+        io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } + io_hash[:glycerol_stock_ids].length
+      end
 
     when "Yeast Transformation"
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
