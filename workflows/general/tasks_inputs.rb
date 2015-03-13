@@ -269,7 +269,7 @@ class Protocol
         need_to_make_fragment_ids.each do |id|
           fragment = find(:sample, id: id)[0]
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-          t = Task.new(name: "#{fragment.name}-3", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
           t.save
           new_fragment_construction_ids.push t.id
         end
@@ -312,7 +312,7 @@ class Protocol
       need_to_order_primer_ids.each do |id|
         primer = find(:sample, id: id)[0]
         tp = TaskPrototype.where("name = 'Primer Order'")[0]
-        t = Task.new(name: "#{primer.name}-6", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
+        t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
         t.save
         new_primer_order_ids.push t.id
       end
