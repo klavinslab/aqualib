@@ -31,10 +31,8 @@ class Protocol
     else
       tasks = tasks_all
     end
-    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
+    waiting = tasks.select { |t| t.status == "waiting" }
     ready = tasks.select { |t| t.status == "ready" }
-    running = tasks.select { |t| t.status == "ordered" }
-    done = tasks.select { |t| t.status == "arrived and diluted" }
 
     # cycling through waiting and ready to make sure primer info are in place
 
@@ -56,16 +54,14 @@ class Protocol
         t.status = "ready"
         t.save
       else
-        t.status = "waiting for ingredients"
+        t.status = "waiting"
         t.save
       end
     end
 
     return {
-      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
-      running_ids: running.collect { |t| t.id },
-      done_ids: done.collect { |t| t.id }
+      waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
+      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
   end ### primer_ordering_status
 
@@ -77,15 +73,18 @@ class Protocol
         true
       end
     end
-    io_hash = { primer_ids:[] }.merge io_hash
+    io_hash = { primer_ids: [] }.merge io_hash
 
     primer_orders = primer_ordering_status
 
     io_hash[:task_ids] = primer_orders[:ready_ids]
+
     io_hash[:task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       io_hash[:primer_ids].concat ready_task.simple_spec[:primer_ids]
     end
+
+    io_hash[:primer_ids].uniq!
 
     primers = io_hash[:primer_ids].collect { |x| find(:sample, id: x)[0] }
 

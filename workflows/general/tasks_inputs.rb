@@ -74,7 +74,14 @@ class Protocol
   # a function that returns a table of task information
   def task_info_table task_ids
 
+    task_ids.compact!
+
+    if task_ids.length == 0
+      return []
+    end
+
     tab = [[ "Task ids", "Task type", "Task name", "Task owner"]]
+
     task_ids.each do |tid|
       task = find(:task, id: tid)[0]
       tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
@@ -106,7 +113,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Gibson Assembly",
+      task_name: "Fragment Construction",
       group: "technicians"
     }
   end
@@ -237,14 +244,6 @@ class Protocol
           note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
           table tasks_tab
         }
-
-        # automatically submit primer order tasks if both primer stock and primer aliquot are missing
-        need_to_order_primer_ids = missing_primer(not_ready_to_build_fragment_ids)
-
-        show {
-          note need_to_order_primer_ids
-        }
-
       end
 
       if io_hash[:group] != "technicians"
@@ -258,6 +257,36 @@ class Protocol
       io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Fragment Construction"
+
+      # pull out fragments that need to be made from Gibson Assembly tasks
+      gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
+      if gibson_tasks[:fragments]
+
+        need_to_make_fragment_ids = gibson_tasks[:fragments][:ready_to_build] + gibson_tasks[:fragments][:not_ready_to_build]
+        need_to_make_fragment_ids = need_to_make_fragment_ids.uniq
+        new_fragment_construction_ids = []
+
+        need_to_make_fragment_ids.each do |id|
+          fragment = find(:sample, id: id)[0]
+          tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
+          t = Task.new(name: "#{fragment.name}-3", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+          t.save
+          new_fragment_construction_ids.push t.id
+        end
+
+        new_fragment_construction_ids.compact!
+
+        if new_fragment_construction_ids.length > 0
+          new_fragment_construction_tasks_tab = task_info_table(new_fragment_construction_ids)
+          show {
+            title "New fragment Construction tasks"
+            note "The following fragment Construction tasks are automatically generated for fragments that need to be built in Gibson Assemblies."
+            table new_fragment_construction_tasks_tab
+          }
+        end
+
+      end
+
       fs = task_status name: "Fragment Construction", group: io_hash[:group]
       if fs[:fragments] && fs[:fragments][:not_ready_to_build].length > 0
         waiting_ids = fs[:waiting_ids]
@@ -276,10 +305,28 @@ class Protocol
         }
       end
 
-      # pull out fragments that need to be made from Gibson Assembly tasks
-      gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
-      io_hash[:fragment_ids].concat gibson_tasks[:fragments][:ready_to_build] if gibson_tasks[:fragments]
-      io_hash[:fragment_ids].uniq!
+      # automatically submit primer order tasks if both primer stock and primer aliquot are missing for not_ready_to_build fragments.
+      need_to_order_primer_ids = missing_primer(fs[:fragments][:not_ready_to_build].uniq)
+      new_primer_order_ids = []
+
+      need_to_order_primer_ids.each do |id|
+        primer = find(:sample, id: id)[0]
+        tp = TaskPrototype.where("name = 'Primer Order'")[0]
+        t = Task.new(name: "#{primer.name}-6", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
+        t.save
+        new_primer_order_ids.push t.id
+      end
+
+      new_primer_order_ids.compact!
+
+      if new_primer_order_ids.length > 0
+        new_primer_order_tab = task_info_table(new_primer_order_ids)
+        show {
+          title "New Primer Order tasks"
+          note "The following Primer Order tasks are automatically generated for primers that need to be ordered from Fragment Constructions."
+          table new_primer_order_tab
+        }
+      end
 
       # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
       limit_idx = io_hash[:task_ids].length
@@ -359,7 +406,7 @@ class Protocol
         note "The following tasks inputs has been processed and returned as outputs. There are #{io_hash[:size]} #{io_hash[:task_name].pluralize(io_hash[:size])} to do."
         table tasks_tab
       else
-        note "No task's inputs is returned as outputs"
+        note "No task's input is returned as outputs"
       end
     }
 
