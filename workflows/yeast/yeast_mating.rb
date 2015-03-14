@@ -95,8 +95,8 @@ class Protocol
     # build the mating table
     mating_tab = [[ "14 mL tube ids", "First 1.5 mL tube", "Second 1.5 mL tube"]]
     yeast_overnights.each_with_index do |y, idx|
-      id0 = io_hash[:yeast_mating_strain_ids][idx][0]
-      id1 = io_hash[:yeast_mating_strain_ids][idx][1]
+      id0 = yeast_items_group[idx][0]
+      id1 = yeast_items_group[idx][1]
       volume0 = [ 100, 1000.0 / ids_hash[id0] ].min.round(0)
       volume1 = [ 100, 1000.0 / ids_hash[id1] ].min.round(0)
       mating_tab.push [ y.id, { content: "#{volume0} µL of #{id0}", check: true }, { content: "#{volume1} µL of #{id1}", check: true } ]
