@@ -105,9 +105,16 @@ class Protocol
       note "Streak out the plates using either sterile toothpick or pipette tip by moving forward and back on the agar surface with a shallow angle."
       image "streak_yeast_plate"
     }
-    
+
     move streaked_yeast_plates, "30 C incubator"
     release streaked_yeast_plates, interactive: true
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id:tid)[0]
+        set_task_status(task,"plate")
+      end
+    end
 
     io_hash[:plate_ids] = streaked_yeast_plates.collect { |x| x.id } 
     return { io_hash: io_hash }
