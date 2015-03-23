@@ -113,13 +113,14 @@ class Protocol
             set_task_status(task,"imaged and stored in fridge")
             # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
             plate_id = plates[idx].id
-            primer_ids_str = find(:item, id: plate_id)[0].sample.properties["Sequencing_primer_ids"]
+            plate = find(:item, id: plate_id)[0]
+            primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
             if primer_ids_str
               primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
               num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
               num_colony = num_colony > 2 ? 2 : num_colony
               tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-              t = Task.new(name: "#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => primer_ids, "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate_id.user.id)
+              t = Task.new(name: "#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => primer_ids, "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
               t.save
             end
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
