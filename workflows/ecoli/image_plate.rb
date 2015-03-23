@@ -125,6 +125,8 @@ class Protocol
               show {
                 note t.id
                 note "plate is #{plate_id}"
+                note "num_colony is #{num_colony}"
+                note "#{primer_ids}"
               }
             end
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
