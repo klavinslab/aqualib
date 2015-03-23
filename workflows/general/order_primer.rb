@@ -42,7 +42,7 @@ class Protocol
 
       t.simple_spec[:primer_ids].each do |prid|
         primer = find(:sample, id: prid)[0]
-        seq = primer.properties["Overhang Sequence"] + primer.properties["Anneal Sequence"]
+        seq = (primer.properties["Overhang Sequence"] || "") + (primer.properties["Anneal Sequence"] || "")
         if seq.length > 0
           t[:primers][:ready].push prid
         else

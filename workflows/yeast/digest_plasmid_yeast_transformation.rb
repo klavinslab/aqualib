@@ -12,6 +12,7 @@ class Protocol
       io_hash: {},
       plasmid_stock_ids: [9189,11546,11547],
       debug_mode: "Yes",
+      item_choice_mode: "No"
     }
   end
   
