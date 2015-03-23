@@ -122,6 +122,10 @@ class Protocol
               tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
               t = Task.new(name: "#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => primer_ids, "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
               t.save
+              show {
+                note t.id
+                note "plate is #{plate_id}"
+              }
             end
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
             set_task_status(task,"no colonies")
