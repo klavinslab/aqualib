@@ -515,7 +515,7 @@ module Cloning
         t[:yeast_strain] = { ready: [], not_valid:[] }
 
         t.simple_spec[:yeast_strain_ids].each do |yid|
-          if find(:sample, id: yid )[0].sample_type.name == "Yeast Strain"
+          if find(:sample, id: yid )[0].sample_type.name == "Yeast Strain" && find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0
             t[:yeast_strain][:ready].push yid
           else
             t[:yeast_strain][:not_valid].push yid

@@ -37,15 +37,13 @@ class Protocol
         yeast_strain = find(:sample, id: yid)[0]
         if yeast_strain.in("Yeast Glycerol Stock").length > 0
           yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0]
-        elsif yeast_strain.in("Yeast Plate").length > 0
-          yeast_items.push yeast_strain.in("Yeast Plate")[0]
         end
       end
 
     elsif io_hash[:item_ids].length > 0
 
       yeast_items = io_hash[:item_ids].collect {|yid| find(:item, id: yid )[0]}
-      
+
     end
 
     # show {
