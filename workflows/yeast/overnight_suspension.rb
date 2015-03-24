@@ -31,22 +31,12 @@ class Protocol
 
     yeast_items = []
 
-    show {
-      note "#{io_hash}"
-    }
-
     if io_hash[:yeast_strain_ids].length > 0 && io_hash[:item_ids].length == 0
 
       io_hash[:yeast_strain_ids].each do |yid|
         yeast_strain = find(:sample, id: yid)[0]
-        show {
-          note yeast_strain.id
-        }
         if yeast_strain.in("Yeast Glycerol Stock").length > 0
           yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0]
-          show {
-            note yeast_strain.in("Yeast Glycerol Stock")[0].id
-          }
         end
       end
 
