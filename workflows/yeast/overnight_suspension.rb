@@ -92,24 +92,28 @@ class Protocol
           title "Media preparation in media bay"
           check "Grab #{overnight.length} of #{io_hash[:tube_size]} mL Test Tube"
           check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty #{io_hash[:tube_size]} mL test tube using serological pipette"
-          check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
+          check "Write down the following ids on the cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
           check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
         }
-        take values, interactive: true, method: "boxes"
+        take values
+        inoculation_tab = [["Item id", "Location", "#{io_hash[:tube_size]} mL tube id"]]
+        values.each_with_index do |y, idx|
+          inoculation_tab.push [ { content: y.id, check: true }, y.location, overnights[idx].id ]
+        end
         show {
           title "Inoculation"
-          note "Inoculate yeast into test tube according to the following table."
+          note "Inoculate yeast into test tube according to the following table. Return items after innocuation"
           case key
           when "Yeast Glycerol Stock"
-            bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock."
+            bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock. Return each glycerol stock immediately"
           when "Yeast Overnight Suspension"
             bullet "Pipette 10 µL of culture into tube" 
           when "Yeast Plate"
             bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
           end
-          table [["Yeast item id","#{io_hash[:tube_size]} mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
+          table inoculation_tab
         }
-        release values, interactive: true, method: "boxes"
+        release values
         release overnight, interactive: true, method: "boxes"
       end
     end
