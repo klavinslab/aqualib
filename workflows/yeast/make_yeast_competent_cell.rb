@@ -185,8 +185,18 @@ class Protocol
 
     release yeast_compcell_aliquots, interactive: true, method: "boxes"
     io_hash[:yeast_competent_cell_ids] = yeast_compcell_aliquots.collect {|y| y.id}
-    
-    return {io_hash: io_hash}
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        if task.task_prototype.name == "Yeast Competent Cell"
+          set_task_status(task,"done")
+        end
+      end
+    end
+
+    return { io_hash: io_hash }
+
   end
 
 end
