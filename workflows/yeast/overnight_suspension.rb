@@ -31,6 +31,10 @@ class Protocol
 
     yeast_items = []
 
+    show {
+      note io_hash
+    }
+
     if io_hash[:yeast_strain_ids].length > 0 && io_hash[:item_ids] == 0
 
       io_hash[:yeast_strain_ids].each do |yid|
