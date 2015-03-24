@@ -117,7 +117,7 @@ class Protocol
             primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
             if primer_ids_str
               primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
-              if primer_ids.all? { |i| i.is_a? Fixnum }
+              if primer_ids.all? { |i| i != 0 }
                 num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
                 num_colony = num_colony > 2 ? 2 : num_colony
                 tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
