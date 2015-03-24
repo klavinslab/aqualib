@@ -20,7 +20,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
 
-    io_hash = { falcon_tube_size: 14 }.merge io_hash
+    io_hash = { falcon_tube_size: 14, yeast_culture_ids: [], overnight_ids: [], volume: 2 }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
