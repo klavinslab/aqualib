@@ -396,7 +396,7 @@ class Protocol
 
       yeast_transformations = task_status name: "Yeast Transformation", group: io_hash[:group]
       if yeast_transformations[:yeast_strains] && yeast_transformations[:yeast_strains][:not_ready_to_build].length > 0
-        
+
         need_to_make_competent_yeast_ids = []
         yeast_transformations[:yeast_strains][:not_ready_to_build].each do |yid|
           y = find(:sample, id: yid)[0]
@@ -441,7 +441,7 @@ class Protocol
       end
       io_hash[:yeast_strain_ids].uniq!
       io_hash[:size] = io_hash[:yeast_strain_ids].length
-      io_hash[:volume] = 4
+      io_hash[:volume] = 5
 
     else
       show {
