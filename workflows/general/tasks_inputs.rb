@@ -113,7 +113,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Fragment Construction",
+      task_name: "Yeast Competent Cell",
       group: "technicians"
     }
   end
@@ -271,6 +271,7 @@ class Protocol
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
           t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
           t.save
+          set_task_status(t,"waiting")
           new_fragment_construction_ids.push t.id
         end
 
@@ -314,6 +315,7 @@ class Protocol
         tp = TaskPrototype.where("name = 'Primer Order'")[0]
         t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
         t.save
+        set_task_status(t,"waiting")
         new_primer_order_ids.push t.id
       end
 
@@ -394,24 +396,33 @@ class Protocol
 
       yeast_transformations = task_status name: "Yeast Transformation", group: io_hash[:group]
       if yeast_transformations[:yeast_strains] && yeast_transformations[:yeast_strains][:not_ready_to_build].length > 0
+        
         need_to_make_competent_yeast_ids = []
         yeast_transformations[:yeast_strains][:not_ready_to_build].each do |yid|
-          y = find(:item, id: yid)[0]
+          y = find(:sample, id: yid)[0]
           if y.properties["Parent"].in("Yeast Competent Aliquot").length == 0 && y.properties["Parent"].in("Yeast Competent Cell").length == 0
-            need_to_make_competent_yeast_ids.push yid
+            need_to_make_competent_yeast_ids.push y.properties["Parent"].id
           end
         end
 
+        new_yeast_competent_cell_task_ids = []
         need_to_make_competent_yeast_ids.each do |id|
           y = find(:sample, id: id)[0]
           tp = TaskPrototype.where("name = 'Yeast Competent Cell'")[0]
-          t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
-          t.save
-          new_yeast_competent_cells.push t.id
+          task = find(:task, name: "#{y.name}_comp_cell")[0]
+          # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
+          if task
+            set_task_status(task,"waiting")
+          else
+            t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
+            t.save
+            new_yeast_competent_cell_task_ids.push t.id
+            set_task_status(t,"waiting")
+          end
         end
 
-        if new_yeast_competent_cells.length > 0
-          new_yeast_competent_cells_tab = task_info_table(new_yeast_competent_cells)
+        if new_yeast_competent_cell_task_ids.length > 0
+          new_yeast_competent_cells_tab = task_info_table(new_yeast_competent_cell_task_ids)
           show {
             title "New Yeast Competent Cell tasks"
             note "The following Yeast Competent Cell tasks are automatically generated for yeast strains that need to make competent cells in Yeast Transformation tasks."
@@ -421,7 +432,8 @@ class Protocol
 
       end
 
-
+      yeast_competent_cell_tasks = task_status name: "Yeast Competent Cell", group: io_hash[:group]
+      io_hash[:task_ids] = yeast_competent_cell_tasks[:ready_ids]
       io_hash = { yeast_strain_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
