@@ -35,7 +35,7 @@ end
 place transformation
   protocol: "aqualib:workflows/yeast/yeast_transformation.rb"
   group: group
-  start: now()
+  start: hours(1)
   window: hours(20)
 end
 
