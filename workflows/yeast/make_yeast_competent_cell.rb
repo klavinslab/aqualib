@@ -20,13 +20,22 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
 
+    io_hash = { falcon_tube_size: 14 }.merge io_hash
+
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
+    io_hash[:falcon_tube_size] = 50 if io_hash[:yeast_culture_ids].length > 0
+
     io_hash = { yeast_competent_cell_ids: [] }.merge io_hash
+
+    if io_hash[:yeast_culture_ids].length == 0 && io_hash[:overnight_ids].length > 0 && io_hash[:volume] >= 4
+      io_hash[:yeast_culture_ids] = io_hash[:overnight_ids]
+    end
+
     if io_hash[:yeast_culture_ids].length == 0
       show {
         title "No competent cells need to be made"
@@ -34,6 +43,7 @@ class Protocol
       }
       return { io_hash: io_hash }
     end
+    
 
     cultures = io_hash[:yeast_culture_ids].collect { |cid| find(:item, id:cid)[0] }
     take cultures, interactive: true
@@ -43,20 +53,20 @@ class Protocol
     show{
       title "Prepare tubes"
       note "Label #{num} 1.5 mL tubes with #{(1..num).to_a}"
-      note "Label #{num} 50 mL falcon tubes with #{(1..num).to_a}"     
+      note "Label #{num} #{io_hash[:falcon_tube_size]} mL falcon tubes with #{(1..num).to_a}"
     }
 
     show{
-      title "Pour cells into 50 mL tubes"
-      check "Pour all contents from the flask into the labeled 50 mL falcon tube according to the tabel below. Left over foams are OK."
-      table [["Flask Label","50 mL Tube Number"]].concat(cultures.collect { |c| { content: c.id, check: true } } .zip (1..num).to_a) 
+      title "Pour cells into #{io_hash[:falcon_tube_size]} mL tubes"
+      check "Pour all contents from the flask into the labeled #{io_hash[:falcon_tube_size]} mL falcon tube according to the tabel below. Left over foams are OK."
+      table [["Flask Label","#{io_hash[:falcon_tube_size]} mL Tube Number"]].concat(cultures.collect { |c| { content: c.id, check: true } } .zip (1..num).to_a)
     }
     
     show{
       title "Centrifuge at 3000xg for 5 min"
       note "If you have never used the big centrifuge before, or are unsure about any aspect of what you have just done. ASK A MORE EXPERIENCED LAB MEMBER BEFORE YOU HIT START!"
-      check "Balance the 50 mL tubes so that they all weigh approximately (within 0.1g) the same."
-      check "Load the 50 mL tubes into the large table top centerfuge such that they are balanced."
+      check "Balance the #{io_hash[:falcon_tube_size]} mL tubes so that they all weigh approximately (within 0.1g) the same."
+      check "Load the #{io_hash[:falcon_tube_size]} mL tubes into the large table top centerfuge such that they are balanced."
       check "Set the speed to 3000xg." 
       check "Set the time to 5 minutes."
       warning "MAKE SURE EVERYTHING IS BALANCED"
@@ -66,16 +76,16 @@ class Protocol
     
     show {
       title "Pour out supernatant"
-      check "After spin, take out all 50 mL tubes and place them in a rack."
+      check "After spin, take out all #{io_hash[:falcon_tube_size]} mL falcon tubes and place them in a rack."
       check "Take to the sink at the tube washing station without shaking tubes. Pour out liquid from tubes in one smooth motion so as not to disturb cell pellet."
       check "Recap tubes and take back to the bench."
     }
     
     show {
-      title "Water washing in 50 mL tube"
-      check "Add 1 mL of molecular grade water to each 50 mL tube and recap."
+      title "Water washing in #{io_hash[:falcon_tube_size]} mL tube"
+      check "Add 1 mL of molecular grade water to each #{io_hash[:falcon_tube_size]} mL tube and recap."
       check "Vortex the tubes till cell pellet is resuspended."
-      check "Aliquot 1.5 mL from each 50 mL tube into the corresponding labeled 1.5 mL tube that has the same label number."
+      check "Aliquot 1.5 mL from each #{io_hash[:falcon_tube_size]} mL tube into the corresponding labeled 1.5 mL tube that has the same label number."
       note "It is OK if you have more than 1.5 mL of the resuspension. 1.5 mL is enough. If you have less than 1.5 mL, pipette as much as possible from tubes."
     }
     
