@@ -108,7 +108,9 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
+
         if task.task_prototype.name == "Gibson Assembly"
+
           if colony_number[:"c#{plates[idx].id}".to_sym] > 0
             set_task_status(task,"imaged and stored in fridge")
             # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
@@ -123,16 +125,33 @@ class Protocol
                 tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
                 t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
                 t.save
+                set_task_status(t,"waiting")
               end
             end
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
             set_task_status(task,"no colonies")
           end
+
+        elsif task.task_prototype.name == "Yeast Transformation"
+          stored_plates.each do |p|
+            num_colony = p.datum[:num_colony]
+            num_colony = num_colony > 3 ? 3 : num_colony
+            tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
+            t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
+            t.save
+            set_task_status(t,"waiting")
+          end
+          set_task_status(task,"imaged and stored in fridge")
+
         else
           set_task_status(task,"imaged and stored in fridge")
         end
-      end
-    end
+
+      end # end io_hash[:task_ids].each_with_index do |tid,idx|
+
+    end  # end if io_hash[:task_ids] 
+
     return { io_hash: io_hash }
+
   end # main
 end # Protocol

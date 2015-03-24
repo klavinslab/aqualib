@@ -556,6 +556,26 @@ module Cloning
 
   end ### task_status
 
+  # a function that returns a table of task information
+  def task_info_table task_ids
+
+    task_ids.compact!
+
+    if task_ids.length == 0
+      return []
+    end
+
+    tab = [[ "Task ids", "Task type", "Task name", "Task owner" ]]
+
+    task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
+    end
+
+    return tab
+
+  end ### task_info_table
+
 end
 
 
