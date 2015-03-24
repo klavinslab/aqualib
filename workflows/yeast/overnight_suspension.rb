@@ -102,10 +102,10 @@ class Protocol
         end
         show {
           title "Inoculation"
-          note "Inoculate yeast into test tube according to the following table. Return items after innocuation"
+          note "Inoculate yeast into test tube according to the following table. Return items after innocuation."
           case key
           when "Yeast Glycerol Stock"
-            bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock. Return each glycerol stock immediately"
+            bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock. Return each glycerol stock immediately after innocuation."
           when "Yeast Overnight Suspension"
             bullet "Pipette 10 µL of culture into tube" 
           when "Yeast Plate"
