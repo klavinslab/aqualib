@@ -22,23 +22,41 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], volume: 2, media_type: "800 mL YPAD liquid (sterile)" }.merge io_hash
+    io_hash = { debug_mode: "No", item_ids: [], yeast_strain_ids: [], overnight_ids: [], volume: 2, media_type: "800 mL YPAD liquid (sterile)" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+
     yeast_items = []
-    yeast_items = io_hash[:item_ids].collect {|yid| find(:item, id: yid )[0]}
+
+    if io_hash[:yeast_strain_ids].length > 0 && io_hash[:item_ids] == 0
+
+      io_hash[:yeast_strain_ids].each do |yid|
+        yeast_strain = find(:sample, id: yid)[0]
+        if yeast_strain.in("Yeast Glycerol Stock").length > 0
+          yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0]
+        elsif yeast_strain.in("Yeast Plate").length > 0
+          yeast_items.push yeast_strain.in("Yeast Plate")[0]
+        end
+      end
+
+    elsif io_hash[:item_ids].length > 0
+
+      yeast_items = io_hash[:item_ids].collect {|yid| find(:item, id: yid )[0]}
+      
+    end
 
     # show {
     #   note "#{io_hash}"
     # }
 
-    io_hash[:media_type] = input[:media_type] || "800 mL YPAD liquid (sterile)"
-    io_hash[:volume] = input[:volume] || 2
-    media_type = io_hash[:media_type]
-    volume = io_hash[:volume]
+    if io_hash[:volume] <= 2
+      io_hash[:tube_size] = 14
+    elsif io_hash[:volume] > 2
+      io_hash[:tube_size] = 20
+    end
 
     # group into different types using Hash
     yeast_type_hash = Hash.new {|h,k| h[k] = [] }
@@ -71,17 +89,18 @@ class Protocol
           y.save
         end
         overnights.concat overnight
+
         show {
           title "Media preparation in media bay"
-          check "Grab #{overnight.length} of 14 mL Test Tube"
-          check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty 14 mL test tube using serological pipette"
+          check "Grab #{overnight.length} of #{io_hash[:tube_size]} mL Test Tube"
+          check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty #{io_hash[:tube_size]} mL test tube using serological pipette"
           check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
           check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
         }
         take values, interactive: true, method: "boxes"
         show {
           title "Inoculation"
-          note "Inoculate yeast into 14 mL tube according to the following table."
+          note "Inoculate yeast into test tube according to the following table."
           case key
           when "Yeast Glycerol Stock"
             bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock."
@@ -90,7 +109,7 @@ class Protocol
           when "Yeast Plate"
             bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
           end
-          table [["Yeast item id","14 mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
+          table [["Yeast item id","#{io_hash[:tube_size]} mL tube"]].concat(values.collect {|v| v.id}.zip overnight.collect {|o| o.id})
         }
         release values, interactive: true, method: "boxes"
         release overnight, interactive: true, method: "boxes"

@@ -510,7 +510,20 @@ module Cloning
         end
 
         ready_conditions = t[:yeast_strain][:ready].length == 2 && t.simple_spec[:yeast_mating_strain_ids].length == 2 && t.simple_spec[:yeast_selective_plate_type].is_a?(String)
-        
+
+      when "Yeast Competent Cell"
+        t[:yeast_strain] = { ready: [], not_valid:[] }
+
+        t.simple_spec[:yeast_strain_ids].each do |yid|
+          if find(:sample, id: yid )[0].sample_type.name == "Yeast Strain"
+            t[:yeast_strain][:ready].push yid
+          else
+            t[:yeast_strain][:not_valid].push yid
+          end
+        end
+
+        ready_conditions = t[:yeast_strain][:ready].length == t.simple_spec[:yeast_strain_ids].length
+
       else
         show {
           title "Under development"

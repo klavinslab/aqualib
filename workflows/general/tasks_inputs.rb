@@ -390,6 +390,15 @@ class Protocol
       end
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
 
+    when "Yeast Competent Cell"
+      io_hash = { yeast_strain_ids: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:yeast_strain_ids].push task.simple_spec[:yeast_strain_ids]
+      end
+      io_hash[:size] = io_hash[:yeast_strain_ids].length
+      io_hash[:volume] = 4
+
     else
       show {
         title "Under development"
