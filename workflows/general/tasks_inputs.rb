@@ -391,6 +391,37 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
 
     when "Yeast Competent Cell"
+
+      yeast_transformations = task_status name: "Yeast Transformation", group: io_hash[:group]
+      if yeast_transformations[:yeast_strains] && yeast_transformations[:yeast_strains][:not_ready_to_build].length > 0
+        need_to_make_competent_yeast_ids = []
+        yeast_transformations[:yeast_strains][:not_ready_to_build].each do |yid|
+          y = find(:item, id: yid)[0]
+          if y.properties["Parent"].in("Yeast Competent Aliquot").length == 0 && y.properties["Parent"].in("Yeast Competent Cell").length == 0
+            need_to_make_competent_yeast_ids.push yid
+          end
+        end
+
+        need_to_make_competent_yeast_ids.each do |id|
+          y = find(:sample, id: id)[0]
+          tp = TaskPrototype.where("name = 'Yeast Competent Cell'")[0]
+          t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
+          t.save
+          new_yeast_competent_cells.push t.id
+        end
+
+        if new_yeast_competent_cells.length > 0
+          new_yeast_competent_cells_tab = task_info_table(new_yeast_competent_cells)
+          show {
+            title "New Yeast Competent Cell tasks"
+            note "The following Yeast Competent Cell tasks are automatically generated for yeast strains that need to make competent cells in Yeast Transformation tasks."
+            table new_yeast_competent_cells_tab
+          }
+        end
+
+      end
+
+
       io_hash = { yeast_strain_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]

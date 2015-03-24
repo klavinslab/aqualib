@@ -457,13 +457,13 @@ module Cloning
         t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
           y = find(:sample, id: yid)[0]
-          # check if glycerol stock and plasmid stock are ready
-          parent_ready = y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0 || y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Overnight Suspension").length > 0
+          # check if competent aliquot/cell and plasmid stock are ready
+          parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0 
           plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0 if y.properties["Integrant"]
           if parent_ready && plasmid_ready
-            t[:yeast_strains][:ready_to_build].push y 
+            t[:yeast_strains][:ready_to_build].push yid
           else
-            t[:yeast_strains][:not_ready_to_build].push y
+            t[:yeast_strains][:not_ready_to_build].push yid
           end
         end
 
@@ -499,30 +499,30 @@ module Cloning
         ready_conditions = t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
 
       when "Yeast Mating"
-        t[:yeast_strain] = { ready: [], not_valid:[] }
+        t[:yeast_strains] = { ready: [], not_valid:[] }
 
         t.simple_spec[:yeast_mating_strain_ids].each do |yid|
           if find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0
-            t[:yeast_strain][:ready].push yid
+            t[:yeast_strains][:ready].push yid
           else
-            t[:yeast_strain][:not_valid].push yid
+            t[:yeast_strains][:not_valid].push yid
           end
         end
 
-        ready_conditions = t[:yeast_strain][:ready].length == 2 && t.simple_spec[:yeast_mating_strain_ids].length == 2 && t.simple_spec[:yeast_selective_plate_type].is_a?(String)
+        ready_conditions = t[:yeast_strains][:ready].length == 2 && t.simple_spec[:yeast_mating_strain_ids].length == 2 && t.simple_spec[:yeast_selective_plate_type].is_a?(String)
 
       when "Yeast Competent Cell"
-        t[:yeast_strain] = { ready: [], not_valid:[] }
+        t[:yeast_strains] = { ready: [], not_valid:[] }
 
         t.simple_spec[:yeast_strain_ids].each do |yid|
           if find(:sample, id: yid )[0].sample_type.name == "Yeast Strain" && find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0
-            t[:yeast_strain][:ready].push yid
+            t[:yeast_strains][:ready].push yid
           else
-            t[:yeast_strain][:not_valid].push yid
+            t[:yeast_strains][:not_valid].push yid
           end
         end
 
-        ready_conditions = t[:yeast_strain][:ready].length == t.simple_spec[:yeast_strain_ids].length
+        ready_conditions = t[:yeast_strains][:ready].length == t.simple_spec[:yeast_strain_ids].length
 
       else
         show {
@@ -549,6 +549,8 @@ module Cloning
     }
 
     task_status_hash[:fragments] = ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Gibson Assembly", "Fragment Construction"].include? params[:name]
+
+    task_status_hash[:yeast_strains] = ((waiting + ready).collect { |t| t[:yeast_strains] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Yeast Transformation"].include? params[:name]
 
     return task_status_hash
 
