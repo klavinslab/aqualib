@@ -142,6 +142,13 @@ class Protocol
         available_yeast_ubottom_plates = find(:item, { object_type: { name: "96 U-bottom Well Plate" } })
         available_yeast_ubottom_plates = available_yeast_ubottom_plates.collect { |yp| yp.id }.collect { |i| collection_from i }
         available_yeast_ubottom_plates.each do |yp|
+          # fill up the plates to a clean start
+          if yp.num_samples % yp.dimensions[1] != 0
+            r, c = yp.num_samples/yp.dimensions[1], yp.num_samples % yp.dimensions[1]
+            (c..yp.dimensions[1]-1).each do |i|
+              yp.set r, i, find(:sample, id: 1)[0]
+            end
+          end
           available_num_of_well = yp.dimensions[0]*yp.dimensions[1] - yp.num_samples
           if available_num_of_well >= yeast_deepwell_plate.num_samples
             yeast_ubottom_plate = yp
