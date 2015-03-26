@@ -16,6 +16,14 @@ place tasks_inputs
   window: hours(1)
 end
 
+place make_plate
+  protocol: "aqualib:workflows/yeast/make_yeast_plate.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
 place yeast_mating
   protocol: "aqualib:workflows/yeast/yeast_mating.rb"
   group: group
@@ -48,18 +56,21 @@ place re_image_plate
   window: hours(1)
 end
 
-wire tasks_inputs => yeast_mating
+wire tasks_inputs => make_plate
+wire make_plate => yeast_mating
 wire yeast_mating => streak_plate
 wire streak_plate => image_plate
 wire image_plate => re_image_plate
 
-transition [ tasks_inputs ] => [ yeast_mating ] when !error(0) && completed (0) end
+transition [ tasks_inputs ] => [ make_plate ] when !error(0) && completed (0) end
+transition [ make_plate ] => [ yeast_mating ] when !error(0) && completed (0) end
 transition [ yeast_mating ] => [ streak_plate ] when !error(0) && completed (0) end
 transition [ streak_plate ] => [ image_plate ] when !error(0) && completed (0) end
 transition [ image_plate ] => [] when !error(0) && completed (0) end
 transition [ re_image_plate ] => [] when !error(0) && completed (0) end
 
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ make_plate ] => [ make_plate ] when error(0) end
 transition [ yeast_mating ] => [ yeast_mating ] when error(0) end
 transition [ streak_plate ] => [ streak_plate ] when error(0) end
 transition [ image_plate ] => [ re_image_plate ] when error(0) end
