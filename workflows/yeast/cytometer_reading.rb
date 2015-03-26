@@ -142,7 +142,7 @@ class Protocol
         available_yeast_ubottom_plates = find(:item, { object_type: { name: "96 U-bottom Well Plate" } })
         available_yeast_ubottom_plates = available_yeast_ubottom_plates.collect { |yp| yp.id }.collect { |i| collection_from i }
         available_yeast_ubottom_plates.each do |yp|
-          # fill up the plates to a clean start
+          # fill up the plates to start from column 1
           if yp.num_samples % yp.dimensions[1] != 0
             r, c = yp.num_samples/yp.dimensions[1], yp.num_samples % yp.dimensions[1]
             (c..yp.dimensions[1]-1).each do |i|
@@ -218,7 +218,7 @@ class Protocol
 
       show {
         title "Discard or return plates"
-        if yeast_ubottom_plate.num_samples > 90
+        if yeast_ubottom_plate.num_samples > 84
           note "Discard the 96 ubottom plate with id #{yeast_ubottom_plate.id}. Discard properly into biohazard box."
         else
           note "Put a new clear film or put back the clear film on the plate #{yeast_ubottom_plate.id} and cross out the wells that have been used. Stack the plate on the shelf with item number label facing outside."
