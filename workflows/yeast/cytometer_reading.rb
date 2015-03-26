@@ -105,7 +105,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      yeast_deepwell_plate_ids: [33362,33363],
+      yeast_deepwell_plate_ids: [27612],
       range_to_read: { from: [[1,1]], to: [[1,12]] },
       yeast_ubottom_plate_ids: [],
       read_volume: 100,
@@ -202,6 +202,8 @@ class Protocol
 
       show {
         title "Eject plate"
+        warning "If any time the screen shows 'Empty the waste tank', go find the waste tank on the side of cytometer and empty the tank by pouring contents into sink."
+        warning "If any time the screen shows 'Refill the sheath tank', go find the sheath fluid bottle on the shelf, pour the contens into the sheath tank. Refill the sheath fluid bottle after use by adding the sheath solution (a small sealed bottle in the drawer named Bacteriostatic Concentrate Solution) and fill DI water to the 1 L line." 
         note "The esitmated time for this cytometer run is shown below. Come back around that time."
         timer initial: { hours: 0, minutes: estimated_time_mm, seconds: estimated_time_ss}
         check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate."
@@ -230,8 +232,8 @@ class Protocol
         title "Clean run"
         check "Go find the cleaning 24 well plate, check if there is still liquid left in tubes at D4, D5, D6 marked with C, D, S on tube lid top. If any tube has lower than 50 µL of liquid in it, replace it with a full reagnent tube with the same letter written on its lid top."
         check "Put the cleanning 24 well plate on the CSampler."
-        check "Click File/Open workspace or template, go to MyDocuments folder to find clean_regular_try.c6t file and open it. It will prompt you to save a file, click No."
-        check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, then click Yes to replace the old file."
+        check "Click File/Open workspace or template, go to My Documents/Aquarium folder to find CleanRegular_template.c6t file and open it. It will prompt you to save a file, click No."
+        check "Click Open Run Display, then click Autorun, it will prompt you save the file, click Save, rename as CleanRegular, then click Yes to replace the old file."
       }
       release [yeast_ubottom_plate]
 
