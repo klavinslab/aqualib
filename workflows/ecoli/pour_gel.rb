@@ -133,7 +133,9 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"pcr")
+        # set_task_status(task,"pcr")
+        task.notify "gel poured", job_id: jid
+        task.save
       end
     end
 
