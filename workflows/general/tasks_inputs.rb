@@ -269,10 +269,16 @@ class Protocol
         need_to_make_fragment_ids.each do |id|
           fragment = find(:sample, id: id)[0]
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-          t.save
-          t.notify "Automatically created from Gibson Assembly.", job_id: jid
-          new_fragment_construction_ids.push t.id
+          task = find(:task, name: "#{fragment.name}")[0]
+          if task
+            set_task_status(task, "waiting")
+            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+          else
+            t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+            t.save
+            t.notify "Automatically created from Gibson Assembly.", job_id: jid
+            new_fragment_construction_ids.push t.id
+            
         end
 
         new_fragment_construction_ids.compact!
