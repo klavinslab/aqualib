@@ -270,8 +270,8 @@ class Protocol
           fragment = find(:sample, id: id)[0]
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
           t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-          t.notify "Automatically created from Gibson Assembly."
           t.save
+          t.notify "Automatically created from Gibson Assembly.", job_id: jid
           new_fragment_construction_ids.push t.id
         end
 
@@ -314,8 +314,8 @@ class Protocol
         primer = find(:sample, id: id)[0]
         tp = TaskPrototype.where("name = 'Primer Order'")[0]
         t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
-        t.notify "Automatically created from Fragment Construction."
         t.save
+        t.notify "Automatically created from Fragment Construction.", job_id: jid
         new_primer_order_ids.push t.id
       end
 
@@ -413,11 +413,12 @@ class Protocol
           # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
           if task
             set_task_status(task,"waiting")
-            task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation."
+            task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
+            task.save
           else
             t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
-            t.notify "Automatically created from Yeast Transformation."
             t.save
+            t.notify "Automatically created from Yeast Transformation.", job_id: jid
             new_yeast_competent_cell_task_ids.push t.id
           end
         end
