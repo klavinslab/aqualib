@@ -10,11 +10,11 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      item_ids: [13011],
+      item_ids: [28212,28212,28212,28204,28212,28212],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
-      volume: "2",
+      volume: 2,
       debug_mode: "Yes"
     }
   end
@@ -96,10 +96,26 @@ class Protocol
           check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
         }
         take values
-        inoculation_tab = [["Item id", "Location", "#{io_hash[:tube_size]} mL tube id"]]
-        values.each_with_index do |y, idx|
-          inoculation_tab.push [ { content: y.id, check: true }, y.location, overnights[idx].id ]
+        inoculation_tab = [["Item id", "Location", "#{io_hash[:tube_size]} mL tube id", "Colony Selection"]]
+        
+        # a hash to record how many of the same plate need to be innoculated
+        value_num = Hash.new {|h,k| h[k] = 0 }
+        value_num_original = Hash.new {|h,k| h[k] = 0 }
+        values.each do |v|
+          value_num[v] +=1
+          value_num_original[v] +=1
         end
+
+        values.each_with_index do |y, idx|
+          if y.object_type.name == "Yeast Plate" && y.datum[:correct_colony]
+            info = "c#{y.datum[:correct_colony][value_num_original[y] - value_num[y]]}"
+            value_num[y] -=1 if y.datum[:correct_colony][value_num_original[y] - value_num[y] + 1]
+          else
+            info = "NA"
+          end
+          inoculation_tab.push [ { content: y.id, check: true }, y.location, overnights[idx].id, info ]
+        end
+
         show {
           title "Inoculation"
           note "Inoculate yeast into test tube according to the following table. Return items after innocuation."
@@ -107,7 +123,7 @@ class Protocol
           when "Yeast Glycerol Stock"
             bullet "Use a sterile 100 µL tip and vigerously scrape the glycerol stock to get a chunk of stock. Return each glycerol stock immediately after innocuation."
           when "Yeast Overnight Suspension"
-            bullet "Pipette 10 µL of culture into tube" 
+            bullet "Pipette 10 µL of culture into tube"
           when "Yeast Plate"
             bullet "Take a sterile 10 µL tip, pick up a medium sized colony by gently scraping the tip to the colony."
           end
