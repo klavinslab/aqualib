@@ -138,9 +138,6 @@ class Protocol
         fs.save
       end
 
-      delete gel_slices
-      release gel_slices
-
       release fragment_stocks, interactive: true, method: "boxes"
       io_hash[:fragment_stock_ids] = fragment_stocks.collect{ |fs| fs.id }
     end
@@ -148,9 +145,20 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"done")
+        if task.simple_spec[:fragments].length = 1
+          if find(:sample, id: fragment_ids[0])[0].in("Gel Slice").length > 0
+            set_task_status(task, "done")
+          else
+            set_task_status(task, "failed")
+          end
+        else
+          set_task_status(task,"done")
+        end
       end
     end
+
+    delete gel_slices
+    release gel_slices
     
     return { io_hash: io_hash }
 
