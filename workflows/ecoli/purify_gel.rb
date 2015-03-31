@@ -145,7 +145,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        if task.simple_spec[:fragments].length = 1
+        if task.simple_spec[:fragments].length == 1
           if find(:sample, id: fragment_ids[0])[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
           else
