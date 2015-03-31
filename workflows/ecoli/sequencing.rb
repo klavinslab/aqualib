@@ -180,15 +180,9 @@ class Protocol
       plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])[0]
       tp = TaskPrototype.where("name = 'Sequencing Verification'")[0]
       t = Task.new
-      t.name = "#{plasmid_stock.sample.name}_plasmid_stock_#{plasmid_stock.id}"
-      t.specification = ({
-        "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ],
-        "overnight_ids TB Overnight of Plasmid" => [ overnight.id ]
-      }).to_json
-      t.task_prototype_id = tp.id
-      t.status = "waiting"
-      t.user_id = overnight.sample.user.id
+      t = Task.new(name: "#{plasmid_stock.sample.name}_plasmid_stock_#{plasmid_stock.id}", specification: { "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ], "overnight_ids TB Overnight of Plasmid" => [ overnight.id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: overnight.sample.user.id)
       t.save
+      t.notify "Automatically created from Plasmid Verification.", job_id: jid
     end
 
     # Set tasks in the io_hash to be send to sequencing
