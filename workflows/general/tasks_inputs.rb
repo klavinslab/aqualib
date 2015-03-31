@@ -33,29 +33,41 @@ class Protocol
 
       case params[:name]
 
-      when "Yeast Transformation"
-        t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
-        t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
-          y = find(:sample, id: yid)[0]
-          # check if competent aliquot/cell and plasmid stock are ready and send notifications
-          parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0
-          t.notify "No competent aliquot/cell for the parent strain of #{y}. Competent cells will be made when yeast competent cell workflow got run.", job_id: jid if !parent_ready
-
-          if y.properties["Integrant"]
-            plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
-            t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}", job_id: jid if !plasmid_ready
-          else
-            t.notify "No integrant defined for yeast strain #{y}.", job_id: jid
-          end
-
-          if parent_ready && plasmid_ready
-            t[:yeast_strains][:ready_to_build].push yid
-          else
-            t[:yeast_strains][:not_ready_to_build].push yid
+      when "Plasmid Verification"
+        length_check = t.simple_spec[:plate_ids].length == t.simple_spec[:num_colonies].length && t.simple_spec[:plate_ids].length == t.simple_spec[:primer_ids].length
+        t.notify "plate_ids, num_colonies, primer_ids need to have the same array length." if !length_check
+        t[:plate_ids] = { ready: [], not_ready: [] }
+        t.simple_spec[:plate_ids].each_with_index do |pid,idx|
+          if find(:item, id: pid)[0]
+            plate_ready = ["E coli Plate of Plasmid", "Plasmid Glycerol Stock"].include?(find(:item, id: pid)[0].object_type.name) 
+            marker_ready = (find(:item, id: pid)[0].sample.properties["Bacterial Marker"] || "").length > 0
+            num_colonies_ready = (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
+            
+            if plate_ready && marker_ready && num_colonies_ready
+              t[:plate_ids][:ready].push pid
+            else
+              t[:plate_ids][:not_ready].push pid
+              t.notify "Item #{pid} need to be an E coli Plate of Plasmid or Plasmid Glycerol Stock", job_id: jid if !plate_ready
+              t.notify "Need Bacterial Marker info for sample corresponding to item #{pid}", job_id: jid if !marker_ready
+              t.notify "num_colonies for #{pid} need to be a number between 0,10", job_id: jid if !(t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
+            end
           end
         end
 
-        ready_conditions = t[:yeast_strains][:ready_to_build].length == t.simple_spec[:yeast_transformed_strain_ids].length
+        t[:primers] = { ready: [], no_aliquot: [] }
+        primer_ids = t.simple_spec[:primer_ids].flatten.uniq
+        primer_ids.each do |prid|
+          if prid != 0
+            if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
+              t[:primers][:ready].push prid
+            else
+              t[:primers][:no_aliquot].push prid
+              t.notify "Primer #{prid} has no primer aliquot.", job_id: jid
+            end
+          end
+        end
+
+        ready_conditions = length_check && t[:plate_ids][:ready].length == t.simple_spec[:plate_ids].length && t[:primers][:ready].length == primer_ids.length
 
       end
 
@@ -122,7 +134,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Transformation",
+      task_name: "Plasmid Verification",
       group: "technicians"
     }
   end
