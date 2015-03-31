@@ -463,7 +463,7 @@ module Cloning
 
           if y.properties["Integrant"]
             plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
-            t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}", job_id: jid if !plasmid_ready
+            t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}, integrant of yeast strain #{y}", job_id: jid if !plasmid_ready
           else
             t.notify "No integrant defined for yeast strain #{y}.", job_id: jid
           end
