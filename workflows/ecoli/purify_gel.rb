@@ -157,9 +157,11 @@ class Protocol
       end
     end
 
-    delete gel_slices
-    release gel_slices
-    
+    if gel_slices
+      delete gel_slices
+      release gel_slices
+    end
+      
     return { io_hash: io_hash }
 
   end # main
