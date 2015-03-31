@@ -278,7 +278,7 @@ class Protocol
             t.save
             t.notify "Automatically created from Gibson Assembly.", job_id: jid
             new_fragment_construction_ids.push t.id
-            
+          end
         end
 
         new_fragment_construction_ids.compact!
