@@ -292,7 +292,7 @@ class Protocol
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
           task = find(:task, name: "#{fragment.name}")[0]
           if task
-            if ["waiting", "ready"].include? task.status
+            if !["waiting", "ready"].include? task.status
               set_task_status(task, "waiting")
               task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
             end
