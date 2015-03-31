@@ -457,9 +457,17 @@ module Cloning
         t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
           y = find(:sample, id: yid)[0]
-          # check if competent aliquot/cell and plasmid stock are ready
-          parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0 
-          plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0 if y.properties["Integrant"]
+          # check if competent aliquot/cell and plasmid stock are ready and send notifications
+          parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0
+          t.notify "No competent aliquot/cell for the parent strain of #{y}. Competent cells will be made when yeast competent cell workflow got run.", job_id: jid if !parent_ready
+
+          if y.properties["Integrant"]
+            plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
+            t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}", job_id: jid if !plasmid_ready
+          else
+            t.notify "No integrant defined for yeast strain #{y}.", job_id: jid
+          end
+
           if parent_ready && plasmid_ready
             t[:yeast_strains][:ready_to_build].push yid
           else
@@ -488,7 +496,9 @@ module Cloning
       when "Sequencing"
         t[:primers] = { ready: [], no_aliquot: [] }
 
-        t.simple_spec[:primer_ids].each do |prid|
+        primer_ids = t.simple_spec[:primer_ids].flatten.uniq
+
+        primer_ids.each do |prid|
           if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
             t[:primers][:ready].push prid
           else
@@ -497,7 +507,7 @@ module Cloning
           end
         end
 
-        ready_conditions = t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
+        ready_conditions = t[:primers][:ready].length == primer_ids.length && find(:item, id: t.simple_spec[:plasmid_stock_id])
 
       when "Yeast Mating"
         t[:yeast_strains] = { ready: [], not_valid:[] }

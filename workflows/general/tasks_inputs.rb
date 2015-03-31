@@ -6,7 +6,7 @@ class Protocol
   include Standard
   include Cloning
 
-  def task_status_debug p={}
+  def task_status p={}
 
     # This function is used to debug task_status function in cloning.rb
 
@@ -33,28 +33,37 @@ class Protocol
 
       case params[:name]
 
-      when "Yeast Strain QC"
-        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
-        t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
-        sample_check = true
-        t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
-          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
-          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
-          if primer1 && primer2 && t.simple_spec[:num_colonies][idx] > 0
-            t[:yeast_plate_ids][:ready_to_QC].push yid
+      when "Yeast Transformation"
+        t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
+        t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
+          y = find(:sample, id: yid)[0]
+          # check if competent aliquot/cell and plasmid stock are ready and send notifications
+          parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0
+          t.notify "No competent aliquot/cell for the parent strain of #{y}. Competent cells will be made when yeast competent cell workflow got run.", job_id: jid if !parent_ready
+
+          if y.properties["Integrant"]
+            plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
+            t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}", job_id: jid if !plasmid_ready
           else
-            t[:yeast_plate_ids][:not_ready_to_QC].push yid
+            t.notify "No integrant defined for yeast strain #{y}.", job_id: jid
+          end
+
+          if parent_ready && plasmid_ready
+            t[:yeast_strains][:ready_to_build].push yid
+          else
+            t[:yeast_strains][:not_ready_to_build].push yid
           end
         end
 
-        ready_conditions = sample_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
+        ready_conditions = t[:yeast_strains][:ready_to_build].length == t.simple_spec[:yeast_transformed_strain_ids].length
+
       end
 
       if ready_conditions
-        t.status = "ready"
+        set_task_status(t, "ready")
         t.save
       else
-        t.status = "waiting"
+        set_task_status(t, "waiting")
         t.save
       end
 
@@ -113,7 +122,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Competent Cell",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end

@@ -10,8 +10,8 @@ class Protocol
     {
       io_hash: {},
       plasmid_stock_ids: [15417,15418],
-      primer_ids: [[2575,2569],[2054,2569]],
-      debug_mode: "No",
+      primer_ids: [[2575,2054],[2054]],
+      debug_mode: "Yes",
       group: "yang"
     }
   end
@@ -19,7 +19,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [] }.merge io_hash
+    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No" }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -98,7 +98,7 @@ class Protocol
       check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
-    if io_hash[:group] != ("technicians" || "cloning" || "admin")
+    if io_hash[:item_choice_mode].downcase == "yes"
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
 
