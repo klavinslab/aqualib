@@ -567,10 +567,10 @@ module Cloning
       end
 
       if ready_conditions
-        set_task_status(t, "ready")
+        set_task_status(t, "ready") if t.status != "ready"
         t.save
       else
-        set_task_status(t, "waiting")
+        set_task_status(t, "waiting") if t.status != "waiting"
         t.save
       end
 
