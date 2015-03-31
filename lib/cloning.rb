@@ -438,6 +438,7 @@ module Cloning
 
       when "Plasmid Verification"
         length_check = t.simple_spec[:plate_ids].length == t.simple_spec[:num_colonies].length && t.simple_spec[:plate_ids].length == t.simple_spec[:primer_ids].length
+        t.notify "plate_ids, num_colonies, primer_ids need to have the same array length." if !length_check
         sample_check = true
         t.simple_spec[:plate_ids].each_with_index do |pid,idx|
           if find(:item, id: pid)[0]
@@ -479,6 +480,7 @@ module Cloning
 
       when "Yeast Strain QC"
         length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
+        t.notify "yeast_plate_ids need to have the same array length with num_colonies.", job_id: jid if !length_check
         t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
         sample_check = true
         t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
@@ -488,6 +490,9 @@ module Cloning
             t[:yeast_plate_ids][:ready_to_QC].push yid
           else
             t[:yeast_plate_ids][:not_ready_to_QC].push yid
+            t.notify "QC Primer 1 for yeast plate #{t[:yeast_plate_ids]} does not have any primer aliquot.", job_id: jid if !primer1
+            t.notify "QC Primer 2 for yeast plate #{t[:yeast_plate_ids]} does not have any primer aliquot.", job_id: jid if !primer2
+            t.notify "num_colonies for yeast plate #{t[:yeast_plate_ids]} need to be a number between 0,10", job_id: jid if !t.simple_spec[:num_colonies][idx].between?(0, 10)
           end
         end
 
