@@ -346,6 +346,7 @@ class Protocol
       end
 
       # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
+      io_hash[:task_ids] = fs[:ready_ids]
       limit_idx = io_hash[:task_ids].length
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
