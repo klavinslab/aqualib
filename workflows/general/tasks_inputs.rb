@@ -292,8 +292,10 @@ class Protocol
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
           task = find(:task, name: "#{fragment.name}")[0]
           if task
-            set_task_status(task, "waiting")
-            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+            if ["waiting", "ready"].include? task.status
+              set_task_status(task, "waiting")
+              task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+            end
           else
             t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
             t.save
