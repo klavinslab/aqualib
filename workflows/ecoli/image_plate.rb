@@ -125,7 +125,7 @@ class Protocol
                 tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
                 t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
                 t.save
-                set_task_status(t,"waiting")
+                t.notify "Automatically created from Gibson Assembly.", job_id: jid
               end
             end
           elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
@@ -139,7 +139,7 @@ class Protocol
             tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
             t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
             t.save
-            set_task_status(t,"waiting")
+            t.notify "Automatically created from Yeast Transformation.", job_id: jid
           end
           set_task_status(task,"imaged and stored in fridge")
 
