@@ -515,8 +515,6 @@ module Cloning
 
         ready_conditions = length_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
 
-      end
-
       when "Sequencing"
         t[:primers] = { ready: [], no_aliquot: [] }
 
