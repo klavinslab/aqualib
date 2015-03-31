@@ -6,7 +6,7 @@ class Protocol
   include Standard
   include Cloning
 
-  def task_status p={}
+  def task_status_debug p={}
 
     # This function is used to debug task_status function in cloning.rb
 
