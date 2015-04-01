@@ -32,7 +32,7 @@ place read
   protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
   group: group
   marked: false
-  start: now
+  start: now()
   window: hours(1)
 end
 
