@@ -32,18 +32,29 @@ place read
   protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
   group: group
   marked: false
+  start: now
+  window: hours(1)
+end
+
+place next_read
+  protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
+  group: group
+  marked: false
   start: hours(5)
   window: hours(1)
 end
 
 wire overnight => dilute
 wire dilute => read
+wire read => next_read
 
 transition [ overnight ] => [ dilute ] when !error(0) && completed(0) end
 transition [ dilute ] => [ read ] when !error(0) && completed(0) end
-transition [ read ] => [] when !error(0) && completed(0) end
+transition [ read ] => [ next_read ] when !error(0) && completed(0) end
+transition [ next_read ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
 transition [ overnight ] => [ overnight ] when error(0) end
 transition [ dilute ] => [ dilute ] when error(0) end
 transition [ read ] => [ read ] when error(0) end
+transition [ next_read ] => [ next_read ] when error(0) end
