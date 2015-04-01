@@ -33,41 +33,24 @@ class Protocol
 
       case params[:name]
 
-      when "Plasmid Verification"
-        length_check = t.simple_spec[:plate_ids].length == t.simple_spec[:num_colonies].length && t.simple_spec[:plate_ids].length == t.simple_spec[:primer_ids].length
-        t.notify "plate_ids, num_colonies, primer_ids need to have the same array length." if !length_check
-        t[:plate_ids] = { ready: [], not_ready: [] }
-        t.simple_spec[:plate_ids].each_with_index do |pid,idx|
-          if find(:item, id: pid)[0]
-            plate_ready = ["E coli Plate of Plasmid", "Plasmid Glycerol Stock"].include?(find(:item, id: pid)[0].object_type.name) 
-            marker_ready = (find(:item, id: pid)[0].sample.properties["Bacterial Marker"] || "").length > 0
-            num_colonies_ready = (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
-            
-            if plate_ready && marker_ready && num_colonies_ready
-              t[:plate_ids][:ready].push pid
-            else
-              t[:plate_ids][:not_ready].push pid
-              t.notify "Item #{pid} need to be an E coli Plate of Plasmid or Plasmid Glycerol Stock", job_id: jid if !plate_ready
-              t.notify "Need Bacterial Marker info for sample corresponding to item #{pid}", job_id: jid if !marker_ready
-              t.notify "num_colonies for #{pid} need to be a number between 0,10", job_id: jid if !(t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
-            end
+      when "Yeast Strain QC"
+        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies].length
+        t.notify "yeast_plate_ids need to have the same array length with num_colonies.", job_id: jid if !length_check
+        t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
+        t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
+          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
+          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
+          if primer1 && primer2 && (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
+            t[:yeast_plate_ids][:ready_to_QC].push yid
+          else
+            t[:yeast_plate_ids][:not_ready_to_QC].push yid
+            t.notify "QC Primer 1 for yeast plate #{yid} does not have any primer aliquot.", job_id: jid if !primer1
+            t.notify "QC Primer 2 for yeast plate #{yid} does not have any primer aliquot.", job_id: jid if !primer2
+            t.notify "num_colonies for yeast plate #{yid} need to be a number between 0,10", job_id: jid if !(t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
           end
         end
 
-        t[:primers] = { ready: [], no_aliquot: [] }
-        primer_ids = t.simple_spec[:primer_ids].flatten.uniq
-        primer_ids.each do |prid|
-          if prid != 0
-            if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
-              t[:primers][:ready].push prid
-            else
-              t[:primers][:no_aliquot].push prid
-              t.notify "Primer #{prid} has no primer aliquot.", job_id: jid
-            end
-          end
-        end
-
-        ready_conditions = length_check && t[:plate_ids][:ready].length == t.simple_spec[:plate_ids].length && t[:primers][:ready].length == primer_ids.length
+        ready_conditions = length_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
 
       end
 

@@ -497,7 +497,7 @@ module Cloning
         ready_conditions = t[:yeast_strains][:ready_to_build].length == t.simple_spec[:yeast_transformed_strain_ids].length
 
       when "Yeast Strain QC"
-        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies]
+        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies].length
         t.notify "yeast_plate_ids need to have the same array length with num_colonies.", job_id: jid if !length_check
         t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
         t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|

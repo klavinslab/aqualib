@@ -49,7 +49,7 @@ class Protocol
     io_hash[:yeast_item_ids].each_with_index do |yid,idx|
       yeast_items.push find(:item, id: yid )[0]
       io_hash[:inducer_additions].push "None"
-      io_hash[:inducers][idx].each do |inducer|
+      (io_hash[:inducers][idx] || []).each do |inducer|
         yeast_items.push find(:item, id: yid )[0]
         io_hash[:inducer_additions].push inducer
       end
