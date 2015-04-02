@@ -24,7 +24,7 @@ place dilute
   protocol: "aqualib:workflows/yeast/dilute_yeast_culture_deepwell_plate.rb"
   group: group
   marked: false
-  start: hours(18)
+  start: hours(14)
   window: hours(1)
 end
 

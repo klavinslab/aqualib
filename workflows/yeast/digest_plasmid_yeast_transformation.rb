@@ -58,9 +58,9 @@ class Protocol
 
     num = plasmid_stocks.length
     
-    water_volume = 42 * num * 1.3
-    buffer_volume = 5 * num * 1.3
-    enzyme_volume = 1 * num * 1.3
+    water_volume = 42 * num + 21
+    buffer_volume = 5 * num + 2.5
+    enzyme_volume = 1 * num + 0.5
     
     show {
       title "Make master mix"
