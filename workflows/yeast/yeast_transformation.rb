@@ -163,7 +163,7 @@ class Protocol
 
     yeast_plates = []
     yeast_transformation_mixtures_markers.each do |key, mixtures|
-      if key == "kan"
+      if !["his","ura","leu","trp"].include? key
         show {
           title "Resuspend in YPAD"
           check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
