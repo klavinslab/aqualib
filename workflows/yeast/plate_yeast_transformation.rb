@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_transformation_mixture_ids: [12293],
+      yeast_transformation_mixture_ids: [13574,13575,25701,27087,34086,34087,27089],
       debug_mode: "Yes"
     }
   end
@@ -32,6 +32,7 @@ class Protocol
         note "No transformed aliquots need to be plated. Thanks for your effort!"
       }
     else
+
       take yeast_transformation_mixtures, interactive: true
       
       show {
@@ -43,6 +44,21 @@ class Protocol
         warning "Make sure the pellet is resuspended and there are no cells stuck to the bottom of the tube"
       }
 
+      yeast_markers = yeast_plates.collect {|y| y.sample.properties["Integrant"].properties["Yeast Marker"].downcase[0,3].to_sym}
+      yeast_plates_markers = Hash.new {|h,k| h[k] = [] }
+      yeast_plates.each_with_index do |y,idx|
+        yeast_markers.uniq.each do |mk|
+          yeast_plates_markers[mk].push y if yeast_markers[idx] == mk
+        end
+      end
+
+      antibiotic_hash = { nat: "+ClonNat", kan: "+G418", hyg: "+Hygromycin", ble: "+BleoMX", his: "-HIS" }
+
+      tab_plate = [["Plate Type","Quantity","Id to label"]]
+      yeast_plates_markers.each do |marker, plates|
+        tab_plate.push( [ antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
+      end
+
       tab = [["Yeast Transformation Mixtures id","Plate id"]]
       yeast_transformation_mixtures.each_with_index do |y,idx|
         tab.push([y.id,yeast_plates[idx].id])
@@ -50,9 +66,9 @@ class Protocol
 
       show {
         title "Plating"
-        check "Grab #{yeast_plates.length} +G418 plates. Label plates with the following ids"
-        note (yeast_plates.collect{|y| "#{y}"})
-        check "Flip the plate and add 4-5 glass beads to it"
+        check "Grab plates and label."
+        table tab_plate
+        check "Flip the plate and add 4-5 glass beads to it"  
         check "Add 200 µL of the transformation mixture from the tube according to the following table"
         table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
       }
@@ -67,7 +83,7 @@ class Protocol
 
       move yeast_plates, "30 C incubator"
       release yeast_plates, interactive: true
-      delete yeast_transformation_mixtures
+      #delete yeast_transformation_mixtures
     end
 
     io_hash = ({ plate_ids: [], task_ids: [] }).merge io_hash
