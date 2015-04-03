@@ -230,7 +230,7 @@ class Protocol
     end
     io_hash[:plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
 
-    yeast_transformation_mixtures_antibiotic_markers = yeast_transformation_mixtures_markers.select { |k,v| ["nat","kan","hyg","ble"].include? key }
+    yeast_transformation_mixtures_antibiotic_markers = yeast_transformation_mixtures_markers.select { |k,v| ["nat","kan","hyg","ble"].include? k }
     io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_antibiotic_markers.collect {|x| x.id}
     
     return { io_hash: io_hash }

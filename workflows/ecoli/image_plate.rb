@@ -12,7 +12,8 @@ class Protocol
       #Enter the plate ids as a list
       plate_ids: [3798,3797,3799],
       debug_mode: "No",
-      image_option: "Yes"
+      image_option: "Yes",
+      task_ids: []
     }
   end #arguments
 
