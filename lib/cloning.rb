@@ -467,6 +467,8 @@ module Cloning
               t[:primers][:no_aliquot].push prid
               t.notify "Primer #{prid} has no primer aliquot.", job_id: jid
             end
+          elsif prid == 0
+            t[:primers][:ready].push prid
           end
         end
 

@@ -163,7 +163,7 @@ class Protocol
 
     yeast_plates = []
     yeast_transformation_mixtures_markers.each do |key, mixtures|
-      if !["his","ura","leu","trp"].include? key
+      if ["nat","kan","hyg","ble"].include? key
         show {
           title "Resuspend in YPAD"
           check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
@@ -229,7 +229,10 @@ class Protocol
       end
     end
     io_hash[:plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
-    io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_markers["kan"].collect {|x| x.id} if yeast_transformation_mixtures_markers["kan"]
+
+    yeast_transformation_mixtures_antibiotic_markers = yeast_transformation_mixtures_markers.select { |k,v| ["nat","kan","hyg","ble"].include? key }
+    io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_antibiotic_markers.collect {|x| x.id}
+    
     return { io_hash: io_hash }
 
   end
