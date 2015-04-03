@@ -2,7 +2,7 @@ needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
 class Protocol
-  
+
   include Standard
   include Cloning
 
@@ -15,7 +15,7 @@ class Protocol
       group: "yang"
     }
   end
- 
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -148,19 +148,19 @@ class Protocol
     show {
       title "Prepare Stripwells for sequencing reaction"
       stripwells.each_with_index do |sw,idx|
-      	if idx < stripwells.length-1 and idx != stripwells.length-1
-	        check "Grab a stripwell with 12 wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{idx*12+12}"
-	        separator
-	    else
-	    	check" Grab a stripwell with #{plasmid_stocks.length.modulo(12)} wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{plasmid_stocks.length}"
+        if idx < stripwells.length - 1
+          check "Grab a stripwell with 12 wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{idx*12+12}"
+        else
+          number_of_wells = plasmid_stocks.length - idx * 12
+          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{plasmid_stocks.length}"
         end
-    end
+      end
     }
 
     load_samples_variable_vol( ["Molecular Grade Water", "Plasmid", "Primer"], [
-        water_volume_list,
-        plasmids_with_volume,
-        primers_with_volume
+      water_volume_list,
+      plasmids_with_volume,
+      primers_with_volume
       ], stripwells )
     show {
       title "Put all stripwells in the Genewiz mailbox"
@@ -196,5 +196,6 @@ class Protocol
     # Return all info
     io_hash[:genewiz_tracking_no] = genewiz[:tracking_num]
     return { io_hash: io_hash }
-  end
-end
+
+  end # main
+end # Protocol
