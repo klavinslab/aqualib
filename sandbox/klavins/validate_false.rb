@@ -5,9 +5,9 @@ class Validator
   include Standard
 
   def check task
-    e = { a: [ "Task '#{task.name}' looks suspicious!", 
+    e = [ "Task '#{task.name}' looks suspicious!", 
           "Could not validate task.", 
-          "Honestly, I didn't try very hard." ] }
+          "Honestly, I didn't try very hard." ]
     return e
   end
 
