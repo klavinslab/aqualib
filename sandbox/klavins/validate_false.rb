@@ -1,4 +1,8 @@
+needs "Cloning"
+
 class Validator
+
+  include Cloning
 
   def check task
     e = [ "Task '#{task.name}' looks suspicious!", 
