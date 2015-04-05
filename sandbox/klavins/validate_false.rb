@@ -1,4 +1,4 @@
-needs "Cloning"
+needs "aqualib/lib/cloning"
 
 class Validator
 
