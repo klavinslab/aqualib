@@ -1,8 +1,8 @@
-needs "aqualib/lib/cloning"
+needs "aqualib/lib/standard"
 
 class Validator
 
-  include Cloning
+  include Standard
 
   def check task
     e = [ "Task '#{task.name}' looks suspicious!", 
