@@ -23,6 +23,7 @@ class Protocol
       end
     end
   	items = io_hash[:item_ids].collect { |id| find(:item, id: id)[0] }
+    items = items.compact
   	take items, interactive: true, method: "boxes"
   	show {
   		title "Dispose or recycle depending on the items"

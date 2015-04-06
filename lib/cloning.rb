@@ -503,8 +503,8 @@ module Cloning
         t.notify "yeast_plate_ids need to have the same array length with num_colonies.", job_id: jid if !length_check
         t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
         t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
-          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
-          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
+          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0] if find(:item, id: yid)[0].sample.properties["QC Primer1"]
+          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0] if find(:item, id: yid)[0].sample.properties["QC Primer2"]
           if primer1 && primer2 && (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
             t[:yeast_plate_ids][:ready_to_QC].push yid
           else
