@@ -479,9 +479,14 @@ module Cloning
         t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
           y = find(:sample, id: yid)[0]
           # check if competent aliquot/cell and plasmid stock are ready and send notifications
-          parent_ready = (y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0) || nil
-          t.notify "No competent aliquot/cell for the parent strain of #{y}. Competent cells will be made when yeast competent cell workflow got run.", job_id: jid if !parent_ready
-
+          if y.properties["Parent"]
+            parent_ready = y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0
+            t.notify "No competent aliquot/cell for the parent strain of #{y}. Competent cells will be made when yeast competent cell workflow got run.", job_id: jid if !parent_ready
+          else
+            parent_ready = nil
+            t.notify "Parent strain not defined", job_id: jid
+          end
+          
           if y.properties["Integrant"]
             plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
             t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}, integrant of yeast strain #{y}", job_id: jid if !plasmid_ready
