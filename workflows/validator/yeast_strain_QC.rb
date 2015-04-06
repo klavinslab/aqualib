@@ -22,13 +22,13 @@ class Validator
     ready_conditions = length_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
 
     if ready_conditions
-      set_task_status(t, "ready") if t.status != "ready"
+      t.status = "ready" if t.status != "ready"
       t.save
       return true
     else
-      set_task_status(t, "waiting") if t.status != "waiting"
+      t.status = "wating" if t.status != "waiting"
       t.save
-      return errors
+      return err
     end
 
   end
