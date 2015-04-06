@@ -24,7 +24,7 @@ class Validator
     if ready_conditions
       return true
     else
-      return err
+      return errors
     end
 
   end
