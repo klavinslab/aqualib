@@ -214,7 +214,7 @@ class Protocol
         check "Discard the beads in a used beads container."
         check "Throw away the following 1.5 mL tubes."
         note mixtures_to_plate.collect { |x| "#{x}"}
-        check "Incubate all the plates shown in the next page."
+        check "Incubate all the plates with agar side up shown in the next page."
       }
 
       delete mixtures_to_plate
