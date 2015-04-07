@@ -115,7 +115,7 @@ class Protocol
         elsif length < 10000
           plasmid_volume_list.push ( 800.0 / conc ).round(1)
         else
-          plasmid_volume_list.push ( 10000.0 / conc ).round(1)
+          plasmid_volume_list.push ( 1000.0 / conc ).round(1)
         end
       elsif p.sample.sample_type.name == "Fragment"
         if length < 500

@@ -119,7 +119,7 @@ class Protocol
 
     # ask the user to enter again if the pellet_volume is too large or too small.
     (1..num).each do |x|
-      while pellet_volume[:"#{x}".to_sym] > 500 || pellet_volume[:"#{x}".to_sym] < 5
+      while pellet_volume[:"#{x}".to_sym] > 500 || pellet_volume[:"#{x}".to_sym] < 0
         re_pellet_volume = show {
           title "Re-estimate the pellet volume"
           note "Are you really sure you pellet volume for tube #{x} is #{pellet_volume[:"#{x}".to_sym]} µL? Noting that pellet volume means the spun down pellet volume. Did you spin down your tube?"
