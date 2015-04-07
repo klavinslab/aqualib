@@ -85,9 +85,9 @@ class Protocol
       show {
         title "Shake and incubate"
         check "Shake the plates in all directions to evenly spread the culture over its surface till dry"
-        check "Discard the beads in a used beads container"
-        check "Throw away transformation mixture tubes"
-        check "Put the plates with the agar side up in the 30C incubator"
+        check "Discard the beads in a used beads container."
+        check "Throw away all 1.5 mL tubes."
+        check "Put the plates with the agar side up in the 30C incubator."
       }
 
       move yeast_plates, "30 C incubator"
