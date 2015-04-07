@@ -160,8 +160,8 @@ class Protocol
     mixtures_to_plate = []
     yeast_plates = []
 
-    grab_plate_tab = [["Plate Type","Quantity","Id to label"]]
-    plating_info_tab = [["Yeast Transformation Mixtures id","Plate id"]]
+    grab_plate_tab = [["Plate type","Quantity","Id to label"]]
+    plating_info_tab = [["1.5 mL tube id","Plate id"]]
 
     yeast_transformation_mixtures_markers.each do |key, mixtures|
       if ["nat","kan","hyg","ble"].include? key
@@ -197,14 +197,14 @@ class Protocol
 
     if mixtures_to_plate.length > 0
       show {
-        title "Grab plates"
-        note "Grab the following plate and label with ids."
+        title "Grab plate"
+        note "Grab the following plates and label with ids."
         table grab_plate_tab
       }
       show {
         title "Resuspend in water and plate"
         check "Add 200 µL of MG water to the following mixtures shown in the table."
-        check "Flip the plate and add 4-5 glass beads to it, add 200 µL on each plate."
+        check "Flip the plate and add 4-5 glass beads to it, add 200 µL of mixtures on each plate."
         table plating_info_tab
       }
 
@@ -212,7 +212,7 @@ class Protocol
         title "Shake and incubate"
         check "Shake the plates in all directions to evenly spread the culture over its surface till dry."
         check "Discard the beads in a used beads container."
-        check "Throw away all the following tubes."
+        check "Throw away all the following 1.5 mL tubes."
         note mixtures_to_plate.collect { |x| "#{x}"}
         check "Put the following plates with the agar side up in the 30C incubator."
         note yeast_plates.collect { |y| "#{y}" }

@@ -46,7 +46,7 @@ class Protocol
       
       show {
         title "Resuspend in water"
-        check "Spin down all the tubes in a small table top centrifuge for ~1 minute"
+        check "Spin down all 1.5 mL tubes in a small table top centrifuge for ~1 minute"
         check "Pipette off supernatant being careful not to disturb yeast pellet"
         check "Add 600 µL of sterile water to each eppendorf tube"
         check "Resuspend the pellet by vortexing the tube throughly"
