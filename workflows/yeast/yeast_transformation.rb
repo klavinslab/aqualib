@@ -197,21 +197,27 @@ class Protocol
 
     if mixtures_to_plate.length > 0
       show {
-        title "Plating and incubate"
+        title "Grab plates"
         note "Grab the following plate and label with ids."
         table grab_plate_tab
+      }
+      show {
+        title "Plating and incubate"
         check "Add 200 µL of MG water to the following mixtures and then plate 200 µL on corresponding plate."
         check "Plate at 30 C incubator after plating."
         table plating_info_tab
       }
+
       delete mixtures_to_plate
+
       show {
         title "Incubate"
         note "Put all the following plates in the 30 C incubator:"
         note yeast_plates.collect { |p| "#{p}"}
       }
+
       move yeast_plates, "30 C incubator"
-      release yeast_plates
+      
     end
 
     delete yeast_competent_cells
