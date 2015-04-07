@@ -34,6 +34,15 @@ class Protocol
     else
 
       take yeast_transformation_mixtures, interactive: true
+
+      num = yeast_transformation_mixtures.length
+
+      show {
+        title "Transfer into 1.5 mL tube"
+        check "Take #{num} 1.5 mL tube, label with #{io_hash[:yeast_transformation_mixture_ids]}."
+        check "Transfer contents from 14 mL tube to each same id 1.5 mL tube."
+        check "Recycle or discard all the 14 mL tubes."
+      }
       
       show {
         title "Resuspend in water"
@@ -69,8 +78,8 @@ class Protocol
         check "Grab plates and label."
         table tab_plate
         check "Flip the plate and add 4-5 glass beads to it"  
-        check "Add 200 µL of the transformation mixture from the tube according to the following table"
-        table [["Yeast Transformation Mixtures id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
+        check "Add 200 µL of 1.5 mL tube contents according to the following table"
+        table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
       }
 
       show {

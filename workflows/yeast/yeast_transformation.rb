@@ -203,8 +203,9 @@ class Protocol
       }
       show {
         title "Plating and incubate"
-        check "Add 200 µL of MG water to the following mixtures and then plate 200 µL on corresponding plate."
-        check "Plate at 30 C incubator after plating."
+        check "Add 200 µL of MG water to the following mixtures shown in the table."
+        check "Flip the plate and add 4-5 glass beads to it, plate 200 µL on each plate."
+        check "Place at 30 C incubator after plating."
         table plating_info_tab
       }
 
@@ -217,7 +218,7 @@ class Protocol
       }
 
       move yeast_plates, "30 C incubator"
-      
+
     end
 
     delete yeast_competent_cells
