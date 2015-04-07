@@ -212,21 +212,14 @@ class Protocol
         title "Shake and incubate"
         check "Shake the plates in all directions to evenly spread the culture over its surface till dry."
         check "Discard the beads in a used beads container."
-        check "Throw away all the following 1.5 mL tubes."
+        check "Throw away the following 1.5 mL tubes."
         note mixtures_to_plate.collect { |x| "#{x}"}
-        check "Put the following plates with the agar side up in the 30C incubator."
-        note yeast_plates.collect { |y| "#{y}" }
+        check "Incubate all the plates shown in the next page."
       }
 
       delete mixtures_to_plate
-
-      show {
-        title "Incubate"
-        note "Put all the following plates in the 30 C incubator:"
-        note yeast_plates.collect { |p| "#{p}"}
-      }
-
       move yeast_plates, "30 C incubator"
+      release yeast_plates, interactive: true
 
     end
 
