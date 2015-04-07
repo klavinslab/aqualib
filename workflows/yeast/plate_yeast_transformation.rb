@@ -23,7 +23,7 @@ class Protocol
       end
     end
 
-    yeast_transformation_mixtures = io_hash[:yeast_transformation_mixture_ids].collect {|tid| find(:item, id: tid )[0]}
+    yeast_transformation_mixtures = io_hash[:yeast_transformation_mixture_ids].collect { |tid| find(:item, id: tid )[0] }
     yeast_plates = yeast_transformation_mixtures.collect {|y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
     if yeast_transformation_mixtures.length == 0

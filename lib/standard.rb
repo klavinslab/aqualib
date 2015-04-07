@@ -180,6 +180,7 @@ module Standard
       i.save
       i.reload
     end
+    release items
   end # move
 
   def delete items
@@ -190,6 +191,7 @@ module Standard
       i.mark_as_deleted
       i.save
     end
+    release items
   end # delete
 
   # return the initials of first name and last name

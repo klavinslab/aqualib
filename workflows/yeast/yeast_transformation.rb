@@ -9,11 +9,10 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_parent_strain_ids: [29,2866,29,2866],
+      yeast_parent_strain_ids: [30,30,30,30],
       #stripwell that containing digested plasmids
-      "stripwell_ids Stripwell" => [33613],
+      "stripwell_ids Stripwell" => [27109],
       "yeast_transformed_strain_ids Yeast Strain" => [1705,1706,5079,5079],
-      "plasmid_stock_ids Plasmid Stock" => [9189,9167],
       debug_mode: "Yes"
     }
   end
@@ -157,59 +156,55 @@ class Protocol
       end
     end
 
-    # show {
-    #   note "#{yeast_transformation_mixtures_markers}"
-    # }
-
+    mixtures_to_incubate = []
+    mixtures_to_plate = []
     yeast_plates = []
+
+    grab_plate_tab = [["Plate Type","Quantity","Id to label"]]
+    plating_info_tab = [["Yeast Transformation Mixtures id","Plate id"]]
+
     yeast_transformation_mixtures_markers.each do |key, mixtures|
       if ["nat","kan","hyg","ble"].include? key
-        show {
-          title "Resuspend in YPAD"
-          check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
-          check "Add 1 mL of YPAD to the each tube and vortex for 20 seconds"
-          check "Grab #{mixtures.length} 14 mL #{"tube".pluralize(mixtures.length)}, label with #{(mixtures.collect {|x| x.id}).join(", ")}"
-          check "Transfer all contents from each 1.5 mL tube to corresponding 14 mL tube that has the same label number"
-          check "Place all #{mixtures.length} 14 mL #{"tube".pluralize(mixtures.length)}  into 30 C shaker incubator" 
-          check "Discard all #{mixtures.length} empty 1.5 mL #{"tube".pluralize(mixtures.length)} "
-        }
-        mixtures.each do |y|
-          y.location = "30 C shaker incubator"
-          y.save
-        end
-        release mixtures
+        mixtures_to_incubate.concat mixtures
       else
         yeast_plates_sub = mixtures.collect {|v| produce new_sample v.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
-        yeast_plates += yeast_plates_sub
-        tab = [["Tube id","Plate id"]]
+        yeast_plates.concat yeast_plates_sub
+        mixtures_to_plate.concat mixtures
+
+        grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
         mixtures.each_with_index do |y,idx|
-          tab.push([y.id,yeast_plates_sub[idx].id])
-        end
-        show {
-          title "Take #{mixtures.length} -#{key.upcase} #{"plate".pluralize(mixtures.length)}"
-          check "Grab #{mixtures.length} -#{key.upcase} #{"plate".pluralize(mixtures.length)} from B0.110"
-          check "Label each plate with #{(yeast_plates_sub.collect {|x| x.id}).join(", ")}"
-          check "Grab #{"tube".pluralize(mixtures.length)} with id #{(mixtures.collect {|x| x.id}).join(", ")}"
-          check "Add 200 µL of MG water to the each tube and vortex for 20 seconds."
-          check "If hard to vortex, rake the tube accross a tube rack to resuspend."
-        }
-        show {
-          title "Plating"
-          check "Pour 3-10 sterile beads to each plate"
-          check "Transfer 200 µL from each 1.5 mL tube to corresponding -#{key.upcase} plate using the following table"
-          table tab
-          check "Shake the plate to spread the sample over the surface until dry."
-          check "Pour the beads into a waste bead container"
-          check "Discard above 1.5 mL tubes"
-        }
-        mixtures.each do |m|
-          m.mark_as_deleted
-          m.save
+          plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
         end
       end
     end
 
-    if yeast_plates.length > 0
+    if mixtures_to_incubate.length > 0
+      show {
+        title "Resuspend in YPAD and incubate"
+        check "Grab #{"tube".pluralize(mixtures_to_incubate.length)} with id #{(mixtures_to_incubate.collect {|x| x.id}).join(", ")}"
+        check "Add 1 mL of YPAD to the each tube and vortex for 20 seconds"
+        check "Grab #{mixtures_to_incubate.length} 14 mL #{"tube".pluralize(mixtures_to_incubate.length)}, label with #{(mixtures_to_incubate.collect {|x| x.id}).join(", ")}"
+        check "Transfer all contents from each 1.5 mL tube to corresponding 14 mL tube that has the same label number"
+        check "Place all #{mixtures_to_incubate.length} 14 mL #{"tube".pluralize(mixtures_to_incubate.length)} into 30 C shaker incubator"
+        check "Discard all #{mixtures_to_incubate.length} empty 1.5 mL #{"tube".pluralize(mixtures_to_incubate.length)} "
+      }
+      mixtures_to_incubate.each do |y|
+        y.location = "30 C shaker incubator"
+        y.save
+      end
+      release mixtures_to_incubate
+    end
+
+    if mixtures_to_plate.length > 0
+      show {
+        title "Plating and incubate"
+        note "Grab the following plate and label with ids."
+        table grab_plate_tab
+        check "Add 200 µL of MG water to the following mixtures and then plate 200 µL on corresponding plate."
+        check "Plate at 30 C incubator after plating."
+        table plating_info_tab
+      }
+      delete mixtures_to_plate
       show {
         title "Incubate"
         note "Put all the following plates in the 30 C incubator:"
@@ -222,6 +217,7 @@ class Protocol
     delete yeast_competent_cells
 
     release [peg] + [lioac] + [ssDNA], interactive: true
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
@@ -230,8 +226,7 @@ class Protocol
     end
     io_hash[:plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
 
-    yeast_transformation_mixtures_antibiotic_markers = yeast_transformation_mixtures_markers.select { |k,v| ["nat","kan","hyg","ble"].include? k }
-    io_hash[:yeast_transformation_mixture_ids] = yeast_transformation_mixtures_antibiotic_markers.collect { |k,values| values.collect { |v| v.id } }.flatten
+    io_hash[:yeast_transformation_mixture_ids] = mixtures_to_incubate.collect { |y| y.id }
     
     return { io_hash: io_hash }
 
