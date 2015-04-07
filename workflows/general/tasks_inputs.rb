@@ -413,7 +413,7 @@ class Protocol
         need_to_make_competent_yeast_ids = []
         yeast_transformations[:yeast_strains][:not_ready_to_build].each do |yid|
           y = find(:sample, id: yid)[0]
-          if y.properties["Parent"].in("Yeast Competent Aliquot").length == 0 && y.properties["Parent"].in("Yeast Competent Cell").length == 0
+          if y.properties["Parent"] && y.properties["Parent"].in("Yeast Competent Aliquot").length == 0 && y.properties["Parent"].in("Yeast Competent Cell").length == 0
             need_to_make_competent_yeast_ids.push y.properties["Parent"].id
           end
         end
