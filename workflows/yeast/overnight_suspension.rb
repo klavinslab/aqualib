@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      item_ids: [28212,28212,28212,28204,28212,28212],
+      item_ids: [28338,28338,28212,28204,28212,28212],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -113,7 +113,7 @@ class Protocol
           else
             info = "NA"
           end
-          inoculation_tab.push [ { content: y.id, check: true }, y.location, overnights[idx].id, info ]
+          inoculation_tab.push [ { content: "#{y}", check: true }, y.location, overnights[idx].id, info ]
         end
 
         show {
