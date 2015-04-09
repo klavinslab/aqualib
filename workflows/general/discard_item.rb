@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       "item_ids Yeast Plates" => [1234],
+      task_ids: [2310, 2309],
       debug_mode: "Yes"
     }
   end
@@ -38,6 +39,7 @@ class Protocol
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"discarded")
+        task.save
       end
     end
   end
