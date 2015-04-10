@@ -111,9 +111,23 @@ class Protocol
 
   end
 
-  def choose_plasmid_stock pid
+  # a function that returns plasmid stock ids that has seq_verified marked "correct", if nothing marked, return the 1st one in the array of plasmid stocks
 
-    plasmid = find(:sample, id: fid)[0]
+  def choose_plasmid_stock plasmid
+
+    plasmid_stocks = plasmid.in("Plasmid Stock")
+    if plasmid_stocks.length > 1
+      plasmid_stocks.each do |ps|
+        if ps.datum[:seq_verified] == "correct"
+          return ps.id
+        end
+      end
+      return plasmid_stocks[0].id
+    elsif plasmid_stocks.length == 1
+      return plasmid_stocks[0].id
+    else
+      return nil
+    end
 
   end
 
@@ -121,7 +135,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Plasmid Verification",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end
@@ -385,7 +399,7 @@ class Protocol
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Integrant"].in("Plasmid Stock")[0].id }
+        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| choose_plasmid_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
         io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
       end
       io_hash[:size] = io_hash[:yeast_transformed_strain_ids].length
