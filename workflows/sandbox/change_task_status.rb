@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      task_ids: [2004, 2046],
+      task_ids: [2310, 2307],
       debug_mode: "Yes"
     }
   end
@@ -25,7 +25,10 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"waiting")
+        set_task_status(task,"done")
+        show {
+          note task.errors.full_messages.join(", ")
+        }
       end
     end
   end

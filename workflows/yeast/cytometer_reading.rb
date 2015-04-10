@@ -156,12 +156,12 @@ class Protocol
           end
         end
 
-        # if none has enought available wells, create new one
+        # if none has enough available wells, create new one
         if !yeast_ubottom_plate
           yeast_ubottom_plate = produce new_collection "96 U-bottom Well Plate", 8, 12
           show {
             title "Grab a new 96 U-bottom Well Plate"
-            note "Grab one new 96 U-bottom Well Plate and label with #{yeast_ubottom_plates[x].id}."
+            note "Grab one new 96 U-bottom Well Plate and label with #{yeast_ubottom_plate.id}."
           }
         end
 
