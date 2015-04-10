@@ -115,7 +115,7 @@ class Protocol
           else
             info = "NA"
           end
-          inoculation_tab.push [ { content: "#{y}", check: true }, y.location, overnights[idx].id, info ]
+          inoculation_tab.push [ { content: "#{y}", check: true }, y.location, overnight[idx].id, info ]
         end
 
         show {

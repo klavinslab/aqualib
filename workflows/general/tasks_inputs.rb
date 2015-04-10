@@ -111,7 +111,11 @@ class Protocol
 
   end
 
+  def choose_plasmid_stock pid
 
+    plasmid = find(:sample, id: fid)[0]
+
+  end
 
   def arguments
     {

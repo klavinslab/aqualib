@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      task_ids: [2309, 2308],
+      task_ids: [2004, 2046],
       debug_mode: "Yes"
     }
   end
