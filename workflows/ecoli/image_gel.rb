@@ -11,6 +11,30 @@ class Protocol
     }
   end
 
+  def gel_band_verify col, options = {}
+    m = col.matrix
+    routes = []
+    opts = { except: [] }.merge options
+
+    (0..m.length-1).each do |i|
+      (0..m[i].length-1).each do |j|
+        if m[i][j] > 0 && ! ( opts[:except].include? [i,j] )
+          s = find(:sample,{ id: m[i][j] })[0]
+          length = s.properties
+          routes.push lane: [i,j], length: length
+        end
+      end
+    end
+
+    verify_data = show {
+      title "Verify that each lane matches expected size"
+      routes.each_with_index do |r,idx|
+        select ["Yes", "No"], var: "verify#{r[:lane][0]}_#{r[:lane][1]}", label: "Does gel lane on Row #{r[:lane][0]+1} Col #{r[:lane][1]+1} match the expected length of #{r[:length]} bp"
+      end
+    }
+
+  end #gel_band_verify_cut
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -21,7 +45,7 @@ class Protocol
         true
       end
     end
-  	take gels, interactive: true
+    take gels, interactive: true
   	gels.each do |gel|
   		show {
   			title "Image gel #{gel.id}"
