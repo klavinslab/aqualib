@@ -165,7 +165,7 @@ class Protocol
         new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[idx][m].round(1)
         f.datum = f.datum.merge({ volume: new_volume.round(1) })
         f.save
-        empty_fragment_stocks.push f if f.datum[:volume] < 1
+        empty_fragment_stocks.push f if new_volume < 1
       end
       show {
           title "Load Gibson Reaction #{gibson_result}"
