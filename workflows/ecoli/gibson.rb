@@ -11,12 +11,12 @@ class Protocol
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [],
+      fragment_ids: [[4291,4275],[4125,3953],[2058,2062]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [],
-      debug_mode: "No",
+      plasmid_ids: [5985,5496,5205],
+      debug_mode: "Yes",
     }
   end
 
@@ -115,6 +115,36 @@ class Protocol
     # Take fragment stocks
     take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
+    # Measure not verified volumes of fragment stocks
+    need_to_measure = false
+    fragment_stocks_flatten.each do |fs|
+      if fs.datum[:volume_verified] != "Yes"
+        need_to_measure = true
+        break
+      end
+    end
+
+    if need_to_measure
+
+      fragment_volume = show {
+        title "Estimate volume of fragment stock"
+        fragment_stocks_flatten.each do |fs|
+          if fs.datum[:volume_verified] != "Yes"
+            get "number", var: "v#{fs.id}", label: "Estimate volume for tube #{fs.id}, normally a number less than 28", default: 28
+          end
+        end
+      }
+
+      # write into datum the verified volumes
+      fragment_stocks_flatten.each do |fs|
+        if fragment_volume[:"v#{fs.id}".to_sym]
+          fs.datum = fs.datum.merge({ volume: fragment_volume[:"v#{fs.id}".to_sym], volume_verified: "Yes" })
+          fs.save
+        end
+      end
+
+    end
+
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots"
@@ -124,6 +154,7 @@ class Protocol
 
     # following loop is to show a table of setting up each Gibson reaction to the user
     gibson_results = []
+    empty_fragment_stocks = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
@@ -131,13 +162,17 @@ class Protocol
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
         tab.push(["#{gibson_result}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
+        new_volume = f.datum[:volume] - fragment_volumes[idx][m].round(1)
+        f.datum = f.datum.merge({ volume: new_volume.round(1) })
+        f.save
+        empty_fragment_stocks.push f if f.datum[:volume] < 1
       end
       show {
           title "Load Gibson Reaction #{gibson_result}"
           note "Lable an unused gibson aliquot as #{gibson_result}."
           note "Make sure the gibson aliquot is thawed before pipetting."
           table tab
-        }  
+        }
     end
 
     # Place all reactions in 50 C heat block
@@ -146,8 +181,17 @@ class Protocol
       note "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
     }
 
+    show {
+      title "Discard the following fragment stocks"
+      note empty_fragment_stocks.collect { |f| "#{f}"}
+    } if empty_fragment_stocks.length > 0
+
+    fragment_stocks_to_release = fragment_stocks_flatten - empty_fragment_stocks
+
+    delete empty_fragment_stocks
+
     # Release fragment stocks flatten
-    release fragment_stocks_flatten, interactive: true,  method: "boxes"
+    release fragment_stocks_to_release, interactive: true,  method: "boxes"
 
     show {
       title "Wait for 60 minutes"
