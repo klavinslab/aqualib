@@ -140,6 +140,7 @@ class Protocol
         if fragment_volume[:"v#{fs.id}".to_sym]
           fs.datum = fs.datum.merge({ volume: fragment_volume[:"v#{fs.id}".to_sym], volume_verified: "Yes" })
           fs.save
+          fs.reload
         end
       end
 
@@ -162,7 +163,7 @@ class Protocol
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
         tab.push(["#{gibson_result}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
-        new_volume = f.datum[:volume] - fragment_volumes[idx][m].round(1)
+        new_volume = f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym] - fragment_volumes[idx][m].round(1)
         f.datum = f.datum.merge({ volume: new_volume.round(1) })
         f.save
         empty_fragment_stocks.push f if f.datum[:volume] < 1
