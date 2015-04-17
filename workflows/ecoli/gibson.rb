@@ -174,7 +174,7 @@ class Protocol
         note "Make sure the gibson aliquot is thawed before pipetting."
         table tab
         fragment_stocks[idx].each do |f|
-          select ["Yes", "No"], var: "c#{f.id}", label: "Does #{f.id} have enough volume for this reaction.", default: "Yes"
+          select ["Yes", "No"], var: "c#{f.id}", label: "Does #{f.id} have enough volume for this reaction?", default: "Yes"
         end if io_hash[:debug_mode].downcase != "yes"
       }
 
