@@ -174,7 +174,7 @@ class Protocol
         note "Make sure the gibson aliquot is thawed before pipetting."
         table tab
         fragment_stocks[idx].each do |f|
-          select ["No", "Yes"], var: "c#{f.id}", label: "Select Yes if #{f.id} does not have enough volume for this reaction.", default: "No"
+          select ["Yes", "No"], var: "c#{f.id}", label: "Does #{f.id} have enough volume for this reaction.", default: "Yes"
         end if io_hash[:debug_mode].downcase != "yes"
       }
 
@@ -183,7 +183,7 @@ class Protocol
       replacement_stocks = []
 
       fragment_stocks[idx].each_with_index do |f, idy|
-        if volume_empty[:"c#{f.id}".to_sym] == "Yes"
+        if volume_empty[:"c#{f.id}".to_sym] == "No"
           not_enough_volume_stocks.push f
           if f.sample.in("Fragment Stock")[1]
             replacement_stocks.push f.sample.in("Fragment Stock")[1]
