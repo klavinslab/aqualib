@@ -128,6 +128,7 @@ class Protocol
 
       fragment_volume = show {
         title "Estimate volume of fragment stock"
+        warning "Pause here, don't click through until you entered estimated volume.".upcase
         fragment_stocks_flatten.each do |fs|
           if fs.datum[:volume_verified] != "Yes"
             get "number", var: "v#{fs.id}", label: "Estimate volume for tube #{fs.id}, normally a number less than 28", default: 28
