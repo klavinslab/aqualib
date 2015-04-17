@@ -155,24 +155,76 @@ class Protocol
     # following loop is to show a table of setting up each Gibson reaction to the user
     gibson_results = []
     empty_fragment_stocks = []
+    not_done_task_ids = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
-      gibson_results = gibson_results.push gibson_result
+      
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
-        tab.push(["#{gibson_result}","#{f.id}",{ content: fragment_volumes[idx][m].round(1), check: true }])
+        tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
         new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[idx][m].round(1)
         f.datum = f.datum.merge({ volume: new_volume.round(1) })
         f.save
         empty_fragment_stocks.push f if new_volume < 1
       end
-      show {
-          title "Load Gibson Reaction #{gibson_result}"
-          note "Lable an unused gibson aliquot as #{gibson_result}."
-          note "Make sure the gibson aliquot is thawed before pipetting."
-          table tab
-        }
+      volume_empty = show {
+        title "Load Gibson Reaction #{gibson_result}"
+        note "Lable an unused gibson aliquot as #{gibson_result}."
+        note "Make sure the gibson aliquot is thawed before pipetting."
+        table tab
+        fragment_stocks[idx].each do |f|
+          select ["No", "Yes"], var: "c#{f.id}", label: "Select Yes if #{f.id} does not have enough volume for this reaction.", default: "No"
+        end if io_hash[:debug_mode].downcase != "yes"
+      }
+
+      # deal with not enough volume situation
+      not_enough_volume_stocks = []
+      replacement_stocks = []
+
+      fragment_stocks[idx].each_with_index do |f, idy|
+        if volume_empty[:"c#{f.id}".to_sym] == "Yes"
+          not_enough_volume_stocks.push f
+          if f.sample.in("Fragment Stock")[1]
+            replacement_stocks.push f.sample.in("Fragment Stock")[1]
+            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[1]
+          end
+        end
+      end
+
+      if not_enough_volume_stocks.length > 0
+
+        if replacement_stocks.length == not_enough_volume_stocks.length
+          take replacement_stocks, interactive: true
+          gibson_results = gibson_results.push gibson_result
+          tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
+          fragment_stocks[idx].each_with_index do |f,m|
+            tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
+          end
+          show {
+            title "Load Gibson Reaction #{gibson_result} with new stocks"
+            note "Make sure the gibson aliquot is thawed before pipetting."
+            table tab
+          }
+        else
+          show {
+            title "Throw away the unfinished gibson aliquot"
+            note "Discard #{gibson_result}"
+          }
+          delete gibson_result
+          not_done_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
+
+        end
+
+        empty_fragment_stocks.concat not_enough_volume_stocks
+
+      else
+
+        gibson_results = gibson_results.push gibson_result
+
+      end
+
+
     end
 
     # Place all reactions in 50 C heat block
@@ -199,7 +251,15 @@ class Protocol
     }
 
     release gibson_results, interactive: true,  method: "boxes"
+
+    not_done_task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"waiting")
+      task.notify "Pushed back to waiting, not enought volume for fragment stocks, new fragment stocks will be made during next fragment construction batch.", job_id: jid
+    end
+
     if io_hash[:task_ids]
+      io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"gibson")

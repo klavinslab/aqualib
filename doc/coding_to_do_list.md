@@ -19,4 +19,5 @@ task.user.member?
 - [ ] Yeast overnight suspenstion transformation version takes plates into source.
 - [x] Work on lab class transformation metacol.
 - [x] Improve yeast transformation related protocols based on Michelle's suggestions.
+- [x] Volume tracking system, fragment stock volume tracking, where is fragment stock being used? Mostly gisbon, make more fragments if volume is less than needed.
 
