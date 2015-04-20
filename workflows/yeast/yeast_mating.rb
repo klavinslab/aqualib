@@ -74,18 +74,25 @@ class Protocol
     io_hash[:yeast_mating_strain_ids].each_with_index do |yids, idx|
       y0 = find(:sample, id: yids[0])[0]
       y1 = find(:sample, id: yids[1])[0]
-      y = Sample.new
-      y.name = "#{y0.name}, #{y1.name}"
-      y.sample_type_id = y0.sample_type_id
-      y.user_id = io_hash[:user_ids][idx]
-      y.description = "A diploid strain automatically generated from yeast mating."
-      y.project = y0.project
-      y.field6 = "diploid"
-      y.save
+      mated_strain_name = "#{y0.name}, #{y1.name}"
+      if find(:sample, name: mated_strain_name)[0]
+        y = find(:sample, name: mated_strain_name)[0]
+      else
+        y = Sample.new
+        y.name = mated_strain_name
+        y.sample_type_id = y0.sample_type_id
+        y.user_id = io_hash[:user_ids][idx]
+        y.description = "A diploid strain automatically generated from yeast mating."
+        y.project = y0.project
+        y.field6 = "diploid"
+        y.save
+      end
       yeast_mated_strains.push y
     end
 
     yeast_overnights = yeast_mated_strains.collect { |y| y.make_item "Yeast Overnight Suspension" }
+
+    take yeast_overnights
 
     yeast_mating_strain_ids_flat = io_hash[:yeast_mating_strain_ids].flatten
 
