@@ -66,7 +66,6 @@ module Cloning
         # compute the annealing temperature
         t1 = fwd_items[0].sample.properties["T Anneal"] || 70.0
         t2 = rev_items[0].sample.properties["T Anneal"] || 70.0
-        tanneal = [t1, t2].min
 
         # find stocks of this fragment, if any
         stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
@@ -78,7 +77,7 @@ module Cloning
           fwd: fwd_item_to_return,
           rev: rev_item_to_return,
           template: template_item_to_return,
-          tanneal: tanneal
+          tanneal: (t1+t2)/2.0
         }
 
       end
