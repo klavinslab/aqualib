@@ -135,7 +135,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Transformation",
+      task_name: "Glycerol Stock",
       group: "technicians"
     }
   end
@@ -195,16 +195,43 @@ class Protocol
 
       # Find sequencing verification correct tasks that belongs to io_hash[:group]
       seq_verifi_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
-      correct_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence correct" }
+      correct_seq_verifi_tasks = seq_verifi_tasks.select { |t| t.status == "sequence correct" || t.status == "sequence correct but keep plate" }
       correct_seq_verifi_task_ids = correct_seq_verifi_tasks.collect { |t| t.id }
       correct_seq_verifi_task_ids = task_group_filter correct_seq_verifi_task_ids, io_hash[:group]
+
+      tp = TaskPrototype.where("name = 'Discard Item'")[0]
+
+      new_discard_item_task_ids = []
 
       #Add sequence correct items to glycerol stock
       correct_seq_verifi_task_ids.each do |tid|
         io_hash[:task_ids].push tid
         task = find(:task, id: tid)[0]
         io_hash[:overnight_ids].concat task.simple_spec[:overnight_ids]
+
+        if task.status == "sequence correct"
+          # make new discard item tasks for corresponding plate
+          plate_id = find(:item, id: task.simple_spec[:overnight_ids][0])[0].datum[:from]
+          plate = find(:item, id: plate_id)[0]
+          gibson_reaction_results = plate.sample.in("Gibson Reaction Result")
+          gibson_reaction_result_ids = gibson_reaction_results.collect { |g| g.id }
+          discard_item_ids = gibson_reaction_result_ids.push plate_id
+          t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+          t.save
+          t.notify "Automatically created from Sequencing Verification.", job_id: jid
+          new_discard_item_task_ids.push t.id
+        end
       end
+
+      if new_discard_item_task_ids.length > 0
+        new_discard_item_task_table = task_info_table(new_discard_item_task_ids)
+        show {
+          title "New Dicard Items tasks"
+          note "The following dicard items tasks are automatically generated for gibson results and plate that has correct sequenced plasmid stocks."
+          table new_discard_item_task_table
+        }
+      end
+
       io_hash[:size] = io_hash[:overnight_ids].length + io_hash[:item_ids].length
 
     when "Discard Item"
