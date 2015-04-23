@@ -421,9 +421,14 @@ module Cloning
             t[:fragments][:ready_to_build].push fid
           end
         end
-        bacterial_marker = find(:sample, id:t.simple_spec[:plasmid])[0].properties["Bacterial Marker"]
-        plasmid_condition = find(:sample, id:t.simple_spec[:plasmid])[0] && bacterial_marker && bacterial_marker != ""
-        t.notify "Bacterial Marker info required for plasmid #{t.simple_spec[:plasmid]}", job_id: jid if !bacterial_marker
+        plasmid_condition = false
+        if find(:sample, id:t.simple_spec[:plasmid])[0]
+          bacterial_marker = find(:sample, id:t.simple_spec[:plasmid])[0].properties["Bacterial Marker"]
+          plasmid_condition = find(:sample, id:t.simple_spec[:plasmid])[0] && bacterial_marker && bacterial_marker != ""
+          t.notify "Bacterial Marker info required for plasmid #{t.simple_spec[:plasmid]}", job_id: jid if !bacterial_marker
+        else
+          t.notify "No samples corresponding to plasmid #{t.simple_spec[:plasmid]}", job_id: jid
+        end
         ready_conditions = t[:fragments][:ready_to_use].length == t.simple_spec[:fragments].length && plasmid_condition
 
       when "Fragment Construction"
