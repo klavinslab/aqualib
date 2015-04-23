@@ -79,6 +79,16 @@ class Protocol
       note "Proceed until all the fragmment length info entered."
     } if fragment_stocks_need_length_info.length > 0
 
+    # Tell the user what we are doing
+    show {
+      title "Gibson Assembly Information"
+      note "This protocol will build the following #{io_hash[:plasmid_ids].length} plasmids using Gibson Assembly method:"
+      note io_hash[:plasmid_ids].collect {|p| "#{p}"}
+    }
+
+    # Take fragment stocks
+    take fragment_stocks_flatten, interactive: true,  method: "boxes"
+
     fragment_stocks_need_to_measure = fragment_stocks_flatten.select {|f| !f.datum[:concentration]}
     if fragment_stocks_need_to_measure.length > 0
       data = show {
@@ -104,16 +114,6 @@ class Protocol
       volumes.collect! { |x| x < 0.5 ? 0.5 : x }
       fragment_volumes.push volumes 
     end
-
-    # Tell the user what we are doing
-    show {
-      title "Gibson Assembly Information"
-      note "This protocol will build the following plasmids using Gibson Assembly method:"
-      note io_hash[:plasmid_ids].collect {|p| "#{p}"}
-    }
-
-    # Take fragment stocks
-    take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
     # Measure not verified volumes of fragment stocks
     need_to_measure = false
