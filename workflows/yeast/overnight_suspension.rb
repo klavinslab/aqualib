@@ -51,7 +51,7 @@ class Protocol
         elsif yeast_strain.in("Yeast Plate").length > 0
           yeast_items.push yeast_strain.in("Yeast Plate")[0]
         end
-      ends
+      end
 
     elsif io_hash[:item_ids].length > 0
 
