@@ -67,7 +67,7 @@ class Protocol
       title "Cut gel slices and place them in new 1.5 mL tubes"
       table [
         [ "Row", "Column", "New Gel Slice id", "Length" ]
-        ].concat( new_routes.collect { |r| [ r[:lane ][0]+1, r[:lane][1]+1, { content: r[:slice_id], check: true }, r[:length] ] } )
+        ].concat( new_routes.collect { |r| [ r[:lane][0]+1, r[:lane][1]+1, { content: r[:slice_id], check: true }, r[:length] ] } )
         note "Label the tubes with the id shown above."
         note "Wipe the blade with ethanol before each cut."
         warning "Wear blue light goggles during this process!"
