@@ -36,11 +36,22 @@ class Protocol
       io_hash[:yeast_strain_ids].each do |yid|
         yeast_strain = find(:sample, id: yid)[0]
         if yeast_strain.in("Yeast Glycerol Stock").length > 0
-          yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0]
+          if yeast_strain.in("Yeast Glycerol Stock").length == 1
+            yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0]
+          elsif yeast_strain.in("Yeast Glycerol Stock").length > 1
+            choose_indicator = true
+            yeast_strain.in("Yeast Glycerol Stock").each do |y|
+              if y.datum[:use_this_for_overnight] == "Yes"
+                yeast_items.push y
+                choose_indicator = false
+              end
+            end
+            yeast_items.push yeast_strain.in("Yeast Glycerol Stock")[0] if choose_indicator
+          end
         elsif yeast_strain.in("Yeast Plate").length > 0
           yeast_items.push yeast_strain.in("Yeast Plate")[0]
         end
-      end
+      ends
 
     elsif io_hash[:item_ids].length > 0
 
