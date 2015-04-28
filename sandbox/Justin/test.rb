@@ -18,14 +18,24 @@ class Protocol
   
   def main
     show{
-      	title "This is some title"
-      	note "This is some note"
-      }
-    end
+		title "Place all empty flasks at the clean station"
+		}
     
     show{
-      title "This is the next step"
-    }
+		title "Prepare equipment during spin"
+		check "During the spin, take out #{num} QIAfilter Cartridge(s). Label them with #{overnight_ids}. Screw the cap onto the outlet nozzle of the QIAfilter Cartridge(s). Place the QIAfilter Cartridge(s) into a convenient tube or test tube rack."
+		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 ml beaker. Add 10ml of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
+   		 }
+
+	show{
+		title "Retrieve centrifuge tubes"
+	    check "Remove the supernatant from all the tubes. Pour off the supernatant into liquid waste, being sure not to upset the pellet. Pipette out the residual supernatant."
+    	}
+    
+    show{
+      title "Resuspend cells in P1"
+      check "Add 20 mL of P1 into each centrifuge tube using the serological pipet and vortex strongly to resuspend."
+    	}
   end
   
 end
