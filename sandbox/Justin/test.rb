@@ -21,6 +21,10 @@ class Protocol
       	title "This is some title"
       	note "This is some note"
       }
+    
+    show{
+      title "This is the next step"
+    }
   end
   
 end
