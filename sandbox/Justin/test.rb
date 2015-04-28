@@ -17,8 +17,7 @@ class Protocol
   end
   
   def main
-  	show
-  	{
+  	show{
   		title "some title"
   		check "some check box"
   		note "some note"
