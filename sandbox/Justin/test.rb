@@ -1,18 +1,26 @@
-needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
+needs "aqualib/lib/standard"
 
 class Protocol
-  include Stanard
+  
+  include Standard
   include Cloning
   
   def arguments
     {
-      samples_ids: [5913, 5914]
+    #Enter the plasmid stocks ids that you wish to convert to another plasmid 
+    plasmidstock_ids: [17032,17034,17039],
+    
+    #Enter the corresponding plasmid you would like to convert the plasmid stock too
+    plasmid_ids: [3546, 3547, 3539]
     }
   end
   
   def main
+    show 
     {
+      title "Some title"
     }
   end
+  
 end
