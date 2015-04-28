@@ -17,16 +17,12 @@ class Protocol
   end
   
   def main
-    show{
-		title "Place all empty flasks at the clean station"
-		}
-    end
-    show{
-		title "Prepare equipment during spin"
-		check "During the spin, take out #{num} QIAfilter Cartridge(s). Label them with #{overnight_ids}. Screw the cap onto the outlet nozzle of the QIAfilter Cartridge(s). Place the QIAfilter Cartridge(s) into a convenient tube or test tube rack."
-		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 ml beaker. Add 10ml of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
-   		 }
-	end
+  	show
+  	{
+  		title "some title"
+  		check "some check box"
+  		note "some note"
+  	}
   end
   
 end
