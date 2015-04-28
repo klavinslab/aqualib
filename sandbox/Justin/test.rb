@@ -22,6 +22,10 @@ class Protocol
   		check "some check box"
   		note "some note"
   	}
+  	show{
+  	  title "some other title #2"
+  	  check "some check box2
+  	}
   end
   
 end
