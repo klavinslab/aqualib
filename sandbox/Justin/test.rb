@@ -24,7 +24,7 @@ class Protocol
   	}
   	show{
   	  title "some other title #2"
-  	  check "some check "box2"
+  	  check "some check box2"
   	}
   end
   
