@@ -13,11 +13,6 @@ class Protocol
   
   def main
     {
-    show
-      {
-        title "This is a test protocol"
-        note "this is some note"
-      }
     }
   end
 end
