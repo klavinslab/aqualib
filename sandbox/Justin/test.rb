@@ -17,10 +17,6 @@ class Protocol
   end
   
   def main
-    show 
-    {
-      title "Some title"
-    }
   end
   
 end
