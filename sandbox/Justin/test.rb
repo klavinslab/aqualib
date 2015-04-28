@@ -18,7 +18,8 @@ class Protocol
   
   def main
     show{
-      	title "Set centrifuge to 4 degrees C"
+      	title "This is some title"
+      	note "This is some note"
       }
   end
   
