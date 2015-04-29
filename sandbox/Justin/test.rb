@@ -21,11 +21,8 @@ class Protocol
     ygc = io_hash[:yeast_ids].collect {|y| find(:sample,{id: y})[0].in("Yeast Glycerol Stock")[0]}
     tab = [["Glycerol Stock id", "Loction"]]
     ygc.each do |y|
-      tab.push[y.id, y.location]
+      show "#{y.id}"
     end
-    show{
-      table tab
-    }
   end
   
 end
