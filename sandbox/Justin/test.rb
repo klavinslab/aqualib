@@ -17,9 +17,9 @@ class Protocol
   end
   
   def main
-    find(:sample,{id: 3546})[0].in("Fragment Stock")[0]
+    x = find(:sample,{id: 3546})[0].in("Plasmid Stock")[0]
   	show{
-  		title "some title"
+  		title "some title #{x}"
   		check "some check box"
   		note "some note"
   	}
