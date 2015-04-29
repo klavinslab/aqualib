@@ -22,6 +22,7 @@ class Protocol
     tab = [["Glycerol Stock id", "Loction"]]
     ygc.each do |y|
       tab.push[y.id, y.location]
+    end
     show{
       table tab
     }
