@@ -8,25 +8,22 @@ class Protocol
   
   def arguments
     {
-    #Enter the plasmid stocks ids that you wish to convert to another plasmid 
-    plasmidstock_ids: [17032,17034,17039],
-    
-    #Enter the corresponding plasmid you would like to convert the plasmid stock too
-    plasmid_ids: [3546, 3547, 3539]
+      io_hash: {},
+      yeast_ids: [2701, 2697, 2720],
+      debug_mode: "Yes",
     }
   end
   
   def main
-    x = find(:sample,{id: 3546})[0].in("Plasmid Stock")[0]
-  	show{
-  		title "some title #{x}"
-  		check "some check box"
-  		note "some note"
-  	}
-  	show{
-  	  title "some other title #2"
-  	  check "some check box2"
-  	}
+    io_hash = input[:io_hash]
+    io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+    io_hash = {yeast_ids: [2701, 2697], debug_mode: "No", item_choice_mode: "No"}.merge io_hash
+    io_hash[:yeast_ids].each do |yid|
+      x = find(:sample,{id: yid})[0].in("Yeast Glycerol Stock")[0]
+      show{
+        title "Yeast Glycerol Stock id #{x}"
+      }
+    end
   end
   
 end
