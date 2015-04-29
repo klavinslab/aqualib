@@ -18,6 +18,7 @@ class Protocol
   
   def main
   	show{
+  	  find(:sample,{id: fid})[0].in("Fragment Stock")[0]
   		title "some title"
   		check "some check box"
   		note "some note"
