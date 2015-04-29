@@ -20,9 +20,7 @@ class Protocol
     io_hash = {yeast_ids: [2701, 2697], debug_mode: "No", item_choice_mode: "No"}.merge io_hash
     ygc = io_hash[:yeast_ids].collect {|y| find(:sample,{id: y})[0].in("Yeast Glycerol Stock")[0]}
     tab = [["Glycerol Stock id", "Loction"]]
-    ygc.each do |y|
-      show "#{y.id}"
-    end
+    take ygc, interactive: true, method: "boxes"
   end
   
 end
