@@ -13,6 +13,10 @@ module Cloning
     end
 
     fragment = find(:sample,{id: fid})[0]
+    if fragment == nil
+      task.notify "Fragment #{fid} is not in the database.", job_id: jid if task
+      return nil
+    end
     props = fragment.properties
 
     # get sample ids for primers and template
@@ -164,7 +168,7 @@ module Cloning
 
       t.simple_spec[:fragments].each do |fid|
 
-        info = fragment_info fid
+        info = fragment_info fid, task_id: t.id
 
         # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
         if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
@@ -234,7 +238,7 @@ module Cloning
 
       t.simple_spec[:fragments].each do |fid|
 
-        info = fragment_info fid
+        info = fragment_info fid, task_id: t.id
         if !info
           t[:fragments][:not_ready_to_build].push fid
         else
@@ -459,7 +463,7 @@ module Cloning
       when "Gibson Assembly"
         t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid
+          info = fragment_info fid, task_id: t.id
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
           if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
             t[:fragments][:ready_to_use].push fid
@@ -484,7 +488,7 @@ module Cloning
       when "Fragment Construction"
         t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid
+          info = fragment_info fid, task_id: t.id
           if !info
             t[:fragments][:not_ready_to_build].push fid
           else
