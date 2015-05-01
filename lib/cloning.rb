@@ -465,7 +465,10 @@ module Cloning
         t.simple_spec[:fragments].each do |fid|
           info = fragment_info fid, task_id: t.id
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
-          if find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
+          if find(:sample, id: fid)[0] == nil
+            t[:fragments][:not_ready_to_use].push fid
+            t.notify "Fragment #{fid} does not exist in database.", job_id: jid
+          elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
             t[:fragments][:ready_to_use].push fid
           elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] == 0
             t[:fragments][:not_ready_to_use].push fid
