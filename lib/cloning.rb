@@ -24,19 +24,19 @@ module Cloning
     length = props["Length"]
 
     if fwd == nil
-      task.notify "Forward Primer for fragment #{fid} required", job_id: jid
+      task.notify "Forward Primer for fragment #{fid} required", job_id: jid if task
     end
 
     if rev == nil
-      task.notify "Reverse Primer for fragment #{fid} required", job_id: jid
+      task.notify "Reverse Primer for fragment #{fid} required", job_id: jid if task
     end
 
     if template == nil
-      task.notify "Template for fragment #{fid} required", job_id: jid
+      task.notify "Template for fragment #{fid} required", job_id: jid if task
     end
 
     if length == nil
-      task.notify "Length for fragment #{fid} required", job_id: jid
+      task.notify "Length for fragment #{fid} required", job_id: jid if task
     end
 
 
@@ -47,11 +47,11 @@ module Cloning
     else
 
       if fwd.properties["T Anneal"] == nil
-        task.notify "T Anneal for primer #{fwd.id} required", job_id: jid
+        task.notify "T Anneal for primer #{fwd.id} required", job_id: jid if task
       end
 
       if rev.properties["T Anneal"] == nil
-        task.notify "T Anneal for primer #{rev.id} required", job_id: jid
+        task.notify "T Anneal for primer #{rev.id} required", job_id: jid if task
       end
 
       if fwd.properties["T Anneal"] == nil || rev.properties["T Anneal"] == nil
@@ -59,7 +59,7 @@ module Cloning
       end
 
       if fwd.properties["T Anneal"] < 50 || rev.properties["T Anneal"] < 50
-        task.notify "T Anneal for primer #{fwd.id} or #{rev.id} is lower than 50, too low.", job_id: jid
+        task.notify "T Anneal for primer #{fwd.id} or #{rev.id} is lower than 50, too low.", job_id: jid if task
         return nil
       end
 
@@ -86,15 +86,15 @@ module Cloning
       end
 
       if fwd_items.length == 0
-        task.notify "Primer aliquot for primer #{fwd.id} required", job_id: jid
+        task.notify "Primer aliquot for primer #{fwd.id} required", job_id: jid if task
       end
 
       if rev_items.length == 0
-        task.notify "Primer aliquot for primer #{rev.id} required", job_id: jid
+        task.notify "Primer aliquot for primer #{rev.id} required", job_id: jid if task
       end
 
       if template_items.length == 0
-        task.notify "Stock for template #{template.id} required", job_id: jid
+        task.notify "Stock for template #{template.id} required", job_id: jid if task
       end
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
