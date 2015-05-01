@@ -6,7 +6,11 @@ module Cloning
     # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template (1 ng/µL Plasmid Stock). It also computes the annealing temperature.
 
     # find the fragment and get its properties
-    params = ({ item_choice: false }).merge p
+    params = ({ item_choice: false, task_id: nil }).merge p
+
+    if params[:task_id]
+      task = find(:task, id: params[:task_id])[0]
+    end
 
     fragment = find(:sample,{id: fid})[0]
     props = fragment.properties
@@ -19,11 +23,45 @@ module Cloning
     # get length for each fragment
     length = props["Length"]
 
+    if fwd == nil
+      task.notify "Forward Primer for fragment #{fid} required", job_id: jid
+    end
+
+    if rev == nil
+      task.notify "Reverse Primer for fragment #{fid} required", job_id: jid
+    end
+
+    if template == nil
+      task.notify "Template for fragment #{fid} required", job_id: jid
+    end
+
+    if length == nil
+      task.notify "Length for fragment #{fid} required", job_id: jid
+    end
+
+
     if fwd == nil || rev == nil || template == nil || length == 0
 
       return nil # Whoever entered this fragment didn't provide enough information on how to make it
 
     else
+
+      if fwd.properties["T Anneal"] == nil
+        task.notify "T Anneal for primer #{fwd.id} required", job_id: jid
+      end
+
+      if rev.properties["T Anneal"] == nil
+        task.notify "T Anneal for primer #{rev.id} required", job_id: jid
+      end
+
+      if fwd.properties["T Anneal"] == nil || rev.properties["T Anneal"] == nil
+        return nil
+      end
+
+      if fwd.properties["T Anneal"] < 50 || rev.properties["T Anneal"] < 50
+        task.notify "T Anneal for primer #{fwd.id} or #{rev.id} is lower than 50, too low.", job_id: jid
+        return nil
+      end
 
       # get items associated with primers and template
       fwd_items = fwd.in "Primer Aliquot"
@@ -47,6 +85,18 @@ module Cloning
         end
       end
 
+      if fwd_items.length == 0
+        task.notify "Primer aliquot for primer #{fwd.id} required", job_id: jid
+      end
+
+      if rev_items.length == 0
+        task.notify "Primer aliquot for primer #{rev.id} required", job_id: jid
+      end
+
+      if template_items.length == 0
+        task.notify "Stock for template #{template.id} required", job_id: jid
+      end
+
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
 
         return nil # There are missing items
@@ -64,8 +114,8 @@ module Cloning
         end
 
         # compute the annealing temperature
-        t1 = fwd_items[0].sample.properties["T Anneal"] || 70.0
-        t2 = rev_items[0].sample.properties["T Anneal"] || 70.0
+        t1 = fwd_items[0].sample.properties["T Anneal"]
+        t2 = rev_items[0].sample.properties["T Anneal"]
 
         # find stocks of this fragment, if any
         stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
@@ -77,7 +127,7 @@ module Cloning
           fwd: fwd_item_to_return,
           rev: rev_item_to_return,
           template: template_item_to_return,
-          tanneal: (t1+t2)/2.0
+          tanneal: [t1,t2].min
         }
 
       end
