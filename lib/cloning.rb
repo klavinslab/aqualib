@@ -412,7 +412,9 @@ module Cloning
       user_group = params[:group] == "technicians"? "cloning": params[:group]
       group_info = Group.find_by_name(user_group)
       tasks_all.each do |t|
-        tasks.push t if t.user.member? group_info.id
+        if t.user
+          tasks.push t if t.user.member? group_info.id
+        end
       end
     else
       tasks = tasks_all
