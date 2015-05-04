@@ -50,20 +50,15 @@ module Cloning
 
     else
 
-      if fwd.properties["T Anneal"] == nil
-        task.notify "T Anneal for primer #{fwd.id} required", job_id: jid if task
+      if fwd.properties["T Anneal"] == nil || fwd.properties["T Anneal"] < 50
+        task.notify "T Anneal (higher than 50) for primer #{fwd.id} of fragment #{fid} required", job_id: jid if task
       end
 
-      if rev.properties["T Anneal"] == nil
-        task.notify "T Anneal for primer #{rev.id} required", job_id: jid if task
+      if rev.properties["T Anneal"] == nil || rev.properties["T Anneal"] < 50
+        task.notify "T Anneal (higher than 50) for primer #{rev.id} of fragment #{fid} required", job_id: jid if task
       end
 
-      if fwd.properties["T Anneal"] == nil || rev.properties["T Anneal"] == nil
-        return nil
-      end
-
-      if fwd.properties["T Anneal"] < 50 || rev.properties["T Anneal"] < 50
-        task.notify "T Anneal for primer #{fwd.id} or #{rev.id} is lower than 50, too low.", job_id: jid if task
+      if fwd.properties["T Anneal"] == nil || fwd.properties["T Anneal"] < 50 || rev.properties["T Anneal"] == nil || rev.properties["T Anneal"] < 50
         return nil
       end
 
@@ -90,15 +85,15 @@ module Cloning
       end
 
       if fwd_items.length == 0
-        task.notify "Primer aliquot for primer #{fwd.id} required", job_id: jid if task
+        task.notify "Primer aliquot for primer #{fwd.id} of fragment #{fid} required", job_id: jid if task
       end
 
       if rev_items.length == 0
-        task.notify "Primer aliquot for primer #{rev.id} required", job_id: jid if task
+        task.notify "Primer aliquot for primer #{rev.id} of fragment #{fid} required", job_id: jid if task
       end
 
       if template_items.length == 0
-        task.notify "Stock for template #{template.id} required", job_id: jid if task
+        task.notify "Stock for template #{template.id} of fragment #{fid} required", job_id: jid if task
       end
 
       if fwd_items.length == 0 || rev_items.length == 0 || template_items.length == 0
