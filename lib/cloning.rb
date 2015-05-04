@@ -493,12 +493,12 @@ module Cloning
       when "Fragment Construction"
         t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          if params[:notifications].downcase = "off"
+          if params[:notification].downcase = "off"
             info = fragment_info fid
           else
             info = fragment_info fid, task_id: t.id
           end
-          
+
           if !info
             t[:fragments][:not_ready_to_build].push fid
           else
