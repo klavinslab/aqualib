@@ -403,7 +403,7 @@ module Cloning
     # This function is to process tasks of which the status is waiting or ready. If ready_condition of the task is met, set the status to ready, otherwise, set the status to waiting.
     # This function takes a hash as an argument. group defines whose tasks to process based on their owners belongings to the group and name defines which task_prototype of tasks to process. For example, group: technicians, name: "Yeast Strain QC" will process all Yeast Strain QC tasks whose owners belong to a group called cloning. Another example, group: yang, name: "Fragment Construction" will process all Fragment Construction tasks whose owner belong to a group called yang.
 
-    params = ({ group: false, name: "" }).merge p
+    params = ({ group: false, name: "", notification: "off" }).merge p
     raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].length == 0
     tasks_all = find(:task,{task_prototype: { name: params[:name] }})
     tasks = []
@@ -465,7 +465,7 @@ module Cloning
       when "Gibson Assembly"
         t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid, task_id: t.id
+          info = fragment_info fid
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
           if find(:sample, id: fid)[0] == nil
             t[:fragments][:not_ready_to_use].push fid
@@ -493,7 +493,12 @@ module Cloning
       when "Fragment Construction"
         t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid, task_id: t.id
+          if params[:notifications].downcase = "off"
+            info = fragment_info fid
+          else
+            info = fragment_info fid, task_id: t.id
+          end
+          
           if !info
             t[:fragments][:not_ready_to_build].push fid
           else
