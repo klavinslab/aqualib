@@ -135,7 +135,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Glycerol Stock",
+      task_name: "Fragment Construction",
       group: "technicians"
     }
   end
