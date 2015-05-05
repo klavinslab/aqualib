@@ -404,6 +404,18 @@ class Protocol
       io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
       io_hash[:size] = io_hash[:fragment_ids].length
 
+      # adding Tetra (time estimation tool for Aquarium) display
+      tetra_tab = [[ "Protocol Name", "Esitmated Time (min)"]]
+
+      ["PCR"].each do |protocol_name|
+        tetra_tab.push [protocol_name, time_prediction(io_hash[:size], protocol_name)]
+      end
+
+      show {
+        title "Tetra time predictions"
+        table tetra_tab
+      }
+
     when "Plasmid Verification"
       io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
       io_hash[:task_ids].each do |tid|

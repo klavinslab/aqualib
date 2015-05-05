@@ -686,6 +686,9 @@ module Cloning
 
   # supply a poly fit data model name and size of the reaction, predit the time it will take
   def time_prediction size, model_name
+    if size == 0
+      return 0
+    end
     model_data = find(:sample, name: model_name)[0].properties["Model"]
     model_array = model_data.split(",")
     n = model_array.length - 1
