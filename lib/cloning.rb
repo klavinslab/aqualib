@@ -684,6 +684,18 @@ module Cloning
 
   end ### task_info_table
 
+  # supply a poly fit data model name and size of the reaction, predit the time it will take
+  def time_prediction size, model_name
+    model_data = find(:sample, name: model_name)[0].properties["Model"]
+    model_array = model_data.split(",")
+    n = model_array.length - 1
+    time = 0
+    model_array.each_with_index do |p, idx|
+      time += p.to_f * size ** (n - idx)
+    end
+    return time.round(0)
+  end
+
 end
 
 

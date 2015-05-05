@@ -63,11 +63,14 @@ class Protocol
       return { io_hash: io_hash }
     end
 
+    predited_time = time_prediction all_fragments.length, "PCR"
+
     # tell the user what we are doing
     show {
       title "Fragment Information"
       note "This protocol will build the following #{all_fragments.length} fragments:"
       note (all_fragments.collect { |f| "#{f.id}" })
+      note "The predicted time needed is #{predited_time} min."
       if not_ready.length > 0
         separator
         note "The following fragments have missing ingredients and will not be built:"
