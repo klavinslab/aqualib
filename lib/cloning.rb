@@ -311,6 +311,12 @@ module Cloning
 
   def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
 
+    if block_given?
+      user_shows = ShowBlock.new.run(&Proc.new) 
+    else
+      user_shows = []
+    end
+
     raise "Empty collection list" unless collections.length > 0
 
     heading = [ [ "#{collections[0].object_type.name}", "Location" ] + headings ]
@@ -338,6 +344,7 @@ module Cloning
       show {
           title "Load #{col.object_type.name} #{col.id}"
           table heading + tab
+          raw user_shows
         }
     end
 
