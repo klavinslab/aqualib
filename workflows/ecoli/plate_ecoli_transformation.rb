@@ -61,7 +61,7 @@ class Protocol
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
-        actual_plates.push plates
+        actual_plates.concat plates
       else
         show {
           title "No marker info found"
