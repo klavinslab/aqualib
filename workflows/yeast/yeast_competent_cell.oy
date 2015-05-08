@@ -23,6 +23,13 @@ place startovernight
   window: hours(20)
 end
 
+place dilution
+  protocol: "aqualib:workflows/yeast/inoculate_large_volume_growth.rb"
+  group: group
+  start: now()
+  window: hours(20)
+end
+
 place makecompcell
   protocol: "aqualib:workflows/yeast/make_yeast_competent_cell.rb"
   group: group
@@ -31,13 +38,16 @@ place makecompcell
 end
 
 wire tasks_inputs => startovernight
+wire startovernight => dilution
 wire startovernight => makecompcell
 
 transition [ tasks_inputs ] => [ startovernight ] when !error(0) && completed (0) end
-transition [ startovernight ] => [ makecompcell ] when !error(0) && completed(0) end
+transition [ startovernight ] => [ dilution ] when !error(0) && completed(0) end
+transition [ dilution ] => [ makecompcell ] when !error(0) && completed(0) end
 transition [ makecompcell ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ startovernight ] => [ startovernight ] when error(0) end
+transition [ dilution ] => [ dilution ] when error(0) end
 transition [ makecompcell ] => [ makecompcell ] when error(0) end

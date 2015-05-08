@@ -14,7 +14,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the overnight ids that you are going to start overnight with
-      "yeast_overnight_ids Yeast Overnight Suspension" => [25980,13576,13577],
+      "overnight_ids Yeast Overnight Suspension" => [25980,13576,13577],
       large_volume: 50,
       #Enter the media type you are going to use
       media_type: "800 mL YPAD liquid (sterile)",
@@ -32,7 +32,7 @@ class Protocol
       end
     end
 
-  	yeast_overnights = io_hash[:yeast_overnight_ids].collect{ |yid| find(:item, id: yid )[0] }
+    yeast_overnights = io_hash[:overnight_ids].collect{ |yid| find(:item, id: yid )[0] }
   	yeast_cultures = []
   	yeast_overnights.each do |y|
   		yeast_culture = produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast 50ml culture"
