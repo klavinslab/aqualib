@@ -10,7 +10,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_culture_ids: [25996,25997],
+      yeast_culture_ids: [34887,34888],
+      overnight_ids: [34883,34884,34885],
       debug_mode: "Yes"
     }
   end
@@ -43,7 +44,6 @@ class Protocol
       }
       return { io_hash: io_hash }
     end
-    
 
     cultures = io_hash[:yeast_culture_ids].collect { |cid| find(:item, id:cid)[0] }
     take cultures, interactive: true

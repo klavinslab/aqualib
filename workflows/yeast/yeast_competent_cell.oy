@@ -39,7 +39,7 @@ end
 
 wire tasks_inputs => startovernight
 wire startovernight => dilution
-wire startovernight => makecompcell
+wire dilution => makecompcell
 
 transition [ tasks_inputs ] => [ startovernight ] when !error(0) && completed (0) end
 transition [ startovernight ] => [ dilution ] when !error(0) && completed(0) end
