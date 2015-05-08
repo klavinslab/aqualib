@@ -11,7 +11,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      transformed_aliquots_ids: [11815,11816,11817,12282,3648],
+      transformed_aliquots_ids: [9191,9190,8418],
       debug_mode: "No",
     }
   end
@@ -35,18 +35,21 @@ class Protocol
     end
     take all_transformed_aliquots, interactive: true if all_transformed_aliquots.length > 0
 
-    all_plates = all_transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
+    all_plates = all_transformed_aliquots.collect { |t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid" }
 
     plates_marker_hash = Hash.new { |h,k| h[k] = [] }
     all_plates.each do |p|
       plates_marker_hash[p.sample.properties["Bacterial Marker"].downcase[0,3]].push p
     end
 
+    actual_plates = []
+
     plates_marker_hash.each do |marker, plates|
+      transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
       unless marker == ""
         marker = "chlor" if marker == "chl"
         plates_with_initials = plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
-        num = transformed_aliquots.length
+        num = plates.length
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} LB+#{marker[0].upcase}#{marker[1..marker.length]} Plate (sterile)"
@@ -58,29 +61,31 @@ class Protocol
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
+        actual_plates.push plates
       else
         show {
           title "No marker info found"
           note "Place the following tubes into DFP and inform the plasmid owner that they need their Bacterial Marker info entered in the plasmid sample page."
           note "#{transformed_aliquots.collect { |t| t.id }}"
         }
+        delete plates
       end
     end
 
     delete all_transformed_aliquots
 
-    if all_plates.length > 0
+    if actual_plates.length > 0
       show {
         title "Incubate"
         note "Put all the following plates in 37 C incubator:"
-        note all_plates.collect { |p| "#{p}"}
+        note actual_plates.collect { |p| "#{p}"}
       }
-      move all_plates, "37 C incubator"
-      release all_plates
+      move actual_plates, "37 C incubator"
+      release actual_plates
     end
 
     io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
-    io_hash[:plate_ids].concat all_plates.collect { |p| p.id }
+    io_hash[:plate_ids].concat actual_plates.collect { |p| p.id }
 
     # Set tasks in the io_hash to be on plate
     if io_hash[:task_ids]
