@@ -13,6 +13,7 @@ class Protocol
       io_hash: {},
       transformed_aliquots_ids: [11815,11816,11817,12282,3648],
       debug_mode: "No",
+      inducer_plate: "IPTG"
     }
   end
 
@@ -25,6 +26,7 @@ class Protocol
         true
       end
     end
+    io_hash[:inducer_plate] = io_hash[:inducer_plate] || ""
     
     all_transformed_aliquots = io_hash[:transformed_aliquots_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_transformed_aliquots.length == 0
@@ -35,29 +37,40 @@ class Protocol
     end
     take all_transformed_aliquots, interactive: true if all_transformed_aliquots.length > 0
 
-    all_plates = all_transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
-
-    plates_marker_hash = Hash.new { |h,k| h[k] = [] }
-    all_plates.each do |p|
-      plates_marker_hash[p.sample.properties["Bacterial Marker"].downcase[0,3]].push p
+    transformed_aliquot_marker_hash = Hash.new { |h,k| h[k] = [] }
+    all_transformed_aliquots.each do |t|
+      transformed_aliquot_marker_hash[t.sample.properties["Bacterial Marker"].downcase[0,3]].push t
     end
 
-    plates_marker_hash.each do |marker, plates|
+    all_plates = []
+    transformed_aliquot_marker_hash.each do |marker, transformed_aliquots|
       unless marker == ""
         marker = "chlor" if marker == "chl"
-        plates_with_initials = plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
+        selection_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"}
+        selection_plates_with_initials = selection_plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
+        inducer_plates = []
+        inducer_plates = transformed_aliquots.collect {|t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid"} unless io_hash[:inducer_plate] == ""
+        plates = selection_plates + inducer_plates
+        all_plates.concat plates
         num = transformed_aliquots.length
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} LB+#{marker[0].upcase}#{marker[1..marker.length]} Plate (sterile)"
-          check "Label with the following ids #{plates_with_initials}"
+          check "Label with the following ids #{selection_plates_with_initials}"
         }
+        show {
+          title "Grab #{num} #{"plate".pluralize(num)}"
+          check "Grab #{num} LB+#{marker[0].upcase}#{marker[1..marker.length]}+#{io_hash[:inducer_plate]} Plate (sterile)"
+          check "Label with the following ids #{inducer_plates.collect { |p| p.id }}"
+        } unless io_hash[:inducer_plate] == ""
         show {
           title "Plating"
           check "Use sterile beads to plate 200 µL from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
           check "Discard used transformed aliquots after plating."
-          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
+          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip selection_plates.collect{ |p| { content: p.id, check: true } })
+          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]}+#{io_hash[:inducer_plate]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip inducer_plates.collect{ |p| { content: p.id, check: true } }) unless io_hash[:inducer_plate] == ""
         }
+        delete transformed_aliquots
       else
         show {
           title "No marker info found"
@@ -66,8 +79,6 @@ class Protocol
         }
       end
     end
-
-    delete all_transformed_aliquots
 
     if all_plates.length > 0
       show {
