@@ -34,7 +34,7 @@ class Protocol
         title "Work in the gel room"
         note "You will take images for plates using the gel room camera in this protocol."
         check "Go log into the gel room computer"
-        warning "Be sure to wear gloves"
+        warning "Be sure to wear gloves!"
       }
 
       show {
@@ -97,7 +97,7 @@ class Protocol
     # update stored plates datum and location
 
     stored_plates.each do |p|
-      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
+      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }.merge p.datum
       p.save
       p.store
       p.reload
