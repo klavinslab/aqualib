@@ -73,6 +73,8 @@ class Protocol
       end
     }
 
+    # for plate as a collection, drop the sample if no colony is no it, record the num_colony as the totoal num_colony on the plate collection
+    # for plate as a normal item, just record the num_colony in datum.
     plates.each do |p|
       if p.datum[:matrix]
         new_matrix = [[]]
