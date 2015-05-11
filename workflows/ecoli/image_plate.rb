@@ -1,5 +1,6 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
+require 'json'
 
 class Protocol
 
@@ -10,9 +11,9 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [3798,3797,3799],
-      debug_mode: "No",
-      image_option: "Yes",
+      plate_ids: [35004,35005],
+      debug_mode: "Yes",
+      image_option: "No",
       task_ids: []
     }
   end #arguments
@@ -61,18 +62,43 @@ class Protocol
       note "Estimate colony numbers for each plate by eye or using the OpenCFU software and enter in the following."
       warning "Double check if you think there is no colony on the plate, enter 0 for no colony plate."
       plates.each do |p|
-        get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
+        # deal with when p is a collection with matrix defined. Assume all the plates are defined as 1xn dimension
+        if p.datum[:matrix]
+          p.datum[:matrix][0].each_with_index do |x, index|
+            get "number", var: "c#{p.id}.#{index+1}", label: "Estimate colony numbers for plate #{p.id}.#{index+1}", default: 5 if x > 0
+          end
+        else
+          get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
+        end
       end
     }
 
     plates.each do |p|
-      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }
+      if p.datum[:matrix]
+        new_matrix = [[]]
+        num_colony = 0
+        p.datum[:matrix][0].each_with_index do |x, index|
+          new_matrix[0][index] = x
+          if colony_number[:"c#{p.id}.#{index+1}".to_sym] == 0
+            new_matrix[0][index] = -1
+            show {
+              note colony_number[:"c#{p.id}.#{index+1}".to_sym]
+              note new_matrix
+            }
+          elsif colony_number[:"c#{p.id}.#{index+1}".to_sym]
+            num_colony += colony_number[:"c#{p.id}.#{index+1}".to_sym]
+          end
+        end
+        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony })
+      else
+        p.datum = (p.datum).merge({ num_colony: colony_number[:"c#{p.id}".to_sym] })
+      end
       p.save
     end
 
     # Sort plates into discarded list and stored list based on num_colony
     discarded_plates = plates.select { |p| p.datum[:num_colony] == 0 }
-    stored_plates = plates.select { |p| p.datum[:num_colony] > 0 }
+    stored_plates = plates.select { |p| p.datum[:num_colony] != 0 }
 
     show {
       title "Discard plate that has no colony on it"
@@ -97,8 +123,6 @@ class Protocol
     # update stored plates datum and location
 
     stored_plates.each do |p|
-      p.datum = { num_colony: colony_number[:"c#{p.id}".to_sym] }.merge p.datum
-      p.save
       p.store
       p.reload
     end
