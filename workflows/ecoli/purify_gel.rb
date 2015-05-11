@@ -38,7 +38,7 @@ class Protocol
       num = gel_slices.length
       num_arr = *(1..num)
 
-      predited_time = time_prediction io_hash[:gel_slices].length, "purify_gel"
+      predited_time = time_prediction io_hash[:gel_slice_ids].length, "purify_gel"
 
       show {
         title "Protocol Information"
