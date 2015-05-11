@@ -50,7 +50,7 @@ place image
   protocol: "aqualib:workflows/ecoli/image_plate.rb"
   group: group
   marked: false
-  start: hours(72)
+  start: hours(66)
   window: hours(10)
 end
 
