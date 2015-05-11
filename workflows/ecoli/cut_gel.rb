@@ -78,13 +78,20 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    gels = io_hash[:gel_ids].collect { |i| collection_from i }
+    io_hash = { debug_mode: "No", gel_ids: [], size: 0 }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+    predited_time = time_prediction io_hash[:size], "cut_gel"
+    show {
+      title "Protocol Information"
+      note "This protocol will take gel pictures and cut gel into gel slices."
+      note "The predicted time needed is #{predited_time} min."
+    }
+    gels = io_hash[:gel_ids].collect { |i| collection_from i }
     take gels, interactive: true
     slices = []
     gels.each do |gel|

@@ -38,11 +38,14 @@ class Protocol
       num = gel_slices.length
       num_arr = *(1..num)
 
+      predited_time = time_prediction io_hash[:gel_slices].length, "purify_gel"
+
       show {
         title "Protocol Information"
         note "This protocol purfies gel slices into DNA fragment stocks."
         note "The following gel slices are going to be purfied"
         note gel_slices.collect { |gs| "#{gs}" }
+        note "The predicted time needed is #{predited_time} min."
       }
 
       take gel_slices, interactive: true,  method: "boxes"
