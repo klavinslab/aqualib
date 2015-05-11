@@ -513,7 +513,7 @@ class Protocol
       end
       io_hash[:yeast_strain_ids].uniq!
       io_hash[:size] = io_hash[:yeast_strain_ids].length
-      io_hash[:volume] = 5
+      io_hash[:volume] = 2
 
     else
       show {
