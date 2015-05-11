@@ -4,6 +4,7 @@ needs "aqualib/lib/cloning"
 class Protocol
 
   include Standard
+  include Cloning
 
   def arguments
     {
