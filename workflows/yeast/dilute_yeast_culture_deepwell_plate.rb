@@ -107,8 +107,12 @@ class Protocol
       plate = collection_from p
       num_of_row = plate.matrix[0].length
       num_of_well = 0
-      num_of_well = (range_to_read[:to][idx][0] - range_to_read[:from][idx][0]) * num_of_row
-      num_of_well += (range_to_read[:to][idx][1] - range_to_read[:from][idx][1]) + 1
+      if range_to_read[:to][idx].length == 0
+        num_of_well = plate.num_samples
+      else
+        num_of_well = (range_to_read[:to][idx][0] - range_to_read[:from][idx][0]) * num_of_row
+        num_of_well += (range_to_read[:to][idx][1] - range_to_read[:from][idx][1]) + 1
+      end
       num_of_wells.push num_of_well
     end
     return num_of_wells
@@ -122,7 +126,7 @@ class Protocol
       volume: 1000,
       dilution_rate: 0.01,
       new_inducers: ["0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
-      range_to_dilute: { from: [[2,1]], to: [[2,12]] },
+      #range_to_dilute: { from: [[2,1]], to: [[2,12]] },
       debug_mode: "Yes"
     }
   end
@@ -130,7 +134,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", new_inducers: [[]] }.merge io_hash
+    io_hash = { debug_mode: "No", new_inducers: [[]], range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
