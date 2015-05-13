@@ -135,7 +135,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Fragment Construction",
+      task_name: "Streak Plate",
       group: "technicians"
     }
   end
@@ -259,8 +259,17 @@ class Protocol
       yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
       need_to_streak_glycerol_stocks = []
       if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
+        show {
+          note yeast_competent_cells[:yeast_strains][:ready_to_streak]
+        }
         yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
-          need_to_streak_glycerol_stocks.push (find(:sample, yid)[0].in("Yeast Glycerol Stock")[0].id)
+          y = find(:sample, id: yid)[0]
+          y_stocks = y.in("Yeast Glycerol Stock")
+          show {
+            note y.id
+            note y_stocks.length
+          }
+          need_to_streak_glycerol_stocks.push y_stocks[0].id
         end
 
         new_streak_plate_task_ids = []
@@ -270,31 +279,33 @@ class Protocol
           task = find(:task, name: "#{y.sample.name}_streak_plate")[0]
           # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
           if task
-            if task.staus == "imaged and stored in fridge"
+            if task.status == "imaged and stored in fridge"
               set_task_status(task,"waiting")
               task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
               task.save
             end
           else
-            t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
+            t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.sample.user.id)
             t.save
             t.notify "Automatically created from Yeast Competent Cell.", job_id: jid
             new_streak_plate_task_ids.push t.id
           end
         end
 
-        new_streak_plate_tab = task_info_table(new_streak_plate_task_ids)
-        show {
-          title "New Streak Plate tasks"
-          note "The following Streak Plate tasks are automatically generated for yeast strains that need to streak plate in Yeast Competent Cell tasks."
-          table new_streak_plate_tab
-        }
+        if new_streak_plate_task_ids.length > 0
+          new_streak_plate_tab = task_info_table(new_streak_plate_task_ids)
+          show {
+            title "New Streak Plate tasks"
+            note "The following Streak Plate tasks are automatically generated for yeast strains that need to streak plate in Yeast Competent Cell tasks."
+            table new_streak_plate_tab
+          }
+        end
       end
 
-      streak_plate_tasks = task_status name: "Yeast Competent Cell", group: io_hash[:group]
+      streak_plate_tasks = task_status name: "Streak Plate", group: io_hash[:group]
       io_hash[:task_ids] = streak_plate_tasks[:ready_ids]
       io_hash[:yeast_glycerol_stock_ids] = []
-      io_hash[:task_ids].each do |tid|
+    io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:item_ids].each do |id|
           if find(:item, id: id)[0].object_type.name == "Yeast Glycerol Stock"
