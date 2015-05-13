@@ -33,7 +33,7 @@ end
 place makecompcell
   protocol: "aqualib:workflows/yeast/make_yeast_competent_cell.rb"
   group: group
-  start: hours(20)
+  start: hours(5)
   window: hours(20)
 end
 

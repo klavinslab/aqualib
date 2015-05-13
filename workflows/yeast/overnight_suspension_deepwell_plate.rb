@@ -78,6 +78,12 @@ class Protocol
       d.location = "30 C shaker incubator"
       d.save
     end
+    
+    yeast_items.each do |y|
+      y.store
+      y.reload
+    end
+
     release deepwells + yeast_items.uniq, interactive: true
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
