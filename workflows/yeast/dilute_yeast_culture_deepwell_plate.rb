@@ -167,7 +167,7 @@ class Protocol
     end
 
     load_samples_variable_vol( ["Inducers"], [
-        io_hash[:inducer_additions]
+        io_hash[:inducer_additions].flatten
       ], yeast_deepwell_plates )
 
     show {

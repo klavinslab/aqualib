@@ -3,6 +3,7 @@
 #
 
 require 'active_support/inflector'
+require 'time'
 
 module Standard
 
@@ -229,13 +230,14 @@ module Standard
     return filtered_task_ids
   end
 
-  # a method for finding collections that contains certain sample ids and belongs to a certain object_type
-  def collection_type_contain id, object_type
+  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has been created beyond time_frame ago.
+  def collection_type_contain id, object_type, time_frame
     matched_collections = []
     find_collections = Collection.containing Sample.find(id)
     if find_collections[0]
       (find_collections).each do |c|
-        if c.object_type.name == object_type
+        duration = ((Time.now - c.created_at) / 3600).round
+        if c.object_type.name == object_type && duration > time_frame
           matched_collections.push c
         end
       end
