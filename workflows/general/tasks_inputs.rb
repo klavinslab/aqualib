@@ -256,6 +256,43 @@ class Protocol
       io_hash[:size] = io_hash[:item_ids].length
 
     when "Streak Plate"
+      yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
+      need_to_streak_glycerol_stocks = []
+      if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
+        yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
+          need_to_streak_glycerol_stocks.push (find(:sample, yid)[0].in("Yeast Glycerol Stock")[0].id)
+        end
+
+        new_streak_plate_task_ids = []
+        need_to_streak_glycerol_stocks.each do |id|
+          y = find(:item, id: id)[0]
+          tp = TaskPrototype.where("name = 'Streak Plate'")[0]
+          task = find(:task, name: "#{y.sample.name}_streak_plate")[0]
+          # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
+          if task
+            if task.staus == "imaged and stored in fridge"
+              set_task_status(task,"waiting")
+              task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
+              task.save
+            end
+          else
+            t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
+            t.save
+            t.notify "Automatically created from Yeast Competent Cell.", job_id: jid
+            new_streak_plate_task_ids.push t.id
+          end
+        end
+
+        new_streak_plate_tab = task_info_table(new_streak_plate_task_ids)
+        show {
+          title "New Streak Plate tasks"
+          note "The following Streak Plate tasks are automatically generated for yeast strains that need to streak plate in Yeast Competent Cell tasks."
+          table new_streak_plate_tab
+        }
+      end
+
+      streak_plate_tasks = task_status name: "Yeast Competent Cell", group: io_hash[:group]
+      io_hash[:task_ids] = streak_plate_tasks[:ready_ids]
       io_hash[:yeast_glycerol_stock_ids] = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
