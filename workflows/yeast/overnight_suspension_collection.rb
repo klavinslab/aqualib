@@ -5,13 +5,13 @@ class Protocol
 
   include Standard
   include Cloning
-
+  
   def arguments
     {
       io_hash: {},
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
-      yeast_strain_ids: [1668,1669],
+      yeast_strain_ids: [1668,1669,6518,6515],
       #The volume of the overnight suspension to make
       volume: 2,
       debug_mode: "Yes"
@@ -32,12 +32,18 @@ class Protocol
     yeast_items = []
     yeast_plate_sections = [] # record where exactly the plate id and section the yeast_strain_id appears in yeast items.
 
+    yeast_strain_available_ids = []
+    yeast_strain_unavailable_ids = []
+
     io_hash[:yeast_strain_ids].each do |yid|
-      if Collection.containing Sample.find(yid)
-        yeast_plate = (Collection.containing Sample.find(yid))[0]
+      if (collection_type_contain yid, "Divided Yeast Plate").length > 0
+        yeast_plate = (collection_type_contain yid, "Divided Yeast Plate")[0]
         yeast_items.push yeast_plate
         yeast_plate.datum[:matrix][0]
         yeast_plate_sections.push "#{yeast_plate.id}.#{yeast_plate.datum[:matrix][0].index(yid)+1}"
+        yeast_strain_available_ids.push yid
+      else
+        yeast_strain_unavailable_ids.push yid
       end
     end
 
@@ -55,17 +61,14 @@ class Protocol
 
     overnights = []
     
-    if io_hash[:yeast_strain_ids].empty?
-      show {
-        title "No overnights need to be prepared"
-        note "Thanks for your effort!"
-      }
-    else
-      show {
-        title "Protocol information"
-        note "This protocol is used to prepare yeast overnight suspensions from divided yeast plates."
-      }
-      overnights = io_hash[:yeast_strain_ids].collect { |id| find(:sample, id: id)[0].make_item "Yeast Overnight Suspension" }
+    show {
+      title "Protocol information"
+      note "This protocol is used to prepare yeast overnight suspensions from divided yeast plates."
+      note "The following yeast strains will be prepared overnights: " + yeast_strain_available_ids.join(', ') if yeast_strain_available_ids.length > 0
+      note "The following yeast strains will not be prepared since no divided yeast plates contain them: " + yeast_strain_unavailable_ids.join(', ') if yeast_strain_unavailable_ids.length > 0
+    }
+    if yeast_strain_available_ids.length > 0
+      overnights = yeast_strain_available_ids.collect { |id| find(:sample, id: id)[0].make_item "Yeast Overnight Suspension" }
       overnights.each do |y|
         y.location = "30 C shaker incubator"
         y.save
@@ -89,6 +92,11 @@ class Protocol
       }
       release yeast_items.uniq, interactive: true
       release overnights, interactive: true, method: "boxes"
+    else
+      show {
+        title "No overnights need to be prepared"
+        note "Thanks for your effort!"
+      }
     end
 
     if io_hash[:task_ids]

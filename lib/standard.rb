@@ -228,4 +228,19 @@ module Standard
     end
     return filtered_task_ids
   end
+
+  # a method for finding collections that contains certain sample ids and belongs to a certain object_type
+  def collection_type_contain id, object_type
+    matched_collections = []
+    find_collections = Collection.containing Sample.find(id)
+    if find_collections[0]
+      (find_collections).each do |c|
+        if c.object_type.name == object_type
+          matched_collections.push c
+        end
+      end
+    end
+    return matched_collections
+  end
+  
 end
