@@ -464,10 +464,10 @@ module Cloning
         t[:item_ids] = { ready: [], not_ready: [] }
         accepted_object_types = ["Yeast Glycerol Stock", "Yeast Plate", "Plate"]
         t.simple_spec[:item_ids].each do |id|
-          if find(:item, id: id)[0]
-            if accepted_object_types.include? find(:item, id: id)[0].object_type.name
-              t[:item_ids][:ready].push id
-            end
+          if accepted_object_types.include? find(:item, id: id)[0].object_type.name
+            t[:item_ids][:ready].push id
+          else
+            t[:item_ids][:not_ready].push id
           end
         end
         ready_conditions = t[:item_ids][:ready].length == t.simple_spec[:item_ids].length
