@@ -1,4 +1,12 @@
+needs "aqualib/lib/standard"
+
 module Cloning
+
+  def self.included klass
+    klass.class_eval do
+      include Standard
+    end
+  end
 
   def fragment_info fid, p={}
 
@@ -635,7 +643,7 @@ module Cloning
         t[:yeast_strains] = { ready: [], not_valid:[] }
 
         t.simple_spec[:yeast_strain_ids].each do |yid|
-          if find(:sample, id: yid )[0].sample_type.name == "Yeast Strain" && (find(:sample, id: yid )[0].in("Yeast Glycerol Stock").length > 0 || find(:sample, id: yid )[0].in("Yeast Plate").length > 0)
+          if (collection_type_contain yid, "Divided Yeast Plate", 10).length > 0
             t[:yeast_strains][:ready].push yid
           else
             t[:yeast_strains][:not_valid].push yid

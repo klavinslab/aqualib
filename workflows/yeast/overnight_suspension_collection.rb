@@ -1,26 +1,10 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
-require 'time'
 
 class Protocol
 
   include Standard
   include Cloning
-
-  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has been created beyond time_frame ago.
-  def collection_type_contain id, object_type, time_frame
-    matched_collections = []
-    find_collections = Collection.containing Sample.find(id)
-    if find_collections[0]
-      (find_collections).each do |c|
-        duration = ((Time.now - c.created_at) / 3600).round
-        if c.object_type.name == object_type && duration > time_frame
-          matched_collections.push c
-        end
-      end
-    end
-    return matched_collections
-  end
   
   def arguments
     {
@@ -52,8 +36,9 @@ class Protocol
     yeast_strain_unavailable_ids = []
 
     io_hash[:yeast_strain_ids].each do |yid|
-      if (collection_type_contain yid, "Divided Yeast Plate", 72).length > 0
-        yeast_plate = (collection_type_contain yid, "Divided Yeast Plate", 72)[0]
+      yeast_collections = collection_type_contain yid, "Divided Yeast Plate", 10
+      if yeast_collections.length > 0
+        yeast_plate = yeast_collections[0]
         yeast_items.push yeast_plate
         yeast_plate.datum[:matrix][0]
         yeast_plate_sections.push "#{yeast_plate.id}.#{yeast_plate.datum[:matrix][0].index(yid)+1}"
