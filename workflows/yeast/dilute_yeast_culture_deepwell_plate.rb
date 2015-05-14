@@ -126,7 +126,7 @@ class Protocol
       volume: 1000,
       dilution_rate: 0.01,
       new_inducers: ["0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
-      #range_to_dilute: { from: [[2,1]], to: [[2,12]] },
+      range_to_dilute: { from: [[2,1]], to: [[2,12]] },
       debug_mode: "Yes"
     }
   end
