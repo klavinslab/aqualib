@@ -122,8 +122,9 @@ class Protocol
     end
 
     show {
+      title "Wait till cell dry"
       note "Wait till the yeast cells are dried on the plate."
-      timer initial: { hours: 0, minutes: 2, seconds: 0 }
+      timer initial: { hours: 0, minutes: 3, seconds: 0 }
     }
 
     show {
