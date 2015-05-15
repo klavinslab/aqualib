@@ -5,7 +5,7 @@ class Protocol
 
   include Standard
   include Cloning
-  
+
   def arguments
     {
       io_hash: {},
@@ -36,7 +36,7 @@ class Protocol
     yeast_strain_unavailable_ids = []
 
     io_hash[:yeast_strain_ids].each do |yid|
-      yeast_collections = collection_type_contain yid, "Divided Yeast Plate", 10
+      yeast_collections = collection_type_contain yid, "Divided Yeast Plate", 60
       if yeast_collections.length > 0
         yeast_plate = yeast_collections[0]
         yeast_items.push yeast_plate
@@ -61,7 +61,7 @@ class Protocol
     } if io_hash[:debug_mode] == "Yes"
 
     overnights = []
-    
+
     show {
       title "Protocol information"
       note "This protocol is used to prepare yeast overnight suspensions from divided yeast plates."
@@ -110,8 +110,8 @@ class Protocol
     io_hash[:old_overnight_ids]  = io_hash[:overnight_ids]
 
     io_hash[:overnight_ids] = overnights.collect {|x| x.id}
-    
+
     return { io_hash: io_hash }
   end
 
-end  
+end

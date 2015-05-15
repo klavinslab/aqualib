@@ -141,7 +141,7 @@ module Cloning
 
     end
 
-  end # # # # # # # 
+  end # # # # # # #
 
   def gibson_assembly_status p={}
 
@@ -214,7 +214,7 @@ module Cloning
     # # # look up all the plasmids that are ready to build and return fragment array.
     # ready.each do |r|
 
-    #   r[:fragments] 
+    #   r[:fragments]
 
     # return a big hash describing the status of all un-done assemblies
     return {
@@ -226,7 +226,7 @@ module Cloning
       done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
     }
 
-  end # # # # # # # 
+  end # # # # # # #
 
   def fragment_construction_status
     # find all fragment construction tasks and arrange them into lists by status
@@ -274,7 +274,7 @@ module Cloning
       running_ids: running.collect {|t| t.id}
     }
   end ### fragment_construction_status
-  
+
   def yeast_transformation_status p={}
     # find all yeast transformation tasks and arrange them into lists by status
     params = ({ group: false }).merge p
@@ -320,7 +320,7 @@ module Cloning
   def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
 
     if block_given?
-      user_shows = ShowBlock.new.run(&Proc.new) 
+      user_shows = ShowBlock.new.run(&Proc.new)
     else
       user_shows = []
     end
@@ -331,7 +331,7 @@ module Cloning
     i = 0
 
     collections.each do |col|
-      
+
       tab = []
       m = col.matrix
 
@@ -525,10 +525,10 @@ module Cloning
         t[:plate_ids] = { ready: [], not_ready: [] }
         t.simple_spec[:plate_ids].each_with_index do |pid,idx|
           if find(:item, id: pid)[0]
-            plate_ready = ["E coli Plate of Plasmid", "Plasmid Glycerol Stock"].include?(find(:item, id: pid)[0].object_type.name) 
+            plate_ready = ["E coli Plate of Plasmid", "Plasmid Glycerol Stock"].include?(find(:item, id: pid)[0].object_type.name)
             marker_ready = (find(:item, id: pid)[0].sample.properties["Bacterial Marker"] || "").length > 0
             num_colonies_ready = (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
-            
+
             if plate_ready && marker_ready && num_colonies_ready
               t[:plate_ids][:ready].push pid
             else
@@ -571,7 +571,7 @@ module Cloning
               parent_ready = nil
               t.notify "Parent strain not defined", job_id: jid
             end
-            
+
             if y.properties["Integrant"]
               plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0
               t.notify "No plasmid stock exists for #{y.properties["Integrant"].name}, integrant of yeast strain #{y}", job_id: jid if !plasmid_ready
@@ -645,7 +645,7 @@ module Cloning
         t[:yeast_strains] = { ready: [], not_valid:[], ready_to_streak: [], not_ready_to_streak: [] }
 
         t.simple_spec[:yeast_strain_ids].each do |yid|
-          if (collection_type_contain yid, "Divided Yeast Plate", 10).length > 0
+          if (collection_type_contain yid, "Divided Yeast Plate", 60).length > 0
             t[:yeast_strains][:ready].push yid
           else
             t[:yeast_strains][:not_valid].push yid
@@ -683,7 +683,7 @@ module Cloning
 
     end
 
-    task_status_hash = { 
+    task_status_hash = {
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
@@ -732,5 +732,3 @@ module Cloning
   end
 
 end
-
-
