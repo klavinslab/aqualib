@@ -122,9 +122,12 @@ class Protocol
     end
 
     show {
-      title "Streak out the plates"
       note "Wait till the yeast cells are dried on the plate."
-      timer initial: { hours: 0, minutes: 3, seconds: 0 }
+      timer initial: { hours: 0, minutes: 2, seconds: 0 }
+    }
+
+    show {
+      title "Streak out the plates"
       note "Streak out the plates using either sterile toothpick or pipette tip by moving forward and back on the agar surface with a shallow angle."
       note "For divided plate:"
       image "divided_yeast_plate_streak"
@@ -148,7 +151,7 @@ class Protocol
       end
     end
 
-    io_hash[:plate_ids] = streaked_yeast_plates.collect { |x| x.id } 
+    io_hash[:plate_ids] = streaked_yeast_plates.collect { |x| x.id }
     return { io_hash: io_hash }
 
   end # main
