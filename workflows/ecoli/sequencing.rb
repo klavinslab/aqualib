@@ -31,7 +31,7 @@ class Protocol
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
-    
+
     idx = 0
     io_hash[:primer_ids].each_with_index do |pids|
       unless pids == []
@@ -51,7 +51,8 @@ class Protocol
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
-        unless find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0].datum[:concentration] == 0
+        stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
+        if stock.datum[:concentration] &&  stock.datum[:concentration]!= 0 && ["Plasmid, Fragment"].include?(stock.sample.sample_type.name)
           primer_ids.concat pids
           (1..pids.length).each do
             plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
@@ -71,7 +72,7 @@ class Protocol
       return { io_hash: io_hash }
     end
 
-    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]} 
+    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
     primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]}
 
     # create order table for sequencing
@@ -94,7 +95,7 @@ class Protocol
       check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
       table sequencing_tab
       check "Click Save & Next, Review the form and click Next Step"
-      check "Enter Quotation Number MS0721101, click Next Step"  
+      check "Enter Quotation Number MS0721101, click Next Step"
       check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }

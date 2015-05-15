@@ -298,7 +298,7 @@ class Protocol
       streak_plate_tasks = task_status name: "Streak Plate", group: io_hash[:group]
       io_hash[:task_ids] = streak_plate_tasks[:ready_ids]
       io_hash[:yeast_glycerol_stock_ids] = []
-    io_hash[:task_ids].each do |tid|
+      io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:item_ids].each do |id|
           if find(:item, id: id)[0].object_type.name == "Yeast Glycerol Stock"
