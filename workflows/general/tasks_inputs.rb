@@ -64,7 +64,7 @@ class Protocol
 
     end
 
-    task_status_hash = { 
+    task_status_hash = {
       waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
       ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
     }
@@ -74,7 +74,7 @@ class Protocol
     return task_status_hash
 
   end
-  
+
   # a function that returns a table of task information
   def task_info_table task_ids
 
@@ -176,7 +176,7 @@ class Protocol
       else
         note "No task is ready"
       end
-      
+
     }
 
     case io_hash[:task_name]
@@ -305,7 +305,7 @@ class Protocol
             io_hash[:yeast_glycerol_stock_ids].push id
           elsif ["Yeast Plate", "Plate"].include? find(:item, id: id)[0].object_type.name
             io_hash[:plate_ids].concat task.simple_spec[:item_ids]
-          else 
+          else
             io_hash[:item_ids].concat task.simple_spec[:item_ids]
           end
         end
@@ -329,7 +329,7 @@ class Protocol
         end
         show {
           title "Gibson Assemby Status"
-          note "Ready to build means recipes and ingredients for building this fragments are complete." 
+          note "Ready to build means recipes and ingredients for building this fragments are complete."
           note "Not ready to build means some information or stocks are missing."
           note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
           table tasks_tab
@@ -525,9 +525,11 @@ class Protocol
           task = find(:task, name: "#{y.name}_comp_cell")[0]
           # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
           if task
-            set_task_status(task,"waiting")
-            task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
-            task.save
+            if task.status == "done"
+              set_task_status(task,"waiting")
+              task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
+              task.save
+            end
           else
             t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
             t.save
@@ -581,4 +583,4 @@ class Protocol
     return { io_hash: io_hash }
   end
 
-end 
+end
