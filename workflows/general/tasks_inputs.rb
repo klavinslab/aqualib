@@ -259,16 +259,9 @@ class Protocol
       yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
       need_to_streak_glycerol_stocks = []
       if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
-        show {
-          note yeast_competent_cells[:yeast_strains][:ready_to_streak]
-        }
         yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
           y = find(:sample, id: yid)[0]
           y_stocks = y.in("Yeast Glycerol Stock")
-          show {
-            note y.id
-            note y_stocks.length
-          }
           need_to_streak_glycerol_stocks.push y_stocks[0].id
         end
 
