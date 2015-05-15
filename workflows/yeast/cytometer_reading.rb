@@ -127,7 +127,7 @@ class Protocol
     show {
       title "Protocol information"
       note "This protocol is used to take cytometer readings from deepwell plates using u-bottom plates."
-      note "#{io_hash}"
+      note "#{io_hash}" if io_hash[:debug_mode] == "Yes"
     }
 
     yeast_deepwell_plates.each_with_index do |yeast_deepwell_plate, idx|
