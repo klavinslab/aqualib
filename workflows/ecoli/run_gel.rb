@@ -1,8 +1,10 @@
 needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
 
   include Standard
+  include Cloning
 
   def arguments
     {
@@ -19,6 +21,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     volume = io_hash[:volume] || 50
+    io_hash = { debug_mode: "No", fragment_ids: [] }.merge io_hash # set default value of io_hash
 
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -33,6 +36,12 @@ class Protocol
         note "No gel need to be run. Thanks for your effort!"
       }
     else
+      predited_time = time_prediction(io_hash[:fragment_ids].length, "run_gel")
+      show {
+        title "Protocol Information"
+        note "This protocol run DNA on gel."
+        note "The predicted time needed is #{predited_time} min."
+      }
       stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
       gels = io_hash[:gel_ids].collect { |i| collection_from i }
 
@@ -81,17 +90,17 @@ class Protocol
         gel.set 0, 0, ladder
         #gel.set 1, 0, ladder
         if gel.dimensions[0] == 2
-          gel.set 1, 0, ladder 
+          gel.set 1, 0, ladder
         end
       end
 
       transfer( stripwells, gels ) {
         title "Using a 100 µL pipetter, pipet #{volume} µL of each PCR result into the indicated gel lane."
-        note "Make sure each stripwell has the leftmost well labeled with an 'A'. 
+        note "Make sure each stripwell has the leftmost well labeled with an 'A'.
               This well contains the first sample. The well to its right contains the second sample, etc."
         image "gel_begin_loading"
       }
-      
+
       show {
         title "Start electrophoresis"
         note "Carefully attach the gel box lid(s) to the gel box(es), being careful not to bump the samples out of the wells. Attach the red electrode to the red terminal of the power supply, and the black electrode to the neighboring black terminal. Hit the start button on the gel boxes - usually a small running person icon."
@@ -109,20 +118,17 @@ class Protocol
 
       release gels
       release [ ladder, dye ], interactive: true
-      
+
     end
-    
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"gel run")
       end
     end
-    
+
     return { io_hash: io_hash }
   end
 
 end
-
-
-
