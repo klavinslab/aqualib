@@ -15,7 +15,7 @@ class Protocol
       item_choice_mode: "No"
     }
   end
-  
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -26,7 +26,7 @@ class Protocol
         true
       end
     end
-    
+
     if io_hash[:plasmid_stock_ids].length == 0
       show {
         title "No plasmid digestion required"
@@ -44,36 +44,36 @@ class Protocol
     plasmids = plasmid_stocks.collect { |p| p.sample }
 
     take plasmid_stocks, interactive: true, method: "boxes"
-    
+
     cut_smart = choose_sample "Cut Smart", take: true
-    
+
     stripwells = produce spread plasmids, "Stripwell", 1, 12
 
     show {
       title "Grab an ice block"
       warning "In the following step you will take PmeI enzyme out of the freezer. Make sure the enzyme is kept on ice for the duration of the protocol."
     }
-    
+
     pmeI = choose_sample "PmeI", take: true
 
     num = plasmid_stocks.length
-    
+
     water_volume = 42 * num + 21
     buffer_volume = 5 * num + 2.5
     enzyme_volume = 1 * num + 0.5
-    
+
     show {
       title "Make master mix"
       check "Label a new eppendorf tube MM."
       check "Add #{water_volume.round(1)} µL of water to the tube."
       check "Add #{buffer_volume.round(1)} µL of the cutsmart buffer to the tube."
       check "Add #{enzyme_volume.round(1)} µL of the PmeI to the tube."
-      check "Vortex for 20-30 seconds"
+      check "Vortex for 5-10 seconds"
       warning "Keep the master mix in an ice block while doing the next steps".upcase
     }
-    
+
     release [pmeI] + [cut_smart], interactive: true, method: "boxes"
-    
+
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
@@ -81,12 +81,12 @@ class Protocol
         check "Pipette 48 µL from tube MM into wells" + sw.non_empty_string + "."
       end
     }
-    
+
     load_samples( ["Plasmid, 2 µL"], [plasmid_stocks], stripwells ) {
       note "Add 2 µL of each plasmid into the stripwell indicated."
       warning "Use a fresh pipette tip for each transfer."
     }
-    
+
     incubate = show {
       title "Incubate"
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
@@ -94,7 +94,7 @@ class Protocol
       check "Place the stripwells into a small green tube holder and then place in 37 C incubator."
       image "put_green_tube_holder_to_incubator"
     }
-    
+
     stripwells.each do |sw|
       sw.move "37 C incubator"
     end
@@ -111,7 +111,7 @@ class Protocol
 
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
     return { io_hash: io_hash }
-    
+
   end
-  
+
 end
