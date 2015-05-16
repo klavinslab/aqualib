@@ -30,7 +30,8 @@ class Protocol
 
     show {
       note "#{io_hash}"
-    }
+    } if io_hash[:debug_mode].downcase == "yes"
+    
     genewiz_tracking_no = io_hash[:genewiz_tracking_no]
     show {
       title "Upload Genewiz Sequencing Results"
