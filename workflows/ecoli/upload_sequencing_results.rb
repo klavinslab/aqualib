@@ -2,7 +2,7 @@ needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
 class Protocol
-  
+
   include Standard
   include Cloning
 
@@ -10,14 +10,18 @@ class Protocol
     {
       io_hash: {},
       genewiz_tracking_no: "",
+      sequencing_verification_task_ids: [],
+      task_ids: [],
+      sequencing_task_ids: [],
       debug_mode: "No"
     }
   end
- 
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     # re define the debug function based on the debug_mode input
+    io_hash = { sequencing_verification_task_ids: [], sequencing_task_ids: [], task_ids: [], debug_mode: "No" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -35,7 +39,8 @@ class Protocol
     task_ids = []
     task_ids.concat io_hash[:task_ids] if io_hash[:task_ids]
     task_ids.concat io_hash[:sequencing_task_ids] if io_hash[:sequencing_task_ids]
-    
+    task_ids.concat io_hash[:sequencing_verification_task_ids] if io_hash[:sequencing_verification_task_ids].length > 0
+
     # Set tasks in the io_hash to be results back
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
@@ -44,10 +49,6 @@ class Protocol
       end
     end
 
-    return { io_hash: io_hash}
+    return { io_hash: io_hash }
   end # main
 end # Protocol
-
-
-
-
