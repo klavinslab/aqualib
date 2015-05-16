@@ -37,8 +37,8 @@ class Protocol
       upload var: "sequencing_#{genewiz_tracking_no}"
     }
     task_ids = []
-    task_ids.concat io_hash[:task_ids] if io_hash[:task_ids]
-    task_ids.concat io_hash[:sequencing_task_ids] if io_hash[:sequencing_task_ids]
+    task_ids.concat io_hash[:task_ids] if io_hash[:task_ids].length > 0
+    task_ids.concat io_hash[:sequencing_task_ids] if io_hash[:sequencing_task_ids].length > 0
     task_ids.concat io_hash[:sequencing_verification_task_ids] if io_hash[:sequencing_verification_task_ids].length > 0
 
     # Set tasks in the io_hash to be results back
