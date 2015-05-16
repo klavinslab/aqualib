@@ -10,9 +10,9 @@ class Protocol
     {
       io_hash: {},
       genewiz_tracking_no: "",
-      sequencing_verification_task_ids: [],
-      task_ids: [],
-      sequencing_task_ids: [],
+      sequencing_verification_task_ids: [4061,4062,4063,4064,4065,4066,4067,4068,4069,4070,4071,4072,4073,4074,4075,4076,4077,4078,4079,4080,4081,4082,4083,4084,4085,4086,4087,4088,4089,4090],
+      task_ids: [3947,3948,3949,3950,3951,3952,3953,3954,3955,3956,3957,3958,3960,3963,3969,3972,3973,3969,3972,3973],
+      sequencing_task_ids: [3969,3972,3973],
       debug_mode: "No"
     }
   end
