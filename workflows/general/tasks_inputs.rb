@@ -448,7 +448,7 @@ class Protocol
       # adding Tetra (time estimation tool for Aquarium) display
       tetra_tab = [[ "Protocol Name", "Esitmated Time (min)"]]
 
-      ["PCR","cut_gel","purify_gel"].each do |protocol_name|
+      ["PCR","run_gel","cut_gel","purify_gel"].each do |protocol_name|
         tetra_tab.push [protocol_name, time_prediction(io_hash[:size], protocol_name)]
       end
 
