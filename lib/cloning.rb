@@ -574,9 +574,9 @@ module Cloning
 
             if y.properties["Integrant"]
               integrant = y.properties["Integrant"]
-              if integrant.sample_type.name == "Plasmid"
+              if integrant.sample_type.name == "Plasmid" && integrant.properties["Yeast Marker"]
                 integrant_ready = integrant.in("Plasmid Stock").length > 0 && !integrant.properties["Yeast Marker"].empty?
-              elsif integrant.sample_type.name == "Fragment"
+              elsif integrant.sample_type.name == "Fragment" && integrant.properties["Yeast Marker"]
                 integrant_ready = integrant.in("Fragment Stock").length > 0 && !integrant.properties["Yeast Marker"].empty?
               end
               t.notify "No stock exists or lack of Yeast Marker info for #{integrant.name}, integrant of yeast strain #{y}", job_id: jid if !integrant_ready
