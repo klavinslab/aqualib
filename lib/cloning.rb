@@ -574,9 +574,9 @@ module Cloning
 
             if y.properties["Integrant"]
               integrant = y.properties["Integrant"]
-              if integrant.sample_type == "Plasmid"
+              if integrant.sample_type.name == "Plasmid"
                 plasmid_ready = integrant.in("Plasmid Stock").length > 0
-              elsif integrant.sample_type == "Fragment"
+              elsif integrant.sample_type.name == "Fragment"
                 plasmid_ready = integrant.in("Fragment Stock").length > 0
               end
               t.notify "No plasmid stock or fragment stock exists for #{integrant.name}, integrant of yeast strain #{y}", job_id: jid if !plasmid_ready
