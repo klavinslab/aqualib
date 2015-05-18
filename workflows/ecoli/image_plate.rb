@@ -138,7 +138,7 @@ class Protocol
 
         if task.task_prototype.name == "Gibson Assembly"
 
-          plasmid_id = task.simple_spec[:plasmid]
+          plasmid_id = task.simple_spec[:plasmid][0]
           plasmid_name = find(:sample, id: plasmid_id)[0].name
           plates.each do |plate|
             if plate.sample.name == plasmid_name
