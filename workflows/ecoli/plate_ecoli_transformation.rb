@@ -18,14 +18,16 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?  
+    io_hash = input if input[:io_hash].empty?
+
+    io_hash = { plate_ids: [], debug_mode: "no" }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    
+
     all_transformed_aliquots = io_hash[:transformed_aliquots_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_transformed_aliquots.length == 0
       show {
@@ -42,7 +44,7 @@ class Protocol
       plates_marker_hash[p.sample.properties["Bacterial Marker"].downcase[0,3]].push p
     end
 
-    actual_plates = []
+    deleted_plates = []
 
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
@@ -61,18 +63,22 @@ class Protocol
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
-        actual_plates.concat plates
       else
         show {
           title "No marker info found"
           note "Place the following tubes into DFP and inform the plasmid owner that they need their Bacterial Marker info entered in the plasmid sample page."
           note "#{transformed_aliquots.collect { |t| t.id }}"
+          note "Discard the following plates:"
+          note "#{plates.collect { |p| p.id }}"
         }
-        delete plates
+        deleted_plates.concat plates
       end
     end
 
+    actual_plates = all_plates - deleted_plates
+
     delete all_transformed_aliquots
+    delete deleted_plates
 
     if actual_plates.length > 0
       show {
@@ -84,7 +90,6 @@ class Protocol
       release actual_plates
     end
 
-    io_hash[:plate_ids] = [] if !io_hash[:plate_ids]
     io_hash[:plate_ids].concat actual_plates.collect { |p| p.id }
 
     # Set tasks in the io_hash to be on plate

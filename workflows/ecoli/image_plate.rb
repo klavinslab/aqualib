@@ -138,10 +138,17 @@ class Protocol
 
         if task.task_prototype.name == "Gibson Assembly"
 
-          if colony_number[:"c#{plates[idx].id}".to_sym] > 0
+          plasmid_id = task.simple_spec[:plasmid]
+          plasmid_name = find(:sample, id: plasmid_id)[0].name
+          plates.each do |plate|
+            if plate.sample.name == plasmid_name
+              plate_id = plate.id
+            end
+          end
+
+          if colony_number[:"c#{plate_id}".to_sym] > 0
             set_task_status(task,"imaged and stored in fridge")
             # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
-            plate_id = plates[idx].id
             plate = find(:item, id: plate_id)[0]
             primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
             if primer_ids_str
@@ -155,7 +162,7 @@ class Protocol
                 t.notify "Automatically created from Gibson Assembly.", job_id: jid
               end
             end
-          elsif colony_number[:"c#{plates[idx].id}".to_sym] == 0
+          elsif colony_number[:"c#{plate_id}".to_sym] == 0
             set_task_status(task,"no colonies")
           end
 
@@ -176,7 +183,7 @@ class Protocol
 
       end # end io_hash[:task_ids].each_with_index do |tid,idx|
 
-    end  # end if io_hash[:task_ids] 
+    end  # end if io_hash[:task_ids]
 
     return { io_hash: io_hash }
 
