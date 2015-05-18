@@ -147,6 +147,10 @@ class Protocol
             end
           end
 
+          show {
+            note plate_id
+          }
+
           if plate_id > 0
 
             if colony_number[:"c#{plate_id}".to_sym] > 0
@@ -168,7 +172,7 @@ class Protocol
             elsif colony_number[:"c#{plate_id}".to_sym] == 0
               set_task_status(task,"no colonies")
             end
-            
+
           end
 
         elsif task.task_prototype.name == "Yeast Transformation"
