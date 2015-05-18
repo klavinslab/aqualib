@@ -116,7 +116,7 @@ class Protocol
 
   def choose_stock sample
 
-    stocks = sample.in(sample.sample.sample_type + " Stock")
+    stocks = sample.in(sample.sample_type + " Stock")
     if stocks.length > 1
       stocks.each do |stock|
         if stock.datum[:seq_verified] == "correct"
