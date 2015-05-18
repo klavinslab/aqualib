@@ -493,7 +493,7 @@ module Cloning
           end
         end
         plasmid_condition = false
-        if find(:sample, id:t.simple_spec[:plasmid])[0]
+        if find(:sample, id: t.simple_spec[:plasmid])[0]
           bacterial_marker = find(:sample, id:t.simple_spec[:plasmid])[0].properties["Bacterial Marker"]
           plasmid_condition = find(:sample, id:t.simple_spec[:plasmid])[0] && bacterial_marker && bacterial_marker != ""
           t.notify "Bacterial Marker info required for plasmid #{t.simple_spec[:plasmid]}", job_id: jid if !bacterial_marker
