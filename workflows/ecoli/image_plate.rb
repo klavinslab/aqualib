@@ -147,10 +147,6 @@ class Protocol
             end
           end
 
-          show {
-            note plate_id
-          }
-
           if plate_id > 0
 
             if colony_number[:"c#{plate_id}".to_sym] > 0
