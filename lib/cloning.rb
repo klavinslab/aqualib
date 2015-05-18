@@ -561,7 +561,7 @@ module Cloning
         t[:yeast_strains] = { ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:yeast_transformed_strain_ids].each do |yid|
           y = find(:sample, id: yid)[0]
-          parent_ready, plasmid_ready = nil, nil
+          parent_ready, integrant_ready = nil, nil
           # check if competent aliquot/cell and plasmid stock are ready and send notifications
           if y
             if y.properties["Parent"]
@@ -575,11 +575,11 @@ module Cloning
             if y.properties["Integrant"]
               integrant = y.properties["Integrant"]
               if integrant.sample_type.name == "Plasmid"
-                plasmid_ready = integrant.in("Plasmid Stock").length > 0
+                integrant_ready = integrant.in("Plasmid Stock").length > 0 && !integrant.properties["Yeast Marker"].empty?
               elsif integrant.sample_type.name == "Fragment"
-                plasmid_ready = integrant.in("Fragment Stock").length > 0
+                integrant_ready = integrant.in("Fragment Stock").length > 0 && !integrant.properties["Yeast Marker"].empty?
               end
-              t.notify "No plasmid stock or fragment stock exists for #{integrant.name}, integrant of yeast strain #{y}", job_id: jid if !plasmid_ready
+              t.notify "No stock exists or lack of Yeast Marker info for #{integrant.name}, integrant of yeast strain #{y}", job_id: jid if !integrant_ready
             else
               t.notify "No integrant defined for yeast strain #{y}.", job_id: jid
             end
@@ -587,7 +587,7 @@ module Cloning
             t.notify "Invalid yeast_transformed_strain_id #{yid}", job_id: jid
           end
 
-          if parent_ready && plasmid_ready
+          if parent_ready && integrant_ready
             t[:yeast_strains][:ready_to_build].push yid
           else
             t[:yeast_strains][:not_ready_to_build].push yid
