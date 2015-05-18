@@ -139,9 +139,6 @@ class Protocol
         if task.task_prototype.name == "Gibson Assembly"
 
           plasmid_id = task.simple_spec[:plasmid]
-          show {
-            note "#{plasmid_id}"
-          }
           plasmid_name = find(:sample, id: plasmid_id)[0].name
           plate_id = 0
           plates.each do |plate|
@@ -150,24 +147,28 @@ class Protocol
             end
           end
 
-          if colony_number[:"c#{plate_id}".to_sym] > 0
-            set_task_status(task,"imaged and stored in fridge")
-            # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
-            plate = find(:item, id: plate_id)[0]
-            primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
-            if primer_ids_str
-              primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
-              if primer_ids.all? { |i| i != 0 }
-                num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
-                num_colony = num_colony > 2 ? 2 : num_colony
-                tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-                t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
-                t.save
-                t.notify "Automatically created from Gibson Assembly.", job_id: jid
+          if plate_id > 0
+
+            if colony_number[:"c#{plate_id}".to_sym] > 0
+              set_task_status(task,"imaged and stored in fridge")
+              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
+              plate = find(:item, id: plate_id)[0]
+              primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
+              if primer_ids_str
+                primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
+                if primer_ids.all? { |i| i != 0 }
+                  num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
+                  num_colony = num_colony > 2 ? 2 : num_colony
+                  tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
+                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [num_colony], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+                  t.save
+                  t.notify "Automatically created from Gibson Assembly.", job_id: jid
+                end
               end
+            elsif colony_number[:"c#{plate_id}".to_sym] == 0
+              set_task_status(task,"no colonies")
             end
-          elsif colony_number[:"c#{plate_id}".to_sym] == 0
-            set_task_status(task,"no colonies")
+            
           end
 
         elsif task.task_prototype.name == "Yeast Transformation"
