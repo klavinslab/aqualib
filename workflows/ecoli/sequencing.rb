@@ -19,7 +19,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No" }.merge io_hash
+    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No", sequencing_verification_task_ids: [] }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -175,8 +175,6 @@ class Protocol
       sw.mark_as_deleted
       sw.save
     end
-
-    io_hash[:sequencing_verification_task_ids] = 0
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
