@@ -10,7 +10,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_stock_ids: [9189,11546,11547],
+      plasmid_stock_ids: [9189,11546,11547,34376,6222,9111],
       debug_mode: "Yes",
       item_choice_mode: "No"
     }
@@ -56,7 +56,7 @@ class Protocol
 
     pmeI = choose_sample "PmeI", take: true
 
-    num = plasmid_stocks.length
+    num = (plasmid_stocks.select { |p| p.object_type.name == "Plasmid Stock" }).length
 
     water_volume = 42 * num + 21
     buffer_volume = 5 * num + 2.5
@@ -68,17 +68,35 @@ class Protocol
       check "Add #{water_volume.round(1)} µL of water to the tube."
       check "Add #{buffer_volume.round(1)} µL of the cutsmart buffer to the tube."
       check "Add #{enzyme_volume.round(1)} µL of the PmeI to the tube."
-      check "Vortex for 5-10 seconds"
+      check "Vortex for 5-10 seconds."
       warning "Keep the master mix in an ice block while doing the next steps".upcase
     }
 
     release [pmeI] + [cut_smart], interactive: true, method: "boxes"
 
+    water_wells = []
+    mm_wells = []
+
+    stripwells.each_with_index do |sw, index|
+      sw.matrix[0].each_with_index do |x, idx|
+        if x > 0
+          if find(:sample, id: x)[0].sample_type.name == "Fragment"
+            water_wells[index] = [] if !water_wells[index]
+            water_wells[index].push (idx + 1)
+          elsif find(:sample, id: x)[0].sample_type.name == "Plasmid"
+            mm_wells[index] = [] if !mm_wells[index]
+            mm_wells[index].push (idx + 1)
+          end
+        end
+      end
+    end
+
     show {
       title "Prepare Stripwell Tubes"
-      stripwells.each do |sw|
+      stripwells.each_with_index do |sw, index|
         check "Label a new stripwell with the id #{sw}. Use enough number of wells to write down the id number."
-        check "Pipette 48 µL from tube MM into wells" + sw.non_empty_string + "."
+        check "Pipette 48 µL of water into wells " + water_wells[index].join(", ")
+        check "Pipette 48 µL from tube MM into wells " + mm_wells[index].join(", ")
       end
     }
 
