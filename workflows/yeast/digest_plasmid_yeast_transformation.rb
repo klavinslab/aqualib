@@ -95,8 +95,8 @@ class Protocol
       title "Prepare Stripwell Tubes"
       stripwells.each_with_index do |sw, index|
         check "Label a new stripwell with the id #{sw}. Use enough number of wells to write down the id number."
-        check "Pipette 48 µL of water into wells " + water_wells[index].join(", ")
-        check "Pipette 48 µL from tube MM into wells " + mm_wells[index].join(", ")
+        check "Pipette 48 µL of water into wells " + water_wells[index].join(", ") if water_wells[index]
+        check "Pipette 48 µL from tube MM into wells " + mm_wells[index].join(", ") if mm_wells[index]
       end
     }
 
