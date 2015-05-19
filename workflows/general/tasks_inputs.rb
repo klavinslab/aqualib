@@ -311,7 +311,7 @@ class Protocol
           end
         end
       end
-      io_hash[:size] = io_hash[:plate_ids].length
+      io_hash[:size] = io_hash[:yeast_glycerol_stock_ids].length + io_hash[:plate_ids].length
 
     when "Gibson Assembly"
       if tasks[:fragments]
@@ -492,6 +492,7 @@ class Protocol
         io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
       end
+      io_hash[:gel_band_verify] = "Yes"
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
 
     when "Yeast Mating"
