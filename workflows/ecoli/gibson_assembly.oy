@@ -32,7 +32,7 @@ place transformation
   protocol: "aqualib:workflows/ecoli/ecoli_transformation.rb"
   group: group
   marked: false
-  start: now()
+  start: minutes(50)
   window: hours(1)
 end
 

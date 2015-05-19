@@ -19,7 +19,7 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?  
+    io_hash = input if input[:io_hash].empty?
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -39,10 +39,10 @@ class Protocol
     }
 
     transformed_aliquots = gibson_results.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
-    ids = transformed_aliquots.collect {|t| t.id} 
+    ids = transformed_aliquots.collect {|t| t.id}
     num = transformed_aliquots.length
     num_arr = *(1..num)
-    
+
     show {
       title "Prepare #{num} 1.5 mL tubes and pipettors"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
@@ -106,6 +106,12 @@ class Protocol
 
     move transformed_aliquots, "37 C incubator"
     release transformed_aliquots
+
+    gibson_results.each do |g|
+      g.store
+      g.reload
+    end
+
     release gibson_results, interactive: true, method: "boxes"
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 

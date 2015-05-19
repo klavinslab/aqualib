@@ -115,7 +115,7 @@ class Protocol
       volume_vector = coefficient_matrix.inv * total_vector
       volumes = volume_vector.each.to_a
       volumes.collect! { |x| x < 0.5 ? 0.5 : x }
-      fragment_volumes.push volumes 
+      fragment_volumes.push volumes
     end
 
     # Measure not verified volumes of fragment stocks
@@ -163,7 +163,7 @@ class Protocol
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
-      
+
       tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
       fragment_stocks[idx].each_with_index do |f,m|
         tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
@@ -237,6 +237,9 @@ class Protocol
       note "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
     }
 
+    move gibson_results, "50 C heat block"
+    release gibson_results
+
     show {
       title "Discard the following fragment stocks"
       note empty_fragment_stocks.collect { |f| "#{f}"}
@@ -248,13 +251,6 @@ class Protocol
 
     # Release fragment stocks flatten
     release fragment_stocks_to_release, interactive: true,  method: "boxes"
-
-    show {
-      title "Wait for 60 minutes"
-      timer initial: { hours: 0, minutes: 60, seconds: 0}
-    }
-
-    release gibson_results, interactive: true,  method: "boxes"
 
     not_done_task_ids.each do |tid|
       task = find(:task, id: tid)[0]
