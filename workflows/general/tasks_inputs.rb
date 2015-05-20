@@ -136,7 +136,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Streak Plate",
+      task_name: "Gibson Assembly",
       group: "technicians"
     }
   end
