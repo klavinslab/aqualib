@@ -485,7 +485,8 @@ module Cloning
       when "Gibson Assembly"
         t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid, check_mode: true
+          # info = fragment_info fid, check_mode: true
+          info = true
           show {
             note "#{info}"
           }
