@@ -483,10 +483,10 @@ module Cloning
         ready_conditions = t[:item_ids][:ready].length == t.simple_spec[:item_ids].length
 
       when "Gibson Assembly"
-        t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
+        t[:fragments] = { ready_to_use: [], not_ready_to_use: [], need_to_build: []}
         t.simple_spec[:fragments].each do |fid|
           # info = fragment_info fid, check_mode: true
-          info = true
+          # info = true
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
           if find(:sample, id: fid)[0] == nil
             t[:fragments][:not_ready_to_use].push fid
@@ -495,10 +495,8 @@ module Cloning
             t[:fragments][:ready_to_use].push fid
           elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] == 0
             t[:fragments][:not_ready_to_use].push fid
-          elsif !info
-            t[:fragments][:not_ready_to_build].push fid
           else
-            t[:fragments][:ready_to_build].push fid
+            t[:fragments][:need_to_build].push fid
           end
         end
         plasmid_condition = false

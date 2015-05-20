@@ -351,10 +351,9 @@ class Protocol
 
       # pull out fragments that need to be made from Gibson Assembly tasks
       gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
-      if gibson_tasks[:fragments]
+      if gibson_tasks[:fragments][:need_to_build].length > 0
 
-        need_to_make_fragment_ids = gibson_tasks[:fragments][:ready_to_build] + gibson_tasks[:fragments][:not_ready_to_build]
-        need_to_make_fragment_ids = need_to_make_fragment_ids.uniq
+        need_to_make_fragment_ids = gibson_tasks[:fragments][:need_to_build].uniq
         new_fragment_construction_ids = []
 
         need_to_make_fragment_ids.each do |id|
