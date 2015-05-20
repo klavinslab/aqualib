@@ -125,11 +125,11 @@ module Cloning
         t2 = rev_items[0].sample.properties["T Anneal"]
 
         # find stocks of this fragment, if any
-        stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
+        #stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
 
         return {
           fragment: fragment,
-          stocks: stocks,
+          #stocks: stocks,
           length: length,
           fwd: fwd_item_to_return,
           rev: rev_item_to_return,
