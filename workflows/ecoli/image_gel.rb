@@ -72,12 +72,12 @@ class Protocol
       release plates
     end
 
-  end #gel_band_verify_cut
+  end #gel_band_verify
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "No", gel_band_verify: "No", plate_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [] }.merge io_hash
   	gels = io_hash[:gel_ids].collect { |i| collection_from i }
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -96,12 +96,12 @@ class Protocol
   			upload var: "my_gel_pic"
   		}
       if io_hash[:gel_band_verify].downcase == "yes"
-        gel_band_verify gel, except: [ [0,0], [1,0] ], plate_ids: io_hash[:plate_ids]
+        gel_band_verify gel, except: [ [0,0], [1,0] ], plate_ids: io_hash[:yeast_plate_ids]
       end
   	end
 
     if io_hash[:gel_band_verify].downcase == "yes"
-      plates = io_hash[:plate_ids].collect { |id| find(:item, id: id)[0] }
+      plates = io_hash[:yeast_plate_ids].collect { |id| find(:item, id: id)[0] }
       plates.each do |p|
         if p.datum[:correct_colony]
           if p.datum[:correct_colony].length > 0
