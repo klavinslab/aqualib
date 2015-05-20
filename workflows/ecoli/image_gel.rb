@@ -40,7 +40,7 @@ class Protocol
       note "Select No if there is no band or band does not match expected size,
       select N/A if expected length is N/A and there is a band."
       routes.each_with_index do |r,idx|
-        select ["Yes", "No", "N/A"], var: "verify#{r[:lane][0]}_#{r[:lane][1]}", label: "Does gel lane on Row #{r[:lane][0]+1} Col #{r[:lane][1]+1} match the expected length of #{r[:length]} bp"
+        select ["N/A", "Yes", "No"], var: "verify#{r[:lane][0]}_#{r[:lane][1]}", label: "Does gel lane on Row #{r[:lane][0]+1} Col #{r[:lane][1]+1} match the expected length of #{r[:length]} bp"
       end
     }
 
