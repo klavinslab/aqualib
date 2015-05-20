@@ -493,7 +493,7 @@ class Protocol
           if ! (io_hash[:yeast_plate_ids].include? id)
             io_hash[:yeast_plate_ids].push id
             io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
-          else
+          end
       end
       io_hash[:gel_band_verify] = "Yes"
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
