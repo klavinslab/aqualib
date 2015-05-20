@@ -488,22 +488,25 @@ module Cloning
           # info = fragment_info fid, check_mode: true
           # info = true
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
-          if find(:sample, id: fid)[0] == nil
+          fragment = find(:sample, id: fid)[0]
+          if fragment == nil
             t[:fragments][:not_ready_to_use].push fid
             t.notify "Fragment #{fid} does not exist in database.", job_id: jid
-          elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] > 0
+          elsif fragment.in("Fragment Stock").length > 0 && fragment.properties["Length"] > 0
             t[:fragments][:ready_to_use].push fid
-          elsif find(:sample, id: fid)[0].in("Fragment Stock").length > 0 && find(:sample, id: fid)[0].properties["Length"] == 0
+          elsif fragment.in("Fragment Stock").length > 0 && fragment.properties["Length"] == 0
             t[:fragments][:not_ready_to_use].push fid
           else
             t[:fragments][:need_to_build].push fid
           end
         end
         plasmid_condition = false
-        if find(:sample, id: t.simple_spec[:plasmid])[0]
-          bacterial_marker = find(:sample, id:t.simple_spec[:plasmid])[0].properties["Bacterial Marker"]
-          plasmid_condition = find(:sample, id:t.simple_spec[:plasmid])[0] && bacterial_marker && bacterial_marker != ""
-          t.notify "Bacterial Marker info required for plasmid #{t.simple_spec[:plasmid]}", job_id: jid if !bacterial_marker
+        plasmid = find(:sample, id: t.simple_spec[:plasmid])[0]
+        if plasmid
+          bacterial_marker = plasmid.properties["Bacterial Marker"]
+          bacterial_marker = "" if !bacterial_marker
+          plasmid_condition = !bacterial_marker.empty?
+          t.notify "Bacterial Marker info required for plasmid #{t.simple_spec[:plasmid]}", job_id: jid if bacterial_marker.empty?
         else
           t.notify "No samples corresponding to plasmid #{t.simple_spec[:plasmid]}", job_id: jid
         end
