@@ -17,6 +17,7 @@ class Protocol
     m = col.matrix
     routes = []
     opts = { except: [], plate_ids: [] }.merge options
+    opts[:plate_ids].uniq!
 
     (0..m.length-1).each do |i|
       (0..m[i].length-1).each do |j|
@@ -66,7 +67,7 @@ class Protocol
         qc_result = plate.datum[:QC_result]
         correct_colony_result = qc_result.each_index.select{ |i| qc_result[i] == "Yes" }
         correct_colony_result.map! { |x| x+1 }
-        plate.datum = plate.datum.merge({ correct_colony: correct_colony_result})
+        plate.datum = plate.datum.merge({ correct_colony: correct_colony_result })
         plate.save
       end
       release plates

@@ -489,8 +489,11 @@ class Protocol
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        io_hash[:yeast_plate_ids].concat task.simple_spec[:yeast_plate_ids]
-        io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
+        task.simple_spec[:yeast_plate_ids].each_with_index do |id, idx|
+          if ! (io_hash[:yeast_plate_ids].include? id)
+            io_hash[:yeast_plate_ids].push id
+            io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
+          else
       end
       io_hash[:gel_band_verify] = "Yes"
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
