@@ -487,9 +487,6 @@ module Cloning
         t.simple_spec[:fragments].each do |fid|
           # info = fragment_info fid, check_mode: true
           info = true
-          show {
-            note "#{info}"
-          }
           # First check if there already exists fragment stock and if its length info is entered, it's ready to build.
           if find(:sample, id: fid)[0] == nil
             t[:fragments][:not_ready_to_use].push fid
