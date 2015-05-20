@@ -490,7 +490,7 @@ class Protocol
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:yeast_plate_ids].each_with_index do |id, idx|
-          if ! (io_hash[:yeast_plate_ids].include? id)
+          if !(io_hash[:yeast_plate_ids].include? id)
             io_hash[:yeast_plate_ids].push id
             io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
           end
