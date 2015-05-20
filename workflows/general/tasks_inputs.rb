@@ -314,28 +314,28 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_glycerol_stock_ids].length + io_hash[:plate_ids].length
 
     when "Gibson Assembly"
-      if tasks[:fragments]
-        waiting_ids = tasks[:waiting_ids]
-        users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
-        fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
-        ready_to_use_fragment_ids = tasks[:fragments][:ready_to_use].uniq
-        not_ready_to_use_fragment_ids = tasks[:fragments][:not_ready_to_use].uniq
-        ready_to_build_fragment_ids = tasks[:fragments][:ready_to_build].uniq
-        not_ready_to_build_fragment_ids = tasks[:fragments][:not_ready_to_build].uniq
-        plasmid_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:plasmid] }
-        plasmids = plasmid_ids.collect { |pid| find(:sample, id: pid)[0]}
-        tasks_tab = [[ "Not ready tasks", "Tasks owner", "Plasmid", "Fragments", "Ready to build", "Not ready to build", "Length info missing" ]]
-        waiting_ids.each_with_index do |tid,idx|
-          tasks_tab.push [ tid, users[idx], "#{plasmids[idx]}", fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s,(fragment_ids[idx]&not_ready_to_use_fragment_ids).to_s ]
-        end
-        show {
-          title "Gibson Assemby Status"
-          note "Ready to build means recipes and ingredients for building this fragments are complete."
-          note "Not ready to build means some information or stocks are missing."
-          note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
-          table tasks_tab
-        }
-      end
+      # if tasks[:fragments]
+      #   waiting_ids = tasks[:waiting_ids]
+      #   users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
+      #   fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
+      #   ready_to_use_fragment_ids = tasks[:fragments][:ready_to_use].uniq
+      #   not_ready_to_use_fragment_ids = tasks[:fragments][:not_ready_to_use].uniq
+      #   ready_to_build_fragment_ids = tasks[:fragments][:ready_to_build].uniq
+      #   not_ready_to_build_fragment_ids = tasks[:fragments][:not_ready_to_build].uniq
+      #   plasmid_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:plasmid] }
+      #   plasmids = plasmid_ids.collect { |pid| find(:sample, id: pid)[0]}
+      #   tasks_tab = [[ "Not ready tasks", "Tasks owner", "Plasmid", "Fragments", "Ready to build", "Not ready to build", "Length info missing" ]]
+      #   waiting_ids.each_with_index do |tid,idx|
+      #     tasks_tab.push [ tid, users[idx], "#{plasmids[idx]}", fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s,(fragment_ids[idx]&not_ready_to_use_fragment_ids).to_s ]
+      #   end
+      #   show {
+      #     title "Gibson Assemby Status"
+      #     note "Ready to build means recipes and ingredients for building this fragments are complete."
+      #     note "Not ready to build means some information or stocks are missing."
+      #     note "Length info missing means the fragment are already in stock but does not have length information needed for Gibson assembly."
+      #     table tasks_tab
+      #   }
+      # end
 
       if io_hash[:group] != "technicians"
         io_hash[:task_ids] = io_hash[:task_ids].take(12)
@@ -388,22 +388,22 @@ class Protocol
       end
 
       fs = task_status name: "Fragment Construction", group: io_hash[:group], notification: "on"
-      if fs[:fragments] && fs[:fragments][:not_ready_to_build].length > 0
-        waiting_ids = fs[:waiting_ids]
-        users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
-        fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
-        ready_to_build_fragment_ids = fs[:fragments][:ready_to_build].uniq
-        not_ready_to_build_fragment_ids = fs[:fragments][:not_ready_to_build].uniq
-        fs_tab = [[ "Not ready tasks", "Tasks owner", "Fragments", "Ready to build", "Not ready to build" ]]
-        waiting_ids.each_with_index do |tid,idx|
-          fs_tab.push [ tid, users[idx], fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s ]
-        end
-        show {
-          title "Fragment Construction Status"
-          note "Ready to build means recipes and ingredients for building this fragments are complete. Not ready to build means some information or stocks are missing."
-          table fs_tab
-        }
-      end
+      # if fs[:fragments] && fs[:fragments][:not_ready_to_build].length > 0
+      #   waiting_ids = fs[:waiting_ids]
+      #   users = waiting_ids.collect { |tid| find(:task, id: tid)[0].user.name }
+      #   fragment_ids = waiting_ids.collect { |tid| find(:task, id: tid)[0].simple_spec[:fragments] }
+      #   ready_to_build_fragment_ids = fs[:fragments][:ready_to_build].uniq
+      #   not_ready_to_build_fragment_ids = fs[:fragments][:not_ready_to_build].uniq
+      #   fs_tab = [[ "Not ready tasks", "Tasks owner", "Fragments", "Ready to build", "Not ready to build" ]]
+      #   waiting_ids.each_with_index do |tid,idx|
+      #     fs_tab.push [ tid, users[idx], fragment_ids[idx].to_s, (fragment_ids[idx]&ready_to_build_fragment_ids).to_s, (fragment_ids[idx]&not_ready_to_build_fragment_ids).to_s ]
+      #   end
+      #   show {
+      #     title "Fragment Construction Status"
+      #     note "Ready to build means recipes and ingredients for building this fragments are complete. Not ready to build means some information or stocks are missing."
+      #     table fs_tab
+      #   }
+      # end
 
       # automatically submit primer order tasks if both primer stock and primer aliquot are missing for not_ready_to_build fragments.
       need_to_order_primer_ids = missing_primer(fs[:fragments][:not_ready_to_build].uniq)
