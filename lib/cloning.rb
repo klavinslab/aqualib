@@ -14,7 +14,7 @@ module Cloning
     # It returns a hash containing a list of stocks of the fragment, length of the fragment, as well item numbers for forward, reverse primers and plasmid template (1 ng/µL Plasmid Stock). It also computes the annealing temperature.
 
     # find the fragment and get its properties
-    params = ({ item_choice: false, task_id: nil }).merge p
+    params = ({ item_choice: false, task_id: nil, check_mode: false }).merge p
 
     if params[:task_id]
       task = find(:task, id: params[:task_id])[0]
@@ -110,32 +110,40 @@ module Cloning
 
       else
 
-        if params[:item_choice]
-          fwd_item_to_return = choose_sample fwd_items[0].sample.name, object_type: "Primer Aliquot"
-          rev_item_to_return = choose_sample rev_items[0].sample.name, object_type: "Primer Aliquot"
-          template_item_to_return = choose_sample template_items[0].sample.name, object_type: template_items[0].object_type.name
+        if !params[:check_mode]
+
+          if params[:item_choice]
+            fwd_item_to_return = choose_sample fwd_items[0].sample.name, object_type: "Primer Aliquot"
+            rev_item_to_return = choose_sample rev_items[0].sample.name, object_type: "Primer Aliquot"
+            template_item_to_return = choose_sample template_items[0].sample.name, object_type: template_items[0].object_type.name
+          else
+            fwd_item_to_return = fwd_items[0]
+            rev_item_to_return = rev_items[0]
+            template_item_to_return = template_items[0]
+          end
+
+          # compute the annealing temperature
+          t1 = fwd_items[0].sample.properties["T Anneal"]
+          t2 = rev_items[0].sample.properties["T Anneal"]
+
+          # find stocks of this fragment, if any
+          #stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
+
+          return {
+            fragment: fragment,
+            #stocks: stocks,
+            length: length,
+            fwd: fwd_item_to_return,
+            rev: rev_item_to_return,
+            template: template_item_to_return,
+            tanneal: [t1,t2].min
+          }
+
         else
-          fwd_item_to_return = fwd_items[0]
-          rev_item_to_return = rev_items[0]
-          template_item_to_return = template_items[0]
+
+          return true
+
         end
-
-        # compute the annealing temperature
-        t1 = fwd_items[0].sample.properties["T Anneal"]
-        t2 = rev_items[0].sample.properties["T Anneal"]
-
-        # find stocks of this fragment, if any
-        #stocks = fragment.items.select { |i| i.object_type.name == "Fragment Stock" && i.location != "deleted"}
-
-        return {
-          fragment: fragment,
-          #stocks: stocks,
-          length: length,
-          fwd: fwd_item_to_return,
-          rev: rev_item_to_return,
-          template: template_item_to_return,
-          tanneal: [t1,t2].min
-        }
 
       end
 
@@ -477,7 +485,7 @@ module Cloning
       when "Gibson Assembly"
         t[:fragments] = { ready_to_use: [], not_ready_to_use: [], ready_to_build: [], not_ready_to_build: [] }
         t.simple_spec[:fragments].each do |fid|
-          info = fragment_info fid
+          info = fragment_info fid, check_mode: true
           show {
             note "#{info}"
           }
