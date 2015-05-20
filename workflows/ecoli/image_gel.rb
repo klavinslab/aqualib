@@ -69,6 +69,7 @@ class Protocol
         plate.datum = plate.datum.merge({ correct_colony: correct_colony_result})
         plate.save
       end
+      release plates
     end
 
   end #gel_band_verify_cut
