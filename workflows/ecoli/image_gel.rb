@@ -64,7 +64,7 @@ class Protocol
         end
       end
       plates.each do |plate|
-        qc_result = plate.datum[:QC_result]
+        qc_result = plate.datum[:QC_result] || []
         correct_colony_result = qc_result.each_index.select{ |i| qc_result[i] == "Yes" }
         correct_colony_result.map! { |x| x+1 }
         plate.datum = plate.datum.merge({ correct_colony: correct_colony_result })
