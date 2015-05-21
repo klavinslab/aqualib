@@ -9,13 +9,13 @@ class Protocol
   def transfer sources, destinations, options={}
 
      # go through each well of the sources and transfer it to the next empty well of
-     # destinations. Every time a source or destination is used up, advance to 
-     # another step.    
+     # destinations. Every time a source or destination is used up, advance to
+     # another step.
 
      opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge options
 
      if block_given?
-       user_shows = ShowBlock.new.run(&Proc.new) 
+       user_shows = ShowBlock.new.run(&Proc.new)
      else
        user_shows = []
      end
@@ -56,7 +56,7 @@ class Protocol
        # if either is nil or if the source well is empty or if the source well has reached its range
        if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [sr_end, sc_end]
 
-         # display 
+         # display
          show {
            title "Transfer from #{sources[s].object_type.name} #{sources[s].id} to #{destinations[d].object_type.name} #{destinations[d].id}"
            transfer sources[s], destinations[d], routing
@@ -75,7 +75,7 @@ class Protocol
 
          # BUGFIX by Yaoyu Yang
          # return if sources[s].matrix[sr][sc] == -1
-         # 
+         #
          if (sr && sources[s].matrix[sr][sc] == -1) or !sr or [sr,sc] == [sr_end, sc_end]
            s += 1
            return unless s < sources.length
@@ -134,7 +134,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", new_inducers: [[]], range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
+    io_hash = { debug_mode: "No", new_inducers: [], range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
