@@ -160,6 +160,7 @@ class Protocol
     gibson_results = []
     empty_fragment_stocks = []
     not_done_task_ids = []
+    all_replacement_stocks = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
@@ -195,6 +196,8 @@ class Protocol
           end
         end
       end
+
+      all_replacement_stocks.concat replacement_stocks
 
       if not_enough_volume_stocks.length > 0
 
@@ -245,7 +248,9 @@ class Protocol
       note empty_fragment_stocks.collect { |f| "#{f}"}
     } if empty_fragment_stocks.length > 0
 
-    fragment_stocks_to_release = fragment_stocks_flatten - empty_fragment_stocks
+    all_replacement_stocks.uniq!
+
+    fragment_stocks_to_release = fragment_stocks_flatten - empty_fragment_stocks + all_replacement_stocks
 
     delete empty_fragment_stocks
 
