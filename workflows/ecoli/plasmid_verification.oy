@@ -68,6 +68,6 @@ transition [ upload ] => [] when !error(0) && completed(0) end
 # restart if errored out
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
-transition [ miniprep ] => [ sequencing ] when error(0) end
+transition [ miniprep ] => [ miniprep ] when error(0) end
 transition [ sequencing ] => [ sequencing ] when error(0) end
 transition [ upload ] => [ upload ] when error(0) end
