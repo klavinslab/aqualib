@@ -13,7 +13,7 @@ class Protocol
       debug_mode: "No"
     }
   end
-  
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -75,8 +75,21 @@ class Protocol
         set_task_status(task,"done")
       end
     end
+    if io_hash[:item_ids]
+      io_hash[:item_ids].each do |p|
+        tp = TaskPrototype.where("name = 'Discard Item'")[0]
+        t = Task.new(
+            name: "#{p.sample.name}_plate_#{p.id}",
+            specification: { "item_ids Yeast Plate" => [p.id] }.to_json,
+            task_prototype_id: tp.id,
+            status: "waiting",
+            user_id: p.sample.user.id)
+        t.save
+        t.notify "Automatically created after glycerol stock made.", job_id: jid
+      end
+    end
     io_hash[:glycerol_stock_ids] = io_hash[:glycerol_stock_ids].concat glycerol_stocks.collect { |g| g.id }
     return { io_hash: io_hash }
   end # main
-  
+
 end # protocol
