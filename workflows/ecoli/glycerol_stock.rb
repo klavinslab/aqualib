@@ -75,8 +75,9 @@ class Protocol
         set_task_status(task,"done")
       end
     end
-    if io_hash[:item_ids]
-      io_hash[:item_ids].each do |p|
+    if io_hash[:item_ids] && io_hash[:old_overnight_ids]
+      io_hash[:item_ids].each do |id|
+        p = find(:item, id: id)[0]
         tp = TaskPrototype.where("name = 'Discard Item'")[0]
         t = Task.new(
             name: "#{p.sample.name}_plate_#{p.id}",
