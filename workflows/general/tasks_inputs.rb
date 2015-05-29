@@ -132,6 +132,24 @@ class Protocol
 
   end
 
+  # a simple function to diplay user input for how many tasks to choose from the queue and present user
+  # timing info vs size, return numer of tasks user chooses.
+  def task_size_select task_name, sizes, tetra_tab = nil
+
+    limit_input = show {
+      title "How many #{task_name} to run?"
+      note "There is a total of #{sizes[-1]} #{task_name} in the queue. How many do you want to run?"
+      select sizes, var: "limit", label: "Enter the number of #{task_name} you want to run", default: sizes[-1]
+      if tetra_tab
+        note "Tetra predictions for estimated job duration in minutes."
+        table tetra_tab
+      end
+    }
+
+    return limit_input[:limit].to_i
+
+  end
+
   def arguments
     {
       io_hash: {},
@@ -336,10 +354,17 @@ class Protocol
       #     table tasks_tab
       #   }
       # end
-
-      if io_hash[:group] != "technicians"
-        io_hash[:task_ids] = io_hash[:task_ids].take(12)
+      # if io_hash[:group] != "technicians"
+      #   io_hash[:task_ids] = io_hash[:task_ids].take(12)
+      # end
+      # adding Tetra (time estimation tool for Aquarium) display
+      sizes = (1..io_hash[:task_ids].length).to_a
+      tetra_tab = [[ "size", "gibson"]]
+      sizes.each do |size|
+        tetra_tab.push [size, time_prediction(size, "gibson")]
       end
+      limit = task_size_select(io_hash[:task_name], sizes, tetra_tab)
+      io_hash[:task_ids] = io_hash[:task_ids].take(limit)
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push task.simple_spec[:fragments]
@@ -430,15 +455,31 @@ class Protocol
 
       # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
       io_hash[:task_ids] = fs[:ready_ids]
-      limit_idx = io_hash[:task_ids].length
+      sizes, fragment_ids = [], []
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        fragment_ids.concat task.simple_spec[:fragments]
+        fragment_ids.uniq!
+        sizes.push fragment_ids.length
+      end
+
+      tetra_all_tab = [[ "size", "PCR","run_gel","cut_gel","purify_gel" ]]
+      sizes.each do |size|
+        job_times = []
+        ["PCR","run_gel","cut_gel","purify_gel"].each do |protocol_name|
+          job_times.push time_prediction(size, protocol_name)
+        end
+        tetra_all_tab.push([size].concat job_times)
+      end
+      size_limit = task_size_select(io_hash[:task_name], sizes, tetra_all_tab)
+
+      limit_idx = 0
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
-        fragment_ids_temp = io_hash[:fragment_ids].dup
         io_hash[:fragment_ids].concat task.simple_spec[:fragments]
         io_hash[:fragment_ids].uniq!
-        if io_hash[:fragment_ids].length > 10 && io_hash[:group] != "technicians"
-          limit_idx = idx
-          io_hash[:fragment_ids] = fragment_ids_temp
+        if io_hash[:fragment_ids].length >= size_limit
+          limit_idx = idx + 1
           break
         end
       end
@@ -454,24 +495,42 @@ class Protocol
 
       show {
         title "Tetra time predictions"
+        note "There is #{io_hash[:size]} #{io_hash[:task_name]} to do. Tetra prediction for
+        each job duration in minutes is following."
         table tetra_tab
       }
 
     when "Plasmid Verification"
       io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
+      sizes = []
       io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task_size = task.simple_spec[:num_colonies].inject { |sum, n| sum + n }
+        sizes.push( task_size + (sizes[-1] || 0) )
+      end
+      size_limit = task_size_select(io_hash[:task_name], sizes)
+
+      current_size, limit_idx = 0, 0
+      io_hash[:task_ids].each_with_index do |tid, idx_outer|
         task = find(:task, id: tid)[0]
         task.simple_spec[:plate_ids].each_with_index do |pid, idx|
           if task.simple_spec[:primer_ids][idx] != [0]
             io_hash[:plate_ids].push pid
             io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
             io_hash[:primer_ids].push task.simple_spec[:primer_ids][idx]
+            current_size = current_size + task.simple_spec[:num_colonies][idx]
           else
             io_hash[:glycerol_stock_ids].push pid
+            current_size = current_size + 1
           end
+        end
+        if current_size >= size_limit
+          limit_idx = idx_outer + 1
+          break
         end
       end
 
+      io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx)
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
 
     when "Yeast Transformation"
