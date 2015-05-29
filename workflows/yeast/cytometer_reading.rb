@@ -9,13 +9,13 @@ class Protocol
   def transfer sources, destinations, options={}
 
      # go through each well of the sources and transfer it to the next empty well of
-     # destinations. Every time a source or destination is used up, advance to 
-     # another step.    
+     # destinations. Every time a source or destination is used up, advance to
+     # another step.
 
      opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge options
 
      if block_given?
-       user_shows = ShowBlock.new.run(&Proc.new) 
+       user_shows = ShowBlock.new.run(&Proc.new)
      else
        user_shows = []
      end
@@ -56,7 +56,7 @@ class Protocol
        # if either is nil or if the source well is empty or if the source well has reached its range
        if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [sr_end, sc_end]
 
-         # display 
+         # display
          show {
            title "Transfer from #{sources[s].object_type.name} #{sources[s].id} to #{destinations[d].object_type.name} #{destinations[d].id}"
            transfer sources[s], destinations[d], routing
@@ -75,7 +75,7 @@ class Protocol
 
          # BUGFIX by Yaoyu Yang
          # return if sources[s].matrix[sr][sc] == -1
-         # 
+         #
          if (sr && sources[s].matrix[sr][sc] == -1) or !sr or [sr,sc] == [sr_end, sc_end]
            s += 1
            return unless s < sources.length
@@ -198,7 +198,7 @@ class Protocol
         check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click Close Run Display first and then click Eject Plate."
         check "Place the loaded u-bottom plate on the CSampler holder."
         check "Find Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading by clicking the plate layout."
-        check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000." 
+        check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000."
         check "Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}. And the wells you just chose should turn to a different color."
         check "Click Open Run Display, then click Autorun."
       }
@@ -210,7 +210,7 @@ class Protocol
       show {
         title "Eject plate"
         warning "If any time the screen shows 'Empty the waste tank', go find the waste tank on the side of cytometer and empty the tank by pouring contents into sink."
-        warning "If any time the screen shows 'Refill the sheath tank', go find the sheath fluid bottle on the shelf, pour the contens into the sheath tank. Refill the sheath fluid bottle after use by adding the sheath solution (a small sealed bottle in the drawer named Bacteriostatic Concentrate Solution) and fill DI water to the 1 L line." 
+        warning "If any time the screen shows 'Refill the sheath tank', go find the sheath fluid bottle on the shelf, pour the contens into the sheath tank. Refill the sheath fluid bottle after use by adding the sheath solution (a small sealed bottle in the drawer named Bacteriostatic Concentrate Solution) and fill DI water to the 1 L line."
         note "The esitmated time for this cytometer run is shown below. Come back around that time."
         timer initial: { hours: 0, minutes: estimated_time_mm, seconds: estimated_time_ss}
         check "Wait till the cytometer says Done. Click Close Run Display, then click Eject Plate."
@@ -220,6 +220,8 @@ class Protocol
         title "Discard or return plates"
         if yeast_ubottom_plate.num_samples > 84
           note "Discard the 96 ubottom plate with id #{yeast_ubottom_plate.id}. Discard properly into biohazard box."
+          yeast_ubottom_plate.mark_as_deleted
+          yeast_ubottom_plate.save
         else
           note "Put a new clear film or put back the clear film on the plate #{yeast_ubottom_plate.id} and cross out the wells that have been used. Stack the plate on the shelf with item number label facing outside."
         end
@@ -258,4 +260,3 @@ class Protocol
   end # main
 
 end # Protocol
-
