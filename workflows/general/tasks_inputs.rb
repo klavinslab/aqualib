@@ -136,17 +136,20 @@ class Protocol
   # timing info vs size, return numer of tasks user chooses.
   def task_size_select task_name, sizes, tetra_tab = nil
 
-    limit_input = show {
-      title "How many #{task_name} to run?"
-      note "There is a total of #{sizes[-1]} #{task_name} in the queue. How many do you want to run?"
-      select sizes, var: "limit", label: "Enter the number of #{task_name} you want to run", default: sizes[-1]
-      if tetra_tab
-        note "Tetra predictions for estimated job duration in minutes."
-        table tetra_tab
-      end
-    }
-
-    return limit_input[:limit].to_i
+    if sizes.length > 0
+      limit_input = show {
+        title "How many #{task_name} to run?"
+        note "There is a total of #{sizes[-1]} #{task_name} in the queue. How many do you want to run?"
+        select sizes, var: "limit", label: "Enter the number of #{task_name} you want to run", default: sizes[-1]
+        if tetra_tab
+          note "Tetra predictions for estimated job duration in minutes."
+          table tetra_tab
+        end
+      }
+      return limit_input[:limit].to_i
+    else
+      return 0
+    end
 
   end
 
