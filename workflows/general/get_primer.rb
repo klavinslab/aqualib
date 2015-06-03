@@ -17,7 +17,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "No",
-      primer_ids: [4360,4344],
+      primer_ids: [4360,4344,6089,5979],
       group: "cloning"
     }
   end
@@ -32,6 +32,8 @@ class Protocol
         true
       end
     end
+
+    io_hash[:primer_ids].sort!
 
     show {
       title "Go the biochem store to pick up primers"
@@ -85,11 +87,8 @@ class Protocol
 
     if primer_stocks.length > 0
       show {
-        title "Wait one minute for the primer to dissolve in TE"
-        timer initial: { hours: 0, minutes: 1, seconds: 0}
-      } 
-      show {
         title "Vortex and centrifuge"
+        note "Wait one minute for the primer to dissolve in TE." if primer_stocks.length < 7
         note "Vortex each tube on table top vortexer for 5 seconds and then quick spin for 2 seconds on table top centrifuge."
       }
     end
