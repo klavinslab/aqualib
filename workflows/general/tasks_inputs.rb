@@ -157,7 +157,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Gibson Assembly",
+      task_name: "Streak Plate",
       group: "technicians"
     }
   end
@@ -280,30 +280,32 @@ class Protocol
     when "Streak Plate"
       yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
       need_to_streak_glycerol_stocks = []
-      if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
-        yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
-          y = find(:sample, id: yid)[0]
-          y_stocks = y.in("Yeast Glycerol Stock")
-          need_to_streak_glycerol_stocks.push y_stocks[0].id
-        end
+      if yeast_competent_cells[:yeast_strains]
+        if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
+          yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
+            y = find(:sample, id: yid)[0]
+            y_stocks = y.in("Yeast Glycerol Stock")
+            need_to_streak_glycerol_stocks.push y_stocks[0].id
+          end
 
-        new_streak_plate_task_ids = []
-        need_to_streak_glycerol_stocks.each do |id|
-          y = find(:item, id: id)[0]
-          tp = TaskPrototype.where("name = 'Streak Plate'")[0]
-          task = find(:task, name: "#{y.sample.name}_streak_plate")[0]
-          # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
-          if task
-            if task.status == "imaged and stored in fridge"
-              set_task_status(task,"waiting")
-              task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
-              task.save
+          new_streak_plate_task_ids = []
+          need_to_streak_glycerol_stocks.each do |id|
+            y = find(:item, id: id)[0]
+            tp = TaskPrototype.where("name = 'Streak Plate'")[0]
+            task = find(:task, name: "#{y.sample.name}_streak_plate")[0]
+            # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
+            if task
+              if task.status == "imaged and stored in fridge"
+                set_task_status(task,"waiting")
+                task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
+                task.save
+              end
+            else
+              t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.sample.user.id)
+              t.save
+              t.notify "Automatically created from Yeast Competent Cell.", job_id: jid
+              new_streak_plate_task_ids.push t.id
             end
-          else
-            t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.sample.user.id)
-            t.save
-            t.notify "Automatically created from Yeast Competent Cell.", job_id: jid
-            new_streak_plate_task_ids.push t.id
           end
         end
 
