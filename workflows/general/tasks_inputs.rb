@@ -280,6 +280,7 @@ class Protocol
     when "Streak Plate"
       yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
       need_to_streak_glycerol_stocks = []
+      new_streak_plate_task_ids = []
       if yeast_competent_cells[:yeast_strains]
         if yeast_competent_cells[:yeast_strains][:ready_to_streak].length > 0
           yeast_competent_cells[:yeast_strains][:ready_to_streak].each do |yid|
@@ -288,7 +289,6 @@ class Protocol
             need_to_streak_glycerol_stocks.push y_stocks[0].id
           end
 
-          new_streak_plate_task_ids = []
           need_to_streak_glycerol_stocks.each do |id|
             y = find(:item, id: id)[0]
             tp = TaskPrototype.where("name = 'Streak Plate'")[0]
