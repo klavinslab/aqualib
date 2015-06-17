@@ -75,7 +75,7 @@ class Protocol
         rehydrate_volume = rehydrate_volume.to_s + " µL of water"
       end
 
-      tab.push([prid, "#{primer_stock}", rehydrate_volume])
+      tab.push([prid, "#{primer_stock}", { content: rehydrate_volume, check: true }])
 
     end
 
