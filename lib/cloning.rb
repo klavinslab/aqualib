@@ -84,6 +84,7 @@ module Cloning
         template_items = template.in "E coli Lysate"
         if template_items.length == 0
           template_items = template.in "Genome Prep"
+          template_items = template_tiems.reverse() #so we take the last one.
         end
       elsif template.sample_type.name == "Yeast Strain"
         template_items = template.in "Lysate"
