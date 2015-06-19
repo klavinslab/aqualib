@@ -83,7 +83,7 @@ class Protocol
 
     # Tell the user what we are doing
     show {
-      title "Gibson Assembly Information"
+      title "Golden Gate Assembly Information"
       note "This protocol will build the following #{io_hash[:plasmid_ids].length} plasmids using Gibson Assembly method:"
       note io_hash[:plasmid_ids].collect {|p| "#{p}"}
       note "The predicted time needed is #{predited_time} min."
