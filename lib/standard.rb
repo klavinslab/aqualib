@@ -251,7 +251,7 @@ module Standard
 		find_collections = Collection.containing Sample.find(id)
 		if find_collections[0]
 			(find_collections).each do |c|
-				if c.datum
+				if c.datum && c.location != "deleted"
 					if (c.datum[:num_colony] || 0) > 0
 					  matched_collections.push c
 					end
