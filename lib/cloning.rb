@@ -666,7 +666,7 @@ module Cloning
         t[:yeast_strains] = { ready: [], not_valid:[], ready_to_streak: [], not_ready_to_streak: [] }
 
         t.simple_spec[:yeast_strain_ids].each do |yid|
-          if (collection_type_contain yid, "Divided Yeast Plate", 60).length > 0
+          if (collection_type_contain_has_colony yid, "Divided Yeast Plate").length > 0
             t[:yeast_strains][:ready].push yid
           else
             t[:yeast_strains][:not_valid].push yid

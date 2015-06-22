@@ -18,7 +18,7 @@ module Standard
     #   take : false              --> does an interactive take if true
 
     if block_given?
-      user_shows = ShowBlock.new.run(&Proc.new) 
+      user_shows = ShowBlock.new.run(&Proc.new)
     else
       user_shows = []
     end
@@ -31,7 +31,7 @@ module Standard
     else
       options = find(:item, sample: {name: sample_name}).reject { |i| /eleted/ =~ i.location }
     end
-    
+
 		raise "No choices found for #{sample_name}" if options.length == 0
 
 		choices = options.collect { |ps| "#{ps.id}: #{ps.location}" }
@@ -46,7 +46,7 @@ module Standard
 				else
 				  title "Choose #{params[:quantity]} #{sample_name.pluralize}"
 				end
-			  if quantity >= 0 
+			  if quantity >= 0
 			  	note "Try again. You chose the wrong number of items"
 			  end
 			  raw user_shows
@@ -92,7 +92,7 @@ module Standard
     #   take : false              --> does an interactive take if true
 
     if block_given?
-      user_shows = ShowBlock.new.run(&Proc.new) 
+      user_shows = ShowBlock.new.run(&Proc.new)
     else
       user_shows = []
     end
@@ -115,7 +115,7 @@ module Standard
 				else
 					title "Choose #{params[:quantity]} #{object_name.pluralize}"
 				end
-  		  if quantity >= 0 
+  		  if quantity >= 0
 			  	note "Try again. You chose the wrong number of items"
 			  end
 	      raw user_shows
@@ -200,7 +200,7 @@ module Standard
     full_name = str.split
     begin
       cap_initials = full_name[0][0].upcase + full_name[1][0].upcase
-    rescue 
+    rescue
       cap_initials = ""
     end
     return cap_initials
@@ -208,7 +208,7 @@ module Standard
 
   def task_group_filter task_ids, group
     # filter out task_ids based on group parameter
-    # current rule is if group is "technicians", it will return task_ids belong to "cloning", if group is 
+    # current rule is if group is "technicians", it will return task_ids belong to "cloning", if group is
     # not "technicians", it will retrun task_ids belong to the group.
     filtered_task_ids = []
     task_ids.each do |tid|
@@ -244,5 +244,21 @@ module Standard
     end
     return matched_collections
   end
-  
+
+	  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
+	def collection_type_contain_has_colony id, object_type
+		matched_collections = []
+		find_collections = Collection.containing Sample.find(id)
+		if find_collections[0]
+			(find_collections).each do |c|
+				if c.datum
+					if (c.datum[:num_colony] || 0) > 0
+					  matched_collections.push c
+					end
+				end
+			end
+		end
+		return matched_collections
+	end
+
 end
