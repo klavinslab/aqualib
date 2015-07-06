@@ -233,15 +233,24 @@ class Protocol
 
         if task.status == "sequence correct"
           # make new discard item tasks for corresponding plate
-          plate_id = find(:item, id: task.simple_spec[:overnight_ids][0])[0].datum[:from]
-          plate = find(:item, id: plate_id)[0]
-          gibson_reaction_results = plate.sample.in("Gibson Reaction Result")
-          gibson_reaction_result_ids = gibson_reaction_results.collect { |g| g.id }
-          discard_item_ids = gibson_reaction_result_ids.push plate_id
-          t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
-          t.save
-          t.notify "Automatically created from Sequencing Verification.", job_id: jid
-          new_discard_item_task_ids.push t.id
+          discard_item_ids = [] # empty list to store item ids to discard
+          overnight = find(:item, id: task.simple_spec[:overnight_ids][0])[0]
+          # find plate_id to discard
+          plate_id = overnight.datum[:from]
+          if find(:item, id: plate_id)[0]
+            discard_item_ids.push plate_id
+          end
+          # find gibson reaction result id to discard
+          gibson_reaction_results = overnight.sample.in("Gibson Reaction Result")
+          if gibson_reaction_results.length > 0
+            discard_item_ids.concat gibson_reaction_results.collect { |g| g.id }
+          end
+          if discard_item_ids.length > 0
+            t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+            t.save
+            t.notify "Automatically created from Sequencing Verification.", job_id: jid
+            new_discard_item_task_ids.push t.id
+          end
         end
       end
 
