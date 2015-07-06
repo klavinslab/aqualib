@@ -237,7 +237,8 @@ class Protocol
           overnight = find(:item, id: task.simple_spec[:overnight_ids][0])[0]
           # find plate_id to discard
           plate_id = overnight.datum[:from]
-          if find(:item, id: plate_id)[0]
+          plate = find(:item, id: plate_id)[0]
+          if plate
             discard_item_ids.push plate_id
           end
           # find gibson reaction result id to discard
@@ -246,7 +247,7 @@ class Protocol
             discard_item_ids.concat gibson_reaction_results.collect { |g| g.id }
           end
           if discard_item_ids.length > 0
-            t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+            t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: (plate || gibson_reaction_results[0]).sample.user.id)
             t.save
             t.notify "Automatically created from Sequencing Verification.", job_id: jid
             new_discard_item_task_ids.push t.id
