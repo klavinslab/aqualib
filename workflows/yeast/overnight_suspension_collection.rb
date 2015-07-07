@@ -36,7 +36,7 @@ class Protocol
     yeast_strain_unavailable_ids = []
 
     io_hash[:yeast_strain_ids].each do |yid|
-      yeast_collections = collection_type_contain yid, "Divided Yeast Plate", 60
+      yeast_collections = collection_type_contain_has_colony yid, "Divided Yeast Plate"
       if yeast_collections.length > 0
         yeast_plate = yeast_collections[0]
         yeast_items.push yeast_plate
