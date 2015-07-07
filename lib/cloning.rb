@@ -493,10 +493,14 @@ module Cloning
           if fragment == nil
             t[:fragments][:not_ready_to_use].push fid
             t.notify "Fragment #{fid} does not exist in database.", job_id: jid
-          elsif fragment.in("Fragment Stock").length > 0 && fragment.properties["Length"] > 0
-            t[:fragments][:ready_to_use].push fid
-          elsif fragment.in("Fragment Stock").length > 0 && fragment.properties["Length"] == 0
+          elsif fragment.sample_type.name != "Fragment"
             t[:fragments][:not_ready_to_use].push fid
+            t.notify "Sample #{fid} is not a Fragment", job_id: jid
+          elsif fragment.in("Fragment Stock").length > 0 && (fragment.properties["Length"] || "").length > 0
+            t[:fragments][:ready_to_use].push fid
+          elsif fragment.in("Fragment Stock").length > 0 && (fragment.properties["Length"] || "").length == 0
+            t[:fragments][:not_ready_to_use].push fid
+            t.notify "Fragment #{fid} needs the Length information entered."
           else
             t[:fragments][:need_to_build].push fid
           end
