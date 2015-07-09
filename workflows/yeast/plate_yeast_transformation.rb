@@ -9,11 +9,11 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_transformation_mixture_ids: [13574,13575,25701,27087,34086,34087,27089],
+      yeast_transformation_mixture_ids: [39899,39901],
       debug_mode: "Yes"
     }
   end
-  
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -43,7 +43,7 @@ class Protocol
         check "Transfer contents from 14 mL tube to each same id 1.5 mL tube."
         check "Recycle or discard all the 14 mL tubes."
       }
-      
+
       show {
         title "Resuspend in water"
         check "Spin down all 1.5 mL tubes in a small table top centrifuge for ~1 minute"
@@ -54,11 +54,13 @@ class Protocol
       }
 
       yeast_markers = yeast_plates.collect {|y| y.sample.properties["Integrant"].properties["Yeast Marker"].downcase[0,3].to_sym}
+      # change all the G418 marker to Kan internally since some people mistakenly enter G418 as the marker which instead should be KanMx.
+      yeast_markers.collect! do |mk|
+        (mk == :g41) ? :kan : mk
+      end
       yeast_plates_markers = Hash.new {|h,k| h[k] = [] }
       yeast_plates.each_with_index do |y,idx|
-        yeast_markers.uniq.each do |mk|
-          yeast_plates_markers[mk].push y if yeast_markers[idx] == mk
-        end
+        yeast_plates_markers[yeast_markers[idx]].push y
       end
 
       antibiotic_hash = { nat: "+ClonNat", kan: "+G418", hyg: "+Hygromycin", ble: "+BleoMX", his: "-HIS" }
@@ -77,7 +79,7 @@ class Protocol
         title "Plating"
         check "Grab plates and label."
         table tab_plate
-        check "Flip the plate and add 4-5 glass beads to it"  
+        check "Flip the plate and add 4-5 glass beads to it"
         check "Add 200 µL of 1.5 mL tube contents according to the following table"
         table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
       }
@@ -101,8 +103,8 @@ class Protocol
       set_task_status(task,"plated")
     end
     io_hash[:plate_ids].concat yeast_plates.collect { |p| p.id }
-    
+
     return { io_hash: io_hash }
   end # main
-  
+
 end # Protocol
