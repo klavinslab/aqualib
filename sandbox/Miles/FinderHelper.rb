@@ -15,17 +15,27 @@ def arguments
     }
   end
 
-def main  
+def main 
+	item_locations=[]
 	item_numbers=input[:item_number]
 	item_number_length=item_numbers.length
 	
 	sample_numbers=input[:sample_number]
 	sample_number_length=sample_numbers.length
 	
+	count=0
+	while count < item_number_length do
+		temp=item_numbers[count]
+		temp1=temp.location
+		
+		item_locations[count]=temp1
+		count=count+1
+	end	
+	
 	show{
 	  title "Here are the locations of the item numbers and the invetory of the sample numbers"
 	  item_numbers
-	  item_numbers.location
+	  item_locations
 		}
 end
 
