@@ -26,7 +26,8 @@ def main
 	count=0
 	while count < item_number_length do
 		temp=item_numbers[count]
-		temp1=temp.location
+		stock=find(:item, id: temp)
+		temp1=stock.location
 		
 		item_locations[count]=temp1
 		count=count+1
