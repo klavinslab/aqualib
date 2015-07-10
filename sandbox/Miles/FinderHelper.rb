@@ -24,8 +24,8 @@ def main
 	
 	show{
 	  title "Here are the locations of the item numbers and the invetory of the sample numbers"
-	  note item_numbers
-	  note item_numnber.location
+	  item_numbers
+	  item_numnber.location
 		}
 end
 
