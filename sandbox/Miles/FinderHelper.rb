@@ -26,6 +26,6 @@ show{
   note item_numbers
   note item_numnber.location
 	}
-
+end
 
   
