@@ -34,7 +34,7 @@ def main
 	end	
 	
 	show{
-	  title "Here are the locations of the item numbers and the invetory of the sample numbers"
+	  title "Here are the locations of the items specified"
 	  table [["item", "location"]].concat(item_numbers.zip item_locations)
 		}
 end
