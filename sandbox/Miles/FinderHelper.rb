@@ -14,18 +14,21 @@ def arguments
     sample_number: [3546, 3547, 3539]
     }
   end
-  
-item_numbers=input[:item_number]
-item_number_length=item_numbers.length
 
-sample_numbers=input[:sample_number]
-sample_number_length=sample_numbers.length
+def main  
+	item_numbers=input[:item_number]
+	item_number_length=item_numbers.length
+	
+	sample_numbers=input[:sample_number]
+	sample_number_length=sample_numbers.length
+	
+	show{
+	  title "Here are the locations of the item numbers and the invetory of the sample numbers"
+	  note item_numbers
+	  note item_numnber.location
+		}
+end
 
-show{
-  title "Here are the locations of the item numbers and the invetory of the sample numbers"
-  note item_numbers
-  note item_numnber.location
-	}
 end
 
   
