@@ -11,7 +11,7 @@ def arguments
     item_number: [17032,17034,17039],
     
     #Enter the sample numbers you wish to receive inventory for
-    sample_number: [3546, 3547, 3539]
+    #sample_number: [3546, 3547, 3539]
     }
   end
 
