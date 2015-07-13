@@ -20,8 +20,8 @@ def main
 	item_numbers=input[:item_number]
 	item_number_length=item_numbers.length
 	
-	sample_numbers=input[:sample_number]
-	sample_number_length=sample_numbers.length
+	#sample_numbers=input[:sample_number]
+	#sample_number_length=sample_numbers.length
 	
 	count=0
 	while count < item_number_length do
