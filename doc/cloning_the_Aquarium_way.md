@@ -1,7 +1,7 @@
 Cloning the Aquarium way
 ===
 
-This documentation is used as a reference for using Aquarium to do cloning work via Tasks. A read through is recommended for new Aquarium users. In case you have any questions, contact this document author Yaoyu Yang by <yaoyu@uw.edu> or post notes in discussion board in Aquarium.
+This documentation is used as a reference for using Aquarium to do cloning work via Tasks. A read through is recommended for new Aquarium users. In case you have any questions, contact this document authors Yaoyu Yang at <yaoyu@uw.edu>, Miles Gander at <gander.miles@gmail.com> or post notes in discussion board in Aquarium.
 
 Samples and Items
 ---
