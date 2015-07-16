@@ -174,7 +174,7 @@ class Protocol
         elsif task.task_prototype.name == "Yeast Transformation"
           stored_plates.each do |p|
             num_colony = p.datum[:num_colony]
-            num_colony = num_colony > 3 ? 3 : num_colony
+            num_colony = num_colony > 2 ? 2 : num_colony
             tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
             t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
             t.save
