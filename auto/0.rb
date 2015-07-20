@@ -6,7 +6,7 @@ class Protocol
 
     show do 
       title "Generic Protocol"
-      note data
+      note data.to_json
     end
 
   end
