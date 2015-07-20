@@ -157,7 +157,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Streak Plate",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end
@@ -175,15 +175,14 @@ class Protocol
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
+    sizes = [] # a variable to store possible run sizes for all tasks
 
     wating_tab = task_info_table tasks[:waiting_ids]
     ready_tab = task_info_table tasks[:ready_ids]
 
     show {
-
       title "Task status"
       note "For #{io_hash[:task_name]} tasks that belong to #{io_hash[:group]}:"
-
       if tasks[:waiting_ids].length > 0
         note "Waiting tasks:"
         note "If your desired to run task still stays in waiting, abort this protocol, it will be automatically rescheduled. Fix the task input problem and rerun this protocol."
@@ -191,14 +190,12 @@ class Protocol
       else
         note "No task is wating"
       end
-
       if tasks[:ready_ids].length > 0
         note "Ready tasks:"
         table ready_tab
       else
         note "No task is ready"
       end
-
     }
 
     case io_hash[:task_name]
@@ -347,7 +344,6 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_glycerol_stock_ids].length + io_hash[:plate_ids].length
 
     when "Gibson Assembly"
-
       sizes = (1..io_hash[:task_ids].length).to_a
       tetra_tab = [[ "size", "gibson"]]
       sizes.each do |size|
@@ -363,14 +359,11 @@ class Protocol
       io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Fragment Construction"
-
       # pull out fragments that need to be made from Gibson Assembly tasks
       gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
       if gibson_tasks[:fragments][:need_to_build].length > 0
-
         need_to_make_fragment_ids = gibson_tasks[:fragments][:need_to_build].uniq
         new_fragment_construction_ids = []
-
         need_to_make_fragment_ids.each do |id|
           fragment = find(:sample, id: id)[0]
           tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
@@ -398,7 +391,6 @@ class Protocol
             table new_fragment_construction_tasks_tab
           }
         end
-
       end
 
       fs = task_status name: "Fragment Construction", group: io_hash[:group], notification: "on"
@@ -428,7 +420,7 @@ class Protocol
 
       # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
       io_hash[:task_ids] = fs[:ready_ids]
-      sizes, fragment_ids = [], []
+      fragment_ids = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         fragment_ids.concat task.simple_spec[:fragments]
@@ -475,7 +467,6 @@ class Protocol
 
     when "Plasmid Verification"
       io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
-      sizes = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task_size = task.simple_spec[:num_colonies].inject { |sum, n| sum + n }
@@ -510,6 +501,13 @@ class Protocol
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        sizes.push(task.simple_spec[:yeast_transformed_strain_ids].length + (sizes[-1] || 0))
+      end
+      size_limit = task_size_select(io_hash[:task_name], sizes)
+      limit_idx = sizes.index(size_limit) || 0
+      io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx + 1)
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
         io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
         io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
         io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
@@ -520,6 +518,14 @@ class Protocol
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        task_size = task.simple_spec[:num_colonies].inject { |sum, n| sum + n }
+        sizes.push( task_size + (sizes[-1] || 0) )
+      end
+      size_limit = task_size_select(io_hash[:task_name], sizes)
+      limit_idx = sizes.index(size_limit) || 0
+      io_hash[:task_ids] = io_hash[:task_ids].take(limit_idx + 1)
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
         task.simple_spec[:yeast_plate_ids].each_with_index do |id, idx|
           if !(io_hash[:yeast_plate_ids].include? id)
             io_hash[:yeast_plate_ids].push id
@@ -527,6 +533,7 @@ class Protocol
           end
         end
       end
+
       io_hash[:gel_band_verify] = "Yes"
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
 
@@ -541,7 +548,6 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
 
     when "Yeast Competent Cell"
-
       yeast_transformations = task_status name: "Yeast Transformation", group: io_hash[:group]
       if yeast_transformations[:yeast_strains] && yeast_transformations[:yeast_strains][:not_ready_to_build].length > 0
 
