@@ -6,75 +6,6 @@ class Protocol
   include Standard
   include Cloning
 
-  def task_status_debug p={}
-
-    # This function is used to debug task_status function in cloning.rb
-
-    params = ({ group: false, name: "" }).merge p
-    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].length == 0
-    tasks_all = find(:task,{task_prototype: { name: params[:name] }})
-    tasks = []
-    # filter out tasks based on group input
-    if params[:group] && !params[:group].empty?
-      user_group = params[:group] == "technicians"? "cloning": params[:group]
-      group_info = Group.find_by_name(user_group)
-      tasks_all.each do |t|
-        tasks.push t if t.user.member? group_info.id
-      end
-    else
-      tasks = tasks_all
-    end
-    waiting = tasks.select { |t| t.status == "waiting" }
-    ready = tasks.select { |t| t.status == "ready" }
-
-    # cycling through waiting and ready to make sure tasks inputs are valid
-
-    (waiting + ready).each do |t|
-
-      case params[:name]
-
-      when "Yeast Strain QC"
-        length_check = t.simple_spec[:yeast_plate_ids].length == t.simple_spec[:num_colonies].length
-        t.notify "yeast_plate_ids need to have the same array length with num_colonies.", job_id: jid if !length_check
-        t[:yeast_plate_ids] = { ready_to_QC: [], not_ready_to_QC: [] }
-        t.simple_spec[:yeast_plate_ids].each_with_index do |yid, idx|
-          primer1 = find(:item, id: yid)[0].sample.properties["QC Primer1"].in("Primer Aliquot")[0]
-          primer2 = find(:item, id: yid)[0].sample.properties["QC Primer2"].in("Primer Aliquot")[0]
-          if primer1 && primer2 && (t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
-            t[:yeast_plate_ids][:ready_to_QC].push yid
-          else
-            t[:yeast_plate_ids][:not_ready_to_QC].push yid
-            t.notify "QC Primer 1 for yeast plate #{yid} does not have any primer aliquot.", job_id: jid if !primer1
-            t.notify "QC Primer 2 for yeast plate #{yid} does not have any primer aliquot.", job_id: jid if !primer2
-            t.notify "num_colonies for yeast plate #{yid} need to be a number between 0,10", job_id: jid if !(t.simple_spec[:num_colonies][idx] || 0).between?(0, 10)
-          end
-        end
-
-        ready_conditions = length_check && t[:yeast_plate_ids][:ready_to_QC].length == t.simple_spec[:yeast_plate_ids].length
-
-      end
-
-      if ready_conditions
-        set_task_status(t, "ready")
-        t.save
-      else
-        set_task_status(t, "waiting")
-        t.save
-      end
-
-    end
-
-    task_status_hash = {
-      waiting_ids: (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id},
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id}
-    }
-
-    task_status_hash[:fragments] = ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } } if ["Gibson Assembly", "Fragment Construction"].include? params[:name]
-
-    return task_status_hash
-
-  end
-
   # a function that returns a table of task information
   def task_info_table task_ids
 
@@ -165,7 +96,8 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "", fragment_ids: [], plasmid_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", task_name: "", task_ids: [], size: 0 }.merge io_hash
+    # io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "", fragment_ids: [], plasmid_ids: [] }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -201,6 +133,7 @@ class Protocol
     case io_hash[:task_name]
 
     when "Glycerol Stock"
+      io_hash = { overnight_ids: [], item_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:item_ids].each do |id|
@@ -264,6 +197,7 @@ class Protocol
       io_hash[:size] = io_hash[:overnight_ids].length + io_hash[:item_ids].length
 
     when "Discard Item"
+      io_hash = { item_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:item_ids].concat task.simple_spec[:item_ids]
@@ -285,6 +219,7 @@ class Protocol
       io_hash[:size] = io_hash[:item_ids].length
 
     when "Streak Plate"
+      io_hash = { item_ids: [], plate_ids:[] }.merge io_hash
       yeast_competent_cells = task_status name: "Yeast Competent Cell", group: io_hash[:group]
       need_to_streak_glycerol_stocks = []
       new_streak_plate_task_ids = []
@@ -344,6 +279,7 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_glycerol_stock_ids].length + io_hash[:plate_ids].length
 
     when "Gibson Assembly"
+      io_hash = { fragment_ids: [], plasmid_ids: [] }.merge io_hash
       sizes = (1..io_hash[:task_ids].length).to_a
       tetra_tab = [[ "size", "gibson"]]
       sizes.each do |size|
@@ -359,6 +295,7 @@ class Protocol
       io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Fragment Construction"
+      io_hash = { fragment_ids: [] }.merge io_hash
       # pull out fragments that need to be made from Gibson Assembly tasks
       gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
       if gibson_tasks[:fragments][:need_to_build].length > 0
@@ -466,7 +403,7 @@ class Protocol
       }
 
     when "Plasmid Verification"
-      io_hash = { num_colonies: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
+      io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [], size: 0 }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task_size = task.simple_spec[:num_colonies].inject { |sum, n| sum + n }
