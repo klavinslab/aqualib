@@ -1,5 +1,9 @@
 class Protocol
 
+  def debug
+    true
+  end
+
   def main
 
     data = input
@@ -8,6 +12,8 @@ class Protocol
       title "Generic Protocol"
       note data.to_json
     end
+
+    return { todo: "make new items" }
 
   end
 
