@@ -42,7 +42,8 @@ class Protocol
     # take w.inputs(:template).first_items, method: "boxes"
 
     show {
-      title w.input_names.join(", ")
+      title "Input names"
+      note w.input_names.join(", ")
     }
 
   end
