@@ -33,7 +33,7 @@ class Protocol
     # take o.inputs(:template).first_items, method: "boxes"
 
     show {
-      title "#{op.name} Inputs"
+      title "#{o.name} Inputs"
       note o.input_names.join(", ")
     }
 
