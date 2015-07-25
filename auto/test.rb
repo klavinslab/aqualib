@@ -1,22 +1,13 @@
+class Op
 
-class Workflow
-
-  def initialize operation
-    @operation = operation
+  def initialize spec
+    @spec = spec
   end
 
   # INPUTS ###############################################################
 
-  def inputs name
-    Inv.new raw_input name
-  end
-
-  def raw_inputs
-    @operation[:inputs]
-  end
-
   def input_names
-    @operation[:inputs].collect { |i| i[:name] }
+    @spec[:inputs].collect { |i| i[:name] }
   end
 
   def raw_input name
@@ -35,15 +26,15 @@ class Protocol
 
   def main
 
-    w = Workflow.new input
+    o = Op.new input
 
-    # take w.inputs(:fwd).first_items, method: "boxes"
-    # take w.inputs(:rev).first_items, method: "boxes"  
-    # take w.inputs(:template).first_items, method: "boxes"
+    # take o.inputs(:fwd).first_items, method: "boxes"
+    # take o.inputs(:rev).first_items, method: "boxes"  
+    # take o.inputs(:template).first_items, method: "boxes"
 
     show {
-      title "Input names"
-      note w.input_names.join(", ")
+      title "#{op.name} Inputs"
+      note o.input_names.join(", ")
     }
 
   end
