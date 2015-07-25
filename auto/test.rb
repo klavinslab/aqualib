@@ -6,6 +6,10 @@ class Op
 
   # INPUTS ###############################################################
 
+  def name
+    @spec[:name]
+  end
+
   def input_names
     @spec[:inputs].collect { |i| i[:name] }
   end
