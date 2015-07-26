@@ -2,21 +2,20 @@ class InvArray
 
   include Enumerable
 
-  initialize ispecs
+  def initialize ispecs
     @ispecs = Array.new ispecs
     @ispecs.each do |i| 
       i[:sample_number] = i[:sample]
       i[:sample] = Sample.find(i[:sample_number])
     end
+    @ispecs
   end
 
   def each &block
     if block_given?
       @ispecs.each &block
     else
-      @ispecs.each do |i|
-        yield i
-      end
+      @ispecs.each { |i| yield i }
     end
   end
 
