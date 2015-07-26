@@ -9,7 +9,7 @@ class Protocol
 
     # o = Workflow::Op.new input
 
-    puts Protocol.constant
+    puts Protocol.constants
 
     # take o.inputs(:fwd).first_items, method: "boxes"
     # take o.inputs(:rev).first_items, method: "boxes"  
