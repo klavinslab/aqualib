@@ -7,7 +7,9 @@ class Protocol
 
   def main
 
-    o = Protocol::Op.new input
+    # o = Op.new input
+
+    puts Op
 
     # take o.inputs(:fwd).first_items, method: "boxes"
     # take o.inputs(:rev).first_items, method: "boxes"  
