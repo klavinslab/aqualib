@@ -16,7 +16,7 @@ class Protocol
     show {
       title "#{o.name} Inputs"
       note o.input_names.join(", ")
-      note "names = #{o.inputs.collect { |i| i[:sample] ? i[:sample].name : "-" }}"
+      note o.inputs.collect { |name,ispec| "#{name}: #{ispec[:sample].name}"}
     }
 
   end
