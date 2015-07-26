@@ -9,7 +9,7 @@ class Protocol
 
     # o = Op.new input
 
-    puts constants.sort
+    puts Protocol.constants.sort
 
     # take o.inputs(:fwd).first_items, method: "boxes"
     # take o.inputs(:rev).first_items, method: "boxes"  
