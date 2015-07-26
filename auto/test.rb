@@ -5,8 +5,10 @@ class InvArray
   def initialize ispecs
     @ispecs = Array.new ispecs
     @ispecs.each do |i| 
-      i[:sample_number] = i[:sample]
-      i[:sample] = Sample.find(i[:sample_number])
+      if i[:sample]
+        i[:sample_number] = i[:sample]
+        i[:sample] = Sample.find(i[:sample_number])
+      end
     end
     @ispecs
   end
