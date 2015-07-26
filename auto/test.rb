@@ -7,7 +7,7 @@ class Protocol
 
   def main
 
-    o = Workflow::Op.new input
+    o = self.Workflow::Op.new input
 
     # take o.inputs(:fwd).first_items, method: "boxes"
     # take o.inputs(:rev).first_items, method: "boxes"  
