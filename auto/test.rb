@@ -7,16 +7,17 @@ class Protocol
 
   def main
 
-    o = Op.new input
+    #o = Op.new input
 
     # take o.inputs(:fwd).first_items, method: "boxes"
     # take o.inputs(:rev).first_items, method: "boxes"  
     # take o.inputs(:template).first_items, method: "boxes"
 
     show {
-      title "#{o.name} Inputs"
-      note o.input_names.join(", ")
-      note "names = #{o.inputs.collect { |i| i[:sample] ? i[:sample].name : "-" }}"
+      note "Test"
+      #title "#{o.name} Inputs"
+      #note o.input_names.join(", ")
+      #note "names = #{o.inputs.collect { |i| i[:sample] ? i[:sample].name : "-" }}"
     }
 
   end
