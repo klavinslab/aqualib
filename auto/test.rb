@@ -61,7 +61,7 @@ class Protocol
     show {
       title "#{o.name} Inputs"
       note o.input_names.join(", ")
-      note "names = #{i.inputs.collect { |i| i.sample.name }}"
+      note "names = #{i.inputs.collect { |i| i[:sample].name }}"
     }
 
   end
