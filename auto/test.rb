@@ -1,3 +1,27 @@
+class InvArray
+
+  include Enumerable
+
+  initialize ispecs
+    @ispecs = Array.new ispecs
+    @ispecs.each do |i| 
+      i[:sample_number] = i[:sample]
+      i[:sample] = Sample.find(i[:sample_number])
+    end
+  end
+
+  def each &block
+    if block_given?
+      @ispecs.each &block
+    else
+      @ispecs.each do |i|
+        yield i
+      end
+    end
+  end
+
+end
+
 class Op
 
   def initialize spec
@@ -14,10 +38,8 @@ class Op
     @spec[:inputs].collect { |i| i[:name] }
   end
 
-  def raw_input name
-    match = raw_inputs.select { |i| i[:name] == name }
-    raise "Could not find input named #{name}" unless match.length != 0
-    match.first
+  def inputs
+    @inv_array ||= InvArray(@spec[:inptus])
   end
 
 end
@@ -39,6 +61,7 @@ class Protocol
     show {
       title "#{o.name} Inputs"
       note o.input_names.join(", ")
+      note i.inputs.collect { |i| i.sample.name }
     }
 
   end
