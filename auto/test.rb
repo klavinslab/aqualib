@@ -38,7 +38,7 @@ class Op
   end
 
   def inputs
-    @inv_array ||= InvArray(@spec[:inptus])
+    @inv_array ||= InvArray.new(@spec[:inptus])
   end
 
 end
