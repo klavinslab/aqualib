@@ -13,7 +13,17 @@ Michelle Parks <mnparks@uw.edu>, wrote the Aquarium Routines section.
 
 Aquarium Routines
 ---
-Michelle Parks is working on this section describing the routines of Aquarium like log in, log out, discussion board, etc.
+#### Creating an Aquarium Username
+
+#### Logging In and Out
+
+#### Searching for a Sample
+
+#### Discussion Board
+
+#### Aborting Jobs and Metacols
+
+#### Job Logs
 
 Samples and Items
 ---
