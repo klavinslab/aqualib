@@ -11,7 +11,7 @@ Samples and Items
 ---
 Samples and Items
 
-In Aquarium there is a hierarchy of different object types. In general, a sample is the definition of something like a plasmid called "pLAB1". Each sample has a specific sample ID. The sample pLAB1 has a specific sample type, in this case plasmid. Each sample has specific container types. For example, for a plasmid sample type, the containers are plasmid stocks, plasmid glycerol stocks, 1 ng/µl stocks, ect. There can be multiple copies of each container type of a sample that exist physically in the lab at the same time. Each container type item has a specific item ID in Aquarium. 
+In Aquarium there is a hierarchy of different object types. In general, a sample is the definition of something like a plasmid called "pLAB1". Each sample has a specific sample ID. The sample pLAB1 has a specific sample type, in this case plasmid. Each sample has specific container types. For example, for a plasmid sample type, the containers are plasmid stocks, plasmid glycerol stocks, 1 ng/µl stocks, ect. There can be multiple copies of each container type of a sample that exist physically in the lab at the same time. Each container type item has a specific item ID in Aquarium.
 
 Creating a New Sample
 
@@ -19,7 +19,7 @@ To define a new sample go to the inventory dropdown menu and select the desired 
 
 Creating New Items
 
-Creating new items of samples is relatively easy. For the most part items of samples will be created automatically through protocols, but there are times where an item may need to be entered outside of a protocol. To do this, go to the inventory page of the sample of which a new item is desired. Click on the desired container type and click the "New" button and Aquarium will create a new item with a unique item ID number. 
+Creating new items of samples is relatively easy. For the most part items of samples will be created automatically through protocols, but there are times where an item may need to be entered outside of a protocol. To do this, go to the inventory page of the sample of which a new item is desired. Click on the desired container type and click the "New" button and Aquarium will create a new item with a unique item ID number.
 
 Creating New Sample Types
 
@@ -47,9 +47,9 @@ The Fragment Construction workflow takes fragment sample id as input and produce
 For each fragment, it finds the 1ng/µL plasmid stock of the fragment. If a 1ng/µL plasmid stock does not exist, it will try to dilute from the plasmid stock if there is any. It also finds the primer aliquot for the forward primer and reverse primer. It uses the T Anneal data in the forward and reverse primer field and uses the lower of the two as the desired annealing temperature for the PCR. The workflow first clusters all PCRs into 3 temperature groups, >= 70 C, 67 -70 C, < 67 C based on the desired annealing temperature. Then it finds the lowest annealing temperature in each group and uses that as the final annealing temperature. The workflow runs the PCR reactions for all fragments based on above information and stocks it finds, then pours a number of gels based on the number of PCR reactions, runs the gel and then cut the gel based on the length info in the fragment field, finally purifies the gel and results in a fragment stock with concentration recorded in the datum field and placed in the M20 boxes. If a gel band does not match the length info, the corresponding gel lane will not be cut and no fragment stock will be produced for that fragment.
 
 #### Input requirements
-| Argument name   |   Data type | Data structure | Inventory type | Sample property |
-|:---------- |:------------- |:------------- |:------------- |:------------- |
-| fragments  |  sample id |  array | Fragment | Length, Template, Forward Primer, Reverse Primer  |
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| fragments  |  sample id |  array | Fragment | Length, Template, Forward Primer, Reverse Primer  | None |
 
 The template can be a plasmid, fragment, yeast strain, or E coli strain.
 
@@ -70,8 +70,13 @@ At the beginning of gibson protocol, the workflow processes all the Gibson Assem
 The workflow also manages all the status of the tasks like described in the fragment construction section, you can check the progress of you task by clicking each status tab. If you Gibson reaction successfully has colonies, it will be pushed to the "imaged and stored in fridge" tab, if no colonies show up, it will be pushed to the "no colonies" tab. If you notice that your tasks are sitting in the "waiting" for too long, you should probably read the following input requirements.
 
 #### Input requirements
- **sample id** is required for the plasmid and fragment argument. You need to enter the **Bacterial Marker** info for the plasmid and **Length** info for the fragment. You need to ensure there is at least one fragment stock for the fragment. If you do not have a fragment stock or run out of fragment stock, the build_fragments metacol will build one for you but you need to make sure all the info in the fragment sample field are valid as the same requirements described in the fragment construction workflow. You do not have to submit this fragment building as a separate task in the fragment construction workflow, the fragment construction workflow will automatically submit for you.
 
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| plasmid  |  sample id |  integer | Plasmid | Bacterial Marker, Length | None |
+| fragments  |  sample id |  array | Fragment | Length | Fragment Stock |
+
+You need to ensure there is at least one fragment stock for the fragment. If you do not have a fragment stock or run out of fragment stock, new fragment construction task will automatically submitted for you.
 
 Plasmid Verification
 ---
@@ -81,16 +86,22 @@ The plasmid verification workflow takes an E coli Plate of Plasmid, produces pla
 #### Input requirements
 Enter the item id of the E coli plate in plate_ids that you want to extract and verify plasmid from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate and also enter **sample id** of primers for setting up sequencing reaction for extracted plasmid from each plate. For each E coli plate of plasmid, you need to enter the **Bacterial Marker** info (Amp, Kan or Chlor) in the plasmid sample field. You need to specify num_colonies (a number that ranges from 1-10) and primer_ids (an array of primer sample ids) for each plate in the task input. Notably, since each plate_id corresponds to an array of primers, the primer_ids for all plate_ids will be an array of arrays. Apparently, the array length of plate_ids, num_colonies, primer_ids should be the same.
 
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| plate_ids  |  item id  | array | E coli Plate of Plasmid | Bacterial Marker (e.g. Amp, Kan, etc) | E coli Plate of Plasmid |
+| num_colonies | integer | array | N/A | N/A | N/A |
+| primer_ids | sample id | array of arrays | Primer | Not required | Primer Aliquot |
+
 Sequencing
 ---
 #### How it works?
 The sequencing workflow takes plasmid stocks and prepares sequencing reaction mix in stripwells with corresponding primer stocks. It submits orders to Genewiz and send to do Sanger sequencing. When sequencing results are back, it guides the technicians to upload the results into Aquarium.
 
 #### Input requirements
-| Argument name   |   Data type | Data structure | Inventory type | Sample property |
-|:---------- |:------------- |:------------- |:------------- |:------------- |
-| plasmid_stock_ids  |  item id | array | Plasmid Stock or Fragment Stock | Not required |
-| primer_ids | sample id | array of arrays | Primer | Not required |
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| plasmid_stock_ids  |  item id | array | Plasmid Stock or Fragment Stock | Not required | Plasmid Stock or Fragment Stock |
+| primer_ids | sample id | array of arrays | Primer | Not required | Primer aliquot |
 
 Each item id in the plasmid_stock_ids uses the corresponding subarray of primer_ids to set up sequencing reaction.
 
