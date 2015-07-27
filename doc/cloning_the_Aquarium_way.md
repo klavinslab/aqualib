@@ -5,7 +5,7 @@ This documentation is used as a reference for using Aquarium to do cloning work 
 
 **Authors List**
 
-Yaoyu Yang <yaoyu@uw.edu>, wrote the Task Common Routines and all the Task specific sections.
+Yaoyu Yang <yaoyu@uw.edu>, wrote the Task Routines and all the Task specific sections.
 
 Miles Gander <gander.miles@gmail.com>, wrote the Samples and Items section.
 
