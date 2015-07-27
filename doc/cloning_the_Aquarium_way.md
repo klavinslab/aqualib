@@ -31,10 +31,15 @@ Deleting Samples
 
 Common Routines
 ---
-Assume a task prototype has the name of Awesome Task (such as Fragment Construction). To enter new tasks and track all existing tasks progress and information, go to Tasks > Awesome Tasks. You can click the button New Awesome Task to enter inputs for new tasks: you can enter anything that helps you recognize in the Name field, leave the Status as waiting by default, enter the rest of arguments referring to the input requirements of each specific task documentation in the following sections. If an argument input has "+", "-" buttons, it means the argument takes an array of inputs, if the input has two "+", "-" button, it means the argument takes an array of array inputs. You can also click the status bar such as waiting, ready, canceled, etc to track all your tasks. You can use search bar to filter out your tasks of interest by typing user name or tasks name. It starts with your user name as default.
+#### How to enter new tasks?
+Assume a task prototype has the name of Awesome Task (such as Fragment Construction). To enter new tasks and track all existing tasks progress and information, go to Tasks > Awesome Tasks. You can click the button New Awesome Task to enter inputs for new tasks: you can enter anything that helps you recognize in the Name field, leave the Status as waiting by default, enter the rest of arguments referring to the **input requirements** of each specific task documentation in the following sections. If an argument input has "+", "-" buttons, it means the argument takes an array of inputs, if the input has two "+", "-" button, it means the argument takes an array of array inputs. You can also click the status bar such as waiting, ready, canceled, etc to track all your tasks. You can use search bar to filter out your tasks of interest by typing user name or tasks name. It starts with your user name as default. You can check your input by running aqualib/workflows/general/tasks_inputs.rb, enter Awesome Task as the argument in task_name and enter your user name in the group argument. After you run, you can check the notifications of the tasks to see what's wrong with your input.
 
-To actually carry out the Awesome Task for real in the wetlab, in most cases (except for Sequencing Verification) you need to schedule the metacol/protocols corresponding to this Awesome Task. Noting that it only needs to be started once to execute all the Awesome Tasks that are waiting or ready, so the best practice is to start this regularly every day at a determined time so users can enter their tasks before that time. To start the metacol/protocols, go to Protocols > Under Version Control, find the Github repo tree, click workflows/metacol, then click the file named awesome_task.oy, leave the debug_mode empty, assign to a group that is going to experimentally perform all the protocols, normally choose technicians, then click Launch! All the protocols will then be subsequently scheduled and can be accessed from Protocols > Pending Jobs.
+#### How to execute tasks?
 
+**Lab manager perspective**
+To actually carry out the Awesome Task for real in the wetlab, in most cases (except for Sequencing Verification), the lab manager need to schedule the metacol/protocols corresponding to this Awesome Task. Noting that it only needs to be started once to execute all the Awesome Tasks that are waiting or ready, so the best practice is to start this regularly every day at a determined time so users can enter their tasks before that time. To start the metacol/protocols, go to Protocols > Under Version Control, find the Github repo tree, click workflows/metacol, then click the file named awesome_task.oy, leave the debug_mode empty, assign to a group that is going to experimentally perform all the protocols, normally choose technicians, then click Launch! All the protocols will then be subsequently scheduled and can be accessed from Protocols > Pending Jobs.
+
+**User perspective**
 For each new task entered, it will start as waiting by default. A protocol named tasks_inputs.rb, normally the first protocol in the metacol associated with this task, will process all the tasks in the waiting or ready status and change its status to ready if all the input requirements are fulfilled and change to waiting if not. All the tasks in the ready will be batched and being processed by subsequent protocols in the metacol to actually instruct technicians to perform guided steps in the lab to carry out actual experiments.
 
 If you don't want a task to be executed anymore, change its status to canceled. You are advised only to do this while your task is in waiting or ready and the metacol has not been started, if your task already been processed and progressed to other status, contact the Lab manager to discuss alternatives if you don't want a task to be executed anymore.
@@ -111,7 +116,12 @@ Yeast Transformation
 The yeast transformation workflow takes a yeast strain id as input and produces a yeast plate through transforming a digested plasmid into a parent yeast strain. The yeast strain sample field defines the integrant and the parent yeast strain. The workflow can be scheduled by starting yeast_transformtion metacol. In detail, it pools all the yeast transformation tasks, starts overnights for the parent strains that do not have enough yeast competent cells for this batch of transformation. If there is any overnights, it then progresses to inoculate overnights into large volume growth and make as many as possible yeast competent cells and places in the M80C boxes. In the meantime, it digests the plasmid stock of the plasmid that specified in the integrant field of the yeast strain. It then transforms the digested plasmids into the parent strain yeast competent cells and plates them on selective media plates using info specified in the yeast marker field of the plasmid. The workflow currently can also handle plasmids with KanMX yeast marker, it will incubate the transformed mixtures for 3 hours and then plate on +G418 plates.
 
 #### Input requirements
-Enter the sample ids of the yeast strains you want to make. For each yeast strain entered in the tasks, you need to enter the **Parent** and **Integrant** info in the sample field. The parent is to link a yeast strain as your parent strain for this transformation and integrant links to the plasmid you are planning to digest and transform into the parent strain to make the yeast transformed strain. You need to make sure there is at least one plasmid stock for the plasmid. You also need to make sure the yeast marker field in properly entered in the plasmid sample page. Noting that currently the workflow only processes plasmid entered into the integrant field since the workflow is intended for digest plasmid and integrate them into yeast genome by transformation.
+ The parent is to link a yeast strain as your parent strain for this transformation and integrant links to the plasmid you are planning to digest and transform into the parent strain to make the yeast transformed strain. You need to make sure there is at least one plasmid stock for the plasmid. You also need to make sure the yeast marker field in properly entered in the plasmid sample page.
+
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| yeast_transformed_strain_ids  |  sample id | array | Yeast Strain | Parent, Integrant (or Plasmid) | None |
+
 
 Yeast Strain QC
 ---
@@ -123,7 +133,12 @@ When picking up colonies from a yeast plate, the workflow follows the following 
 The workflow manages all the status of the tasks as "waiting", "lysate", "pcr", "gel run", "gel imaged", you can easily track the progress of your tasks.
 
 #### Input requirements
-Enter the item id of the Yeast plate in yeast_plate_ids that you want to do lysate and QCPCR from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate for QC. For each yeast plate, you need to enter the **QC Primer 1** and **QC Primer 2** in the yeast strain sample field. You need to specify a number in num_colonies for each yeast_plate_id you enter to indicate how many colonies you want to QC from that plate. The array length of yeast_plate_ids and num_colonies need to be the same.
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| yeast_plate_ids  |  item id | array | Yeast Plate | QC Primer 1, QC Primer 2 | Primer Stock for QC Primer 1 and QC Primer 2 |
+| num_colonies  |  integer | array | N/A | N/A | N/A |
+
+num_colonies is to indicate how many colonies you want to pick from each plate for QC. The array length of yeast_plate_ids and num_colonies need to be the same so they are one to one correspondence.
 
 Yeast Mating
 ---
@@ -131,4 +146,9 @@ Yeast Mating
 For each yeast mating task, the yeast mating workflow takes two yeast strains as input and produces a mated yeast strain on a selective media plate. It automatically creates a new yeast strain in the database where the name of the new yeast strain is generated by concatenating two parent yeast strains' names. In detail, it uses glycerol stock from each yeast strain and inoculates each into 1 mL YPAD. Then mix them into 14 mL tube to incubate for at least 5 hrs. After incubation, it schedules a streak_yeast_plate protocol to streak the yeast on a selective media plate defined by the user from the task input. After 48 hrs, it schedules an image_plate protocol to image and store the plate.
 
 #### Input requirements
-For each task, you need to enter the sample id of the two yeast strains in the **yeast_mating_strain_ids** and you are allowed to only enter **two** yeast strain ids. You need to make sure each strain has at least one Yeast Glycerol Stock available. You also need to specify in the **yeast_selective_plate_type** which plate you intend to plate on, for example, it could be -TRP, -HIS or -URA, -LEU, etc. You can check your input by running aqualib/workflows/general/tasks_inputs.rb and enter Yeast Mating as the argument in task_name.
+| Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
+|:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
+| yeast_mating_strain_ids  |  sample id | array with size 2 | Yeast Strain | Not required | Yeast Glycerol Stock |
+| yeast_selective_plate_type  |  string | string | N/A | N/A | N/A |
+
+yeast_selective_plate_type indicates which type of plate you intend to plate on for the mated strain, it's usually a combination of two markers, such as -TRP, -HIS or -URA, -LEU, etc.
