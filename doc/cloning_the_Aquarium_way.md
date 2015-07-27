@@ -47,7 +47,11 @@ The Fragment Construction workflow takes fragment sample id as input and produce
 For each fragment, it finds the 1ng/µL plasmid stock of the fragment. If a 1ng/µL plasmid stock does not exist, it will try to dilute from the plasmid stock if there is any. It also finds the primer aliquot for the forward primer and reverse primer. It uses the T Anneal data in the forward and reverse primer field and uses the lower of the two as the desired annealing temperature for the PCR. The workflow first clusters all PCRs into 3 temperature groups, >= 70 C, 67 -70 C, < 67 C based on the desired annealing temperature. Then it finds the lowest annealing temperature in each group and uses that as the final annealing temperature. The workflow runs the PCR reactions for all fragments based on above information and stocks it finds, then pours a number of gels based on the number of PCR reactions, runs the gel and then cut the gel based on the length info in the fragment field, finally purifies the gel and results in a fragment stock with concentration recorded in the datum field and placed in the M20 boxes. If a gel band does not match the length info, the corresponding gel lane will not be cut and no fragment stock will be produced for that fragment.
 
 #### Input requirements
-Enter the sample id of the fragment in the fragments argument, it can also be an array of sampld ids. For each submitted fragment, you need to enter **Length**, **Template**, **Forward Primer**, **Reverse Primer**, which can be edited in the fragment sample page by clicking Edit Fragment Information. The template can be a plasmid, fragment, yeast strain, or E coli strain. For plasmid, you need plasmid stock or 1ng/µL plasmid stock existed in the inventory.
+| Argument name   |   Data type | Data structure | Inventory type | Sample property |
+|:---------- |:------------- |:------------- |:------------- |:------------- |
+| fragments  |  sample id |  array | Fragment | Length, Template, Forward Primer, Reverse Primer  |
+
+The template can be a plasmid, fragment, yeast strain, or E coli strain.
 
 | Template   |      Inventory in container needed |
 |:---------- |:------------- |
@@ -66,23 +70,29 @@ At the beginning of gibson protocol, the workflow processes all the Gibson Assem
 The workflow also manages all the status of the tasks like described in the fragment construction section, you can check the progress of you task by clicking each status tab. If you Gibson reaction successfully has colonies, it will be pushed to the "imaged and stored in fridge" tab, if no colonies show up, it will be pushed to the "no colonies" tab. If you notice that your tasks are sitting in the "waiting" for too long, you should probably read the following input requirements.
 
 #### Input requirements
-You need to enter the **Bacterial Marker** info for the plasmid and **Length** info for the fragment. You need to ensure there is at least one fragment stock for the fragment. If you do not have a fragment stock or run out of fragment stock, the build_fragments metacol will build one for you but you need to make sure all the info in the fragment sample field are valid as the same requirements described in the fragment construction workflow. You do not have to submit this fragment building as a separate task in the fragment construction workflow, the build_fragments metacol will pull inputs from both gibson assembly and fragment construction tasks.
+ **sample id** is required for the plasmid and fragment argument. You need to enter the **Bacterial Marker** info for the plasmid and **Length** info for the fragment. You need to ensure there is at least one fragment stock for the fragment. If you do not have a fragment stock or run out of fragment stock, the build_fragments metacol will build one for you but you need to make sure all the info in the fragment sample field are valid as the same requirements described in the fragment construction workflow. You do not have to submit this fragment building as a separate task in the fragment construction workflow, the fragment construction workflow will automatically submit for you.
 
-#### How to submit a task?
-To submit a Gibson assembly task, go to Tasks/Gibson Assembly, click New Gibson Assembly, enter Name as an identifier for you to recognize, could be any string that does not conflict with existing task names under Gibson Assembly task, leave the Status as "waiting" or change it to "ready" if you want, enter the plasmid id and fragment id by either directly enter the sample id or use the finder UI by clicking the button alongside the input box.
 
 Plasmid Verification
 ---
 #### How it works?
 The plasmid verification workflow takes an E coli Plate of Plasmid, produces plasmid stocks from specified number of colonies on that plate, and produces sequencing results by sending sequencing reactions with specified primers. In detail, the workflow can be started by scheduling plasmid_verification metacol, it pools all plasmid verification tasks and start specified number of overnights from each plate, produces plasmid stocks using miniprep from overnights that have growth, sets up sequencing reactions for each plasmid stock with specified primers, sends to a sequencing facility (currently Genewiz), and finally uploads the sequencing results into Aquarium.
 
-The workflow also manages all the status of the tasks as "waiting", "overnight", "plasmid extracted", "send to sequencing", "results back", you can easily track the progress of your tasks.
+#### Input requirements
+Enter the item id of the E coli plate in plate_ids that you want to extract and verify plasmid from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate and also enter **sample id** of primers for setting up sequencing reaction for extracted plasmid from each plate. For each E coli plate of plasmid, you need to enter the **Bacterial Marker** info (Amp, Kan or Chlor) in the plasmid sample field. You need to specify num_colonies (a number that ranges from 1-10) and primer_ids (an array of primer sample ids) for each plate in the task input. Notably, since each plate_id corresponds to an array of primers, the primer_ids for all plate_ids will be an array of arrays. Apparently, the array length of plate_ids, num_colonies, primer_ids should be the same.
+
+Sequencing
+---
+#### How it works?
+The sequencing workflow takes plasmid stocks and prepares sequencing reaction mix in stripwells with corresponding primer stocks. It submits orders to Genewiz and send to do Sanger sequencing. When sequencing results are back, it guides the technicians to upload the results into Aquarium.
 
 #### Input requirements
-For each E coli plate of plasmid, you need to enter the **Bacterial Marker** info (Amp, Kan or Chlor) in the plasmid sample field. You need to specify num_colonies (a number that ranges from 1-10) and primer_ids (an array of primer sample ids) for each plate in the task input. Notably, since each plate_id corresponds to an array of primers, the primer_ids for all plate_ids will be an array of arrays. Apparently, the array length of plate_ids, num_colonies, primer_ids should be the same.
+| Argument name   |   Data type | Data structure | Inventory type | Sample property |
+|:---------- |:------------- |:------------- |:------------- |:------------- |
+| plasmid_stock_ids  |  item id | array | Plasmid Stock or Fragment Stock | Not required |
+| primer_ids | sample id | array of arrays | Primer | Not required |
 
-#### How to submit a task?
-To submit a plasmid verification task, go to Tasks/Plasmid Verification, click New Plasmid Verification, enter Name as an identifier for you to recognize, could be any string that does not conflict with existing task names under Plasmid Verification task, leave the Status as "waiting", enter the item id of the E coli plate in plate_ids that you want to extract and verify plasmid from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate and also enter **sample id** of primers for setting up sequencing reaction for extracted plasmid from each plate. You can also enter your initials so that in the sequencing results it will have you initials in the file name so you can easily identify your results among others.
+Each item id in the plasmid_stock_ids uses the corresponding subarray of primer_ids to set up sequencing reaction.
 
 Yeast Transformation
 ---
@@ -90,10 +100,7 @@ Yeast Transformation
 The yeast transformation workflow takes a yeast strain id as input and produces a yeast plate through transforming a digested plasmid into a parent yeast strain. The yeast strain sample field defines the integrant and the parent yeast strain. The workflow can be scheduled by starting yeast_transformtion metacol. In detail, it pools all the yeast transformation tasks, starts overnights for the parent strains that do not have enough yeast competent cells for this batch of transformation. If there is any overnights, it then progresses to inoculate overnights into large volume growth and make as many as possible yeast competent cells and places in the M80C boxes. In the meantime, it digests the plasmid stock of the plasmid that specified in the integrant field of the yeast strain. It then transforms the digested plasmids into the parent strain yeast competent cells and plates them on selective media plates using info specified in the yeast marker field of the plasmid. The workflow currently can also handle plasmids with KanMX yeast marker, it will incubate the transformed mixtures for 3 hours and then plate on +G418 plates.
 
 #### Input requirements
-For each yeast strain entered in the tasks, you need to enter the **Parent** and **Integrant** info in the sample field. The parent is to link a yeast strain as your parent strain for this transformation and integrant links to the plasmid you are planning to digest and transform into the parent strain to make the yeast transformed strain. You need to make sure there is at least one plasmid stock for the plasmid. You also need to make sure the yeast marker field in properly entered in the plasmid sample page. Noting that currently the workflow only processes plasmid entered into the integrant field since the workflow is intended for digest plasmid and integrate them into yeast genome by transformation.
-
-#### How to submit a task?
-To submit a yeast transformation task, go to Tasks/Yeast Transformation, click New Yeast Transformation, enter Name as an identifier for you to recognize, could be any string that does not conflict with existing task names under Yeast Transformation task, leave the Status as "waiting", enter the sample ids of the yeast strains you want to make.
+Enter the sample ids of the yeast strains you want to make. For each yeast strain entered in the tasks, you need to enter the **Parent** and **Integrant** info in the sample field. The parent is to link a yeast strain as your parent strain for this transformation and integrant links to the plasmid you are planning to digest and transform into the parent strain to make the yeast transformed strain. You need to make sure there is at least one plasmid stock for the plasmid. You also need to make sure the yeast marker field in properly entered in the plasmid sample page. Noting that currently the workflow only processes plasmid entered into the integrant field since the workflow is intended for digest plasmid and integrate them into yeast genome by transformation.
 
 Yeast Strain QC
 ---
@@ -105,10 +112,7 @@ When picking up colonies from a yeast plate, the workflow follows the following 
 The workflow manages all the status of the tasks as "waiting", "lysate", "pcr", "gel run", "gel imaged", you can easily track the progress of your tasks.
 
 #### Input requirements
-For each yeast plate, you need to enter the **QC Primer 1** and **QC Primer 2** in the yeast strain sample field. YOu need to specify a number in num_colonies for each yeast_plate_id you enter to indicate how many colonies you want to QC from that plate. The array length of yeast_plate_ids and num_colonies need to be the same.
-
-#### How to submit a task?
-To submit a yeast strain QC task, go to Tasks/Yeast Strain QC, click New Yeast Strain QC, enter Name as an identifier for you to recognize, could be any string that does not conflict with existing task names under Yeast Strain QC task, leave the Status as "waiting", enter the item id of the Yeast plate in yeast_plate_ids that you want to do lysate and QCPCR from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate for QC.
+Enter the item id of the Yeast plate in yeast_plate_ids that you want to do lysate and QCPCR from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate for QC. For each yeast plate, you need to enter the **QC Primer 1** and **QC Primer 2** in the yeast strain sample field. You need to specify a number in num_colonies for each yeast_plate_id you enter to indicate how many colonies you want to QC from that plate. The array length of yeast_plate_ids and num_colonies need to be the same.
 
 Yeast Mating
 ---
