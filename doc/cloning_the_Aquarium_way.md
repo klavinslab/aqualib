@@ -51,7 +51,7 @@ For each fragment, it finds the 1ng/µL plasmid stock of the fragment. If a 1ng/
 |:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
 | fragments  |  sample id |  array | Fragment | Length, Template, Forward Primer, Reverse Primer  | None |
 
-The template can be a plasmid, fragment, yeast strain, or E coli strain.
+The template can be a plasmid, fragment, yeast strain, or E coli strain. Corresponding item shown in the table below need to be existed in the inventory for the fragment construction task able to be pushed to ready.
 
 | Template   |      Item required |
 |:---------- |:------------- |
