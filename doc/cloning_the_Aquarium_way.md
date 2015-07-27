@@ -1,23 +1,28 @@
 Cloning the Aquarium way
 ===
 
-This documentation is used as a reference for using Aquarium to do cloning work via Tasks. A read through is recommended for new Aquarium users. In case you have any questions, contact this document authors Yaoyu Yang at <yaoyu@uw.edu>, Miles Gander at <gander.miles@gmail.com> or post notes in discussion board in Aquarium.
+This documentation is used as a reference for using Aquarium to do cloning work via Tasks. A read through is recommended for new Aquarium users. In case you have any questions, contact this document authors below.
 
-General stuff
+**Authors List**
+Yaoyu Yang <yaoyu@uw.edu>, wrote the Task Common Routines and all the Task specific sections.
+Miles Gander <gander.miles@gmail.com>, wrote the Samples and Items section.
+Michelle Parks <mnparks@uw.edu>, wrote the Aquarium Routines section.
+
+Aquarium Routines
 ---
-MP
+Michelle Parks is working on this section describing the routines of Aquarium like log in, log out, discussion board, etc.
 
 Samples and Items
 ---
-Samples and Items
+#### Samples and Items
 
 In Aquarium there is a hierarchy of different object types. In general, a sample is the definition of something like a plasmid called "pLAB1". Each sample has a specific sample ID. The sample pLAB1 has a specific sample type, in this case plasmid. Each sample has specific container types. For example, for a plasmid sample type, the containers are plasmid stocks, plasmid glycerol stocks, 1 ng/µl stocks, ect. There can be multiple copies of each container type of a sample that exist physically in the lab at the same time. Each container type item has a specific item ID in Aquarium.
 
-Creating a New Sample
+#### Creating a new sample
 
 To define a new sample go to the inventory dropdown menu and select the desired sample type for the new sample. (Plasmid, Primer, Yeast Strain, etc.) Then, for example, to define a new plasmid click on the "New Plasmid" button at the bottom of the page. This pulls up a page with information fields to fill out. The "New Plasmid" page has fields for the name of the plasmids, the project of the sample, a description of the plasmid, sequencing verification and other relevant information. Other sample types have similar informaiton field pages that must be completed to define a new sample. When the fields are completed click on "Save Sample Information" and Aquarium will assign a unique sample number to the new sample.
 
-Creating New Items
+#### Creating new items
 
 Creating new items of samples is relatively easy. For the most part items of samples will be created automatically through protocols, but there are times where an item may need to be entered outside of a protocol. To do this, go to the inventory page of the sample of which a new item is desired. Click on the desired container type and click the "New" button and Aquarium will create a new item with a unique item ID number.
 
@@ -29,7 +34,7 @@ Deleting Items
 
 Deleting Samples
 
-Common Routines
+Task Routines
 ---
 #### How to enter new tasks?
 Assume a task prototype has the name of Awesome Task (such as Fragment Construction). To enter new tasks and track all existing tasks progress and information, go to Tasks > Awesome Tasks. You can click the button New Awesome Task to enter inputs for new tasks: you can enter anything that helps you recognize in the Name field, leave the Status as waiting by default, enter the rest of arguments referring to the **input requirements** of each specific task documentation in the following sections. If an argument input has "+", "-" buttons, it means the argument takes an array of inputs, if the input has two "+", "-" button, it means the argument takes an array of array inputs. You can also click the status bar such as waiting, ready, canceled, etc to track all your tasks. You can use search bar to filter out your tasks of interest by typing user name or tasks name. It starts with your user name as default. You can check your input by running aqualib/workflows/general/tasks_inputs.rb, enter Awesome Task as the argument in task_name and enter your user name in the group argument. After you run, you can check the notifications of the tasks to see what's wrong with your input.
