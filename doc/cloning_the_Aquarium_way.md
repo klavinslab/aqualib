@@ -5,7 +5,7 @@ This documentation is used as a reference for using Aquarium to do cloning work 
 
 **Authors List**
 
-Yaoyu Yang <yaoyu@uw.edu>, wrote the Task Routines and all the Task specific sections.
+Yaoyu Yang <yaoyu@uw.edu>, wrote the Task Common Routines and all the Task specific sections.
 
 Miles Gander <gander.miles@gmail.com>, wrote the Samples and Items section.
 
@@ -29,13 +29,21 @@ To define a new sample go to the inventory dropdown menu and select the desired 
 
 Creating new items of samples is relatively easy. For the most part items of samples will be created automatically through protocols, but there are times where an item may need to be entered outside of a protocol. To do this, go to the inventory page of the sample of which a new item is desired. Click on the desired container type and click the "New" button and Aquarium will create a new item with a unique item ID number.
 
-Creating New Sample Types
+#### Creating New Sample Types
 
-Creating New Container Types
+If new protocol or new task requires a new sample type, it can be defined in the following manner. First, click on the inventory dropdown menu and click on the "Sample Type Definitions" option. This leads to a page with all the defined sample types currently available in the system. At the bottom of this page there is a button labeled "New Sample type", this will open a page with a space for a name, a descripiton, and up to 8 fields. These fields can be defined to take strings, numbers, urls, or links to any other sample type. Not all fields necessarily need to be used. Once all of the information fields on this page are filled out, clicking the "Save Sample Type" will define the new sample. 
 
-Deleting Items
+#### Creating New Container Types
 
-Deleting Samples
+Each sample type has different forms it can exist in. In the Aquarium system these forms are referred to as container types. To define a new container type for a given sample, navigate back to the "Sample Type Definitions" page. Once there, click the link to the name of the sample type you wish to add a container type too. The link will bring up a page that lists the fields of the sample type and all of its containers. At the bottom of the listed containers, there is an "add" button that pulls up a page with a number of different data fields to fill out. The fields include, name of the container type, description, and the location prefix for the location wizard. Additionally, there are a few other optional fields present such as cost per container, vendor and safety information. The functionality for using the information in the additional fields is currently being developed. 
+
+#### Deleting Items
+
+Deleting items in Aquarium is easy. Just navigate to the sample page of the item to be deleted and click on the black "x" to the right of the item. The only consideration when manually deleting an item is to make sure the item is physically removed from the location it had been occupying. That way new items assigned a location by the location wizards will be able to be placed in their correct, unoccupied, slots.
+
+#### Deleting Samples
+
+Deleting sample is also relatively easy. Go to the inventory drop down tab, select the sample type of the sample to be deleted and then click on the black "x" to the right of the sample name. The same consideration of physical removal for deleting items exists for deleting samples. Since a sample can have many items associated with it, all of the associated items with the sample being deleted will need to be physically removed from their inventory slots.
 
 Task Routines
 ---
