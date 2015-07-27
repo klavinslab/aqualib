@@ -96,15 +96,13 @@ You need to ensure there is at least one fragment stock for the fragment. If you
 Plasmid Verification
 ---
 #### How it works?
-The plasmid verification workflow takes an E coli Plate of Plasmid, produces plasmid stocks from specified number of colonies on that plate, and produces sequencing results by sending sequencing reactions with specified primers. In detail, the workflow can be started by scheduling plasmid_verification metacol, it pools all plasmid verification tasks and start specified number of overnights from each plate, produces plasmid stocks using miniprep from overnights that have growth, sets up sequencing reactions for each plasmid stock with specified primers, sends to a sequencing facility (currently Genewiz), and finally uploads the sequencing results into Aquarium.
+The plasmid verification workflow takes an E coli Plate of Plasmid, produces plasmid stocks from specified number of colonies on that plate, and produces sequencing results by sending sequencing reactions with specified primers. In detail, the workflow pools all plasmid verification tasks and starts specified number of overnights from each plate, produces plasmid stocks using miniprep from overnights that have growth, sets up sequencing reactions for each plasmid stock with specified primers, sends to a sequencing facility (currently Genewiz), and finally uploads the sequencing results into Aquarium.
 
 #### Input requirements
-Enter the item id of the E coli plate in plate_ids that you want to extract and verify plasmid from, enter a number in num_colonies to indicate how many colonies you want to pick from each plate and also enter **sample id** of primers for setting up sequencing reaction for extracted plasmid from each plate. For each E coli plate of plasmid, you need to enter the **Bacterial Marker** info (Amp, Kan or Chlor) in the plasmid sample field. You need to specify num_colonies (a number that ranges from 1-10) and primer_ids (an array of primer sample ids) for each plate in the task input. Notably, since each plate_id corresponds to an array of primers, the primer_ids for all plate_ids will be an array of arrays. Apparently, the array length of plate_ids, num_colonies, primer_ids should be the same.
-
 | Argument name   |  Data type | Data structure | Inventory type | Sample property | Item required |
 |:---------- |:------------- |:------------- |:------------- |:------------- |:------------- |
 | plate_ids  |  item id  | array | E coli Plate of Plasmid | Bacterial Marker (e.g. Amp, Kan, etc) | E coli Plate of Plasmid |
-| num_colonies | integer | array | N/A | N/A | N/A |
+| num_colonies | integer (1-10) | array | N/A | N/A | N/A |
 | primer_ids | sample id | array of arrays | Primer | Not required | Primer Aliquot |
 
 Sequencing
