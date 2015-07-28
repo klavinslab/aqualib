@@ -84,11 +84,91 @@ class Protocol
 
   end
 
+  def inventory_type_check inventory_types, item_or_sample, id
+    if inventory_types == ["Sample"] || inventory_types == ["Item"]
+      return true
+    elsif item_or_sample == :item
+      object_type = find(:item, id: id)[0].object_type.name
+      return inventory_types.include? object_type
+    elsif item_or_sample == :sample
+      sample_type = find(:sample, id: id)[0].sample_type.name
+      return inventory_types.include? sample_type
+    end
+  end
+
+  def task_status p={}
+    params = ({ group: "", name: "", notification: "off" }).merge p
+    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].empty?
+    tasks_to_process = find(:task,{ task_prototype: { name: params[:name] } }).select {
+    |t| %w[waiting ready].include? t.status }
+    # filter out tasks based on group input
+    if !params[:group].empty?
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks_to_process.select! { |t| t.user.member? group_info.id }
+    end
+
+    # array of object_type_names and sample_type_names
+    object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
+    sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
+
+    # cycling through tasks_to_process to make sure tasks inputs are valid
+    tasks_to_process.each do |t|
+      errors = []
+      t.spec.each do |argument, ids|
+        argument = argument.to_s
+        argument.slice!(argument.split(' ')[0])
+        argument.slice!(0) # remove white space in the beginning
+        inventory_types = argument.split('|')
+        if inventory_types.empty?
+          if argument == "num_colonies"
+            ids.each do |id|
+              errors.push "A number between 0,10 is required for num_colonies"
+            end
+          end
+        else
+          item_or_sample = ""
+          if object_type_names & inventory_types == inventory_types
+            item_or_sample = :item
+          elsif sample_type_names & inventory_types == inventory_types
+            item_or_sample = :sample
+          end
+          ids = [*ids] if ids.is_a? Numeric
+          show {
+            note inventory_types
+            note ids
+          }
+          ids.flatten!
+          ids.uniq!
+          ids.each do |id|
+            if !find(item_or_sample, id: id)[0]
+              errors.push "Can not find #{item_or_sample} #{id}."
+            elsif !inventory_type_check(inventory_types, item_or_sample, id)
+              errors.push "#{item_or_sample} #{id} is not #{inventory_types.join(" or ")}."
+            end
+          end
+        end
+      end
+      if errors.any?
+        errors.each { |error| t.notify error, job_id: jid }
+        set_task_status(t, "waiting") unless t.status == "waiting"
+      else
+        set_task_status(t, "ready") if t.status != "ready"
+      end
+    end
+
+    task_status_hash = {
+      waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" }).collect {|t| t.id},
+      ready_ids: (tasks_to_process.select { |t| t.status == "ready" }).collect {|t| t.id}
+    }
+    return task_status_hash
+  end
+
   def arguments
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Yeast Transformation",
+      task_name: "Gibson Assembly",
       group: "technicians"
     }
   end

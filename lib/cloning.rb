@@ -417,33 +417,77 @@ module Cloning
     }
   end ### sequencing_status
 
+  # process inventory ids and produce erros if there is any
+  def inventory_process ids, params={}
+    errors = []
+    params = ({ inventory_type: "" }).merge params
+    ids = [ids] if ids.class == Fixnum
+    ids.each do |id|
+      if !find(:params[:inventory_type], id: id)
+        errors.push "Can not find #{inventory_type} #{id}."
+      elsif !inventory_types.include? find(:item, id: id).ObjectType.name
+        errors.push "Sample #{id} is not #{inventory_type}."
+      end
+    end
+    return errors
+  end
+
   def task_status p={}
 
     # This function is to process tasks of which the status is waiting or ready. If ready_condition of the task is met, set the status to ready, otherwise, set the status to waiting.
     # This function takes a hash as an argument. group defines whose tasks to process based on their owners belongings to the group and name defines which task_prototype of tasks to process. For example, group: technicians, name: "Yeast Strain QC" will process all Yeast Strain QC tasks whose owners belong to a group called cloning. Another example, group: yang, name: "Fragment Construction" will process all Fragment Construction tasks whose owner belong to a group called yang.
 
-    params = ({ group: false, name: "", notification: "off" }).merge p
-    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].length == 0
-    tasks_all = find(:task,{task_prototype: { name: params[:name] }})
-    tasks = []
+    params = ({ group: "", name: "", notification: "off" }).merge p
+    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].empty?
+    tasks_to_process = find(:task,{ task_prototype: { name: params[:name] } }).select {
+    |t| %w[waiting,ready].include? t.status }
     # filter out tasks based on group input
-    if params[:group] && !params[:group].empty?
+    if !params[:group].empty?
       user_group = params[:group] == "technicians"? "cloning": params[:group]
       group_info = Group.find_by_name(user_group)
-      tasks_all.each do |t|
-        if t.user
-          tasks.push t if t.user.member? group_info.id
+      tasks_to_process.select! { |t| t.user.member? group_info.id }
+    end
+
+    # array of object_type_names and sample_type_names
+    object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
+    sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
+
+    # cycling through tasks_to_process to make sure tasks inputs are valid
+    tasks_to_process.each do |t|
+      errors = []
+      t.spec.each do |argument, ids|
+        argument.slice!(argument.split(' ')[0])
+        inventory_types = argument.split("|")
+        if inventory_types.empty?
+          if argument == "num_colonies"
+            ids.each do |id|
+              errors.push "A number between 0,10 is required for num_colonies"
+            end
+          end
+        else
+          if object_type_names & inventory_types == inventory_types
+            item_or_sample = :item
+          elsif sample_type_names & inventory_types == inventory_types
+            item_or_sample = :sample
+          end
+          ids = [ids] if ids.class == Fixnum
+          ids.flatten!.uniq!
+          ids.each do |id|
+            if !find(item_or_sample, id: id)
+              errors.push "Can not find #{item_or_sample} #{id}."
+            elsif (["Item","Sample"] & inventory_types).empty? && !inventory_types.include? find(:item, id: id).ObjectType.name
+              errors.push "#{item_or_sample} #{id} is not #{inventory_types}."
+            end
+          end
         end
       end
-    else
-      tasks = tasks_all
-    end
-    waiting = tasks.select { |t| t.status == "waiting" }
-    ready = tasks.select { |t| t.status == "ready" }
 
-    # cycling through waiting and ready to make sure tasks inputs are valid
+      if errors.any?
+        errors.each { |error| t.notify error, job_id: jid }
+        set_task_status(t, "waiting") unless t.status == "waiting"
+      end
 
-    (waiting + ready).each do |t|
+      set_task_status(t, "ready") if t.status != "ready"
 
       case params[:name]
 
