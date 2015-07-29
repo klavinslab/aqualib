@@ -503,6 +503,7 @@ module Cloning
             t.notify "Fragment #{fid} needs the Length information entered."
           else
             t[:fragments][:need_to_build].push fid
+            t.notify "Fragment #{fid} needs to have a fragment stock. Fragment construction will be automatically submitted."
           end
         end
         plasmid_condition = false
