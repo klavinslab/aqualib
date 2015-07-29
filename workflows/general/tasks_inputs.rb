@@ -127,24 +127,28 @@ class Protocol
             end
           end
         else
-          item_or_sample = ""
           if object_type_names & inventory_types == inventory_types
             item_or_sample = :item
           elsif sample_type_names & inventory_types == inventory_types
             item_or_sample = :sample
+          else
+            item_or_sample = ""
+            errors.push "Please check your task prototype definition."
           end
-          ids = [*ids] if ids.is_a? Numeric
-          show {
-            note inventory_types
-            note ids
-          }
-          ids.flatten!
-          ids.uniq!
-          ids.each do |id|
-            if !find(item_or_sample, id: id)[0]
-              errors.push "Can not find #{item_or_sample} #{id}."
-            elsif !inventory_type_check(inventory_types, item_or_sample, id)
-              errors.push "#{item_or_sample} #{id} is not #{inventory_types.join(" or ")}."
+          unless item_or_sample.empty?
+            ids = [*ids] if ids.is_a? Numeric
+            show {
+              note inventory_types
+              note ids
+            }
+            ids.flatten!
+            ids.uniq!
+            ids.each do |id|
+              if !find(item_or_sample, id: id)[0]
+                errors.push "Can not find #{item_or_sample} #{id}."
+              elsif !inventory_type_check(inventory_types, item_or_sample, id)
+                errors.push "#{item_or_sample} #{id} is not #{inventory_types.join(" or ")}."
+              end
             end
           end
         end
