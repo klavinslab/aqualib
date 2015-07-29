@@ -32,10 +32,12 @@ class Protocol
     primers = []
     fids.each do |fid|
       fragment = find(:sample, id: fid )[0]
-      fwd = fragment.properties["Forward Primer"]
-      rev = fragment.properties["Reverse Primer"]
-      primers.push fwd.id if fwd && (fwd.in("Primer Aliquot").length == 0) && (fwd.in("Primer Stock").length == 0)
-      primers.push rev.id if rev && (rev.in("Primer Aliquot").length == 0) && (rev.in("Primer Stock").length == 0)
+      if fragment
+        fwd = fragment.properties["Forward Primer"]
+        rev = fragment.properties["Reverse Primer"]
+        primers.push fwd.id if fwd && (fwd.in("Primer Aliquot").length == 0) && (fwd.in("Primer Stock").length == 0)
+        primers.push rev.id if rev && (rev.in("Primer Aliquot").length == 0) && (rev.in("Primer Stock").length == 0)
+      end
     end
 
     return primers.uniq
@@ -87,7 +89,6 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      debug_mode: "Yes",
       task_name: "Yeast Transformation",
       group: "technicians"
     }
@@ -99,11 +100,11 @@ class Protocol
     io_hash = { debug_mode: "No", task_name: "", task_ids: [], size: 0 }.merge io_hash
     # io_hash = { debug_mode: "No", item_ids: [], overnight_ids: [], plate_ids: [], task_name: "", fragment_ids: [], plasmid_ids: [] }.merge io_hash
 
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
-    end
+    # if io_hash[:debug_mode].downcase == "yes"
+    #   def debug
+    #     true
+    #   end
+    # end
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
