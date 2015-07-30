@@ -43,11 +43,16 @@ The resulting page will give information about that item regarding sample type, 
 
 If you are searching for a sample or item by name, enter the sample name (or part of the sample name) in the "Query String" field and click "Find Samples". On that same page, a list will load for all items that include that string in its name. Click on an item number to find information specific to the item (location, history, etc.)
 
+#### Job Logs
+
 #### Discussion Board
+
+The Aquarium Discussion Board is a good place to ask questions and make requests. If you have a question that is not answered in this document, the discussion board is a good resource, because all Aquarium users will be able to see your posted question and have the opportunity to answer. Urgent questions and requests should probably not go through the Discussion Board.
+
+To post a general question: use the discussion area on the right side on the Aquarium Production main page: http://54.68.9.194:81/
 
 #### Aborting Jobs and Metacols
 
-#### Job Logs
 
 Samples and Items
 ---
