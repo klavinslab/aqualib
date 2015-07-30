@@ -231,7 +231,7 @@ class Protocol
       waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" })
       .collect { |t| t.id },
       ready_ids: (tasks_to_process.select { |t| t.status == "ready" })
-      .collect {|t| t.id}
+      .collect {|t| t.id},
       task_connection_info: task_connection_info
     }
     return task_status_hash
