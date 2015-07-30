@@ -106,6 +106,8 @@ class Protocol
     #   end
     # end
 
+    # automatic task submissions
+
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
     sizes = [] # a variable to store possible run sizes for all tasks

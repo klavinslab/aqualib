@@ -82,8 +82,8 @@ class Protocol
     take all_templates + all_forward_primers + all_reverse_primers, interactive: true,  method: "boxes"
 
     # get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix"
-    take [phusion_stock_item], interactive: true, method: "boxes" 
+    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [phusion_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
@@ -124,7 +124,7 @@ class Protocol
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
         if sw.num_samples <= 6
-          check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
+          check "Grab a new stripwell with 6 wells and label with the id #{sw}."
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
@@ -188,8 +188,8 @@ class Protocol
     release [ phusion_stock_item ], interactive: true, method: "boxes"
 
     # release the templates, primers
-    release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes" 
-    
+    release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes"
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
