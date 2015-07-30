@@ -146,7 +146,10 @@ class Protocol
 
     # cycling through tasks_to_process to make sure tasks inputs are valid
     tasks_to_process_ready = []
+    # a hash to store useful information to automatically start other tasks.
+    task_connection_info = {}
     tasks_to_process.each do |t|
+      #To do: check array sizes equal? first
       errors = []
       t.spec.each do |argument, ids|
         argument = argument.to_s
@@ -201,6 +204,20 @@ class Protocol
         t.simple_spec[:fragments].each do |fid|
           errors.concat fragment_valid_check(fid)
         end
+      when "Gibson Assembly"
+        task_connection_info = { fragment_ids: [] }
+        t.simple_spec[:fragments].each do |fid|
+          unless find(:sample, id: fid)[0].in("Fragment Stock")[0]
+            errors.push "Fragment #{fid} requires a fragment stock"
+            task_connection_info[:fragment_ids].push fid
+          end
+          unless find(:sample, id: fid).properties["Length"] > 0
+            errors.push "Fragment #{fid} requires Length info"
+          end
+        end
+        plasmid_id = t.simple_spec[:plasmid]
+        plasmid = find(:sample, id: plasmid_id)[0]
+        errors.push "Bacterial Marker info required for plasmid #{plasmid_id}" unless plasmid.properties["Bacterial Marker"].length > 0
       end
       if errors.any?
         errors.each { |error| t.notify error, job_id: jid }
@@ -215,13 +232,35 @@ class Protocol
       .collect { |t| t.id },
       ready_ids: (tasks_to_process.select { |t| t.status == "ready" })
       .collect {|t| t.id}
+      task_connection_info: task_connection_info
     }
     return task_status_hash
   end
 
-  def auto_create_new_tasks task_name
-    case task_name
+  def auto_create_new_tasks p={}
+    params = ({ group: "", task_name: "" }).merge p
+    new_task_ids = []
+    case params[:task_name]
     when "Fragment Construction"
+      task_status name: "Gibson Assembly", group: params[:group]
+      fragment_ids = task_status[:task_connection_info][:fragment_ids]
+      fragment_ids.each do |id|
+        fragment = find(:sample, id: id)[0]
+        tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
+        task = find(:task, name: "#{fragment.name}")[0]
+        if task
+          if task.status == "done"
+            set_task_status(task, "waiting")
+            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+          end
+        else
+          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+          t.save
+          t.notify "Automatically created from Gibson Assembly.", job_id: jid
+          new_task_ids.push t.id
+        end
+      end
+    end
   end
 
   def arguments
@@ -246,7 +285,16 @@ class Protocol
     end
 
     # Add automatically creating new tasks
+    new_task_ids = auto_create_new_tasks task_name: io_hash[:task_name], group: io_hash[:group]
 
+    if new_task_ids.any?
+      new_task_table = task_info_table(new_task_ids)
+      show {
+        title "New #{io_hash[:task_name]} tasks"
+        note "The following tasks are automatically generated."
+        table new_task_table
+      }
+    end
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
@@ -439,67 +487,36 @@ class Protocol
 
     when "Fragment Construction"
       io_hash = { fragment_ids: [] }.merge io_hash
-      # pull out fragments that need to be made from Gibson Assembly tasks
-      gibson_tasks = task_status name: "Gibson Assembly", group: io_hash[:group]
-      if gibson_tasks[:fragments][:need_to_build].length > 0
-        need_to_make_fragment_ids = gibson_tasks[:fragments][:need_to_build].uniq
-        new_fragment_construction_ids = []
-        need_to_make_fragment_ids.each do |id|
-          fragment = find(:sample, id: id)[0]
-          tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-          task = find(:task, name: "#{fragment.name}")[0]
-          if task
-            if task.status == "done"
-              set_task_status(task, "waiting")
-              task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
-            end
-          else
-            t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-            t.save
-            t.notify "Automatically created from Gibson Assembly.", job_id: jid
-            new_fragment_construction_ids.push t.id
-          end
-        end
-
-        new_fragment_construction_ids.compact!
-
-        if new_fragment_construction_ids.length > 0
-          new_fragment_construction_tasks_tab = task_info_table(new_fragment_construction_ids)
-          show {
-            title "New fragment Construction tasks"
-            note "The following fragment Construction tasks are automatically generated for fragments that need to be built in Gibson Assemblies."
-            table new_fragment_construction_tasks_tab
-          }
-        end
-      end
-
-      fs = task_status name: "Fragment Construction", group: io_hash[:group], notification: "on"
-
-      need_to_order_primer_ids = missing_primer(fs[:fragments][:not_ready_to_build].uniq)
-      new_primer_order_ids = []
-
-      need_to_order_primer_ids.each do |id|
-        primer = find(:sample, id: id)[0]
-        tp = TaskPrototype.where("name = 'Primer Order'")[0]
-        t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
-        t.save
-        t.notify "Automatically created from Fragment Construction.", job_id: jid
-        new_primer_order_ids.push t.id
-      end
-
-      new_primer_order_ids.compact!
-
-      if new_primer_order_ids.length > 0
-        new_primer_order_tab = task_info_table(new_primer_order_ids)
-        show {
-          title "New Primer Order tasks"
-          note "The following Primer Order tasks are automatically generated for primers that need to be ordered from Fragment Constructions."
-          table new_primer_order_tab
-        }
-      end
-
-      # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
-      io_hash[:task_ids] = fs[:ready_ids]
+      # # pull out fragments that need to be made from Gibson Assembly tasks
+      #
+      #
+      # fs = task_status name: "Fragment Construction", group: io_hash[:group], notification: "on"
+      #
+      # need_to_order_primer_ids = missing_primer(fs[:fragments][:not_ready_to_build].uniq)
+      # new_primer_order_ids = []
+      #
+      # need_to_order_primer_ids.each do |id|
+      #   primer = find(:sample, id: id)[0]
+      #   tp = TaskPrototype.where("name = 'Primer Order'")[0]
+      #   t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
+      #   t.save
+      #   t.notify "Automatically created from Fragment Construction.", job_id: jid
+      #   new_primer_order_ids.push t.id
+      # end
+      #
+      # new_primer_order_ids.compact!
+      #
+      # if new_primer_order_ids.length > 0
+      #   new_primer_order_tab = task_info_table(new_primer_order_ids)
+      #   show {
+      #     title "New Primer Order tasks"
+      #     note "The following Primer Order tasks are automatically generated for primers that need to be ordered from Fragment Constructions."
+      #     table new_primer_order_tab
+      #   }
+      # end
+      #
+      # # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
+      # io_hash[:task_ids] = fs[:ready_ids]
       fragment_ids = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
