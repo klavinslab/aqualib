@@ -211,7 +211,7 @@ class Protocol
             errors.push "Fragment #{fid} requires a fragment stock"
             task_connection_info[:fragment_ids].push fid
           end
-          unless find(:sample, id: fid).properties["Length"] > 0
+          unless find(:sample, id: fid)[0].properties["Length"] > 0
             errors.push "Fragment #{fid} requires Length info"
           end
         end
@@ -242,25 +242,33 @@ class Protocol
     new_task_ids = []
     case params[:task_name]
     when "Fragment Construction"
-      task_status name: "Gibson Assembly", group: params[:group]
-      fragment_ids = task_status[:task_connection_info][:fragment_ids]
-      fragment_ids.each do |id|
-        fragment = find(:sample, id: id)[0]
-        tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-        task = find(:task, name: "#{fragment.name}")[0]
-        if task
-          if task.status == "done"
-            set_task_status(task, "waiting")
-            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+      tasks_hash = task_status name: "Gibson Assembly", group: params[:group]
+      fragment_ids = tasks_hash[:task_connection_info][:fragment_ids]
+      show {
+        title "Auto-create"
+        note fragment_ids
+      }
+      if fragment_ids
+        fragment_ids.each do |id|
+          fragment = find(:sample, id: id)[0]
+          tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
+          task = find(:task, name: "#{fragment.name}")[0]
+          if task
+            if task.status == "done"
+              set_task_status(task, "waiting")
+              task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+              new_task_ids.push task.id
+            end
+          else
+            t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+            t.save
+            t.notify "Automatically created from Gibson Assembly.", job_id: jid
+            new_task_ids.push t.id
           end
-        else
-          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-          t.save
-          t.notify "Automatically created from Gibson Assembly.", job_id: jid
-          new_task_ids.push t.id
         end
       end
     end
+    return new_task_ids
   end
 
   def arguments
@@ -287,15 +295,17 @@ class Protocol
     # Add automatically creating new tasks
     new_task_ids = auto_create_new_tasks task_name: io_hash[:task_name], group: io_hash[:group]
 
+    # show the users about newly created tasks
     if new_task_ids.any?
       new_task_table = task_info_table(new_task_ids)
       show {
         title "New #{io_hash[:task_name]} tasks"
-        note "The following tasks are automatically generated."
+        note "The following tasks are automatically generated or status adjusted."
         table new_task_table
       }
     end
 
+    # process task_status
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
     sizes = [] # a variable to store possible run sizes for all tasks

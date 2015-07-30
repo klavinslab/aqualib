@@ -475,7 +475,7 @@ module Cloning
           ids.each do |id|
             if !find(item_or_sample, id: id)
               errors.push "Can not find #{item_or_sample} #{id}."
-            elsif (["Item","Sample"] & inventory_types).empty? && !inventory_types.include? find(:item, id: id).ObjectType.name
+            elsif (["Item","Sample"] & inventory_types).empty? && !inventory_types.include? find(:item, id: id).object_type.name
               errors.push "#{item_or_sample} #{id} is not #{inventory_types}."
             end
           end
