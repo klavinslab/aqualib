@@ -96,6 +96,38 @@ class Protocol
     end
   end
 
+  # return errors that prevents fragment to be valid to build
+  def fragment_valid_check fid
+    errors = []
+    fragment = find(:sample, id: fid)[0]
+    props = fragment.properties
+    ["Forward Primer","Reverse Primer","Template","Length"].each do |field|
+      errors.push "#{field} is required for fragment #{fid}" unless fragment.properties[field]
+    end
+    if errors.empty?
+      ["Forward Primer","Reverse Primer"].each do |field|
+        primer_aliquot = fragment.properties[field].in("Primer Aliquot")[0]
+        errors.push "Primer Aliquot is required for fragment #{fid} #{field}" unless
+        primer_aliquot
+      end
+      template_stock_hash = {
+        "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
+        "Fragment" => ["1 ng/µL Fragment Stock", "Fragment Stock" ],
+        "E coli strain" => ["E coli Lysate", "Genome Prep"],
+        "Yeast Strain" => ["Lysate", "Yeast cDNA"]
+      }
+      template_stocks = []
+      template = fragment.properties["Template"]
+      template_stock_hash[template.sample_type.name].each do |container|
+        template_stocks.push template.in(container)[0]
+      end
+      template_stocks.compact!
+      errors.push(template_stock_hash[template.sample_type.name].join(" or").to_s + "is required for fragment #{fid} template") if template_stocks.empty?
+    end
+    return errors
+  end
+
+
   def task_status p={}
     params = ({ group: "", name: "", notification: "off" }).merge p
     raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].empty?
@@ -113,6 +145,7 @@ class Protocol
     sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
 
     # cycling through tasks_to_process to make sure tasks inputs are valid
+    tasks_to_process_ready = []
     tasks_to_process.each do |t|
       errors = []
       t.spec.each do |argument, ids|
@@ -157,22 +190,45 @@ class Protocol
         errors.each { |error| t.notify error, job_id: jid }
         set_task_status(t, "waiting") unless t.status == "waiting"
       else
-        set_task_status(t, "ready") if t.status != "ready"
+        tasks_to_process_ready.push t
+      end
+    end
+
+    tasks_to_process_ready.each do |t|
+      errors = []
+      case params[:name]
+      when "Fragment Construction"
+        t.simple_spec[:fragments].each do |fid|
+          errors.concat fragment_valid_check(fid)
+        end
+      end
+      if errors.any?
+        errors.each { |error| t.notify error, job_id: jid }
+        set_task_status(t, "waiting") unless t.status == "waiting"
+      else
+        set_task_status(t, "ready") unless t.status == "ready"
       end
     end
 
     task_status_hash = {
-      waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" }).collect {|t| t.id},
-      ready_ids: (tasks_to_process.select { |t| t.status == "ready" }).collect {|t| t.id}
+      waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" })
+      .collect { |t| t.id },
+      ready_ids: (tasks_to_process.select { |t| t.status == "ready" })
+      .collect {|t| t.id}
     }
     return task_status_hash
+  end
+
+  def auto_create_new_tasks task_name
+    case task_name
+    when "Fragment Construction"
   end
 
   def arguments
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Gibson Assembly",
+      task_name: "Fragment Construction",
       group: "technicians"
     }
   end
@@ -188,6 +244,9 @@ class Protocol
         true
       end
     end
+
+    # Add automatically creating new tasks
+
 
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
     io_hash[:task_ids] = tasks[:ready_ids]
