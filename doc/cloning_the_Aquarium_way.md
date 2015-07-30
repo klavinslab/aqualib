@@ -25,11 +25,11 @@ Logging into the Production server and Rehearsal server is done separately. To a
 
 To log out of Aquarium, go to the "Account" tab and click "Sign out". 
 
-Note: If you are running Aquarium on a device used by anyone other than yourself, be sure that you are not logged in as another user, and it is suggested that you log out after each use.
+Note: If you are running Aquarium on a device used by anyone other than yourself, be sure that you are not logged in as another user, and log out after each use.
 
 #### Searching for a Sample or Item
 
-Aquarium has a "Search" feature that allows you to look up a particular item or sample (to understand the difference between an item and a sample, the "Samples and Items" section below). 
+Aquarium has a "Search" feature that allows you to look up a particular item or sample (to understand the difference between an item and a sample, see the "Samples and Items" section below). 
 
 To search, click the magnifing glass logo in the upper right corner. 
 
@@ -43,11 +43,19 @@ The resulting page will give information about that item regarding sample type, 
 
 If you are searching for a sample or item by name, enter the sample name (or part of the sample name) in the "Query String" field and click "Find Samples". On that same page, a list will load for all items that include that string in its name. Click on an item number to find information specific to the item (location, history, etc.)
 
+#### Job Logs
+
+There is a record of every job that has been run through Aquarium. To find the job log list, go to "Analytics" and "Job Logs". A particular job can be searched for by protocol name, job number, or user that submitted or performed the job. 
+
 #### Discussion Board
 
-#### Aborting Jobs and Metacols
+The Aquarium Discussion Board is a good place to ask questions and make requests. If you have a question that is not answered in this document, the discussion board is a good resource, because all Aquarium users will be able to see your posted question and have the opportunity to answer. Urgent questions and requests should probably not go through the Discussion Board.
 
-#### Job Logs
+To post a general question: use the discussion area on the right side on the Aquarium Production main page: http://54.68.9.194:81/
+
+To post about a particular sample, click "Discuss" on the sample page.
+
+To post about a specific protocol click "Discuss protocol" on the Job Log page. If the job is currently running, click the "Actions" tab on the job page, and "Comment". 
 
 Samples and Items
 ---
