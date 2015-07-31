@@ -170,8 +170,11 @@ class Protocol
         yeast_plates_sub = mixtures.collect {|v| produce new_sample v.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
         yeast_plates.concat yeast_plates_sub
         mixtures_to_plate.concat mixtures
-
-        grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
+        if key == "foa"
+          grab_plate_tab.push(["5-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
+        else
+          grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
+        end
         mixtures.each_with_index do |y,idx|
           plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
         end
@@ -236,7 +239,7 @@ class Protocol
     io_hash[:plate_ids]= yeast_plates.collect {|x| x.id} if yeast_plates.length > 0
 
     io_hash[:yeast_transformation_mixture_ids] = mixtures_to_incubate.collect { |y| y.id }
-    
+
     return { io_hash: io_hash }
 
   end
