@@ -97,36 +97,59 @@ class Protocol
   end
 
   # return errors that prevents fragment to be valid to build
-  def fragment_valid_check fid
+  def fragment_sample_check fids
     errors = []
-    fragment = find(:sample, id: fid)[0]
-    props = fragment.properties
-    ["Forward Primer","Reverse Primer","Template","Length"].each do |field|
-      errors.push "#{field} is required for fragment #{fid}" unless fragment.properties[field]
-    end
-    if errors.empty?
-      ["Forward Primer","Reverse Primer"].each do |field|
-        primer_aliquot = fragment.properties[field].in("Primer Aliquot")[0]
-        errors.push "Primer Aliquot is required for fragment #{fid} #{field}" unless
-        primer_aliquot
+    fids.each do |fid|
+      fragment = find(:sample, id: fid)[0]
+      props = fragment.properties
+      ["Forward Primer","Reverse Primer","Template","Length"].each do |field|
+        errors.push "#{field} is required for fragment #{fid}" unless fragment.properties[field]
       end
-      template_stock_hash = {
-        "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
-        "Fragment" => ["1 ng/µL Fragment Stock", "Fragment Stock" ],
-        "E coli strain" => ["E coli Lysate", "Genome Prep"],
-        "Yeast Strain" => ["Lysate", "Yeast cDNA"]
-      }
-      template_stocks = []
-      template = fragment.properties["Template"]
-      template_stock_hash[template.sample_type.name].each do |container|
-        template_stocks.push template.in(container)[0]
+      if errors.empty?
+        ["Forward Primer","Reverse Primer"].each do |field|
+          primer_aliquot = fragment.properties[field].in("Primer Aliquot")[0]
+          errors.push "Primer Aliquot is required for fragment #{fid} #{field}" unless primer_aliquot
+        end
+        template_stock_hash = {
+          "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
+          "Fragment" => ["1 ng/µL Fragment Stock", "Fragment Stock" ],
+          "E coli strain" => ["E coli Lysate", "Genome Prep"],
+          "Yeast Strain" => ["Lysate", "Yeast cDNA"]
+        }
+        template_stocks = []
+        template = fragment.properties["Template"]
+        template_stock_hash[template.sample_type.name].each do |container|
+          template_stocks.push template.in(container)[0]
+        end
+        template_stocks.compact!
+        errors.push(template_stock_hash[template.sample_type.name].join(" or").to_s + "is required for fragment #{fid} template") if template_stocks.empty?
       end
-      template_stocks.compact!
-      errors.push(template_stock_hash[template.sample_type.name].join(" or").to_s + "is required for fragment #{fid} template") if template_stocks.empty?
     end
     return errors
   end
 
+  # check_type: sample_properties or inventory_exist
+  # sample_properties will check the desired sample_property of this primer
+  # inventory_exist will check if primer aliquot or primer stock exist
+  def primer_check pids, p={}
+    params = ({ check_type: "sample_properties" }).merge p
+    errors = []
+    pids.each do |pid|
+      primer = find(:sample, id: pid)[0]
+      if params[:check_type] == "sample_properties"
+        overhang = primer.properties["Overhang Sequence"] || ""
+        anneal = primer.properties["Anneal Sequence"] || ""
+        tanneal = primer.properties["T Anneal"] || 0
+        errors.push "Need Overhang or Anneal Sequence Info" if (overhang + anneal).empty?
+        errors.push "Need T Anneal info" if tanneal < 40
+      elsif params[:check_type] == "inventory_exist"
+        if primer.in("Primer Aliquot").empty? && primer.in("Primer Stock").empty?
+          errors.push "Primer #{pid} requires a primer aliuqot or primer stock"
+        end
+      end
+    end
+    return errors
+  end
 
   def task_status p={}
     params = ({ group: "", name: "", notification: "off" }).merge p
@@ -156,6 +179,7 @@ class Protocol
         argument.slice!(argument.split(' ')[0])
         argument.slice!(0) # remove white space in the beginning
         inventory_types = argument.split('|')
+        # processing sample type or inventory type check
         if inventory_types.empty?
           if argument == "num_colonies"
             ids.each do |id|
@@ -186,6 +210,19 @@ class Protocol
                 errors.push "#{item_or_sample} #{id} is not #{inventory_types.join(" or ")}."
               end
             end
+            # processing sample properties or inventory check when id is sample
+            # only start processing in this level when there is no errors in previous type checking
+            if errors.empty?
+              case argument
+              when "primer_ids"
+                if params[:name] == "Primer Order"
+                  errors.concat primer_check(ids, check_type: "sample_properties")
+                else  # for Sequencing, Plasmid Verification
+                  errors.concat primer_check(ids, check_type: "inventory_exist")
+                end
+              when "fragments"
+
+
           end
         end
       end
@@ -201,9 +238,7 @@ class Protocol
       errors = []
       case params[:name]
       when "Fragment Construction"
-        t.simple_spec[:fragments].each do |fid|
-          errors.concat fragment_valid_check(fid)
-        end
+        errors.concat fragment_sample_check(t.simple_spec[:fragments])
       when "Gibson Assembly"
         task_connection_info = { fragment_ids: [] }
         t.simple_spec[:fragments].each do |fid|
@@ -218,6 +253,7 @@ class Protocol
         plasmid_id = t.simple_spec[:plasmid]
         plasmid = find(:sample, id: plasmid_id)[0]
         errors.push "Bacterial Marker info required for plasmid #{plasmid_id}" unless plasmid.properties["Bacterial Marker"].length > 0
+
       end
       if errors.any?
         errors.each { |error| t.notify error, job_id: jid }
