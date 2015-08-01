@@ -24,7 +24,7 @@ class Protocol
       note "Release all the inputs."
     }    
 
-    o.putput.all.release {
+    o.output.all.release {
       note "Release all the outputs."
     }        
 
