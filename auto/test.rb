@@ -9,7 +9,7 @@ class Protocol
 
     o = op input
 
-    o.input.all.mtake
+    o.input.all.take
 
     show {
       title "#{o.name} Inputs"
