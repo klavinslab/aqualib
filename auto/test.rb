@@ -9,14 +9,11 @@ class Protocol
 
     o = op input
 
-    # take o.inputs(:fwd).first_items, method: "boxes"
-    # take o.inputs(:rev).first_items, method: "boxes"  
-    # take o.inputs(:template).first_items, method: "boxes"
+    o.input.all.take
 
     show {
       title "#{o.name} Inputs"
-      note o.input_names.join(", ")
-      note o.inputs.collect { |name,ispec| "#{name}: #{ispec[:sample].name}"}
+      note "Detailed instructions go here"
     }
 
   end
