@@ -18,9 +18,15 @@ class Protocol
       note "Detailed instructions go here"
     }
 
+    o.output.all.produce
+
     o.input.all.release {
       note "Release all the inputs."
     }    
+
+    o.putput.all.release {
+      note "Release all the outputs."
+    }        
 
   end
 
