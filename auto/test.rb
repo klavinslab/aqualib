@@ -26,7 +26,9 @@ class Protocol
 
     o.output.all.release {
       note "Release all the outputs."
-    }        
+    }   
+
+    return op.result     
 
   end
 
