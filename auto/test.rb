@@ -9,7 +9,9 @@ class Protocol
 
     o = op input
 
-    o.input.all.take
+    o.input.all.take {
+      note "Take all the items"
+    }
 
     show {
       title "#{o.name} Inputs"
