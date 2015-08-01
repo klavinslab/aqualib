@@ -28,7 +28,7 @@ class Protocol
       note "Release all the outputs."
     }   
 
-    return op.result     
+    return o.result     
 
   end
 
