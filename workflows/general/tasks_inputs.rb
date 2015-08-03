@@ -96,73 +96,6 @@ class Protocol
     end
   end
 
-  # return errors that prevents fragment to be valid to build
-  # assert specific properties by supplying an array in assert_property
-  def fragment_check fids, p={}
-    params = ({ assert_property: ["Forward Primer","Reverse Primer","Template","Length"], check_type: "sample_properties" }).merge p
-    errors = []
-    fids = [fids] if fids.is_a? Numeric
-    fids.each do |fid|
-      fragment = find(:sample, id: fid)[0]
-      if params[:check_type] == "sample_properties"
-        params[:assert_property].each do |field|
-          if fragment.properties[field]
-            case field
-            when "Forward Primer", "Reverse Primer"
-              pid = fragment.properties[field].id
-              errors.concat primer_check([pid], check_type: "inventory_exist")
-            when "Template"
-              template_stock_hash = {
-                "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
-                "Fragment" => ["1 ng/µL Fragment Stock", "Fragment Stock" ],
-                "E coli strain" => ["E coli Lysate", "Genome Prep"],
-                "Yeast Strain" => ["Lysate", "Yeast cDNA"]
-              }
-              template_stocks = []
-              template = fragment.properties[field]
-              template_stock_hash[template.sample_type.name].each do |container|
-                template_stocks.push template.in(container)[0]
-              end
-              template_stocks.compact!
-              errors.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for fragment #{fid} template") if template_stocks.empty?
-            when "Length"
-              length = fragment.properties[field] || 0
-              errors.push unless length > 0
-            end
-          else
-            errors.push "#{field} is required for fragment #{fid}"
-          end
-        end #params[:assert_property]
-      elsif params[:check_type] == "inventory_exist"
-        errors.push "Fragment #{fid} requires a Fragment Stock" if fragment.in("Fragment Stock").empty?
-      end # if check_type == "sample_properties"
-    end
-    return errors
-  end
-
-  # check_type: sample_properties or inventory_exist
-  # sample_properties will check the desired sample_property of this primer
-  # inventory_exist will check if primer aliquot or primer stock exist
-  def primer_check pids, p={}
-    params = ({ check_type: "sample_properties" }).merge p
-    errors = []
-    pids.each do |pid|
-      primer = find(:sample, id: pid)[0]
-      if params[:check_type] == "sample_properties"
-        overhang = primer.properties["Overhang Sequence"] || ""
-        anneal = primer.properties["Anneal Sequence"] || ""
-        tanneal = primer.properties["T Anneal"] || 0
-        errors.push "Need Overhang or Anneal Sequence Info" if (overhang + anneal).empty?
-        errors.push "Need T Anneal info" if tanneal < 40
-      elsif params[:check_type] == "inventory_exist"
-        if primer.in("Primer Aliquot").empty? && primer.in("Primer Stock").empty?
-          errors.push "Primer #{pid} requires a Primer Aliquot or Primer Stock"
-        end
-      end
-    end
-    return errors
-  end
-
   # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
     params = ({ sample_type: "", inventory_types: "" }).merge p
@@ -189,11 +122,11 @@ class Protocol
   end
 
   def sample_check ids, p={}
-    params = ({ sample_type: "", assert_property: []}).merge p
+    params = ({ sample_type: "", assert_property: [], assert_logic: "and" }).merge p
     ids = [ids] if ids.is_a? Numeric
     sample_type = params[:sample_type]
     assert_properties = params[:assert_property]
-    assert_properties = [assert_properties] if assert_properties.is_a? String
+    assert_properties = [assert_properties] unless assert_properties.is_a? Array
     if sample_type.empty? || assert_properties.empty?
       return nil
     end
@@ -201,6 +134,7 @@ class Protocol
     ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
+      warnings = [] # to store temporary errors
       assert_properties.each do |field|
         if sample.properties[field]
           property = sample.properties[field]
@@ -208,8 +142,12 @@ class Protocol
           when "Forward Primer", "Reverse Primer"
             pid = property.id
             error, id_to_make = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
-            errors.concat error
+            warnings.push error
             ids_to_make.concat id_to_make
+          when "Overhang Sequence", "Anneal Sequence"
+            warnings.push "#{field} requires nonempty string" unless property.length > 0
+          when "T Anneal"
+            warnings.push "#{field} requires number greater than 40" unless property > 40
           when "Template"
             template_stock_hash = {
               "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
@@ -223,15 +161,27 @@ class Protocol
               template_stocks.push template.in(container)[0]
             end
             template_stocks.compact!
-            errors.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_type} #{id} Template") if template_stocks.empty?
+            warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_type} #{id} Template") if template_stocks.empty?
           when "Length"
-            errors.push "Length greater than 0 is required for #{sample_type} #{id}" unless property > 0
+            warnings.push "Length greater than 0 is required for #{sample_type} #{id}" unless property > 0
           when "Bacterial Marker", "Yeast Marker"
-            errors.push "Nonempty #{field} is required for #{sample_type} #{id}" unless property.length > 0
+            warnings.push "Nonempty #{field} is required for #{sample_type} #{id}" unless property.length > 0
+          when "Parent"
+            yid = property.id
+            error, id_to_make = inventory_check pid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
+            warnings.push error
+            ids_to_make.concat id_to_make
           end # case
         else
-          errors.push "#{field} is required for #{sample_type} #{id}"
+          warnings.push "#{field} is required for #{sample_type} #{id}"
         end # if sample.properties[field]
+        if params[:assert_logic] == "and"
+          errors.concat warnings.flatten
+        elsif params[:assert_logic] == "or"
+          if warnings.length == assert_properties.length
+            errors.push warnings.flatten.join(" or ")
+          end
+        end
       end # assert_properties.each
     end # ids.each
     return errors, ids_to_make
@@ -293,17 +243,21 @@ class Protocol
           case variable_name
           when "primer_ids"
             if params[:name] == "Primer Order"
-              errors.concat primer_check(ids, check_type: "sample_properties")
+              errors.concat sample_check(ids, sample_type: "Primer", assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[0]
             else  # for Sequencing, Plasmid Verification
               error, ids_to_make = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
               errors.concat error
-              errors.push "Primer Order tasks for #{ids_to_make.join(", ")} will be submitted." if ids_to_make.any?
+              if ids_to_make.any?
+                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
+              end
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
               error, ids_to_make = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat error
-              errors.push "Primer Order tasks for #{ids_to_make.join(", ")} will be submitted." if ids_to_make.any?
+              if ids_to_make.any?
+                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
+              end
             elsif params[:name] == "Gibson Assembly"
               error, ids_to_make = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
               errors.concat error
@@ -339,33 +293,40 @@ class Protocol
     return task_status_hash
   end
 
+  # create new tasks for fragment construction or primer order
   def create_new_tasks ids, p={}
     params = ({ task_name: "" }).merge p
+    task_name = params[:task_name]
     new_task_ids = []
-    case params[:task_name]
-    when "Fragment Construction"
-      ids.each do |id|
-        fragment = find(:sample, id: id)[0]
-        tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-        task = find(:task, name: "#{fragment.name}")[0]
-        if task
-          if task.status == "done"
-            set_task_status(task, "waiting")
-            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
-            new_task_ids.push task.id
-          elsif ["failed","canceled"].include? task.status
-            task.notify "Fragment Construction task for #{id} was failed or canceled. You need to manually switch the status if you still want the fragment to be made.", job_id: jid
-          else
-            task.notify "Fragment Construction task for #{id} is already in the workflow.", job_id: jid
-          end
+    show {
+      note ids
+    }
+    ids.each do |id|
+      sample = find(:sample, id: id)[0]
+      tp = TaskPrototype.where(name: task_name)[0]
+      task = find(:task, name: "#{sample.name}")[0]
+      if task
+        if ["done", "received and stocked"].include? task.status
+          set_task_status(task, "waiting")
+          task.notify "Automatically changed status to waiting as needed to make more.", job_id: jid
+          new_task_ids.push task.id
+        elsif ["failed","canceled"].include? task.status
+          task.notify "#{task_name} task for #{id} was failed or canceled. You need to manually switch the status if you want to remake.", job_id: jid
         else
-          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-          t.save
-          t.notify "Automatically created in the workflow.", job_id: jid
-          new_task_ids.push t.id
+          task.notify "#{task_name} task for #{id} is already in the workflow.", job_id: jid
         end
+      else
+        case task_name
+        when "Fragment Construction"
+          t = Task.new(name: "#{sample.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+        when "Primer Order"
+          t = Task.new(name: "#{sample.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+        end
+        t.save
+        t.notify "Automatically created in the workflow.", job_id: jid
+        new_task_ids.push t.id
       end
-    end #when
+    end
     return new_task_ids
   end
 
