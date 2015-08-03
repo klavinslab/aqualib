@@ -293,7 +293,7 @@ class Protocol
               errors.concat sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
             elsif params[:name] == "Gibson Assembly"
               ids.each do |id|
-                error = inventory_check(id, inventory_type: "Fragment Stock")
+                error = inventory_check(id, sample_type: "Fragment", inventory_type: "Fragment Stock")
                 errors.concat error
                 task_connection[:fragment_ids].push id if error.any?
               end
