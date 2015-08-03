@@ -163,23 +163,29 @@ class Protocol
     return errors
   end
 
+  # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
-    params = ({ sample_type: "", inventory_type: "" }).merge p
+    params = ({ sample_type: "", inventory_types: "" }).merge p
     ids = [ids] if ids.is_a? Numeric
+    need_to_make_ids = [] # put the list of sample ids that need inventory_type to be made
     sample_type = params[:sample_type]
-    inventory_type = params[:inventory_type]
+    inventory_types = params[:inventory_types]
+    inventory_types = [inventory_types] if inventory_types.is_a? String
     errors = []
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      if sample.in(inventory_type).empty?
-        if inventory_type == "Fragment Stock"
-          errors.push "#{sample_type} #{id} requires a #{inventory_type}. Fragment Construction task will be automatically submitted"
-        else
-          errors.push "#{sample_type} #{id} requires a #{inventory_type}."
+      warning = []
+      inventory_types.each do |inventory_type|
+        if sample.in(inventory_type).empty?
+          warning.push "#{sample_type} #{id} does not have a #{inventory_type}."
         end
       end
+      if warning.length == inventory_types.length
+        errors.push "#{sample_type} #{id} requires a #{inventory_types.join(" or ")}."
+        need_to_make_ids.push id
+      end
     end
-    return errors
+    return errors, need_to_make_ids
   end
 
   def sample_check ids, p={}
@@ -192,6 +198,7 @@ class Protocol
       return nil
     end
     errors = []
+    ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
       assert_properties.each do |field|
@@ -200,7 +207,9 @@ class Protocol
           case field
           when "Forward Primer", "Reverse Primer"
             pid = property.id
-            errors.concat primer_check([pid], check_type: "inventory_exist")
+            error, id_to_make = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+            errors.concat error
+            ids_to_make.concat id_to_make
           when "Template"
             template_stock_hash = {
               "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
@@ -225,7 +234,7 @@ class Protocol
         end # if sample.properties[field]
       end # assert_properties.each
     end # ids.each
-    return errors
+    return errors, ids_to_make
   end
 
   def task_status p={}
@@ -243,8 +252,8 @@ class Protocol
     # array of object_type_names and sample_type_names
     object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
     sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
-    # a hash to store useful information to automatically start other tasks.
-    task_connection = Hash.new(Array.new)
+    # an array to store new tasks got automatically created.
+    new_task_ids = []
     # cycling through tasks_to_process to make sure tasks inputs are valid
     tasks_to_process.each do |t|
       #To do: check array sizes equal? first
@@ -255,7 +264,7 @@ class Protocol
         argument.slice!(argument.split(' ')[0])
         argument.slice!(0) # remove white space in the beginning
         inventory_types = argument.split('|')
-        ids = [*ids] if ids.is_a? Numeric
+        ids = [ids] unless ids.is_a? Array
         ids.flatten!
         ids.uniq!
         # processing sample type or inventory type check
@@ -286,25 +295,29 @@ class Protocol
             if params[:name] == "Primer Order"
               errors.concat primer_check(ids, check_type: "sample_properties")
             else  # for Sequencing, Plasmid Verification
-              errors.concat primer_check(ids, check_type: "inventory_exist")
+              error, ids_to_make = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+              errors.concat error
+              errors.push "Primer Order tasks for #{ids_to_make.join(", ")} will be submitted." if ids_to_make.any?
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
-              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+              error, ids_to_make = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+              errors.concat error
+              errors.push "Primer Order tasks for #{ids_to_make.join(", ")} will be submitted." if ids_to_make.any?
             elsif params[:name] == "Gibson Assembly"
-              ids.each do |id|
-                error = inventory_check(id, sample_type: "Fragment", inventory_type: "Fragment Stock")
-                errors.concat error
-                task_connection[:fragment_ids].push id if error.any?
+              error, ids_to_make = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
+              errors.concat error
+              if ids_to_make.any?
+                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Fragment Construction")
               end
-              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")
+              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[0]
             end
           when "num_colonies"
             ids.each do |id|
-              errors.push "A number between 0,10 is required for num_colonies"
+              errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
             end
           when "plasmid"
-            errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")
+            errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[0]
           end # case
         end # errors.empty?
       end # t.spec.each
@@ -321,42 +334,38 @@ class Protocol
       .collect { |t| t.id },
       ready_ids: (tasks_to_process.select { |t| t.status == "ready" })
       .collect {|t| t.id},
-      task_connection: task_connection
+      new_task_ids: new_task_ids
     }
     return task_status_hash
   end
 
-  def auto_create_new_tasks p={}
-    params = ({ group: "", task_name: "" }).merge p
+  def create_new_tasks ids, p={}
+    params = ({ task_name: "" }).merge p
     new_task_ids = []
     case params[:task_name]
     when "Fragment Construction"
-      tasks_hash = task_status name: "Gibson Assembly", group: params[:group]
-      fragment_ids = tasks_hash[:task_connection][:fragment_ids]
-      show {
-        title "Auto-create"
-        note fragment_ids
-      }
-      if fragment_ids
-        fragment_ids.each do |id|
-          fragment = find(:sample, id: id)[0]
-          tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
-          task = find(:task, name: "#{fragment.name}")[0]
-          if task
-            if task.status == "done"
-              set_task_status(task, "waiting")
-              task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
-              new_task_ids.push task.id
-            end
+      ids.each do |id|
+        fragment = find(:sample, id: id)[0]
+        tp = TaskPrototype.where("name = 'Fragment Construction'")[0]
+        task = find(:task, name: "#{fragment.name}")[0]
+        if task
+          if task.status == "done"
+            set_task_status(task, "waiting")
+            task.notify "Automatically changed status to waiting to make more fragments", job_id: jid
+            new_task_ids.push task.id
+          elsif ["failed","canceled"].include? task.status
+            task.notify "Fragment Construction task for #{id} was failed or canceled. You need to manually switch the status if you still want the fragment to be made.", job_id: jid
           else
-            t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
-            t.save
-            t.notify "Automatically created from Gibson Assembly.", job_id: jid
-            new_task_ids.push t.id
+            task.notify "Fragment Construction task for #{id} is already in the workflow.", job_id: jid
           end
+        else
+          t = Task.new(name: "#{fragment.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: fragment.user.id)
+          t.save
+          t.notify "Automatically created in the workflow.", job_id: jid
+          new_task_ids.push t.id
         end
       end
-    end
+    end #when
     return new_task_ids
   end
 
@@ -381,18 +390,8 @@ class Protocol
       end
     end
 
-    # Add automatically creating new tasks
-    new_task_ids = auto_create_new_tasks task_name: io_hash[:task_name], group: io_hash[:group]
-
-    # show the users about newly created tasks
-    if new_task_ids.any?
-      new_task_table = task_info_table(new_task_ids)
-      show {
-        title "New #{io_hash[:task_name]} tasks"
-        note "The following tasks are automatically generated or status adjusted."
-        table new_task_table
-      }
-    end
+    # # Add automatically creating new tasks
+    # new_task_ids = auto_create_new_tasks task_name: io_hash[:task_name], group: io_hash[:group]
 
     # process task_status
     tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
@@ -419,6 +418,17 @@ class Protocol
         note "No task is ready"
       end
     }
+
+    # show the users about newly created tasks
+    new_task_ids = tasks[:new_task_ids]
+    if new_task_ids.any?
+      new_task_table = task_info_table(new_task_ids)
+      show {
+        title "New tasks"
+        note "The following tasks are automatically created or status adjusted."
+        table new_task_table
+      }
+    end
 
     case io_hash[:task_name]
 
