@@ -107,14 +107,15 @@ class Protocol
     errors = []
     ids.each do |id|
       sample = find(:sample, id: id)[0]
+      sample_name = "#{sample_type} #{sample.name}"
       warning = []
       inventory_types.each do |inventory_type|
         if sample.in(inventory_type).empty?
-          warning.push "#{sample_type} #{id} does not have a #{inventory_type}."
+          warning.push "#{sample_name} does not have a #{inventory_type}."
         end
       end
       if warning.length == inventory_types.length
-        errors.push "#{sample_type} #{id} requires a #{inventory_types.join(" or ")}."
+        errors.push "#{sample_name} requires a #{inventory_types.join(" or ")}."
         need_to_make_ids.push id
       end
     end
@@ -134,20 +135,25 @@ class Protocol
     ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      warnings = [] # to store temporary errors
+      sample_name = "#{sample_type} #{sample.name}"
+      properties = sample.properties.deep_dup
       assert_properties.each do |field|
-        if sample.properties[field]
-          property = sample.properties[field]
+        warnings = [] # to store temporary errors
+        if properties[field]
+          property = properties[field]
           case field
-          when "Forward Primer", "Reverse Primer"
+          when "Forward Primer", "Reverse Primer", "QC Primer1", "QC Primer2"
             pid = property.id
             error, id_to_make = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+            error.collect! do |err|
+              "#{sample_name}'s #{field} #{err}"
+            end
             warnings.push error
             ids_to_make.concat id_to_make
           when "Overhang Sequence", "Anneal Sequence"
-            warnings.push "#{field} requires nonempty string" unless property.length > 0
+            warnings.push "#{sample_name} #{field} requires nonempty string" unless property.length > 0
           when "T Anneal"
-            warnings.push "#{field} requires number greater than 40" unless property > 40
+            warnings.push "#{sample_name} #{field} requires number greater than 40" unless property > 40
           when "Template"
             template_stock_hash = {
               "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
@@ -161,21 +167,25 @@ class Protocol
               template_stocks.push template.in(container)[0]
             end
             template_stocks.compact!
-            warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_type} #{id} Template") if template_stocks.empty?
+            warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_name} Template") if template_stocks.empty?
           when "Length"
-            warnings.push "Length greater than 0 is required for #{sample_type} #{id}" unless property > 0
+            warnings.push "Length greater than 0 is required for #{sample_name}" unless property > 0
           when "Bacterial Marker", "Yeast Marker"
-            warnings.push "Nonempty #{field} is required for #{sample_type} #{id}" unless property.length > 0
+            warnings.push "Nonempty #{field} is required for #{sample_name}" unless property.length > 0
           when "Parent"
             yid = property.id
-            error, id_to_make = inventory_check pid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
+            error, id_to_make = inventory_check yid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
+            error.collect! do |err|
+              "#{sample_name}'s #{field} #{err}"
+            end
             warnings.push error
             ids_to_make.concat id_to_make
           end # case
         else
-          warnings.push "#{field} is required for #{sample_type} #{id}"
-        end # if sample.properties[field]
+          warnings.push "#{field} is required for #{sample_name}"
+        end # if properties[field]
         if params[:assert_logic] == "and"
+          puts warnings
           errors.concat warnings.flatten
         elsif params[:assert_logic] == "or"
           if warnings.length == assert_properties.length
@@ -184,6 +194,8 @@ class Protocol
         end
       end # assert_properties.each
     end # ids.each
+    errors.uniq!
+    ids_to_make.uniq!
     return errors, ids_to_make
   end
 
@@ -255,15 +267,11 @@ class Protocol
             if params[:name] == "Fragment Construction"
               error, ids_to_make = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat error
-              if ids_to_make.any?
-                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
-              end
+              new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
             elsif params[:name] == "Gibson Assembly"
               error, ids_to_make = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
               errors.concat error
-              if ids_to_make.any?
-                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Fragment Construction")
-              end
+              new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Fragment Construction")
               errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[0]
             end
           when "num_colonies"
@@ -272,6 +280,17 @@ class Protocol
             end
           when "plasmid"
             errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[0]
+          when "yeast_transformed_strain_ids"
+            error, ids_to_make = sample_check(ids, sample_type: "Yeast Strain", assert_property: "Parent")
+            errors.concat error
+            new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Yeast Competent Cell")
+            errors.concat sample_check(ids, sample_type: "Yeast Strain", assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[0]
+          when "yeast_plate_ids"
+            sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
+            errors.concat sample_check(sample_ids, sample_type: "Yeast Strain", assert_property: ["QC Primer1", "QC Primer2"])[0]
+          # when "item_ids"
+          #   if params[:name] == "Streak Plate"
+          #
           end # case
         end # errors.empty?
       end # t.spec.each
@@ -298,13 +317,11 @@ class Protocol
     params = ({ task_name: "" }).merge p
     task_name = params[:task_name]
     new_task_ids = []
-    show {
-      note ids
-    }
     ids.each do |id|
       sample = find(:sample, id: id)[0]
       tp = TaskPrototype.where(name: task_name)[0]
-      task = find(:task, name: "#{sample.name}")[0]
+      tp_name = tp.name.delete(' ').underscore
+      task = find(:task, name: "#{sample.name}_#{tp_name}")[0]
       if task
         if ["done", "received and stocked"].include? task.status
           set_task_status(task, "waiting")
@@ -318,9 +335,11 @@ class Protocol
       else
         case task_name
         when "Fragment Construction"
-          t = Task.new(name: "#{sample.name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
         when "Primer Order"
-          t = Task.new(name: "#{sample.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+        when "Yeast Competent Cell"
+          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
         end
         t.save
         t.notify "Automatically created in the workflow.", job_id: jid
