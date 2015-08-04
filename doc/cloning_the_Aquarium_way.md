@@ -21,7 +21,7 @@ Once your account has been created, you can change your password by going to the
 
 #### Logging In and Out
 
-Logging into the Production server and Rehearsal server is done separately. To access the main menu, go to the url: http://54.68.9.194/ You can then choose to log into the Rehearsal or Production server. Enter your Aquarium username in the "login" field, and your password in the "password" field. 
+Logging into the Production server and Rehearsal server is done separately. To access the main menu, go to the url: http://52.27.47.110/ You can then choose to log into the Rehearsal or Production server. Enter your Aquarium username in the "login" field, and your password in the "password" field. 
 
 To log out of Aquarium, go to the "Account" tab and click "Sign out". 
 
@@ -51,7 +51,7 @@ There is a record of every job that has been run through Aquarium. To find the j
 
 The Aquarium Discussion Board is a good place to ask questions and make requests. If you have a question that is not answered in this document, the discussion board is a good resource, because all Aquarium users will be able to see your posted question and have the opportunity to answer. Urgent questions and requests should probably not go through the Discussion Board.
 
-To post a general question: use the discussion area on the right side on the Aquarium Production main page: http://54.68.9.194:81/
+To post a general question: use the discussion area on the right side on the Aquarium Production main page: http://52.27.47.110:81/
 
 To post about a particular sample, click "Discuss" on the sample page.
 
