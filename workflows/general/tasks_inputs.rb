@@ -216,24 +216,28 @@ class Protocol
     sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
     # an array to store new tasks got automatically created.
     new_task_ids = []
+    counter = 0
     # cycling through tasks_to_process to make sure tasks inputs are valid
     tasks_to_process.each do |t|
       #To do: check array sizes equal? first
       errors = []
+      notifs = []
       t.spec.each do |argument, ids|
         argument = argument.to_s
         variable_name = argument.split(' ')[0]
         argument.slice!(argument.split(' ')[0])
         argument.slice!(0) # remove white space in the beginning
         inventory_types = argument.split('|')
+        inventory_types.uniq!
         ids = [ids] unless ids.is_a? Array
         ids.flatten!
         ids.uniq!
         # processing sample type or inventory type check
         if inventory_types.any?
-          if object_type_names & inventory_types == inventory_types
+          counter += 1
+          if (object_type_names & inventory_types).sort == inventory_types.sort
             item_or_sample = :item
-          elsif sample_type_names & inventory_types == inventory_types
+          elsif (sample_type_names & inventory_types).sort == inventory_types.sort
             item_or_sample = :sample
           else
             item_or_sample = ""
@@ -259,19 +263,17 @@ class Protocol
             else  # for Sequencing, Plasmid Verification
               error, ids_to_make = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
               errors.concat error
-              if ids_to_make.any?
-                new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
-              end
+              new_tasks = create_new_tasks(ids_to_make, task_name: "Primer Order")
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
               error, ids_to_make = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat error
-              new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Primer Order")
+              new_tasks = create_new_tasks(ids_to_make, task_name: "Primer Order")
             elsif params[:name] == "Gibson Assembly"
               error, ids_to_make = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
               errors.concat error
-              new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Fragment Construction")
+              new_tasks = create_new_tasks(ids_to_make, task_name: "Fragment Construction")
               errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[0]
             end
           when "num_colonies"
@@ -283,15 +285,32 @@ class Protocol
           when "yeast_transformed_strain_ids"
             error, ids_to_make = sample_check(ids, sample_type: "Yeast Strain", assert_property: "Parent")
             errors.concat error
-            new_task_ids.concat create_new_tasks(ids_to_make, task_name: "Yeast Competent Cell")
+            new_tasks = create_new_tasks(ids_to_make, task_name: "Yeast Competent Cell")
             errors.concat sample_check(ids, sample_type: "Yeast Strain", assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[0]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
             errors.concat sample_check(sample_ids, sample_type: "Yeast Strain", assert_property: ["QC Primer1", "QC Primer2"])[0]
-          # when "item_ids"
-          #   if params[:name] == "Streak Plate"
-          #
+          when "yeast_strain_ids"
+            ids_to_make = []
+            ids.each do |id|
+              yeast_strain = find(:sample, id: id)[0]
+              if (collection_type_contain_has_colony id, "Divided Yeast Plate").empty?
+                errors.push "Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
+                glycerol_stock = yeast_strain.in("Yeast Glycerol Stock")[0]
+                if glycerol_stock
+                  ids_to_make.push glycerol_stock
+                else
+                  errors.push "Yeast Strain #{yeast_strain.name} needs a Yeast Glycerol Stock to automatically submit Streak Plate tasks"
+                end
+              end
+            end # ids
+            ids_to_make.uniq!
+            new_tasks = create_new_tasks(ids_to_make, task_name: "Streak Plate", argument_type: "item_ids")
           end # case
+          if new_tasks # when new_tasks are created
+            new_task_ids.concat new_tasks[:new_task_ids]
+            notifs.concat new_tasks[:notifs]
+          end
         end # errors.empty?
       end # t.spec.each
       if errors.any?
@@ -300,7 +319,14 @@ class Protocol
       else
         set_task_status(t, "ready") unless t.status == "ready"
       end
+      if notifs.any?
+        notifs.each { |notif| t.notify notif, job_id: jid }
+      end
     end # tasks_to_process
+
+    show {
+      note counter
+    }
 
     task_status_hash = {
       waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" })
@@ -312,41 +338,51 @@ class Protocol
     return task_status_hash
   end
 
-  # create new tasks for fragment construction or primer order
+  # create new tasks for fragment construction, primer order, yeast competent cell
   def create_new_tasks ids, p={}
-    params = ({ task_name: "" }).merge p
-    task_name = params[:task_name]
+    params = ({ task_name: "", argument_type: "sample_ids" }).merge p
+    ids = [ids] unless ids.is_a? Array
     new_task_ids = []
+    notifs = [] # to store all notifications
+    task_prototype_name = params[:task_name]
+    tp = TaskPrototype.where(name: task_prototype_name)[0]
+    tp_name = tp.name.delete(' ').underscore
+    task_type_argument_hash = {
+      "Fragment Construction" => "fragments Fragment",
+      "Primer Order" => "primer_ids Primer",
+      "Yeast Competent Cell" => "yeast_strain_ids Yeast Strain",
+      "Streak Plate" => "item_ids Yeast Glycerol Stock|Yeast Plate"
+    }
     ids.each do |id|
-      sample = find(:sample, id: id)[0]
-      tp = TaskPrototype.where(name: task_name)[0]
-      tp_name = tp.name.delete(' ').underscore
-      task = find(:task, name: "#{sample.name}_#{tp_name}")[0]
+      if params[:argument_type] == "sample_ids"
+        sample = find(:sample, id: id)[0]
+      elsif params[:argument_type] == "item_ids"
+        item = find(:item, id: id)[0]
+        sample = item.sample
+      end
+      auto_create_task_name = "#{sample.name}_#{tp_name}"
+      task = find(:task, name: auto_create_task_name)[0]
       if task
-        if ["done", "received and stocked"].include? task.status
+        if ["done", "received and stocked", "imaged and stored in fridge"].include? task.status
           set_task_status(task, "waiting")
-          task.notify "Automatically changed status to waiting as needed to make more.", job_id: jid
+          notifs.push "#{auto_create_task_name} changed status to waiting to make more."
           new_task_ids.push task.id
         elsif ["failed","canceled"].include? task.status
-          task.notify "#{task_name} task for #{id} was failed or canceled. You need to manually switch the status if you want to remake.", job_id: jid
+          notifs.push "#{auto_create_task_name} was failed or canceled. You need to manually switch the status if you want to remake."
         else
-          task.notify "#{task_name} task for #{id} is already in the workflow.", job_id: jid
+          notifs.push "#{auto_create_task_name} is already in the #{task_prototype_name} workflow."
         end
       else
-        case task_name
-        when "Fragment Construction"
-          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "fragments Fragment" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
-        when "Primer Order"
-          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
-        when "Yeast Competent Cell"
-          t = Task.new(name: "#{sample.name}_#{tp_name}", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
-        end
+        t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
         t.save
-        t.notify "Automatically created in the workflow.", job_id: jid
+        notifs.push "#{auto_create_task_name} is automatically submitted to #{task_prototype_name} workflow."
         new_task_ids.push t.id
       end
     end
-    return new_task_ids
+    return {
+      new_task_ids: new_task_ids,
+      notifs: notifs
+    }
   end
 
   def arguments
@@ -576,36 +612,6 @@ class Protocol
 
     when "Fragment Construction"
       io_hash = { fragment_ids: [] }.merge io_hash
-      # # pull out fragments that need to be made from Gibson Assembly tasks
-      #
-      #
-      # fs = task_status name: "Fragment Construction", group: io_hash[:group], notification: "on"
-      #
-      # need_to_order_primer_ids = missing_primer(fs[:fragments][:not_ready_to_build].uniq)
-      # new_primer_order_ids = []
-      #
-      # need_to_order_primer_ids.each do |id|
-      #   primer = find(:sample, id: id)[0]
-      #   tp = TaskPrototype.where("name = 'Primer Order'")[0]
-      #   t = Task.new(name: "#{primer.name}", specification: { "primer_ids Primer" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primer.user.id)
-      #   t.save
-      #   t.notify "Automatically created from Fragment Construction.", job_id: jid
-      #   new_primer_order_ids.push t.id
-      # end
-      #
-      # new_primer_order_ids.compact!
-      #
-      # if new_primer_order_ids.length > 0
-      #   new_primer_order_tab = task_info_table(new_primer_order_ids)
-      #   show {
-      #     title "New Primer Order tasks"
-      #     note "The following Primer Order tasks are automatically generated for primers that need to be ordered from Fragment Constructions."
-      #     table new_primer_order_tab
-      #   }
-      # end
-      #
-      # # pull out fragments from Fragment Construction tasks and cut off based on limits for non tech groups
-      # io_hash[:task_ids] = fs[:ready_ids]
       fragment_ids = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
@@ -734,52 +740,6 @@ class Protocol
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
 
     when "Yeast Competent Cell"
-      yeast_transformations = task_status name: "Yeast Transformation", group: io_hash[:group]
-      if yeast_transformations[:yeast_strains] && yeast_transformations[:yeast_strains][:not_ready_to_build].length > 0
-
-        need_to_make_competent_yeast_ids = []
-        yeast_transformations[:yeast_strains][:not_ready_to_build].each do |yid|
-          y = find(:sample, id: yid)[0]
-          if y
-            if y.properties["Parent"] && y.properties["Parent"].in("Yeast Competent Aliquot").length == 0 && y.properties["Parent"].in("Yeast Competent Cell").length == 0
-              need_to_make_competent_yeast_ids.push y.properties["Parent"].id
-            end
-          end
-        end
-
-        new_yeast_competent_cell_task_ids = []
-        need_to_make_competent_yeast_ids.each do |id|
-          y = find(:sample, id: id)[0]
-          tp = TaskPrototype.where("name = 'Yeast Competent Cell'")[0]
-          task = find(:task, name: "#{y.name}_comp_cell")[0]
-          # check if task already exists, if so, reset its status to waiting, if not, create new tasks.
-          if task
-            if task.status == "done"
-              set_task_status(task,"waiting")
-              task.notify "Automatically changed status to waiting to make more competent cells as needed from Yeast Transformation.", job_id: jid
-              task.save
-            end
-          else
-            t = Task.new(name: "#{y.name}_comp_cell", specification: { "yeast_strain_ids Yeast Strain" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.user.id)
-            t.save
-            t.notify "Automatically created from Yeast Transformation.", job_id: jid
-            new_yeast_competent_cell_task_ids.push t.id
-          end
-        end
-
-        if new_yeast_competent_cell_task_ids.length > 0
-          new_yeast_competent_cells_tab = task_info_table(new_yeast_competent_cell_task_ids)
-          show {
-            title "New Yeast Competent Cell tasks"
-            note "The following Yeast Competent Cell tasks are automatically generated for yeast strains that need to make competent cells in Yeast Transformation tasks."
-            table new_yeast_competent_cells_tab
-          }
-        end
-
-      end
-
-      yeast_competent_cell_tasks = task_status name: "Yeast Competent Cell", group: io_hash[:group]
-      io_hash[:task_ids] = yeast_competent_cell_tasks[:ready_ids]
       io_hash = { yeast_strain_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
