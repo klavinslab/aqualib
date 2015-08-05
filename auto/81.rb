@@ -14,8 +14,8 @@ class Protocol
     stripwells = o.output.fragment.new_collections
 
     stripwells.slots do |index,slot|
-      if o.output.fragment.samples[index]
-        slot.sample                   = o.output.fragment.samples[index]
+      if index < o.output.fragment.kength 
+        o.output.fragment.associate index, slot
         slot.ingredients[:fwd]        = { id: o.input.fwd.items[index], volume: 1 }
         slot.ingredients[:rev]        = { id: o.input.rev.items[index], volume: 2 }
         slot.ingredients[:template]   = { id: o.input.template.items[index], volume: 3 }
@@ -24,7 +24,7 @@ class Protocol
       end
     end
 
-    stripwells.produce
+    i.output.fragment.produce
 
     stripwells.length.times do |i|
       show {
