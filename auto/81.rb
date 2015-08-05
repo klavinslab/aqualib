@@ -35,11 +35,15 @@ class Protocol
 
     use o.parameter(:annealing_temperature)
 
-    o.data(:tc) = (show {
+    data = show {
       title "Put stripwells in thermocycler"
       note "Set the annealing temperature to #{o.parameter(:annealing_temperature)}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
-    })[:tc]
+    }
+
+    o.data(:tc).get.each do |d|
+      d = data[:tc]
+    end
 
     o.input.all.release
     stripwells.release
