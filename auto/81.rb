@@ -25,11 +25,11 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", row: "Well", fwd:, :rev, :template)
+        table stripwells.table(i, id: "Stripwell", row: "Well", fwd: "Forward primer", rev: "Reverse Primer", template: "Template")
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", row: "Well", :master_mix, :water)
+        table stripwells.table(i, id: "Stripwell", row: "Well", master_mix: "Master Mix", water: "Water")
       }
     end
 
