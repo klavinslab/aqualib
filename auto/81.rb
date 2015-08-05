@@ -48,7 +48,7 @@ class Protocol
     end
 
     o.input.all.release
-    stripwells.release
+    o.output.all.release
 
     return o.result     
 
