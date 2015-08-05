@@ -9,9 +9,7 @@ class Protocol
 
     o = op input
 
-    o.input.all.take {
-      note "Take all the inputs."
-    }
+    o.input.all.take
 
     show {
       title "#{o.name} Inputs"
@@ -19,14 +17,8 @@ class Protocol
     }
 
     o.output.all.produce
-
-    o.input.all.release {
-      note "Release all the inputs."
-    }    
-
-    o.output.all.release {
-      note "Release all the outputs."
-    }   
+    o.input.all.release
+    o.output.all.release
 
     return o.result     
 
