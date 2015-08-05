@@ -39,7 +39,7 @@ class Protocol
 
     data = show {
       title "Put stripwells in thermocycler"
-      note "Set the annealing temperature to #{o.parameter(:annealing_temperature)}"
+      note "Set the annealing temperature to #{o.parameter.annealing_temperature}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 
