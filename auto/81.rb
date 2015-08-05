@@ -14,7 +14,7 @@ class Protocol
     stripwells = o.output.fragment.new_collections
 
     stripwells.slots do |index,slot|
-      puts o.output.fragment.get
+      puts o.output.fragment.samples
       slot.sample                   = o.output.fragment.samples[index]
       slot.ingredients[:fwd]        = { id: o.input.fwd.items[index], volume: 1 }
       slot.ingredients[:rev]        = { id: o.input.rev.items[index], volume: 2 }
