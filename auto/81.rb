@@ -11,15 +11,15 @@ class Protocol
 
     o.input.all.take
 
-    stripwells = o.output(:fragment).new_collections
+    stripwells = o.output.fragment.new_collections
 
     stripwells.slots do |index,slot|
       slot.sample                   = o.output(:fragment).samples[index]
-      slot.ingredients[:fwd]        = { id: i.input(:fwd).item.id, volume: 1 }
-      slot.ingredients[:rev]        = { id: i.input(:rev).item.id, volume: 1 }
-      slot.ingredients[:template]   = { id: i.input(:template).item.id, volume: 1 }
-      slot.ingredients[:master_mix] = { volume: 1 }
-      slot.ingredients[:water]      = { volume: 1 }
+      slot.ingredients[:fwd]        = { id: i.input.fwd.item.id, volume: 1 }
+      slot.ingredients[:rev]        = { id: i.input.rev.item.id, volume: 2 }
+      slot.ingredients[:template]   = { id: i.input.template.item.id, volume: 3 }
+      slot.ingredients[:master_mix] = { volume: 4 }
+      slot.ingredients[:water]      = { volume: 5 }
     end
 
     stripwells.produce
@@ -41,7 +41,7 @@ class Protocol
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 
-    o.data(:tc).get.each do |d|
+    o.data.tc.get.each do |d|
       d = data[:tc]
     end
 
