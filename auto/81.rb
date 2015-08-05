@@ -24,7 +24,7 @@ class Protocol
       end
     end
 
-    i.output.fragment.produce
+    o.output.fragment.produce
 
     stripwells.length.times do |i|
       show {
