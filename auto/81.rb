@@ -7,6 +7,8 @@ class Protocol
 
   def main
 
+    o = op input
+
     o.input.all.take
 
     stripwells = o.output(:fragment).new_collections
@@ -32,8 +34,6 @@ class Protocol
         table stripwells.table(i, id: "Stripwell", row: "Well", master_mix: "Master Mix", water: "Water")
       }
     end
-
-    use o.parameter(:annealing_temperature)
 
     data = show {
       title "Put stripwells in thermocycler"
