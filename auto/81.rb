@@ -21,7 +21,7 @@ class Protocol
         slot.ingredients[:template]   = { id: o.input.template.items[index], volume: 3 }
         slot.ingredients[:master_mix] = { volume: 4 }
         slot.ingredients[:water]      = { volume: 5 }
-        puts slot.ingredients[:water]
+        puts slot.ingredients
       end
     end
 
