@@ -180,7 +180,7 @@ class Protocol
             discard_item_ids.concat gibson_reaction_results.collect { |g| g.id }
           end
           if discard_item_ids.length > 0
-            t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Yeast Plate" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: (plate || gibson_reaction_results[0]).sample.user.id)
+            t = Task.new(name: "#{plate.sample.name}_gibson_results_and_plate", specification: { "item_ids Item" => discard_item_ids }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: (plate || gibson_reaction_results[0]).sample.user.id)
             t.save
             t.notify "Automatically created from Sequencing Verification.", job_id: jid
             new_discard_item_task_ids.push t.id
@@ -246,7 +246,7 @@ class Protocol
                 task.save
               end
             else
-              t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.sample.user.id)
+              t = Task.new(name: "#{y.sample.name}_streak_plate", specification: { "item_ids Yeast Glycerol Stock|Yeast Plate" => [ id ]}.to_json, task_prototype_id: tp.id, status: "waiting", user_id: y.sample.user.id)
               t.save
               t.notify "Automatically created from Yeast Competent Cell.", job_id: jid
               new_streak_plate_task_ids.push t.id
