@@ -15,7 +15,7 @@ class Protocol
 
     stripwells.slots do |index,slot|
       puts "index,length = #{index},#{o.output.fragment.length}"
-      if index < o.output.fragment.length 
+      if index < o.output.fragment.samples.length 
         o.output.fragment.associate index, slot
         slot.ingredients[:fwd]        = { id: o.input.fwd.items[index], volume: 1 }
         slot.ingredients[:rev]        = { id: o.input.rev.items[index], volume: 2 }
