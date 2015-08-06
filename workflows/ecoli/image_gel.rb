@@ -109,7 +109,7 @@ class Protocol
             tp = TaskPrototype.where("name = 'Glycerol Stock'")[0]
             t = Task.new(
                 name: "#{p.sample.name}_plate_#{p.id}",
-                specification: { "item_ids Yeast Plate" => [p.id] }.to_json,
+                specification: { "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension" => [p.id] }.to_json,
                 task_prototype_id: tp.id,
                 status: "waiting",
                 user_id: p.sample.user.id)
