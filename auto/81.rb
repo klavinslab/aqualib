@@ -21,6 +21,7 @@ class Protocol
         slot.ingredients[:template]   = { id: o.input.template.items[index], volume: 3 }
         slot.ingredients[:master_mix] = { volume: 4 }
         slot.ingredients[:water]      = { volume: 5 }
+        puts slot.ingredients[:water]
       end
     end
 
@@ -29,17 +30,17 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", row: "Well", fwd: "Forward primer", rev: "Reverse Primer", template: "Template")
+        table stripwells.table(i, id: "Stripwell", col: "Well", fwd: "Forward primer", rev: "Reverse Primer", template: "Template")
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", row: "Well", master_mix: "Master Mix", water: "Water")
+        table stripwells.table(i, id: "Stripwell", col: "Well", master_mix: "Master Mix", water: "Water")
       }
     end
 
     data = show {
       title "Put stripwells in thermocycler"
-      note "Set the annealing temperature to #{o.parameter.annealing_temperature}"
+      note "Set the annealing temperature to #{o.parameter.annealing_temperature[0]}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 
