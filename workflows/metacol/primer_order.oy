@@ -3,6 +3,20 @@ argument
   group: group, "choose the group to assign this metacol"
 end
 
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    task_name: "Primer Order"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+
 place order_primer
   protocol: "aqualib:workflows/general/order_primer.rb"
   group: group
@@ -23,11 +37,14 @@ place get_primer
   window: hours(1)
 end
 
+wire tasks_inputs => order_primer
 wire order_primer => get_primer
 
+transition [ tasks_inputs ] => [ order_primer ] when !error(0) && completed (0) end
 transition [ order_primer ] => [ get_primer ] when !error(0) && completed(0) end
 transition [ get_primer ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ order_primer ] => [ order_primer ] when error(0) end
 transition [ get_primer ] => [ get_primer ] when error(0) end
