@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      lysate_stripwell_ids: [32910],
+      lysate_stripwell_ids: [22627],
       debug_mode: "Yes"
     }
   end
@@ -35,6 +35,12 @@ class Protocol
       y.flatten!.delete(-1)
       y.collect { |y| find(:sample, id: y)[0] }
     end
+
+    # dilute primer stocks if needed
+    forward_primer_ids = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].id } }.flatten
+    reverse_primer_ids = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].id } }.flatten
+    diluted_primer_aliquots = dilute_samples primers_need_to_dilute(forward_primer_ids + reverse_primer_ids)
+
     forward_primers = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].in("Primer Aliquot")[0]} }
     reverse_primers = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].in("Primer Aliquot")[0]} }
     tanneals = forward_primers.map.with_index { |pr, idx1| pr.map.with_index { |p, idx2| ( p.sample.properties["T Anneal"] + reverse_primers[idx1][idx2].sample.properties["T Anneal"] ) / 2 } }
@@ -42,10 +48,11 @@ class Protocol
     primers = (forward_primers.flatten + reverse_primers.flatten).uniq
 
     # take primer aliquots
-    take primers, interactive: true, method: "boxes"
+    take primers - diluted_primer_aliquots, interactive: true, method: "boxes"
 
-    # Get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix", take: true
+    # get phusion enzyme
+    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [phusion_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that pcrs by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], forward_primers: [], reverse_primers: [], lysate_stripwells: [], pcr_stripwells: [], tanneals: [] } }
@@ -83,7 +90,7 @@ class Protocol
       pcrs.each do |t, pcr|
         pcr[:pcr_stripwells].each_with_index do |sw, idx|
           if sw.num_samples <= 6
-            check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
+            check "Grab a new stripwell with 6 wells and label with the id #{sw}."
           else
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
@@ -91,9 +98,8 @@ class Protocol
           check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
         end
       end
-      # TODO: Put an image of a labeled stripwell here
     }
-  
+
     # add primers to stripwells
     pcrs.each do |t, pcr|
       pcr[:pcr_stripwells].each_with_index do |sw, idx|
