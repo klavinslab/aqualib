@@ -14,16 +14,13 @@ class Protocol
     stripwells = o.output.fragment.new_collections
 
     stripwells.slots do |index,slot|
-      puts "index,length = #{index},#{o.output.fragment.samples.length}"
       if index < o.output.fragment.samples.length 
         o.output.fragment.associate index, slot
-        puts "in protocol, slot.sample = #{slot.sample}"
         slot.ingredients[:fwd]        = { id: o.input.fwd.items[index], volume: 1 }
         slot.ingredients[:rev]        = { id: o.input.rev.items[index], volume: 2 }
         slot.ingredients[:template]   = { id: o.input.template.items[index], volume: 3 }
         slot.ingredients[:master_mix] = { volume: 4 }
         slot.ingredients[:water]      = { volume: 5 }
-        puts slot.ingredients
       end
     end
 
