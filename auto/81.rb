@@ -3,11 +3,12 @@ class Timer
 
   def initialize
     @t = Time.now
-    @i = 0
+    @i = 1
   end
 
   def click
-    puts "  #{((Time.now-@t).seconds*1000).to_i}: #{@i}"
+    puts "#{@i}: #{((Time.now-@t).seconds*1000).to_i} ms"
+    @t = Time.now
     @i += 1
   end
 
@@ -22,7 +23,6 @@ class Protocol
   def main
 
     t = Timer.new
-    t.click
     o = op input
     t.click
     o.input.all.take
