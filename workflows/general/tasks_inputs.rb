@@ -30,24 +30,6 @@ class Protocol
 
   end
 
-
-
-  # a function that find primers that need to be ordered for a list of fragment ids, return a list of primer ids that need to be ordered.
-  def missing_primer fids
-
-    primers = []
-    fids.each do |fid|
-      fragment = find(:sample, id: fid )[0]
-      fwd = fragment.properties["Forward Primer"]
-      rev = fragment.properties["Reverse Primer"]
-      primers.push fwd.id if fwd && (fwd.in("Primer Aliquot").length == 0) && (fwd.in("Primer Stock").length == 0)
-      primers.push rev.id if rev && (rev.in("Primer Aliquot").length == 0) && (rev.in("Primer Stock").length == 0)
-    end
-
-    return primers.uniq
-
-  end
-
   # a function that returns sample stock ids that has seq_verified marked "correct", if nothing marked, return the 1st one in the array of sample stocks
   # currently works for Fragment and Sample
 
@@ -65,27 +47,6 @@ class Protocol
       return stocks[0].id
     else
       return nil
-    end
-
-  end
-
-  # a simple function to diplay user input for how many tasks to choose from the queue and present user
-  # timing info vs size, return numer of tasks user chooses.
-  def task_size_select task_name, sizes, tetra_tab = nil
-
-    if sizes.length > 0
-      limit_input = show {
-        title "How many #{task_name} to run?"
-        note "There is a total of #{sizes[-1]} #{task_name} in the queue. How many do you want to run?"
-        select sizes, var: "limit", label: "Enter the number of #{task_name} you want to run", default: sizes[-1]
-        if tetra_tab
-          note "Tetra predictions for estimated job duration in minutes."
-          table tetra_tab
-        end
-      }
-      return limit_input[:limit].to_i
-    else
-      return 0
     end
 
   end
@@ -160,7 +121,7 @@ class Protocol
   def inventory_check ids, p={}
     params = ({ sample_type: "", inventory_types: "" }).merge p
     ids = [ids] if ids.is_a? Numeric
-    need_to_make_ids = [] # put the list of sample ids that need inventory_type to be made
+    ids_to_make = [] # put the list of sample ids that need inventory_type to be made
     sample_type = params[:sample_type]
     inventory_types = params[:inventory_types]
     inventory_types = [inventory_types] if inventory_types.is_a? String
@@ -176,10 +137,13 @@ class Protocol
       end
       if warning.length == inventory_types.length
         errors.push "#{sample_name} requires a #{inventory_types.join(" or ")}."
-        need_to_make_ids.push id
+        ids_to_make.push id
       end
     end
-    return errors, need_to_make_ids
+    return {
+      errors: errors,
+      ids_to_make: ids_to_make
+    }
   end
 
   def sample_check ids, p={}
@@ -204,12 +168,12 @@ class Protocol
           case field
           when "Forward Primer", "Reverse Primer", "QC Primer1", "QC Primer2"
             pid = property.id
-            error, id_to_make = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
-            error.collect! do |err|
+            inventory_check_result = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+            inventory_check_result[:errors].collect! do |err|
               "#{sample_name}'s #{field} #{err}"
             end
-            warnings.push error
-            ids_to_make.concat id_to_make
+            warnings.push inventory_check_result[:errors]
+            ids_to_make.concat inventory_check_result[:ids_to_make]
           when "Overhang Sequence", "Anneal Sequence"
             warnings.push "#{sample_name} #{field} requires nonempty string" unless property.length > 0
           when "T Anneal"
@@ -227,19 +191,19 @@ class Protocol
               template_stocks.push template.in(container)[0]
             end
             template_stocks.compact!
-            warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_name} Template") if template_stocks.empty?
+            warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_name} #{field}") if template_stocks.empty?
           when "Length"
             warnings.push "Length greater than 0 is required for #{sample_name}" unless property > 0
           when "Bacterial Marker", "Yeast Marker"
-            warnings.push "Nonempty #{field} is required for #{sample_name}" unless property.length > 0
+            warnings.push "Nonempty string is required for #{sample_name} #{field}" unless property.length > 0
           when "Parent"
             yid = property.id
-            error, id_to_make = inventory_check yid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
-            error.collect! do |err|
+            inventory_check_result = inventory_check yid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
+            inventory_check_result[:errors].collect! do |err|
               "#{sample_name}'s #{field} #{err}"
             end
-            warnings.push error
-            ids_to_make.concat id_to_make
+            warnings.push inventory_check_result[:errors]
+            ids_to_make.concat inventory_check_result[:ids_to_make]
           end # case
         else
           warnings.push "#{field} is required for #{sample_name}"
@@ -256,7 +220,10 @@ class Protocol
     end # ids.each
     errors.uniq!
     ids_to_make.uniq!
-    return errors, ids_to_make
+    return {
+      errors: errors,
+      ids_to_make: ids_to_make
+    }
   end
 
   def task_status p={}
@@ -276,12 +243,12 @@ class Protocol
     sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
     # an array to store new tasks got automatically created.
     new_task_ids = []
-    counter = 0
     # cycling through tasks_to_process to make sure tasks inputs are valid
     tasks_to_process.each do |t|
       #To do: check array sizes equal? first
       errors = []
       notifs = []
+      argument_lengths = []
       t.spec.each do |argument, ids|
         argument = argument.to_s
         variable_name = argument.split(' ')[0]
@@ -289,12 +256,12 @@ class Protocol
         argument.slice!(0) # remove white space in the beginning
         inventory_types = argument.split('|')
         inventory_types.uniq!
+        argument_lengths.push ids.length if ids.is_a? Array
         ids = [ids] unless ids.is_a? Array
         ids.flatten!
         ids.uniq!
         # processing sample type or inventory type check
         if inventory_types.any?
-          counter += 1
           if (object_type_names & inventory_types).sort == inventory_types.sort
             item_or_sample = :item
           elsif (sample_type_names & inventory_types).sort == inventory_types.sort
@@ -319,40 +286,40 @@ class Protocol
           case variable_name
           when "primer_ids"
             if params[:name] == "Primer Order"
-              errors.concat sample_check(ids, sample_type: "Primer", assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[0]
+              errors.concat sample_check(ids, sample_type: "Primer", assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
             else  # for Sequencing, Plasmid Verification
-              error, ids_to_make = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
-              errors.concat error
-              new_tasks = create_new_tasks(ids_to_make, task_name: "Primer Order")
+              inventory_check_result = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+              errors.concat inventory_check_result[:errors]
+              new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
-              error, ids_to_make = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
-              errors.concat error
-              new_tasks = create_new_tasks(ids_to_make, task_name: "Primer Order")
+              sample_check_result = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+              errors.concat sample_check_result[:errors]
+              new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
             elsif params[:name] == "Gibson Assembly"
-              error, ids_to_make = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
-              errors.concat error
-              new_tasks = create_new_tasks(ids_to_make, task_name: "Fragment Construction")
-              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[0]
+              inventory_check_result = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
+              errors.concat inventory_check_result[:errors]
+              new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Fragment Construction", user_id: t.user.id)
+              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[:errors]
             end
           when "plate_ids", "glycerol_stock_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-            errors.concat sample_check(sample_ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[0]
+            errors.concat sample_check(sample_ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[:errors]
           when "num_colonies"
             ids.each do |id|
               errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
             end
           when "plasmid"
-            errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[0]
+            errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[:errors]
           when "yeast_transformed_strain_ids"
-            error, ids_to_make = sample_check(ids, sample_type: "Yeast Strain", assert_property: "Parent")
-            errors.concat error
-            new_tasks = create_new_tasks(ids_to_make, task_name: "Yeast Competent Cell")
-            errors.concat sample_check(ids, sample_type: "Yeast Strain", assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[0]
+            sample_check_result = sample_check(ids, sample_type: "Yeast Strain", assert_property: "Parent")
+            errors.concat sample_check_result[:errors]
+            new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Yeast Competent Cell", user_id: t.user.id)
+            errors.concat sample_check(ids, sample_type: "Yeast Strain", assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[:errors]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-            errors.concat sample_check(sample_ids, sample_type: "Yeast Strain", assert_property: ["QC Primer1", "QC Primer2"])[0]
+            errors.concat sample_check(sample_ids, sample_type: "Yeast Strain", assert_property: ["QC Primer1", "QC Primer2"])[:errors]
           when "yeast_strain_ids"
             ids_to_make = []
             ids.each do |id|
@@ -368,7 +335,7 @@ class Protocol
               end
             end # ids
             ids_to_make.uniq!
-            new_tasks = create_new_tasks(ids_to_make, task_name: "Streak Plate")
+            new_tasks = create_new_tasks(ids_to_make, task_name: "Streak Plate", user_id: t.user.id)
           end # case
           if new_tasks # when new_tasks are created
             new_task_ids.concat new_tasks[:new_task_ids]
@@ -376,6 +343,8 @@ class Protocol
           end
         end # errors.empty?
       end # t.spec.each
+      argument_lengths.uniq!
+      errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
       if errors.any?
         errors.each { |error| t.notify "[Error] #{error}", job_id: jid }
         set_task_status(t, "waiting") unless t.status == "waiting"
@@ -386,10 +355,6 @@ class Protocol
         notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: jid }
       end
     end # tasks_to_process
-
-    show {
-      note counter
-    }
 
     task_status_hash = {
       waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" })
@@ -403,7 +368,7 @@ class Protocol
 
   # create new tasks for fragment construction, primer order, yeast competent cell
   def create_new_tasks ids, p={}
-    params = ({ task_name: "" }).merge p
+    params = ({ task_name: "", user_id: nil }).merge p
     ids = [ids] unless ids.is_a? Array
     new_task_ids = []
     notifs = [] # to store all notifications
@@ -442,7 +407,7 @@ class Protocol
           notifs.push "#{auto_create_task_name} is already in the #{task_prototype_name} workflow."
         end
       else
-        t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: sample.user.id)
+        t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
         t.save
         notifs.push "#{auto_create_task_name} is automatically submitted to #{task_prototype_name} workflow."
         new_task_ids.push t.id
@@ -463,7 +428,7 @@ class Protocol
       tasks_to_process.select! { |t| t.user.member? group_info.id }
     end
     new_task_ids = []
-    status_to_process = ["correct", "correct keep plate and gibson", "correct but redundant", "wrong"]
+    status_to_process = ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"]
     tasks_to_process.select! { |t| status_to_process.include? t.status }
     tasks_to_process.each do |t|
       discard_item_ids = [] # list of items to discard
@@ -478,22 +443,22 @@ class Protocol
         gibson_reaction_result_ids = gibson_reaction_results.collect { |g| g.id }
       end
       case t.status
-      when "correct"
+      when "sequence correct"
         discard_item_ids.concat gibson_reaction_result_ids
         discard_item_ids.push plate_id if find(:item, id: plate_id)[0]
         stock_item_ids.push overnight_id
-      when "correct keep plate and gibson"
+      when "sequence correct but keep plate"
         stock_item_ids.push overnight_id
-      when "correct but redundant", "wrong"
+      when "sequence correct but redundant", "sequence wrong"
         discard_item_ids.concat [plasmid_stock_id, overnight_id]
       end
       # create new tasks
-      new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item")
-      new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock")
+      new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item", user_id: t.user.id)
+      new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock", user_id: t.user.id)
       notifs = new_discard_tasks[:notifs] + new_stock_tasks[:notifs]
       new_task_ids.concat new_discard_tasks[:new_task_ids] + new_stock_tasks[:new_task_ids]
       if notifs.any?
-        notifs.each { |notif| t.notify notif, job_id: jid }
+        notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: jid }
       end
       t.status = "done"
       t.save
@@ -525,6 +490,8 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { debug_mode: "No", task_name: "", task_ids: [], size: 0 }.merge io_hash
+    io_hash_default = Hash.new(Array.new)
+    io_hash = io_hash_default.merge io_hash  # make io_hash default value []
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -573,14 +540,6 @@ class Protocol
       end
       io_hash[:size] = io_hash[:overnight_ids].length + io_hash[:item_ids].length
 
-    when "Discard Item"
-      io_hash = { item_ids: [] }.merge io_hash
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        io_hash[:item_ids].concat task.simple_spec[:item_ids]
-      end
-      io_hash[:size] = io_hash[:item_ids].length
-
     when "Streak Plate"
       io_hash = { item_ids: [], yeast_plate_ids:[] }.merge io_hash
       io_hash[:yeast_glycerol_stock_ids] = []
@@ -605,15 +564,6 @@ class Protocol
       end
       io_hash[:size] = io_hash[:plasmid_ids].length
 
-    when "Fragment Construction"
-      io_hash = { fragment_ids: [] }.merge io_hash
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        io_hash[:fragment_ids].concat task.simple_spec[:fragments]
-      end
-      io_hash[:fragment_ids].uniq!
-      io_hash[:size] = io_hash[:fragment_ids].length
-
     when "Plasmid Verification"
       io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [] }.merge io_hash
 
@@ -632,6 +582,23 @@ class Protocol
       end
       io_hash[:task_ids].concat io_hash[:plasmid_extraction_task_ids]
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
+
+    when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction"
+      # a general task processing script only works for those tasks with one variable_name
+      io_hash[:task_ids].each_with_index do |tid, idx|
+        task = find(:task, id: tid)[0]
+        task.simple_spec.each do |variable_name, ids|
+          variable_name = :fragment_ids if variable_name == :fragments
+          io_hash[variable_name] = [] if idx == 0
+          io_hash[variable_name].concat ids
+          if idx == io_hash[:task_ids].length - 1
+            io_hash[variable_name].uniq!
+            io_hash[:size] = io_hash[variable_name].length
+          end
+        end
+      end
+
+      io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"
 
     when "Yeast Transformation"
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
@@ -666,16 +633,6 @@ class Protocol
         io_hash[:user_ids].push task.user.id
       end
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
-
-    when "Yeast Competent Cell"
-      io_hash = { yeast_strain_ids: [] }.merge io_hash
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        io_hash[:yeast_strain_ids].concat task.simple_spec[:yeast_strain_ids]
-      end
-      io_hash[:yeast_strain_ids].uniq!
-      io_hash[:size] = io_hash[:yeast_strain_ids].length
-      io_hash[:volume] = 2
 
     else
       show {

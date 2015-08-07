@@ -68,7 +68,7 @@ class Protocol
     return dilute_sample_ids
   end
 
-  # dilute stocks of samples with ids. e.g. dilute primer stock of primer to primer aliquot, return the diluted stocks to be released in the protocol.
+  # dilute stocks of samples with ids. e.g. dilute primer stock of primer to primer aliquot, return the diluted stocks to be released in the protocol
   def dilute_samples ids
     ids = [ids] unless ids.is_a? Array
     ids.uniq!
