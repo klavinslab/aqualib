@@ -1,4 +1,4 @@
-module Task
+module Tasking
   # supply a poly fit data model name and size of the reaction, predit the time it will take
   def time_prediction size, model_name
     if size == 0

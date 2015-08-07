@@ -1,12 +1,12 @@
 needs "aqualib/lib/standard"
-needs "aqualib/lib/task"
+needs "aqualib/lib/tasking"
 
 module Cloning
 
   def self.included klass
     klass.class_eval do
       include Standard
-      include Task
+      include Tasking
     end
   end
 
