@@ -379,53 +379,6 @@ module Cloning
 
   end # # # # # # #
 
-  def fragment_construction_status
-    # find all fragment construction tasks and arrange them into lists by status
-    tasks = find(:task,{task_prototype: { name: "Fragment Construction" }})
-    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
-    ready = tasks.select { |t| t.status == "ready" }
-    running = tasks.select { |t| t.status == "running" }
-    done = tasks.select { |t| t.status == "done" }
-
-    (waiting + ready).each do |t|
-      t[:fragments] = { ready_to_build: [], not_ready_to_build: [] }
-
-      t.simple_spec[:fragments].each do |fid|
-
-        info = fragment_info fid, task_id: t.id
-        if !info
-          t[:fragments][:not_ready_to_build].push fid
-        else
-          t[:fragments][:ready_to_build].push fid
-        end
-
-      end
-
-      if t[:fragments][:ready_to_build].length == t.simple_spec[:fragments].length
-        t.status = "ready"
-        t.save
-        # show {
-        #   note "fragment construction status set to ready"
-        #   note "#{t.id}"
-        # }
-      elsif t[:fragments][:ready_to_build].length < t.simple_spec[:fragments].length
-        t.status = "waiting for ingredients"
-        t.save
-        # show {
-        #   note "fragment construction status set to waiting"
-        #   note "#{t.id}"
-        # }
-      end
-    end
-
-    return {
-      fragments: ((waiting + ready).collect { |t| t[:fragments] }).inject { |all,part| all.each { |k,v| all[k].concat part[k] } },
-      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect {|t| t.id},
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
-      running_ids: running.collect {|t| t.id}
-    }
-  end ### fragment_construction_status
-
   def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
 
     if block_given?
@@ -465,27 +418,7 @@ module Cloning
         }
     end
 
-  end ### yeast_transformation_status
-
-  # a function that returns a table of task information
-  def task_info_table task_ids
-
-    task_ids.compact!
-
-    if task_ids.length == 0
-      return []
-    end
-
-    tab = [[ "Task ids", "Task type", "Task name", "Task owner" ]]
-
-    task_ids.each do |tid|
-      task = find(:task, id: tid)[0]
-      tab.push [ tid, task.task_prototype.name, task.name, task.user.name ]
-    end
-
-    return tab
-
-  end ### task_info_table
+  end
 
   # supply a poly fit data model name and size of the reaction, predit the time it will take
   def time_prediction size, model_name
