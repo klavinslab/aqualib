@@ -21,14 +21,14 @@ class Protocol
 
   def main
 
-    t = Time.now
-    click
+    t = Timer.new
+    t.click
     o = op input
-    click
+    t.click
     o.input.all.take
-    click
+    t.click
     stripwells = o.output.fragment.new_collections
-    click
+    t.click
     stripwells.slots do |index,slot|
       if index < o.output.fragment.samples.length 
         o.output.fragment.associate index, slot
@@ -39,9 +39,9 @@ class Protocol
         slot.ingredients[:water]      = { volume: 5 }
       end
     end
-    click
+    t.click
     o.output.fragment.produce
-    click
+    t.click
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
@@ -52,21 +52,21 @@ class Protocol
         table stripwells.table(i, id: "Stripwell", col: "Well", master_mix: "Master Mix", water: "Water")
       }
     end
-    click
+    t.click
     data = show {
       title "Put stripwells in thermocycler"
       note "Set the annealing temperature to #{o.parameter.annealing_temperature[0]}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
-    click
+    t.click
     o.data.tc.get.each do |d|
       d = data[:tc]
     end
-    click
+    t.click
     o.input.all.release
-    click
+    t.click
     o.output.all.release
-    click
+    t.click
     return o.result     
 
   end
