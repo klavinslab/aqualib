@@ -1,4 +1,18 @@
 
+class Timer
+
+  def initialize
+    @t = Time.now
+    @i = 0
+  end
+
+  def click
+    puts "  #{((Time.now-@t).seconds*1000).to_i}: #{@i}"
+    @i += 1
+  end
+
+end
+
 class Protocol
 
   def debug
@@ -8,13 +22,13 @@ class Protocol
   def main
 
     t = Time.now
-    puts "  #{((Time.now-t).seconds*1000).to_i}: A"
+    click
     o = op input
-    puts "  #{((Time.now-t).seconds*1000).to_i}: B"
+    click
     o.input.all.take
-    puts "  #{((Time.now-t).seconds*1000).to_i}: C"
+    click
     stripwells = o.output.fragment.new_collections
-    puts "  #{((Time.now-t).seconds*1000).to_i}: D"
+    click
     stripwells.slots do |index,slot|
       if index < o.output.fragment.samples.length 
         o.output.fragment.associate index, slot
@@ -25,9 +39,9 @@ class Protocol
         slot.ingredients[:water]      = { volume: 5 }
       end
     end
-    puts "  #{((Time.now-t).seconds*1000).to_i}: E"
+    click
     o.output.fragment.produce
-    puts "  #{((Time.now-t).seconds*1000).to_i}: F"
+    click
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
@@ -38,21 +52,21 @@ class Protocol
         table stripwells.table(i, id: "Stripwell", col: "Well", master_mix: "Master Mix", water: "Water")
       }
     end
-    puts "  #{((Time.now-t).seconds*1000).to_i}: H"
+    click
     data = show {
       title "Put stripwells in thermocycler"
       note "Set the annealing temperature to #{o.parameter.annealing_temperature[0]}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
-    puts "  #{((Time.now-t).seconds*1000).to_i}: I"
+    click
     o.data.tc.get.each do |d|
       d = data[:tc]
     end
-    puts "  #{((Time.now-t).seconds*1000).to_i}: J"
+    click
     o.input.all.release
-    puts "  #{((Time.now-t).seconds*1000).to_i}: K"
+    click
     o.output.all.release
-    puts "  #{((Time.now-t).seconds*1000).to_i}: L"
+    click
     return o.result     
 
   end
