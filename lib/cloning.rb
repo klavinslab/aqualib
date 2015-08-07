@@ -417,48 +417,6 @@ module Cloning
     }
   end ### fragment_construction_status
 
-  def yeast_transformation_status p={}
-    # find all yeast transformation tasks and arrange them into lists by status
-    params = ({ group: false }).merge p
-    tasks_all = find(:task,{task_prototype: { name: "Yeast Transformation" }})
-    tasks = []
-    # filter out tasks based on group input
-    if params[:group]
-      user_group = params[:group] == "technicians"? "cloning": params[:group]
-      group_info = Group.find_by_name(user_group)
-      tasks_all.each do |t|
-        tasks.push t if t.user.member? group_info.id
-      end
-    else
-      tasks = tasks_all
-    end
-    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
-    ready = tasks.select { |t| t.status == "ready" }
-    (waiting + ready).each do |task|
-      ready_yeast_strains = []
-      task.simple_spec[:yeast_transformed_strain_ids].each do |yid|
-        y = find(:sample, id: yid)[0]
-        # check if glycerol stock and plasmid stock are ready
-        parent_ready = y.properties["Parent"].in("Yeast Glycerol Stock").length > 0 || y.properties["Parent"].in("Yeast Plate").length > 0 || y.properties["Parent"].in("Yeast Competent Aliquot").length > 0 || y.properties["Parent"].in("Yeast Overnight Suspension").length > 0 || y.properties["Parent"].in("Yeast Competent Cell").length > 0
-        plasmid_ready = y.properties["Integrant"].in("Plasmid Stock").length > 0 if y.properties["Integrant"]
-        ready_yeast_strains.push y if parent_ready && plasmid_ready
-      end
-      if ready_yeast_strains.length == task.simple_spec[:yeast_transformed_strain_ids].length
-        task.status = "ready"
-        task.save
-      else
-        task.status = "waiting for ingredients"
-        task.save
-      end
-    end # task_ids
-    return {
-      waiting_ids: (tasks.select { |t| t.status == "waiting for ingredients" }).collect { |t| t.id },
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect { |t| t.id },
-      plated_ids: (tasks.select { |t| t.status == "plated" }).collect { |t| t.id },
-      done_ids: (tasks.select { |t| t.status == "imaged and stored in fridge" }).collect { |t| t.id }
-    }
-  end ### yeast_transformation_status
-
   def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
 
     if block_given?
@@ -499,56 +457,6 @@ module Cloning
     end
 
   end ### yeast_transformation_status
-
-  def sequencing_status p={}
-    params = ({ group: false }).merge p
-    tasks_all = find(:task,{task_prototype: { name: "Sequencing" }})
-    tasks = []
-    # filter out tasks based on group input
-    if params[:group]
-      user_group = params[:group] == "technicians"? "cloning": params[:group]
-      group_info = Group.find_by_name(user_group)
-      tasks_all.each do |t|
-        tasks.push t if t.user.member? group_info.id
-      end
-    else
-      tasks = tasks_all
-    end
-    waiting = tasks.select { |t| t.status == "waiting for ingredients" }
-    ready = tasks.select { |t| t.status == "ready" }
-    running = tasks.select { |t| t.status == "send to sequencing" }
-    done = tasks.select { |t| t.status == "results back" }
-
-    # cycling through waiting and ready to make sure primer aliquots are in place
-
-    (waiting + ready).each do |t|
-
-      t[:primers] = { ready: [], no_aliquot: [] }
-
-      t.simple_spec[:primer_ids].each do |prid|
-        if find(:sample, id: prid)[0].in("Primer Aliquot").length > 0
-          t[:primers][:ready].push prid
-        else
-          t[:primers][:no_aliquot].push prid
-        end
-      end
-
-      if t[:primers][:ready].length == t.simple_spec[:primer_ids].length && find(:item, id: t.simple_spec[:plasmid_stock_id])
-        t.status = "ready"
-        t.save
-      else
-        t.status = "waiting for ingredients"
-        t.save
-      end
-    end
-
-    return {
-      waiting_ids: (tasks.select { |t| t.status == "waiting for fragments" }).collect {|t| t.id},
-      ready_ids: (tasks.select { |t| t.status == "ready" }).collect {|t| t.id},
-      running_ids: running.collect { |t| t.id },
-      done_ids: done.collect { |t| t.id }
-    }
-  end ### sequencing_status
 
   # a function that returns a table of task information
   def task_info_table task_ids
