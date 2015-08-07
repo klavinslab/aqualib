@@ -29,7 +29,6 @@ class Protocol
     end
 
     # automatic task submissions
-
     if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
       show_tasks_table(sequencing_verification_task_processing group: io_hash[:group])
     end
@@ -128,7 +127,7 @@ class Protocol
           end
         end
       end
-
+      # additional io_hash key: values
       io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"
 
     when "Yeast Transformation"

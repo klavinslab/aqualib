@@ -117,7 +117,6 @@ module Cloning
         table tab
         check "Vortex and then spin down for a few seconds"
       }
-
     end
 
     primer_aliquots = []
@@ -139,6 +138,16 @@ module Cloning
     # release all the items
     release dilute_stocks, interactive: true, method: "boxes"
     return template_diluted_stocks + primer_aliquots
+  end
+
+  # pass primer ids here and figure out which primer needs to dilute, return the primer ids that needs to be diluted.
+  def primers_need_to_dilute ids
+    ids = [ids] unless ids.is_a? Array
+    dilute_sample_ids = ids.select do |id|
+      primer = find(:sample, id: id)[0]
+      primer.in("Primer Stock").any? && primer.in("Primer Aliquot").empty?
+    end
+    return dilute_sample_ids
   end
 
   def fragment_info fid, p={}
