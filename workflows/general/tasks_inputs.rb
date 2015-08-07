@@ -493,11 +493,11 @@ class Protocol
     io_hash_default = Hash.new(Array.new)
     io_hash = io_hash_default.merge io_hash  # make io_hash default value []
 
-    # if io_hash[:debug_mode].downcase == "yes"
-    #   def debug
-    #     true
-    #   end
-    # end
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
 
     # automatic task submissions
 
