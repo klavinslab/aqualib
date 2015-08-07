@@ -6,20 +6,152 @@ class Protocol
   include Standard
   include Cloning
 
+  # this function process fragment ids that passed task_inputs, return their PCR recipe template stock, primer aliquts, annealing temperature and length, also return samples whose stock need to be diluted.
+  def fragment_recipe id, p={}
+    fragment = find(:sample, { id: id })[0]
+    props = fragment.properties.deep_dup
+    dilute_sample_ids = []  # primer or template ids whose stock needs to be diluted
+    fwd = props["Forward Primer"]
+    rev = props["Reverse Primer"]
+    template = props["Template"]
+    length = props["Length"]
+    # compute the annealing temperature
+    t1 = fwd.properties["T Anneal"]
+    t2 = rev.properties["T Anneal"]
+    # get items associated with primers and template
+    fwd_items = fwd.in "Primer Aliquot"
+    rev_items = rev.in "Primer Aliquot"
+    dilute_sample_ids.push fwd.id if fwd_items.empty?
+    dilute_sample_ids.push rev.id if rev_items.empty?
+
+    if template.sample_type.name == "Plasmid"
+      template_items = template.in "1 ng/µL Plasmid Stock"
+      if template_items.empty? && template.in("Plasmid Stock").empty?
+        template_items = template.in "Gibson Reaction Result"
+      elsif template_items.empty? && template.in("Plasmid Stock").any?
+        dilute_sample_ids.push template.id
+      end
+    elsif template.sample_type.name == "Fragment"
+      template_items = template.in "1 ng/µL Fragment Stock"
+      dilute_sample_ids.push template.id if template_items.empty?
+    elsif template.sample_type.name == "E coli strain"
+      template_items = template.in "E coli Lysate"
+      if template_items.length == 0
+        template_items = template.in "Genome Prep"
+        template_items = template_items.reverse() #so we take the last one.
+      end
+    elsif template.sample_type.name == "Yeast Strain"
+      template_items = template.in "Lysate"
+      if template_items.length == 0
+        template_items = template.in "Yeast cDNA"
+      end
+    end
+
+    return {
+      dilute_sample_ids: dilute_sample_ids,
+      fragment: fragment,
+      length: length,
+      fwd: fwd_items[0],
+      rev: rev_items[0],
+      template: template_items[0],
+      tanneal: [t1,t2].min
+    }
+  end
+
+  # dilute stocks of samples with ids. e.g. dilute primer stock of primer to primer aliquot, return the diluted stocks to be released in the protocol
+  def dilute_samples ids
+    ids = [ids] unless ids.is_a? Array
+    ids.uniq!
+    dilute_stocks = ids.collect do |id|
+      dilute_sample = find(:sample, id: id)[0]
+      dilute_stock = dilute_sample.in(dilute_sample.sample_type.name + " Stock")[0]
+    end
+    template_stocks, primer_stocks = [], []
+    dilute_stocks.each do |stock|
+      if ["Plasmid Stock", "Fragment Stock"].include? stock.object_type.name
+        template_stocks.push stock
+      elsif ["Primer Stock"].include? stock.object_type.name
+        primer_stocks.push stock
+      end
+    end
+
+    take dilute_stocks, interactive: true, method: "boxes"
+
+    template_diluted_stocks = []
+    if template_stocks.any?
+      template_stocks_need_to_measure = template_stocks.select { |s| !s.datum[:concentration] }
+      while template_stocks_need_to_measure.length > 0
+        data = show {
+          title "Nanodrop the following template/fragment stocks."
+          template_stocks_need_to_measure.each do |ts|
+            get "number", var: "c#{ts.id}", label: "Go to B9 and nanodrop tube #{ts.id}, enter DNA concentrations in the following", default: 100
+          end
+        }
+        template_stocks_need_to_measure.each do |ts|
+          ts.datum = { concentration: data[:"c#{ts.id}".to_sym] }
+          ts.save
+        end
+        template_stocks_need_to_measure = template_stocks.select { |s| !s.datum[:concentration] }
+      end
+
+      # produce 1 ng/µL Plasmid Stocks
+      template_diluted_stocks = template_stocks.collect { |s| produce new_sample s.sample.name, of: s.sample.sample_type.name, as: ("1 ng/µL " + s.sample.sample_type.name + " Stock") }
+
+      # collect all concentrations
+      concs = template_stocks.collect {|s| s.datum[:concentration].to_f}
+      water_volumes = concs.collect {|c| c-1}
+
+      # build a checkable table for user
+      tab = [["Newly labled tube","Template stock, 1 µL","Water volume"]]
+      template_stocks.each_with_index do |s,idx|
+        tab.push([template_diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
+      end
+
+      # display the dilution info to user
+      show {
+        title "Make 1 ng/µL Template Stocks"
+        check "Grab #{template_stocks.length} 1.5 mL tubes, label them with #{template_stocks.collect {|s| s.id}}"
+        check "Add template stocks and water into newly labeled 1.5 mL tubes following the table below"
+        table tab
+        check "Vortex and then spin down for a few seconds"
+      }
+
+    end
+
+    primer_aliquots = []
+    if primer_stocks.any?
+      primer_aliquots = primer_stocks.collect { |p| produce new_sample p.sample.name, of: "Primer", as: "Primer Aliquot" }
+      show {
+        title "Grab #{primer_aliquots.length} 1.5 mL tubes"
+        check "Grab #{primer_aliquots.length} 1.5 mL tubes, label with following ids."
+        check primer_aliquots.collect { |p| "#{p}"}
+        check "Add 90 µL of water into each above tube."
+      }
+      show {
+        title "Make primer aliquots"
+        note "Add 10 µL from primer stocks into each primer aliquot tube using the following table."
+        table [["Primer Aliquot id", "Primer Stock, 10 µL"]].concat (primer_aliquots.collect { |p| "#{p}"}.zip primer_stocks.collect { |p| { content: p.id, check: true } })
+      }
+    end
+
+    # release all the items
+    release dilute_stocks, interactive: true, method: "boxes"
+    return template_diluted_stocks + primer_aliquots
+  end
+
   def arguments
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
-      template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
+      # template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
       debug_mode: "Yes",
-      item_choice_mode: "No",
     }
   end
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_choice_mode: "No", template_stock_ids: [] }.merge io_hash # set default value of io_hash
+    io_hash = { debug_mode: "No", fragment_ids: [], template_stock_ids: [] }.merge io_hash # set default value of io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -28,18 +160,35 @@ class Protocol
       end
     end
 
-    # collect fragment pcr
+    # return if no fragments are ready to build
+    if io_hash[:fragment_ids].length == 0
+      show {
+        title "No fragments ready to build"
+      }
+      io_hash[:stripwell_ids] = []
+      return { io_hash: io_hash }
+    end
+
+    predited_time = time_prediction io_hash[:fragment_ids].length, "PCR"
+
+    # tell the user what we are doing
+    show {
+      title "Fragment Information"
+      note "This protocol will build the following #{io_hash[:fragment_ids].length} fragments:"
+      note io_hash[:fragment_ids].join(", ")
+      note "The predicted time needed is #{predited_time} min."
+    }
+
+    dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
+    dilute_sample_ids.flatten!
+    diluted_stocks = dilute_samples dilute_sample_ids
+
+    # collect fragment pcr information
     fragment_info_list = []
-    not_ready = []
 
     io_hash[:fragment_ids].each do |fid|
-      if io_hash[:item_choice_mode].downcase == "yes"
-        pcr = fragment_info fid, item_choice: true
-      else
-        pcr = fragment_info fid
-      end
-      fragment_info_list.push pcr   if pcr
-      not_ready.push fid if !pcr
+      pcr = fragment_recipe fid
+      fragment_info_list.push pcr
     end
 
     if io_hash[:template_stock_ids].length > 0
@@ -54,35 +203,11 @@ class Protocol
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
-    # return if no fragments are ready to build
-    if all_fragments.length == 0
-      show {
-        title "No fragments ready to build"
-      }
-      io_hash[:stripwell_ids] = []
-      return { io_hash: io_hash }
-    end
-
-    predited_time = time_prediction all_fragments.length, "PCR"
-
-    # tell the user what we are doing
-    show {
-      title "Fragment Information"
-      note "This protocol will build the following #{all_fragments.length} fragments:"
-      note (all_fragments.collect { |f| "#{f.id}" })
-      note "The predicted time needed is #{predited_time} min."
-      if not_ready.length > 0
-        separator
-        note "The following fragments have missing ingredients and will not be built:"
-        note not_ready.to_s
-      end
-    }
-
     # take the primers and templates
-    take all_templates + all_forward_primers + all_reverse_primers, interactive: true,  method: "boxes"
+    take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks, interactive: true,  method: "boxes"
 
     # get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix"
+    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
     take [phusion_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that group fragment pcr by T Anneal
