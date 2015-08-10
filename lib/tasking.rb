@@ -65,11 +65,11 @@ module Tasking
     if task_ids.empty?
       return []
     end
-    sizes = []
+    sizes = [0]
     task_ids.each do |id|
-      sizes.push(task_size(id) + (sizes[-1] || 0))
+      sizes.push task_size(id) + sizes[-1]
     end
-    if sizes.empty?
+    if sizes == [0]
       return []
     end
     limit_input = show {
@@ -80,7 +80,7 @@ module Tasking
     limit_input[:limit] ||= sizes[-1]
     limit_num = limit_input[:limit].to_i
     limit_idx = sizes.index(limit_num)
-    return task_ids.take(limit_idx + 1)
+    return task_ids.take(limit_idx)
   end
 
   # return the size of a task
