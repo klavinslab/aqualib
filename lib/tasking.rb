@@ -109,6 +109,8 @@ module Tasking
       size = task.simple_spec[:yeast_strain_ids].length
     when "Plasmid Extraction"
       size = task.simple_spec[:glycerol_stock_ids].length
+    when "Ecoli Transformation"
+      size = task.simple_spec[:plasmid_item_ids].length
     end
     return size
   end
