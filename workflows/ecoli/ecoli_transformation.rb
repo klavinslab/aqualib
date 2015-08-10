@@ -11,6 +11,7 @@ class Protocol
       io_hash: {},
       #Enter the gibson result ids as a list
       "gibson_result_ids Gibson Reaction Result" => [2853,2853,2853],
+      plasmid_item_ids: [],
       debug_mode: "No",
       inducer_plate: "IPTG",
       cell_type: "DH5alpha"
@@ -20,13 +21,22 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    io_hash = { debug_mode: "Yes", gibson_result_ids: [], plasmid_item_ids: [], task_ids: [], ecoli_transformation_task_ids: [], group: "technicians"}.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
+    ecoli_transformation_tasks = task_status name: "Ecoli Transformation", group: io_hash[:group]
+    io_hash[:ecoli_transformation_task_ids] = task_choose_limit(ecoli_transformation_tasks[:ready_ids], "Ecoli Transformation")
+    io_hash[:ecoli_transformation_task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      io_hash[:plasmid_item_ids].concat task.simple_spec[:plasmid_item_ids]
+    end
     gibson_results = io_hash[:gibson_result_ids].collect{ |gid| find(:item,{id: gid})[0] }
-    take gibson_results, interactive: true, method: "boxes"
+    plasmid_items = io_hash[:plasmid_item_ids].collect { |id| find(:item,{ id: id })[0] }
+    items_to_transform = gibson_results + plasmid_items
+    take items_to_transform, interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
 
@@ -38,7 +48,7 @@ class Protocol
       image "initialize_electroporator"
     }
 
-    transformed_aliquots = gibson_results.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
+    transformed_aliquots = items_to_transform.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
     ids = transformed_aliquots.collect {|t| t.id}
     num = transformed_aliquots.length
     num_arr = *(1..num)
@@ -75,7 +85,7 @@ class Protocol
     show {
       title "Pipette plasmid into electrocompetent aliquot"
       note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
-      table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(gibson_results.collect {|g| { content: g.id, check: true }}.zip num_arr)
+      table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
       image "pipette_plasmid_into_electrocompotent_cells"
     }
 
@@ -112,15 +122,14 @@ class Protocol
       g.reload
     end
 
-    release gibson_results, interactive: true, method: "boxes"
+    release items_to_transform, interactive: true, method: "boxes"
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
-    if io_hash[:task_ids]
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        set_task_status(task,"transformed")
-      end
+    io_hash[:task_ids].concat io_hash[:ecoli_transformation_task_ids]
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"transformed")
     end
     return { io_hash: io_hash }
 
