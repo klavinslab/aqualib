@@ -311,7 +311,7 @@ module Tasking
               new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Fragment Construction", user_id: t.user.id)
               errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[:errors]
             end
-          when "plate_ids", "glycerol_stock_ids"
+          when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
             errors.concat sample_check(sample_ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[:errors]
           when "num_colonies"
