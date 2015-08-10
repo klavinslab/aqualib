@@ -24,7 +24,7 @@ place order_primer
     debug_mode: debug_mode
     group: group
   end
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
