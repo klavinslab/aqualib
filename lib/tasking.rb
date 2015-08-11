@@ -169,7 +169,9 @@ module Tasking
     ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      sample_name = "#{sample_type} #{sample.name}"
+      sample_link = "<a href='/samples/#{id}'>#{sample.name} (#{id})</a>".html_safe
+      sample_name = "#{sample_type}" + sample_link
+      # sample_name = "#{sample_type} #{sample.name}"
       properties = sample.properties.deep_dup
       assert_properties.each do |field|
         warnings = [] # to store temporary errors
