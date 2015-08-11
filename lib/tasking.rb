@@ -31,7 +31,7 @@ module Tasking
 
     task_ids.each do |tid|
       task = find(:task, id: tid)[0]
-      tab.push [ task_html_link(task), task.task_prototype.name, task.name, task.user.name, task_size(tid) ]
+      tab.push [ tid, task_html_link(task), task.name, task.user.name, task_size(tid) ]
     end
 
     return tab
