@@ -129,7 +129,7 @@ module Tasking
 
   # return a descriptive sample with html link
   def sample_html_link sample
-    return "#{sample.sample_type.name} " + "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>".html_safe
+    return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}'>#{sample.id}: #{sample.name}</a>".html_safe
   end
 
   # returns errors of inventory_check and possible needs for submitting new tasks
