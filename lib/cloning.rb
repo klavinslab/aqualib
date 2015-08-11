@@ -114,7 +114,7 @@ module Cloning
       # display the dilution info to user
       show {
         title "Make 1 ng/µL Template Stocks"
-        check "Grab #{template_stocks.length} 1.5 mL tubes, label them with #{template_stocks.collect {|s| s.id}}"
+        check "Grab #{template_stocks.length} 1.5 mL tubes, label them with #{template_diluted_stocks.collect {|s| s.id}}"
         check "Add template stocks and water into newly labeled 1.5 mL tubes following the table below"
         table tab
         check "Vortex and then spin down for a few seconds"
