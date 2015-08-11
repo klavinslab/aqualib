@@ -140,7 +140,7 @@ module Tasking
   # return a link for task_prototype task_prototype_name
   def task_prototype_html_link task_prototype_name
     tp = TaskPrototype.where(name: task_prototype_name)[0]
-    return "<a href='/tasks?task_prototype_id=/#{tp.id}'>#{task_prototype_name}</a>".html_safe
+    return "<a href='/tasks?task_prototype_id=#{tp.id}'>#{task_prototype_name}</a>".html_safe
   end
 
   # returns errors of inventory_check and possible needs for submitting new tasks
