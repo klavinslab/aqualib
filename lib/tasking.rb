@@ -143,6 +143,10 @@ module Tasking
     return "<a href='/tasks?task_prototype_id=#{tp.id}'>#{task_prototype_name}</a>".html_safe
   end
 
+  def item_or_sample_html_link id, item_or_sample
+    return "<a href='/#{item_or_sample}s/#{id}'>#{id}</a>".html_safe
+  end
+
   def indefinite_articlerize(params_word)
       %w(a e i o u).include?(params_word[0].downcase) ? "an" : "a"
   end
@@ -303,7 +307,7 @@ module Tasking
               if !find(item_or_sample, id: id)[0]
                 errors.push "Can not find #{item_or_sample} #{id}."
               elsif !inventory_type_check(inventory_types, item_or_sample, id)
-                errors.push "#{item_or_sample} #{id} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
+                errors.push "#{item_or_sample.to_s.capitalize} #{item_or_sample_html_link id} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
               end
             end # ids
           end # unless
