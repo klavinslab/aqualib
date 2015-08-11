@@ -170,7 +170,7 @@ module Tasking
     ids.each do |id|
       sample = find(:sample, id: id)[0]
       sample_link = "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>".html_safe
-      sample_name = "#{sample_type}" + sample_link
+      sample_name = "#{sample_type} " + sample_link
       # sample_name = "#{sample_type} #{sample.name}"
       properties = sample.properties.deep_dup
       assert_properties.each do |field|
