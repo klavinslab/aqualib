@@ -132,6 +132,10 @@ module Tasking
     return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}'>#{sample.id}: #{sample.name}</a>".html_safe
   end
 
+  def task_html_link task
+    return "<a href='/tasks/#{task.id}'>#{task.name}</a>".html_safe
+  end
+
   # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
     params = ({ inventory_types: "" }).merge p
@@ -410,19 +414,21 @@ module Tasking
       end
       task = find(:task, name: auto_create_task_name)[0]
       if task
+        auto_create_task_name_link = task_html_link task
         if ["done", "received and stocked", "imaged and stored in fridge"].include? task.status
           set_task_status(task, "waiting")
-          notifs.push "#{auto_create_task_name} changed status to waiting to make more."
+          notifs.push "#{auto_create_task_name_link} changed status to waiting to make more."
           new_task_ids.push task.id
         elsif ["failed","canceled"].include? task.status
-          notifs.push "#{auto_create_task_name} was failed or canceled. You need to manually switch the status if you want to remake."
+          notifs.push "#{auto_create_task_name_link} was failed or canceled. You need to manually switch the status if you want to remake."
         else
-          notifs.push "#{auto_create_task_name} is already in the #{task_prototype_name} workflow."
+          notifs.push "#{auto_create_task_name_link} is already in the #{task_prototype_name} workflow."
         end
       else
         t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
         t.save
-        notifs.push "#{auto_create_task_name} is automatically submitted to #{task_prototype_name} workflow."
+        auto_create_task_name_link = task_html_link t
+        notifs.push "#{auto_create_task_name_link} is automatically submitted to #{task_prototype_name} workflow."
         new_task_ids.push t.id
       end
     end
