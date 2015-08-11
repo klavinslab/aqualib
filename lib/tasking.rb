@@ -137,13 +137,12 @@ module Tasking
     params = ({ sample_type: "", inventory_types: "" }).merge p
     ids = [ids] if ids.is_a? Numeric
     ids_to_make = [] # put the list of sample ids that need inventory_type to be made
-    sample_type = params[:sample_type]
     inventory_types = params[:inventory_types]
     inventory_types = [inventory_types] if inventory_types.is_a? String
     errors = []
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      sample_name = "#{sample_type} #{sample.name}"
+      sample_name = sample_html_link sample
       warning = []
       inventory_types.each do |inventory_type|
         if sample.in(inventory_type).empty?
@@ -164,7 +163,6 @@ module Tasking
   def sample_check ids, p={}
     params = ({ sample_type: "", assert_property: [], assert_logic: "and" }).merge p
     ids = [ids] if ids.is_a? Numeric
-    sample_type = params[:sample_type]
     assert_properties = params[:assert_property]
     assert_properties = [assert_properties] unless assert_properties.is_a? Array
     if sample_type.empty? || assert_properties.empty?
@@ -174,9 +172,7 @@ module Tasking
     ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      # sample_link = "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>".html_safe
       sample_name = sample_html_link sample
-      # sample_name = "#{sample_type} #{sample.name}"
       properties = sample.properties.deep_dup
       assert_properties.each do |field|
         warnings = [] # to store temporary errors
