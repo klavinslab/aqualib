@@ -143,6 +143,10 @@ module Tasking
     return "<a href='/tasks?task_prototype_id=#{tp.id}'>#{task_prototype_name}</a>".html_safe
   end
 
+  def indefinite_articlerize(params_word)
+      %w(a e i o u).include?(params_word[0].downcase) ? "an" : "a"
+  end
+
   # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
     params = ({ inventory_types: "" }).merge p
@@ -161,7 +165,7 @@ module Tasking
         end
       end
       if warning.length == inventory_types.length
-        errors.push "#{sample_name} requires a #{inventory_types.join(" or ")}."
+        errors.push "#{sample_name} requires #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
         ids_to_make.push id
       end
     end
@@ -299,7 +303,7 @@ module Tasking
               if !find(item_or_sample, id: id)[0]
                 errors.push "Can not find #{item_or_sample} #{id}."
               elsif !inventory_type_check(inventory_types, item_or_sample, id)
-                errors.push "#{item_or_sample} #{id} is not #{inventory_types.join(" or ")}."
+                errors.push "#{item_or_sample} #{id} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
               end
             end # ids
           end # unless
