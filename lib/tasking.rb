@@ -134,7 +134,7 @@ module Tasking
 
   # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
-    params = ({ sample_type: "", inventory_types: "" }).merge p
+    params = ({ inventory_types: "" }).merge p
     ids = [ids] if ids.is_a? Numeric
     ids_to_make = [] # put the list of sample ids that need inventory_type to be made
     inventory_types = params[:inventory_types]
@@ -161,11 +161,11 @@ module Tasking
   end
 
   def sample_check ids, p={}
-    params = ({ sample_type: "", assert_property: [], assert_logic: "and" }).merge p
+    params = ({ assert_property: [], assert_logic: "and" }).merge p
     ids = [ids] if ids.is_a? Numeric
     assert_properties = params[:assert_property]
     assert_properties = [assert_properties] unless assert_properties.is_a? Array
-    if sample_type.empty? || assert_properties.empty?
+    if assert_properties.empty?
       return nil
     end
     errors = []
