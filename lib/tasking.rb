@@ -239,6 +239,7 @@ module Tasking
           when "Integrant"
             pid = property.id
             inventory_check_result = inventory_check pid, inventory_types: ["Plasmid Stock", "Fragment Stock"]
+            warnings.push inventory_check_result[:errors]
           end # case
         else
           warnings.push "#{field} is required for #{sample_name}"
