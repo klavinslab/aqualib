@@ -307,7 +307,7 @@ module Tasking
               if !find(item_or_sample, id: id)[0]
                 errors.push "Can not find #{item_or_sample} #{id}."
               elsif !inventory_type_check(inventory_types, item_or_sample, id)
-                errors.push "#{item_or_sample.to_s.capitalize} #{item_or_sample_html_link id} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
+                errors.push "#{item_or_sample.to_s.capitalize} #{item_or_sample_html_link id,item_or_sample} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
               end
             end # ids
           end # unless
