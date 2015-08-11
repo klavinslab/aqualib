@@ -181,7 +181,7 @@ module Tasking
           case field
           when "Forward Primer", "Reverse Primer", "QC Primer1", "QC Primer2"
             pid = property.id
-            inventory_check_result = inventory_check pid, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+            inventory_check_result = inventory_check pid, inventory_types: ["Primer Aliquot", "Primer Stock"]
             inventory_check_result[:errors].collect! do |err|
               "#{sample_name}'s #{field} #{err}"
             end
@@ -211,7 +211,7 @@ module Tasking
             warnings.push "Nonempty string is required for #{sample_name} #{field}" unless property.length > 0
           when "Parent"
             yid = property.id
-            inventory_check_result = inventory_check yid, sample_type: "Yeast Strain", inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
+            inventory_check_result = inventory_check yid, inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
             inventory_check_result[:errors].collect! do |err|
               "#{sample_name}'s #{field} #{err}"
             end
@@ -299,40 +299,40 @@ module Tasking
           case variable_name
           when "primer_ids"
             if params[:name] == "Primer Order"
-              errors.concat sample_check(ids, sample_type: "Primer", assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
+              errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
             else  # for Sequencing, Plasmid Verification
-              inventory_check_result = inventory_check ids, sample_type: "Primer", inventory_types: ["Primer Aliquot", "Primer Stock"]
+              inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
               errors.concat inventory_check_result[:errors]
               new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
-              sample_check_result = sample_check(ids, sample_type: "Fragment", assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+              sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat sample_check_result[:errors]
               new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
             elsif params[:name] == "Gibson Assembly"
-              inventory_check_result = inventory_check(ids, sample_type: "Fragment", inventory_types: "Fragment Stock")
+              inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
               errors.concat inventory_check_result[:errors]
               new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Fragment Construction", user_id: t.user.id)
-              errors.concat sample_check(ids, sample_type: "Fragment", assert_property: "Length")[:errors]
+              errors.concat sample_check(ids, assert_property: "Length")[:errors]
             end
           when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-            errors.concat sample_check(sample_ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[:errors]
+            errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
           when "num_colonies"
             ids.each do |id|
               errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
             end
           when "plasmid"
-            errors.concat sample_check(ids, sample_type: "Plasmid", assert_property: "Bacterial Marker")[:errors]
+            errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
           when "yeast_transformed_strain_ids"
-            sample_check_result = sample_check(ids, sample_type: "Yeast Strain", assert_property: "Parent")
+            sample_check_result = sample_check(ids, assert_property: "Parent")
             errors.concat sample_check_result[:errors]
             new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Yeast Competent Cell", user_id: t.user.id)
-            errors.concat sample_check(ids, sample_type: "Yeast Strain", assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[:errors]
+            errors.concat sample_check(ids, assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[:errors]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-            errors.concat sample_check(sample_ids, sample_type: "Yeast Strain", assert_property: ["QC Primer1", "QC Primer2"])[:errors]
+            errors.concat sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])[:errors]
           when "yeast_strain_ids"
             ids_to_make = []
             ids.each do |id|
