@@ -238,7 +238,10 @@ module Tasking
             ids_to_make.concat inventory_check_result[:ids_to_make]
           when "Integrant"
             pid = property.id
-            inventory_check_result = inventory_check pid, inventory_types: ["Plasmid Stock", "Fragment Stock"]
+            inventory_check_result = inventory_check pid, inventory_types: "#{sample.sample_type.name} Stock"
+            inventory_check_result[:errors].collect! do |err|
+              "#{sample_name}'s #{field} #{err}"
+            end
             warnings.push inventory_check_result[:errors]
           end # case
         else
