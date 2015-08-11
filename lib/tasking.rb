@@ -324,6 +324,7 @@ module Tasking
         # processing sample properties or inventory check when id is sample
         # only start processing in this level when there is no errors in previous type checking
         if errors.empty?
+          new_tasks = {}
           case variable_name
           when "primer_ids"
             if params[:name] == "Primer Order"
@@ -331,17 +332,17 @@ module Tasking
             else  # for Sequencing, Plasmid Verification
               inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
               errors.concat inventory_check_result[:errors]
-              new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
+              new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
             end
           when "fragments"
             if params[:name] == "Fragment Construction"
               sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat sample_check_result[:errors]
-              new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
+              new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
             elsif params[:name] == "Gibson Assembly"
               inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
               errors.concat inventory_check_result[:errors]
-              new_tasks = create_new_tasks(inventory_check_result[:ids_to_make], task_name: "Fragment Construction", user_id: t.user.id)
+              new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
               errors.concat sample_check(ids, assert_property: "Length")[:errors]
             end
           when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
@@ -356,16 +357,15 @@ module Tasking
           when "yeast_transformed_strain_ids"
             sample_check_result = sample_check(ids, assert_property: "Parent")
             errors.concat sample_check_result[:errors]
-            new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Yeast Competent Cell", user_id: t.user.id)
+            new_tasks["Yeast Competent Cell"] = sample_check_result[:ids_to_make]
             integrant_check_result = sample_check(ids, assert_property: "Integrant")
-            errors.concat sample_check_result[:errors]
-            new_tasks.push create_new_tasks(integrant_check_result[:ids_to_make], task_name: "Fragment Construction", user_id: t.user.id)
-
+            errors.concat integrant_check_result[:errors]
+            new_tasks["Fragment Construction"] = integrant_check_result[:ids_to_make]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
             sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
             errors.concat sample_check_result[:errors]
-            new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
+            new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
           when "yeast_strain_ids"
             ids_to_make = []
             ids.each do |id|
@@ -380,12 +380,12 @@ module Tasking
                 end
               end
             end # ids
-            ids_to_make.uniq!
-            new_tasks = create_new_tasks(ids_to_make, task_name: "Streak Plate", user_id: t.user.id)
+            new_tasks["Streak Plate"] = ids_to_make
           end # case
-          if new_tasks # when new_tasks are created
-            new_task_ids.concat new_tasks[:new_task_ids]
-            notifs.concat new_tasks[:notifs]
+          new_tasks.each do |task_type_name, ids|
+            created_tasks = create_new_tasks(ids, task_name: task_type_name, user_id: t.user.id)
+            new_task_ids.concat created_tasks[:new_task_ids]
+            notifs.concat created_tasks[:notifs]
           end
         end # errors.empty?
       end # t.spec.each
