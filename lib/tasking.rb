@@ -336,7 +336,9 @@ module Tasking
             errors.concat sample_check(ids, assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[:errors]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-            errors.concat sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])[:errors]
+            sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
+            errors.concat sample_check_result[:errors]
+            new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Primer Order", user_id: t.user.id)
           when "yeast_strain_ids"
             ids_to_make = []
             ids.each do |id|
