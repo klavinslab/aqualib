@@ -127,6 +127,10 @@ module Tasking
     end
   end
 
+  def sample_html_link sample
+    return "#{sample_type} " + "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>".html_safe
+  end
+
   # returns errors of inventory_check and possible needs for submitting new tasks
   def inventory_check ids, p={}
     params = ({ sample_type: "", inventory_types: "" }).merge p
@@ -169,8 +173,8 @@ module Tasking
     ids_to_make = [] # ids that require inventory to be made through other tasks
     ids.each do |id|
       sample = find(:sample, id: id)[0]
-      sample_link = "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>"
-      sample_name = "#{sample_type} " + sample_link
+      # sample_link = "<a href='/samples/#{id}'>#{id}: #{sample.name}</a>".html_safe
+      sample_name = sample_html_link sample
       # sample_name = "#{sample_type} #{sample.name}"
       properties = sample.properties.deep_dup
       assert_properties.each do |field|
