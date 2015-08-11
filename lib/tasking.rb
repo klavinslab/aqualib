@@ -236,6 +236,9 @@ module Tasking
             end
             warnings.push inventory_check_result[:errors]
             ids_to_make.concat inventory_check_result[:ids_to_make]
+          when "Integrant"
+            pid = property.id
+            inventory_check_result = inventory_check pid, inventory_types: ["Plasmid Stock", "Fragment Stock"]
           end # case
         else
           warnings.push "#{field} is required for #{sample_name}"
@@ -348,7 +351,7 @@ module Tasking
             sample_check_result = sample_check(ids, assert_property: "Parent")
             errors.concat sample_check_result[:errors]
             new_tasks = create_new_tasks(sample_check_result[:ids_to_make], task_name: "Yeast Competent Cell", user_id: t.user.id)
-            errors.concat sample_check(ids, assert_property: ["Integrant", "Plasmid"], assert_logic: "or")[:errors]
+            errors.concat sample_check(ids, assert_property: "Integrant")[:errors]
           when "yeast_plate_ids"
             sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
             sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
