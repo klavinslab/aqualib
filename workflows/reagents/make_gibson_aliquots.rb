@@ -39,11 +39,13 @@ class Protocol
       ligase = input[:ligase]
 
       show {
+        title "instructions"
         note "This protocol makes 80 gibson aliquots. Make sure you keep all associated enzyme in this prtocol ON ICE through the duration of the WHOLE PROTOCOL."
 
       }
 
       show {
+        title "Chemicals Needed"
         note "This protocol uses the following"
         bullet "ISO_buffer"
         bullet "T5"
@@ -63,6 +65,7 @@ class Protocol
 
         if iso_stock == nil
           show{
+            title "Caution !!"
             note "This Buffer does not have a stock in the lab"
           }
         end
@@ -72,6 +75,7 @@ class Protocol
 
         if t5_stock == nil
           show{
+            title "Caution !!"
             note "This Enzyme does not have a stock in the lab"
             }
         end
@@ -81,6 +85,7 @@ class Protocol
 
         if phu_stock == nil
           show{
+            title "Caution !!"
             note "This Enzyme does not have a stock in the lab"
           }
         end
@@ -90,6 +95,7 @@ class Protocol
 
         if ligase_stock == nil
           show{
+            title "Caution !!"
             note "This Enzyme does not have a stock in the lab"
           }
         end
@@ -99,6 +105,7 @@ class Protocol
         if iso_stock != nil
           take [iso_stock], interactive: true, method: "boxes"
           isEmpty = show{
+            title "Technician Feedback Needed"
             get "text", var: "y", label: "Is the sample empty", default: "no"
             }
           if isEmpty[:y].downcase == "yes"
@@ -106,6 +113,7 @@ class Protocol
             iso_stock = find(:sample, id: iso_buffer.id)[0].in("Enzyme Buffer Stock")[0]
             if iso_stock == nil
               show{
+                title "Caution !!"
                 note "This Buffer does not have a stock in the lab"
               }
             end
@@ -119,6 +127,7 @@ class Protocol
         if t5_stock != nil
           take [t5_stock], interactive: true, method: "boxes"
           isEmpty = show{
+            title "Technician Feedback Needed"
             get "text", var: "y", label: "Is the sample empty", default: "no"
             }
           if isEmpty[:y].downcase == "yes"
@@ -126,6 +135,7 @@ class Protocol
             t5_stock = find(:sample, id: t5)[0].in("Enzyme Stock")[0]
             if t5_stock == nil
               show{
+                title "Caution !!"
                 note "This Enzyme does not have a stock in the lab"
               }
             end
@@ -139,6 +149,7 @@ class Protocol
         if phu_stock != nil
           take [phu_stock], interactive: true, method: "boxes"
           isEmpty = show{
+            title "Technician Feedback Needed"
             get "text", var: "y", label: "Is the sample empty", default: "no"
             }
           if isEmpty[:y].downcase == "yes"
@@ -146,6 +157,7 @@ class Protocol
             phu_stock = find(:sample, id: phusion_pol)[0].in("Enzyme Stock")[0]
             if phu_stock == nil
               show{
+                title "Caution !!"
                 note "This Enzyme does not have a stock in the lab"
               }
             end
@@ -159,6 +171,7 @@ class Protocol
         if ligase_stock != nil
           take [ligase_stock], interactive: true, method: "boxes"
           isEmpty = show{
+            title "Technician Feedback Needed"
             get "text", var: "y", label: "Is the sample empty", default: "no"
             }
           if isEmpty[:y].downcase == "yes"
@@ -166,6 +179,7 @@ class Protocol
             ligase_stock = find(:sample, id: ligase)[0].in("Enzyme Stock")[0]
             if ligase_stock == nil
               show{
+                title "Caution"
                 note "This Enzyme does not have a stock in the lab"
               }
             end
@@ -180,15 +194,16 @@ class Protocol
 #protocol instructions
         show {
         note "Grab a sample cooling block from SF2 and place all items retrieved in it."
+        title "Item assembly instruction"
         }
 
         show{
-
+          title "Item assembly instruction"
           note "Grab a new 1.5 ml eppendorf tube and place it into the sample ice block"
         }
 
         show {
-
+          title "Sample preparation instruction"
           check "Pipette 320µl of the 5X ISO buffer into the new eppendorf tube."
           check "Pipette 0.64µl of the T5 exonuclease into the eppendorf tube. Remember to keep all associated samples on the ice block."
           check "Pipette 20µl of the Phusion DNA Polymerase into the eppendorf tube."
@@ -198,12 +213,12 @@ class Protocol
         }
 
         show {
-
+          title "Prepare to pipette out aliquot"
           note "Grab 80 small sample tubes and another ice block with a 96well metal plate"
         }
 
         show {
-
+          title "Pipette out aliquots"
           note "Aliquot 15µl of the eppendorf tube contents into each of the 80 small sample tubes"
         }
 
@@ -227,10 +242,11 @@ class Protocol
 #the produce part is still not very clear to me ... That needs to be filled in still
 
        j = produce new_object "Gibson Aliquot"
-       show {
-         note j.id
-         note j.location
-       }
+       loc_id = show {
+         title "Technician Feedback Needed"
+         get "text", var: "y", label: "Enter the location where you kept the aliquots", default: "no"
+                }
+                j.location = loc_id
        release [j]
 
       end
