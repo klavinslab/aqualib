@@ -132,8 +132,15 @@ module Tasking
     return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}'>#{sample.id}: #{sample.name}</a>".html_safe
   end
 
+  # return a link for task
   def task_html_link task
     return "<a href='/tasks/#{task.id}'>#{task.name}</a>".html_safe
+  end
+
+  # return a link for task_prototype task_prototype_name
+  def task_prototype_html_link task_prototype_name
+    tp = TaskPrototype.where(name: task_prototype_name)[0]
+    return "<a href='/tasks?task_prototype_id=/#{tp.id}'>#{task_prototype_name}</a>".html_safe
   end
 
   # returns errors of inventory_check and possible needs for submitting new tasks
@@ -415,6 +422,7 @@ module Tasking
         auto_create_task_name = "#{sample.name}_#{item_type_name}_#{item.id}_#{tp_name}"
       end
       task = find(:task, name: auto_create_task_name)[0]
+      task_prototype_name_link = task_prototype_html_link task_prototype_name
       if task
         auto_create_task_name_link = task_html_link task
         if ["done", "received and stocked", "imaged and stored in fridge"].include? task.status
@@ -424,13 +432,13 @@ module Tasking
         elsif ["failed","canceled"].include? task.status
           notifs.push "#{auto_create_task_name_link} was failed or canceled. You need to manually switch the status if you want to remake."
         else
-          notifs.push "#{auto_create_task_name_link} is already in the #{task_prototype_name} workflow."
+          notifs.push "#{auto_create_task_name_link} is already in the #{task_prototype_name_link} Tasks."
         end
       else
         t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
         t.save
         auto_create_task_name_link = task_html_link t
-        notifs.push "#{auto_create_task_name_link} is automatically submitted to #{task_prototype_name} workflow."
+        notifs.push "#{auto_create_task_name_link} is automatically submitted to #{task_prototype_name_link} Tasks."
         new_task_ids.push t.id
       end
     end
