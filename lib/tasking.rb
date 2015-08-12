@@ -395,7 +395,10 @@ module Tasking
         errors.each { |error| t.notify "[Error] #{error}", job_id: jid }
         set_task_status(t, "waiting") unless t.status == "waiting"
       else
-        set_task_status(t, "ready") unless t.status == "ready"
+        unless t.status == "ready"
+          set_task_status(t, "ready")
+          t.notify "This task has passed input checking and ready to go!"
+        end
       end
       if notifs.any?
         notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: jid }
