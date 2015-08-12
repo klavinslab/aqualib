@@ -147,14 +147,14 @@ class Protocol
     num_of_wells = range_of_adding io_hash[:yeast_deepwell_plate_ids], io_hash[:range_to_dilute]
     show {
       title "Take new deepwell plates"
-      note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.collect {|d| d.id}}."
+      note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.join(", ")}."
       yeast_deepwell_plates.each_with_index do |y,idx|
         note "Add #{io_hash[:volume]*(1-io_hash[:dilution_rate])} µL of #{io_hash[:media_type]} into first #{num_of_wells[idx]} wells."
       end
     }
     show {
       title "Vortex the deepwell plates."
-      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
+      note "Gently vortex the deepwell plates #{deepwell_plates.join(", ")} on a table top vortexer at settings 6 for about 20 seconds."
     }
 
     transfer(deepwell_plates, yeast_deepwell_plates, range_to_read: io_hash[:range_to_dilute]) {
