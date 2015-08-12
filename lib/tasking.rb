@@ -298,6 +298,11 @@ module Tasking
         inventory_types = argument.split('|')
         inventory_types.uniq!
         argument_lengths.push ids.length if ids.is_a? Array
+        show {
+          note ids
+          note ids.length if ids.is_a? Array
+          note argument_lengths
+        }
         ids = [ids] unless ids.is_a? Array
         ids.flatten!
         ids.uniq!
