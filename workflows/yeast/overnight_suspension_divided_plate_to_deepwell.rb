@@ -34,13 +34,13 @@ class Protocol
     end
     io_hash = { inducers: [], yeast_strain_ids:[], inducers: [], volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)" }.merge io_hash
     io_hash[:inducer_additions] = []
-    yeast_trains = []
+    yeast_strains = []
     io_hash[:yeast_strain_ids].each_with_index do |yid,idx|
       yeast_strain = find(:sample, id: yid)[0]
-      yeast_trains.push yeast_strain
+      yeast_strains.push yeast_strain
       io_hash[:inducer_additions].push "None"
       (io_hash[:inducers][idx] || []).each do |inducer|
-        yeast_trains.push yeast_strain
+        yeast_strains.push yeast_strain
         io_hash[:inducer_additions].push inducer
       end
     end
@@ -48,7 +48,7 @@ class Protocol
     yeast_plate_sections = []
     divided_yeast_plates = []
 
-    yeast_trains.each do |y|
+    yeast_strains.each do |y|
       yeast_collections = collection_type_contain_has_colony y.id, "Divided Yeast Plate"
       yeast_plate = yeast_collections[0]
       divided_yeast_plates.push yeast_plate
