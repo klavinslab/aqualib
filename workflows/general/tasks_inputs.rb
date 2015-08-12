@@ -68,6 +68,7 @@ class Protocol
           end
         end
       end
+      io_hash[:overnight_ids].uniq!
       io_hash[:size] = io_hash[:overnight_ids].length + io_hash[:item_ids].length
 
     when "Streak Plate"
