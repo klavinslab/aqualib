@@ -64,7 +64,7 @@ transition [ read ] => [ next_read ] when !error(0) && completed(0) end
 transition [ next_read ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
-transition [ tasks_inputs ] => [ tasks_inputs ] when !error(0) end
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
 transition [ dilute ] => [ dilute ] when error(0) end
 transition [ read ] => [ read ] when error(0) end
