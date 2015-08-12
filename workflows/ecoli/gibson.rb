@@ -59,7 +59,7 @@ class Protocol
     if io_hash[:item_choice_mode].downcase == "yes"
       fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name, object_type: "Fragment Stock"}}
     else
-      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[-1]}}
     end
 
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
