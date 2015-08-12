@@ -397,7 +397,7 @@ module Tasking
       else
         unless t.status == "ready"
           set_task_status(t, "ready")
-          t.notify "This task has passed input checking and ready to go!"
+          t.notify "This task has passed input checking and ready to go!", job_id: jid
         end
       end
       if notifs.any?
