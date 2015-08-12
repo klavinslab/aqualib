@@ -13,7 +13,7 @@ class Protocol
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL SC liquid (sterile)",
       inducers: [["10 µM auxin", "20 µM auxin"],["10 µM auxin", "10 nM b-e"]],
-      when_to_add_inducer: ["start", "dilute"],
+      when_to_add_inducer: "start, dilute",
       dilution_rate: 0.01,
       #The volume of the overnight suspension to make
       volume: 1000,
@@ -32,7 +32,7 @@ class Protocol
         true
       end
     end
-    io_hash = { inducers: [], yeast_strain_ids:[], inducers: [], volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)" }.merge io_hash
+    io_hash = { inducers: [], yeast_strain_ids:[], inducers: [], volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)", when_to_add_inducer: "start, dilute" }.merge io_hash
     io_hash[:inducer_additions] = []
     yeast_strains = []
     io_hash[:yeast_strain_ids].each_with_index do |yid,idx|
@@ -65,10 +65,20 @@ class Protocol
       title "Take deepwell plate"
       note "Grab #{deepwells.length} Eppendorf 96 Deepwell Plate. Label with #{deepwells.collect {|d| d.id}}."
     }
+
     media_str = (1..yeast_plate_sections.length).collect { |y| "#{io_hash[:volume]} µL"}
-    load_samples_variable_vol( ["#{io_hash[:media_type]}","Divided Yeast Plate", "Inducers"], [
-        media_str, yeast_plate_sections,io_hash[:inducer_additions]
-      ], deepwells )
+
+    load_table = {
+      head: ["#{io_hash[:media_type]}","Divided Yeast Plate"]
+      content: [media_str, yeast_plate_sections]
+    }
+    if io_hash[:when_to_add_inducer].include? "start"
+      load_table[:head].push "Inducers"
+      load_table[:content].push io_hash[:inducer_additions]
+    end
+
+    load_samples_variable_vol( load_table[:head], load_table[:content], deepwells )
+
     show {
       title "Seal the deepwell plate(s) with a breathable sealing film"
       note "Put a breathable sealing film on following deepwell plate(s) #{deepwells.collect {|d| d.id}}."

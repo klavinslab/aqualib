@@ -134,7 +134,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", new_inducers: [], range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
+    io_hash = { debug_mode: "No", new_inducers: [], when_to_add_inducer: "start, dilute", range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -166,9 +166,11 @@ class Protocol
       io_hash[:inducer_additions] = io_hash[:new_inducers]
     end
 
-    load_samples_variable_vol( ["Inducers"], [
-        io_hash[:inducer_additions].flatten
-      ], yeast_deepwell_plates )
+    if io_hash[:when_to_add_inducer].include? "dilute"
+      load_samples_variable_vol( ["Inducers"], [
+          io_hash[:inducer_additions].flatten
+        ], yeast_deepwell_plates )
+    end
 
     show {
       title "Place the deepwell plates in the washing station"
