@@ -53,7 +53,6 @@ class Protocol
       yeast_plate = yeast_collections[0]
       divided_yeast_plates.push yeast_plate
       yeast_plate_sections.push "#{yeast_plate.id}.#{yeast_plate.datum[:matrix][0].index(y.id)+1}"
-      end
     end
 
     take divided_yeast_plates.uniq, interactive: true
