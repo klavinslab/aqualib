@@ -163,14 +163,23 @@ class Protocol
     }
 
     if io_hash[:new_inducers].length > 0
-      io_hash[:inducer_additions] = io_hash[:new_inducers]
+      io_hash[:inducers] = io_hash[:new_inducers]
     end
 
-    if io_hash[:when_to_add_inducer].include? "dilute"
-      load_samples_variable_vol( ["Inducers"], [
-          io_hash[:inducer_additions].flatten
-        ], yeast_deepwell_plates )
+    io_hash[:inducer_additions] = []
+    io_hash[:inducers].each_with_index do |inducer_array,index|
+      inducer_array.each do |inducer|
+        if io_hash[:when_to_add_inducer][idx].include? "dilute"
+          io_hash[:inducer_additions].push inducer
+        else
+          io_hash[:inducer_additions].push "None"
+        end
+      end
     end
+
+    load_samples_variable_vol( ["Inducers"], [
+        io_hash[:inducer_additions].flatten
+      ], yeast_deepwell_plates )
 
     show {
       title "Place the deepwell plates in the washing station"
