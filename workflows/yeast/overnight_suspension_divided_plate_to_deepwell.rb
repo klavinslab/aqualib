@@ -65,7 +65,7 @@ class Protocol
     deepwells = produce spread yeast_strains, "Eppendorf 96 Deepwell Plate", 8, 12
     show {
       title "Take deepwell plate"
-      note "Grab #{deepwells.length} Eppendorf 96 Deepwell Plate. Label with #{deepwells.collect {|d| d.id}}."
+      note "Grab #{deepwells.length} Eppendorf 96 Deepwell Plate. Label with #{deepwells.join(", ")}."
     }
     media_str = (1..yeast_plate_sections.length).collect { |y| "#{io_hash[:volume]} µL"}
     load_samples_variable_vol( ["#{io_hash[:media_type]}","Divided Yeast Plate", "Inducers"], [
@@ -73,7 +73,7 @@ class Protocol
       ], deepwells )
     show {
       title "Seal the deepwell plate(s) with a breathable sealing film"
-      note "Put a breathable sealing film on following deepwell plate(s) #{deepwells.collect {|d| d.id}}."
+      note "Put a breathable sealing film on following deepwell plate(s) #{deepwells.join(", ")}."
       note "Place the deepwell plate(s) into the 30 C shaker incubator, make sure it is secure."
     }
     deepwells.each do |d|

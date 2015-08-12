@@ -183,7 +183,7 @@ class Protocol
 
     show {
       title "Place the deepwell plates in the washing station"
-      note "Place the following deepwell plates #{deepwell_plates.collect { |d| d.id }} in the washing station "
+      note "Place the following deepwell plates #{deepwell_plates.join(", ")} in the washing station "
     }
 
     deepwell_plates.each do |d|
