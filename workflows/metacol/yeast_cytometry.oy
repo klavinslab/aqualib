@@ -52,6 +52,7 @@ place next_read
   window: hours(1)
 end
 
+wire tasks_inputs => overnight
 wire overnight => dilute
 wire dilute => read
 wire read => next_read
