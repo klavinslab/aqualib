@@ -167,7 +167,7 @@ class Protocol
     end
 
     io_hash[:inducer_additions] = []
-    io_hash[:inducers].each_with_index do |inducer_array,index|
+    io_hash[:inducers].each_with_index do |inducer_array,idx|
       inducer_array.each do |inducer|
         if io_hash[:when_to_add_inducer][idx].include? "dilute"
           io_hash[:inducer_additions].push inducer
