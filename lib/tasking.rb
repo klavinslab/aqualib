@@ -105,7 +105,7 @@ module Tasking
       size = task.simple_spec[:plasmid_stock_ids].length
     when "Yeast Mating"
       size = task.simple_spec[:yeast_mating_strain_ids].length
-    when "Yeast Competent Cell"
+    when "Yeast Competent Cell", "Yeast Cytometry"
       size = task.simple_spec[:yeast_strain_ids].length
     when "Plasmid Extraction"
       size = task.simple_spec[:glycerol_stock_ids].length
