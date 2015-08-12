@@ -69,7 +69,7 @@ class Protocol
     media_str = (1..yeast_plate_sections.length).collect { |y| "#{io_hash[:volume]} µL"}
 
     load_table = {
-      head: ["#{io_hash[:media_type]}","Divided Yeast Plate"]
+      head: ["#{io_hash[:media_type]}","Divided Yeast Plate"],
       content: [media_str, yeast_plate_sections]
     }
     if io_hash[:when_to_add_inducer].include? "start"
