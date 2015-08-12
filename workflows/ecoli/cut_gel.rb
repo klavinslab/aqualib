@@ -114,10 +114,6 @@ class Protocol
    end
 
   show {
-    note gel_uploads.to_json
-  }
-
-  show {
     title "Clean up!"
     note "Turn off the transilluminator"
     note "Dispose of the gel and any gel parts by placing it in the waste container. Spray the surface of the transilluminator with ethanol and wipe until dry using kimwipes or paper towel."
