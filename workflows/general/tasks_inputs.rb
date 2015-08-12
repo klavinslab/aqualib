@@ -114,7 +114,7 @@ class Protocol
       io_hash[:task_ids].concat io_hash[:plasmid_extraction_task_ids]
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
 
-    when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction", "Yeast Cytometry"
+    when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction"
       # a general task processing script only works for those tasks with one variable_name
       io_hash[:task_ids].each_with_index do |tid, idx|
         task = find(:task, id: tid)[0]
@@ -130,6 +130,19 @@ class Protocol
       end
       # additional io_hash key: values
       io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"
+
+    when "Yeast Cytometry"
+      # a general task processing script without uniqing variable content.
+      io_hash[:task_ids].each_with_index do |tid, idx|
+        task = find(:task, id: tid)[0]
+        task.simple_spec.each do |variable_name, ids|
+          io_hash[variable_name] = [] if idx == 0
+          io_hash[variable_name].concat ids
+          if idx == io_hash[:task_ids].length - 1
+            io_hash[:size] = io_hash[variable_name].length
+          end
+        end
+      end
 
     when "Yeast Transformation"
       io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
