@@ -84,7 +84,8 @@ class Protocol
             set_task_status(task,"waiting")
             task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
           else
-            create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)
+            notfis = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)[:notfis]
+            notifs.each { |notif| task.notify "[Notif] #{notif}", job_id: jid }
           end
         end
 
