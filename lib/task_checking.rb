@@ -1,3 +1,4 @@
+include Krill::Base
 def after_save
   task_status self
 end
