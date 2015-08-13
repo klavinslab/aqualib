@@ -114,7 +114,7 @@ class Protocol
       io_hash[:task_ids].concat io_hash[:plasmid_extraction_task_ids]
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
 
-    when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction"
+    when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction", "Yeast Transformation"
       # a general task processing script only works for those tasks with one variable_name
       io_hash[:task_ids].each_with_index do |tid, idx|
         task = find(:task, id: tid)[0]
@@ -143,17 +143,7 @@ class Protocol
           end
         end
       end
-
-    when "Yeast Transformation"
-      io_hash = { yeast_transformed_strain_ids: [], plasmid_stock_ids: [], yeast_parent_strain_ids: [] }.merge io_hash
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        io_hash[:yeast_transformed_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids]
-        io_hash[:plasmid_stock_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
-        io_hash[:yeast_parent_strain_ids].concat task.simple_spec[:yeast_transformed_strain_ids].collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
-      end
-      io_hash[:size] = io_hash[:yeast_transformed_strain_ids].length
-
+      
     when "Yeast Strain QC"
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
