@@ -127,7 +127,10 @@ module Tasking
     return size
   end
 
-  needs "aqualib/lib/task_checking.rb"
+  p = "aqualib/lib/task_checking.rb"
+  s = Repo::version p
+  content = Repo::contents p, s
+  eval(content)
 
   def show_tasks_table ids
     if ids.any?
