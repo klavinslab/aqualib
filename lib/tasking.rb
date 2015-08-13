@@ -317,7 +317,7 @@ module Tasking
           new_tasks = {}
           case variable_name
           when "primer_ids"
-            if params[:name] == "Primer Order"
+            if t.task_prototype.name == "Primer Order"
               errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
             else  # for Sequencing, Plasmid Verification
               inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
@@ -325,11 +325,11 @@ module Tasking
               new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
             end
           when "fragments"
-            if params[:name] == "Fragment Construction"
+            if t.task_prototype.name == "Fragment Construction"
               sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
               errors.concat sample_check_result[:errors]
               new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
-            elsif params[:name] == "Gibson Assembly"
+            elsif t.task_prototype.name == "Gibson Assembly"
               inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
               errors.concat inventory_check_result[:errors]
               new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
