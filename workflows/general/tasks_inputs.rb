@@ -113,6 +113,7 @@ class Protocol
       end
       # Add plasmid extraction tasks here to do overnight and miniprep in one batch
       plasmid_extraction_tasks = find_tasks task_prototype_name: "Plasmid Extraction", group: io_hash[:group]
+      plasmid_extraction_tasks = task_status plasmid_extraction_tasks
       io_hash[:plasmid_extraction_task_ids] = task_choose_limit(plasmid_extraction_tasks[:ready_ids], "Plasmid Extraction")
       io_hash[:plasmid_extraction_task_ids].each do |tid|
         task = find(:task, id: tid)[0]
