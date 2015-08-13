@@ -6,6 +6,45 @@ class Protocol
   include Standard
   include Cloning
 
+  # pass a list of yeast_strain_ids, return a hash indicates which strain_ids have enough comp cells to transform and which not, also return the comp_cells which contains the comp_cell items and comp_cells_full which contains a list of comp_cell ids and NA to display to the user.
+  def yeast_strain_transformation_scan yeast_transformed_strain_ids
+    parent_strain_ids =  yeast_transformed_strain_ids.collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
+
+    ready_ids, not_ready_ids = [], []
+    competent_cells = []
+    competent_cells_full = [] # an array of competent_cells include nils.
+    aliquot_num_hash = Hash.new {|h,k| h[k] = 0 }
+    cell_num_hash = Hash.new {|h,k| h[k] = 0 }
+
+    parent_strain_ids.each_with_index do |yid, idx|
+      y = find(:sample, id: yid )[0]
+      aliquot_num_hash[y.name] += 1
+      if y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
+        competent_cell = y.in("Yeast Competent Aliquot")[ aliquot_num_hash[y.name] - 1 ]
+      else
+        cell_num_hash[y.name] += 1
+        competent_cell = y.in("Yeast Competent Cell")[ cell_num_hash[y.name] - 1 ]
+      end
+
+      if competent_cell
+        competent_cells.push competent_cell
+        competent_cells_full.push competent_cell.id
+        ready_ids.push
+      else
+        competent_cells_full.push "NA"
+        not_ready_ids.push yeast_transformed_strain_ids[idx]
+      end
+
+    end
+
+    return {
+      ready_ids: ready_ids,
+      competent_cells: competent_cells,
+      competent_cells_full: competent_cells_full,
+      not_ready_ids: not_ready_ids
+    }
+  end
+
 
   def arguments
     {
@@ -26,6 +65,26 @@ class Protocol
         true
       end
     end
+
+    scan_result = yeast_strain_transformation_scan yeast_transformed_strain_ids
+    io_hash[:yeast_transformed_strain_ids] = scan_result[:ready_ids]
+    if scan_result[:not_ready_ids].any?
+      not_done_task_ids = []
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        not_transformed_ids = task.simple_spec[:yeast_transformed_strain_ids] & no_comp_cell_strain_ids
+        if not_transformed_ids.any?
+          not_transformed_ids_link = not_transformed_ids.collect { |id| item_or_sample_html_link id, :sample }.join(", ")
+          task.notify "#{'Yeast Strain'.pluralize(not_transformed_ids.length)} #{not_transformed_ids_link} can not be transformed due to not enough competent cells.", job_id: jid
+        end
+        if not_transformed_ids == task.simple_spec[:yeast_transformed_strain_ids]
+          not_done_task_ids.push tid
+          set_task_status(task,"waiting")
+          task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
+        end
+      end
+    end
+    io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
 
     io_hash[:plasmid_stock_ids] = io_hash[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
 
