@@ -1,1 +1,1 @@
-puts "In after save with task = #{self}"
+self.notify "Hello from after_save.rb"
