@@ -154,13 +154,12 @@ def sample_check ids, p={}
   }
 end
 
-def task_status
+def task_status t
   # array of object_type_names and sample_type_names
   object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
   sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
   # an array to store new tasks got automatically created.
   new_task_ids = []
-  t = self
   errors = []
   notifs = []
   argument_lengths = []
