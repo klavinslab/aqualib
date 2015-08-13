@@ -45,7 +45,8 @@ class Protocol
       end
     end
 
-    sequencing_info = task_status name: "Sequencing", group: io_hash[:group]
+    sequencing_tasks_list = find_tasks task_prototype_name: "Sequencing", group: io_hash[:group]
+    sequencing_info = task_status sequencing_tasks_list
     io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
     io_hash[:sequencing_task_ids].each do |tid|
