@@ -267,25 +267,15 @@ module Tasking
     }
   end
 
-  def task_status p={}
-    params = ({ group: "", name: "", notification: "off" }).merge p
-    raise "Supply a Task name for the task_status function as tasks_status name: task_name" if params[:name].empty?
-    tasks_to_process = find(:task,{ task_prototype: { name: params[:name] } }).select {
-    |t| %w[waiting ready].include? t.status }
-    # filter out tasks based on group input
-    if !params[:group].empty?
-      user_group = params[:group] == "technicians"? "cloning": params[:group]
-      group_info = Group.find_by_name(user_group)
-      tasks_to_process.select! { |t| t.user.member? group_info.id }
-    end
-
+  def task_status tasks
+    tasks = [tasks] unless tasks.is_a? Array
     # array of object_type_names and sample_type_names
     object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
     sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
     # an array to store new tasks got automatically created.
     new_task_ids = []
     # cycling through tasks_to_process to make sure tasks inputs are valid
-    tasks_to_process.each do |t|
+    tasks.each do |t|
       #To do: check array sizes equal? first
       errors = []
       notifs = []
@@ -403,16 +393,15 @@ module Tasking
       if notifs.any?
         notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: jid }
       end
-    end # tasks_to_process
+    end # tasks
 
-    task_status_hash = {
-      waiting_ids: (tasks_to_process.select { |t| t.status == "waiting" })
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting" })
       .collect { |t| t.id },
-      ready_ids: (tasks_to_process.select { |t| t.status == "ready" })
+      ready_ids: (tasks.select { |t| t.status == "ready" })
       .collect {|t| t.id},
       new_task_ids: new_task_ids
     }
-    return task_status_hash
   end
 
   # create new tasks for fragment construction, primer order, yeast competent cell

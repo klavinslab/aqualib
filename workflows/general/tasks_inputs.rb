@@ -18,9 +18,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", task_name: "", task_ids: [], size: 0 }.merge io_hash
-    io_hash_default = Hash.new(Array.new)
-    io_hash = io_hash_default.merge io_hash  # make io_hash default value []
+    io_hash = { debug_mode: "No", task_name: "", task_ids: [], size: 0, group: "technicians" }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -28,13 +26,22 @@ class Protocol
       end
     end
 
+    raise "Supply a task_name." if io_hash[:task_name].empty?
+
     # automatic task submissions
     if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
       show_tasks_table(sequencing_verification_task_processing group: io_hash[:group])
     end
 
+    tasks_to_process = find(:task,{ task_prototype: { name: io_hash[:task_name] } }).select {
+    |t| %w[waiting ready].include? t.status }
+    # filter out tasks based on group input
+    user_group = io_hash[:group] == "technicians"? "cloning": io_hash[:group]
+    group_info = Group.find_by_name(user_group)
+    tasks_to_process.select! { |t| t.user.member? group_info.id }
+
     # process task_status
-    tasks = task_status name: io_hash[:task_name], group: io_hash[:group]
+    tasks = task_status tasks_to_process
 
     # show the users about newly created and adjusted tasks
     show_tasks_table tasks[:new_task_ids]
@@ -143,7 +150,7 @@ class Protocol
           end
         end
       end
-      
+
     when "Yeast Strain QC"
       io_hash = { yeast_plate_ids: [], num_colonies: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
