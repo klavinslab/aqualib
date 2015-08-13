@@ -75,7 +75,7 @@ class Protocol
       not_done_task_ids = []
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        not_transformed_ids = task.simple_spec[:yeast_transformed_strain_ids] & no_comp_cell_strain_ids
+        not_transformed_ids = task.simple_spec[:yeast_transformed_strain_ids] & scan_result[:not_ready_ids]
         if not_transformed_ids.any?
           not_transformed_ids_link = not_transformed_ids.collect { |id| item_or_sample_html_link id, :sample }.join(", ")
           task.notify "#{'Yeast Strain'.pluralize(not_transformed_ids.length)} #{not_transformed_ids_link} can not be transformed due to not enough competent cells.", job_id: jid
