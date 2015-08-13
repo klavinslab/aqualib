@@ -1,4 +1,5 @@
 module Tasking
+
   def find_tasks p={}
     params = { task_prototype_name: "", group: "" }.merge p
     tasks = find(:task,{ task_prototype: { name: params[:task_prototype_name] } }).select {
@@ -131,6 +132,21 @@ module Tasking
   s = Repo::version p
   content = Repo::contents p, s
   eval(content)
+
+  def task_status tasks
+    tasks = [tasks] unless tasks.is_a? Array
+    new_task_ids = []
+    tasks.each do |task|
+      new_task_ids.concat task_status_check(task)[:new_task_ids]
+    end
+    return {
+      waiting_ids: (tasks.select { |t| t.status == "waiting" })
+      .collect { |t| t.id },
+      ready_ids: (tasks.select { |t| t.status == "ready" })
+      .collect {|t| t.id},
+      new_task_ids: new_task_ids
+    }
+  end
 
   def show_tasks_table ids
     if ids.any?
