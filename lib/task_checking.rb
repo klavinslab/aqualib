@@ -1,6 +1,7 @@
 def after_save
   task_status self
 end
+
 def inventory_type_check inventory_types, item_or_sample, id
   if inventory_types == ["Sample"] || inventory_types == ["Item"]
     return true
