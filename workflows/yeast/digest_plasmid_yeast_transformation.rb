@@ -79,13 +79,21 @@ class Protocol
         if not_transformed_ids.any?
           not_transformed_ids_link = not_transformed_ids.collect { |id| item_or_sample_html_link id, :sample }.join(", ")
           task.notify "#{'Yeast Strain'.pluralize(not_transformed_ids.length)} #{not_transformed_ids_link} can not be transformed due to not enough competent cells.", job_id: jid
+          if not_transformed_ids == task.simple_spec[:yeast_transformed_strain_ids]
+            not_done_task_ids.push tid
+            set_task_status(task,"waiting")
+            task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
+          else
+            create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)
+          end
         end
-        if not_transformed_ids == task.simple_spec[:yeast_transformed_strain_ids]
-          not_done_task_ids.push tid
-          set_task_status(task,"waiting")
-          task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
-        end
+
       end
+      show {
+        title "Some transformations can not be done"
+        note "Transformation for the following yeast strain can not be performed since there is not enough competent cell."
+        note scan_result[:not_ready_ids]
+      }
       io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
     end
 

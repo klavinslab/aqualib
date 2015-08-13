@@ -430,9 +430,10 @@ module Tasking
       "Yeast Competent Cell" => "yeast_strain_ids Yeast Strain",
       "Streak Plate" => "item_ids Yeast Glycerol Stock|Yeast Plate",
       "Discard Item" => "item_ids Item",
-      "Glycerol Stock" => "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension"
+      "Glycerol Stock" => "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension",
+      "Yeast Transformation" => "yeast_transformed_strain_ids Yeast Strain"
     }
-    sample_input_task_names = ["Fragment Construction", "Primer Order", "Yeast Competent Cell"]
+    sample_input_task_names = ["Fragment Construction", "Primer Order", "Yeast Competent Cell", "Yeast Transformation"]
     item_input_task_names = ["Streak Plate", "Discard Item", "Glycerol Stock"]
     ids.each do |id|
       if sample_input_task_names.include? task_prototype_name
