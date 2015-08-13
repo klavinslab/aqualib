@@ -1,1 +1,1 @@
-puts "In after save with task = #{task}"
+puts "In after save with task = #{self}"
