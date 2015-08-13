@@ -8,7 +8,7 @@ class Protocol
 
   # pass a list of yeast_strain_ids, return a hash indicates which strain_ids have enough comp cells to transform and which not, also return the comp_cells which contains the comp_cell items and comp_cells_full which contains a list of comp_cell ids and NA to display to the user.
   def yeast_strain_transformation_scan yeast_transformed_strain_ids
-    parent_strain_ids =  yeast_transformed_strain_ids.collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
+    parent_strain_ids = yeast_transformed_strain_ids.collect { |yid| find(:sample, id: yid)[0].properties["Parent"].id }
 
     ready_ids, not_ready_ids = [], []
     competent_cells = []
@@ -67,6 +67,9 @@ class Protocol
     end
 
     scan_result = yeast_strain_transformation_scan io_hash[:yeast_transformed_strain_ids]
+    show {
+      note scan_result.to_json
+    }
     io_hash[:yeast_transformed_strain_ids] = scan_result[:ready_ids]
     if scan_result[:not_ready_ids].any?
       not_done_task_ids = []
