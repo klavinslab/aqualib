@@ -59,15 +59,36 @@ class Protocol
 #      iso_stock = find(:sample, id: iso_buffer)[0].in("Enzyme Buffer Stock")[0]
 #      iso_stock = find(:item, sample: { object_type: { name: "Enzyme Buffer" }, sample: { name: "5X ISO Buffer" } } )
 
+      inventory_hash = {
+        "5X ISO Buffer" => "Enzyme Buffer Stock",
+        "T5 exonuclease" => "Enzyme Stock"
+      }
+      messages = []
+      inventory_hash.each do |sample_name, container_name|
+        stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+        messages.push "#{sample_name} does not have a #{container_name}"
+      end
+
+      if messages.any?
+        show {
+          title "Some stock is empty!"
+          messages.each do |message|
+            note message
+          end
+        }
+        return
+      end
+
 
        iso_buffer = find(:sample, name: "5X ISO Buffer" )[0]
        iso_stock = find(:sample, id: iso_buffer.id)[0].in("Enzyme Buffer Stock")[0]
 
         if iso_stock == nil
-          show{
+          show {
             title "Caution !!"
             note "This Buffer does not have a stock in the lab"
           }
+          return
         end
 
         t5 = find(:sample, name: "T5 exonuclease" )[0]
