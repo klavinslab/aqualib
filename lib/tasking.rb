@@ -4,7 +4,7 @@ module Tasking
     tasks = find(:task,{ task_prototype: { name: params[:task_prototype_name] } }).select {
     |t| %w[waiting ready].include? t.status }
     # filter out tasks based on group input
-    unless group.empty?
+    unless params[:group].empty?
       user_group = params[:group] == "technicians"? "cloning": params[:group]
       group_info = Group.find_by_name(user_group)
       tasks.select! { |t| t.user.member? group_info.id }
