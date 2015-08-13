@@ -47,7 +47,7 @@ class Protocol
 
     sequencing_tasks_list = find_tasks task_prototype_name: "Sequencing", group: io_hash[:group]
     sequencing_info = task_status sequencing_tasks_list
-    io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
+    io_hash[:sequencing_task_ids] = task_choose_limit(sequencing_info[:ready_ids], "Sequencing")
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
