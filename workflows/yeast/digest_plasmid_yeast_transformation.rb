@@ -29,7 +29,7 @@ class Protocol
       if competent_cell
         competent_cells.push competent_cell
         competent_cells_full.push competent_cell.id
-        ready_ids.push
+        ready_ids.push yeast_transformed_strain_ids[idx]
       else
         competent_cells_full.push "NA"
         not_ready_ids.push yeast_transformed_strain_ids[idx]
