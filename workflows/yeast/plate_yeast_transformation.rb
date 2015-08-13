@@ -17,6 +17,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
+    io_hash = { debug_mode: "No", yeast_transformation_mixture_ids: [], task_ids: [], plate_ids: [] }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -98,10 +99,8 @@ class Protocol
     end
 
     io_hash = ({ plate_ids: [], task_ids: [] }).merge io_hash
-    io_hash[:task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      set_task_status(task,"plated")
-    end
+    task = find(:task, id: tid)[0]
+    set_task_status(task,"plated")
     io_hash[:plate_ids].concat yeast_plates.collect { |p| p.id }
 
     return { io_hash: io_hash }
