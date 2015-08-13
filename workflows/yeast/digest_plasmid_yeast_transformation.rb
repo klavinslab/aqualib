@@ -83,8 +83,9 @@ class Protocol
           task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
         end
       end
+      io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
     end
-    io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
+
 
     io_hash[:plasmid_stock_ids] = io_hash[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
 
