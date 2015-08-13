@@ -27,7 +27,8 @@ class Protocol
         true
       end
     end
-    ecoli_transformation_tasks = task_status name: "Ecoli Transformation", group: io_hash[:group]
+    ecoli_transformation_tasks_list = find_tasks task_prototype_name: "Ecoli Transformation", group: io_hash[:group]
+    ecoli_transformation_tasks = task_status ecoli_transformation_tasks_list
     io_hash[:ecoli_transformation_task_ids] = task_choose_limit(ecoli_transformation_tasks[:ready_ids], "Ecoli Transformation")
     io_hash[:ecoli_transformation_task_ids].each do |tid|
       task = find(:task, id: tid)[0]

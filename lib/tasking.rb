@@ -1,4 +1,16 @@
 module Tasking
+  def find_tasks p={}
+    params = { task_prototype_name: "", group: "" }.merge p
+    tasks = find(:task,{ task_prototype: { name: params[:task_prototype_name] } }).select {
+    |t| %w[waiting ready].include? t.status }
+    # filter out tasks based on group input
+    unless group.empty?
+      user_group = params[:group] == "technicians"? "cloning": params[:group]
+      group_info = Group.find_by_name(user_group)
+      tasks.select! { |t| t.user.member? group_info.id }
+    end
+    return tasks
+  end
   # supply a poly fit data model name and size of the reaction, predit the time it will take
   def time_prediction size, model_name
     if size == 0
