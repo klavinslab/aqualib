@@ -1,6 +1,6 @@
 include Krill::Base
 def after_save
-  task_status self
+  task_status_check self
 end
 
 def inventory_type_check inventory_types, item_or_sample, id
@@ -155,7 +155,7 @@ def sample_check ids, p={}
   }
 end
 
-def task_status t
+def task_status_check t
   # array of object_type_names and sample_type_names
   object_type_names = ObjectType.all.collect { |i| i.name }.push "Item"
   sample_type_names = SampleType.all.collect { |i| i.name }.push "Sample"
