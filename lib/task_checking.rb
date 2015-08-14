@@ -377,7 +377,7 @@ def sequencing_verification_task_processing t
     when "sequence correct but keep plate"
       stock_item_ids.push overnight.id if overnight
     when "sequence correct but redundant", "sequence wrong"
-      discard_item_ids.push plasmid_stock.id if plasmid_stcok
+      discard_item_ids.push plasmid_stock.id if plasmid_stock
       discard_item_ids.push overnight.id if overnight
     end
     # create new tasks
