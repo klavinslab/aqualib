@@ -226,7 +226,7 @@ def task_status_check t
             errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
           else  # for Sequencing, Plasmid Verification
             inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
-            errors.concat inventory_check_result[:errors]
+            errors.concat inventory_check_result[:errors].collect! { |error| "[Warning] #{error}"}
             new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
           end
         when "fragments"
@@ -288,6 +288,9 @@ def task_status_check t
     errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
     job_id = defined?(jid) ? jid : nil
     if errors.any?
+      warnings = errors.select { |error| error.include? "[Warning]" }
+      warnings = warnings - t.notifications.collect { |notif| notif.content }
+      errors = errors - warnings
       errors.each { |error| t.notify "[Error] #{error}", job_id: job_id }
       unless t.status == "waiting"
         t.status = "waiting"
