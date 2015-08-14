@@ -301,7 +301,9 @@ def task_status_check t
       end
     end
   end # end if t.task_prototype.name == "Sequencing Verification"
+  puts "before substract #{notifs}"
   notifs = notifs - t.notifications.collect { |notif| notif.content }
+  puts "after substract #{notifs}"
   if notifs.any?
     notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: job_id }
   end
