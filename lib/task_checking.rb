@@ -98,6 +98,7 @@ def sample_check ids, p={}
     sample_name = sample_html_link sample
     properties = sample.properties.deep_dup
     assert_properties.each do |field|
+      sample_field_name = "#{sample_name}'s #{field}"
       warnings = [] # to store temporary errors
       if properties[field]
         property = properties[field]
@@ -106,14 +107,14 @@ def sample_check ids, p={}
           pid = property.id
           inventory_check_result = inventory_check pid, inventory_types: ["Primer Aliquot", "Primer Stock"]
           inventory_check_result[:errors].collect! do |err|
-            "#{sample_name}'s #{field} #{err}"
+            "#{sample_field_name} #{err}"
           end
           warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
           ids_to_make.concat inventory_check_result[:ids_to_make]
         when "Overhang Sequence", "Anneal Sequence"
-          warnings.push "#{sample_name} #{field} requires nonempty string" unless property.length > 0
+          warnings.push "#{sample_field_name} requires nonempty string" unless property.length > 0
         when "T Anneal"
-          warnings.push "#{sample_name} #{field} requires number greater than 40" unless property > 40
+          warnings.push "#{sample_field_name} requires number greater than 40" unless property > 40
         when "Template"
           template_stock_hash = {
             "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
@@ -127,16 +128,16 @@ def sample_check ids, p={}
             template_stocks.push template.in(container)[0]
           end
           template_stocks.compact!
-          warnings.push(template_stock_hash[template.sample_type.name].join(" or ").to_s + " is required for #{sample_name} #{field}") if template_stocks.empty?
+          warnings.push("#{sample_field_name} requires #{template_stock_hash[template.sample_type.name].join(' or ')}.") if template_stocks.empty?
         when "Length"
-          warnings.push "Length greater than 0 is required for #{sample_name}" unless property > 0
+          warnings.push "#{sample_field_name} requires a number greater than 0." unless property > 0
         when "Bacterial Marker", "Yeast Marker"
-          warnings.push "Nonempty string is required for #{sample_name} #{field}" unless property.length > 0
+          warnings.push "#{sample_field_name} requires a nonempty string." unless property.length > 0
         when "Parent"
           yid = property.id
           inventory_check_result = inventory_check yid, inventory_types: ["Yeast Competent Cell", "Yeast Competent Aliquot"]
           inventory_check_result[:errors].collect! do |err|
-            "#{sample_name}'s #{field} #{err}"
+            "#{sample_field_name} #{err}"
           end
           warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
           ids_to_make.concat inventory_check_result[:ids_to_make]
@@ -145,7 +146,7 @@ def sample_check ids, p={}
           integrant_sample = find(:sample, id: pid)[0]
           inventory_check_result = inventory_check pid, inventory_types: "#{integrant_sample.sample_type.name} Stock"
           inventory_check_result[:errors].collect! do |err|
-            "#{sample_name}'s #{field} #{err}"
+            "#{sample_field_name} #{err}"
           end
           if integrant_sample.sample_type.name == "Fragment"
             warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
@@ -155,7 +156,7 @@ def sample_check ids, p={}
           end
         end # case
       else
-        warnings.push "#{field} is required for #{sample_name}"
+        warnings.push "#{sample_field_name} is required."
       end # if properties[field]
       if params[:assert_logic] == "and"
         puts warnings
