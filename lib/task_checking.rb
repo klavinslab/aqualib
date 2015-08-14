@@ -265,8 +265,9 @@ def task_status_check t
   end # t.spec.each
   argument_lengths.uniq!
   errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
+  job_id = defined?(jid) ? jid : nil
   if errors.any?
-    errors.each { |error| t.notify "[Error] #{error}" }
+    errors.each { |error| t.notify "[Error] #{error}", job_id: job_id }
     unless t.status == "waiting"
       t.status = "waiting"
       t.save
@@ -274,12 +275,12 @@ def task_status_check t
   else
     unless t.status == "ready"
       t.status = "ready"
-      t.notify "This task has passed input checking and ready to go!"
+      t.notify "This task has passed input checking and ready to go!", job_id: job_id
       t.save
     end
   end
   if notifs.any?
-    notifs.each { |notif| t.notify "[Notif] #{notif}" }
+    notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: job_id }
   end
 
   return {
@@ -385,7 +386,7 @@ def sequencing_verification_task_processing p={}
     notifs = new_discard_tasks[:notifs] + new_stock_tasks[:notifs]
     new_task_ids.concat new_discard_tasks[:new_task_ids] + new_stock_tasks[:new_task_ids]
     if notifs.any?
-      notifs.each { |notif| t.notify "[Notif] #{notif}" }
+      notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: job_id }
     end
     t.status = "done"
     t.save
