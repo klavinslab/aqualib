@@ -168,7 +168,7 @@ def task_status_check t
     sequencing_verification_results = sequencing_verification_task_processing t
     new_task_ids.concat sequencing_verification_results[:new_task_ids]
     notifs.concat sequencing_verification_results[:notifs]
-  else
+  elsif ["waiting", "ready"].include? t.status
     t.spec.each do |argument, ids|
       argument = argument.to_s
       variable_name = argument.split(' ')[0]
