@@ -28,13 +28,12 @@ class Protocol
 
     raise "Supply a task_name." if io_hash[:task_name].empty?
 
-    # automatic task submissions
-    if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
-      show_tasks_table(sequencing_verification_task_processing group: io_hash[:group])
-    end
-
     tasks_to_process = find(:task,{ task_prototype: { name: io_hash[:task_name] } }).select {
     |t| %w[waiting ready].include? t.status }
+    # add seqeuncing verification tasks to process if discard item or glycerol stock
+    if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
+      tasks_to_process.push find(:task,{ task_prototype: { name: "Sequencing Verification" } }).select { |t| ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"].include? t.status }
+    end
     # filter out tasks based on group input
     user_group = io_hash[:group] == "technicians"? "cloning": io_hash[:group]
     group_info = Group.find_by_name(user_group)
