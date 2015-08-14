@@ -371,7 +371,7 @@ def sequencing_verification_task_processing t
     end
     case t.status
     when "sequence correct"
-      discard_item_ids.concat gibson_reaction_result_ids.collect { |g| g.id }
+      discard_item_ids.concat gibson_reaction_results.collect { |g| g.id }
       discard_item_ids.push plate.id if plate
       stock_item_ids.push overnight.id if overnight
     when "sequence correct but keep plate"
