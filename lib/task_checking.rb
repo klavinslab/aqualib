@@ -108,7 +108,7 @@ def sample_check ids, p={}
           inventory_check_result[:errors].collect! do |err|
             "#{sample_name}'s #{field} #{err}"
           end
-          warnings.push inventory_check_result[:errors]
+          warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
           ids_to_make.concat inventory_check_result[:ids_to_make]
         when "Overhang Sequence", "Anneal Sequence"
           warnings.push "#{sample_name} #{field} requires nonempty string" unless property.length > 0
@@ -138,7 +138,7 @@ def sample_check ids, p={}
           inventory_check_result[:errors].collect! do |err|
             "#{sample_name}'s #{field} #{err}"
           end
-          warnings.push inventory_check_result[:errors]
+          warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
           ids_to_make.concat inventory_check_result[:ids_to_make]
         when "Integrant"
           pid = property.id
@@ -147,8 +147,12 @@ def sample_check ids, p={}
           inventory_check_result[:errors].collect! do |err|
             "#{sample_name}'s #{field} #{err}"
           end
-          warnings.push inventory_check_result[:errors]
-          ids_to_make.concat inventory_check_result[:ids_to_make] if integrant_sample.sample_type.name == "Fragment"
+          if integrant_sample.sample_type.name == "Fragment"
+            warnings.push inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
+            ids_to_make.concat inventory_check_result[:ids_to_make]
+          else
+            warnings.push inventory_check_result[:errors]
+          end
         end # case
       else
         warnings.push "#{field} is required for #{sample_name}"
@@ -236,7 +240,7 @@ def task_status_check t
             new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
           elsif t.task_prototype.name == "Gibson Assembly"
             inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
-            errors.concat inventory_check_result[:errors]
+            errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
             new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
             errors.concat sample_check(ids, assert_property: "Length")[:errors]
           end
