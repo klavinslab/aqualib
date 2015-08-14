@@ -321,13 +321,13 @@ def create_new_tasks ids, p={}
   tp = TaskPrototype.where(name: task_prototype_name)[0]
   tp_name = tp.name.split(" ").collect { |i| i.downcase }.join("_")
   task_type_argument_hash = {
-    "Fragment Construction" => "fragments Fragment",
-    "Primer Order" => "primer_ids Primer",
-    "Yeast Competent Cell" => "yeast_strain_ids Yeast Strain",
-    "Streak Plate" => "item_ids Yeast Glycerol Stock|Yeast Plate",
-    "Discard Item" => "item_ids Item",
-    "Glycerol Stock" => "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension",
-    "Yeast Transformation" => "yeast_transformed_strain_ids Yeast Strain"
+    "Fragment Construction" => { spec: "fragments Fragment", output: "Fragment Stock" },
+    "Primer Order" => { spec: "primer_ids Primer", output: "Primer Aliquot and Primer Stock" },
+    "Yeast Competent Cell" => { spec: "yeast_strain_ids Yeast Strain", output: "Yeast Competent Cell" },
+    "Streak Plate" => { spec: "item_ids Yeast Glycerol Stock|Yeast Plate", output: "Divided Yeast Plate" },
+    "Discard Item" => { spec: "item_ids Item", output: "item deleted" },
+    "Glycerol Stock" => { spec: "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension", output: "Glycerol Stock" },
+    "Yeast Transformation" => { spec: "yeast_transformed_strain_ids Yeast Strain", output: "Yeast Plate" }
   }
   sample_input_task_names = ["Fragment Construction", "Primer Order", "Yeast Competent Cell", "Yeast Transformation"]
   item_input_task_names = ["Streak Plate", "Discard Item", "Glycerol Stock"]
@@ -353,13 +353,13 @@ def create_new_tasks ids, p={}
       elsif ["failed","canceled"].include? task.status
         notifs.push "#{auto_create_task_name_link} was failed or canceled. You need to manually switch the status if you want to remake."
       else
-        notifs.push "#{auto_create_task_name_link} is already in the #{task_prototype_name_link} Tasks."
+        notifs.push "#{auto_create_task_name_link} is in the #{task_prototype_name_link} Tasks to produce #{task_type_argument_hash[task_prototype_name][:output]}."
       end
     else
-      t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
+      t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name][:spec] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
       t.save
       auto_create_task_name_link = task_html_link t
-      notifs.push "#{auto_create_task_name_link} is automatically submitted to #{task_prototype_name_link} Tasks."
+      notifs.push "#{auto_create_task_name_link} is automatically submitted to #{task_prototype_name_link} Tasks to produce #{task_type_argument_hash[task_prototype_name][:output]}."
       new_task_ids.push t.id
     end
   end
