@@ -28,16 +28,23 @@ class Protocol
 
     raise "Supply a task_name." if io_hash[:task_name].empty?
 
-    tasks_to_process = find(:task,{ task_prototype: { name: io_hash[:task_name] } }).select {
-    |t| %w[waiting ready].include? t.status }
+    user_group = io_hash[:group] == "technicians"? "cloning": io_hash[:group]
+
     # add seqeuncing verification tasks to process if discard item or glycerol stock
     if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
-      tasks_to_process.concat find(:task,{ task_prototype: { name: "Sequencing Verification" } }).select { |t| ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"].include? t.status }
+      sequencing_verification_tasks = find(:task,{ task_prototype: { name: "Sequencing Verification" } }).select { |t| ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"].include? t.status }
+      sequencing_verification_tasks.select! { |t| t.user.member? Group.find_by_name(user_group).id } unless user_group.empty?
+      # show the users about newly created and adjusted tasks from sequencing verifications
+      show_tasks_table task_status(sequencing_verification_tasks)[:new_task_ids]
     end
+
+
+
+    tasks_to_process = find(:task,{ task_prototype: { name: io_hash[:task_name] } }).select {
+    |t| %w[waiting ready].include? t.status }
+
     # filter out tasks based on group input
-    user_group = io_hash[:group] == "technicians"? "cloning": io_hash[:group]
-    group_info = Group.find_by_name(user_group)
-    tasks_to_process.select! { |t| t.user.member? group_info.id }
+    tasks_to_process.select! { |t| t.user.member? Group.find_by_name(user_group).id } unless user_group.empty?
 
     # process task_status
     tasks = task_status tasks_to_process

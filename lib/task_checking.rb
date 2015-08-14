@@ -360,23 +360,25 @@ def sequencing_verification_task_processing t
     discard_item_ids = [] # list of items to discard
     stock_item_ids = [] # list of items to glycerol stock
     plasmid_stock_id = t.simple_spec[:plasmid_stock_ids][0]
+    plasmid_stock = find(:item, id: plasmid_stock_id)[0]
     overnight_id = t.simple_spec[:overnight_ids][0]
     overnight = find(:item, id: overnight_id)[0]
-    plate_id, gibson_reaction_result_ids = 0,[]
+    plate, gibson_reaction_results = nil, []
     if overnight
       plate_id = overnight.datum[:from]
+      plate = find(:item, id: plate_id)[0]
       gibson_reaction_results = overnight.sample.in("Gibson Reaction Result")
-      gibson_reaction_result_ids = gibson_reaction_results.collect { |g| g.id }
     end
     case t.status
     when "sequence correct"
-      discard_item_ids.concat gibson_reaction_result_ids
-      discard_item_ids.push plate_id if find(:item, id: plate_id)[0]
-      stock_item_ids.push overnight_id
+      discard_item_ids.concat gibson_reaction_result_ids.collect { |g| g.id }
+      discard_item_ids.push plate.id if plate
+      stock_item_ids.push overnight.id if overnight
     when "sequence correct but keep plate"
-      stock_item_ids.push overnight_id
+      stock_item_ids.push overnight.id if overnight
     when "sequence correct but redundant", "sequence wrong"
-      discard_item_ids.concat [plasmid_stock_id, overnight_id]
+      discard_item_ids.push plasmid_stock.id if plasmid_stcok
+      discard_item_ids.push overnight.id if overnight
     end
     # create new tasks
     new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item", user_id: t.user.id)
