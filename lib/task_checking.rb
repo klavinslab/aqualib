@@ -289,8 +289,9 @@ def task_status_check t
     job_id = defined?(jid) ? jid : nil
     if errors.any?
       warnings = errors.select { |error| error.include? "[Warning]" }
-      warnings = warnings - t.notifications.collect { |notif| notif.content }
       errors = errors - warnings
+      warnings = warnings - t.notifications.collect { |notif| notif.content }
+      warnings.each { |warning| t.notify warning, job_id: job_id }
       errors.each { |error| t.notify "[Error] #{error}", job_id: job_id }
       unless t.status == "waiting"
         t.status = "waiting"
