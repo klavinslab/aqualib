@@ -164,121 +164,127 @@ def task_status_check t
   errors = []
   notifs = []
   argument_lengths = []
-  t.spec.each do |argument, ids|
-    argument = argument.to_s
-    variable_name = argument.split(' ')[0]
-    argument.slice!(argument.split(' ')[0])
-    argument.slice!(0) # remove white space in the beginning
-    inventory_types = argument.split('|')
-    inventory_types.uniq!
-    argument_lengths.push ids.length if ids.is_a? Array
-    ids = [ids] unless ids.is_a? Array
-    ids.flatten!
-    ids.uniq!
-    # processing sample type or inventory type check
-    if inventory_types.any?
-      if (object_type_names & inventory_types).sort == inventory_types.sort
-        item_or_sample = :item
-      elsif (sample_type_names & inventory_types).sort == inventory_types.sort
-        item_or_sample = :sample
-      else
-        item_or_sample = ""
-        errors.push "Please check your task prototype definition."
-      end
-      unless item_or_sample.empty?
-        ids.each do |id|
-          if !find(item_or_sample, id: id)[0]
-            errors.push "Can not find #{item_or_sample} #{id}."
-          elsif !inventory_type_check(inventory_types, item_or_sample, id)
-            errors.push "#{item_or_sample.to_s.capitalize} #{item_or_sample_html_link id,item_or_sample} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
-          end
-        end # ids
-      end # unless
-    end # if inventory_types.any?
-    # processing sample properties or inventory check when id is sample
-    # only start processing in this level when there is no errors in previous type checking
-    if errors.empty?
-      new_tasks = {}
-      case variable_name
-      when "primer_ids"
-        if t.task_prototype.name == "Primer Order"
-          errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
-        else  # for Sequencing, Plasmid Verification
-          inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
-          errors.concat inventory_check_result[:errors]
-          new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
+  if t.task_prototype.name == "Sequencing Verification"
+    sequencing_verification_results = sequencing_verification_task_processing t
+    new_task_ids.concat sequencing_verification_results[:new_task_ids]
+    notifs.concat sequencing_verification_results[:notifs]
+  else
+    t.spec.each do |argument, ids|
+      argument = argument.to_s
+      variable_name = argument.split(' ')[0]
+      argument.slice!(argument.split(' ')[0])
+      argument.slice!(0) # remove white space in the beginning
+      inventory_types = argument.split('|')
+      inventory_types.uniq!
+      argument_lengths.push ids.length if ids.is_a? Array
+      ids = [ids] unless ids.is_a? Array
+      ids.flatten!
+      ids.uniq!
+      # processing sample type or inventory type check
+      if inventory_types.any?
+        if (object_type_names & inventory_types).sort == inventory_types.sort
+          item_or_sample = :item
+        elsif (sample_type_names & inventory_types).sort == inventory_types.sort
+          item_or_sample = :sample
+        else
+          item_or_sample = ""
+          errors.push "Please check your task prototype definition."
         end
-      when "fragments"
-        if t.task_prototype.name == "Fragment Construction"
-          sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+        unless item_or_sample.empty?
+          ids.each do |id|
+            if !find(item_or_sample, id: id)[0]
+              errors.push "Can not find #{item_or_sample} #{id}."
+            elsif !inventory_type_check(inventory_types, item_or_sample, id)
+              errors.push "#{item_or_sample.to_s.capitalize} #{item_or_sample_html_link id,item_or_sample} is not #{indefinite_articlerize(inventory_types[0])} #{inventory_types.join(" or ")}."
+            end
+          end # ids
+        end # unless
+      end # if inventory_types.any?
+      # processing sample properties or inventory check when id is sample
+      # only start processing in this level when there is no errors in previous type checking
+      if errors.empty?
+        new_tasks = {}
+        case variable_name
+        when "primer_ids"
+          if t.task_prototype.name == "Primer Order"
+            errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
+          else  # for Sequencing, Plasmid Verification
+            inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
+            errors.concat inventory_check_result[:errors]
+            new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
+          end
+        when "fragments"
+          if t.task_prototype.name == "Fragment Construction"
+            sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
+            errors.concat sample_check_result[:errors]
+            new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
+          elsif t.task_prototype.name == "Gibson Assembly"
+            inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
+            errors.concat inventory_check_result[:errors]
+            new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
+            errors.concat sample_check(ids, assert_property: "Length")[:errors]
+          end
+        when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
+          sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
+          errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
+        when "num_colonies"
+          ids.each do |id|
+            errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
+          end
+        when "plasmid"
+          errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
+        when "yeast_transformed_strain_ids"
+          sample_check_result = sample_check(ids, assert_property: "Parent")
+          errors.concat sample_check_result[:errors]
+          new_tasks["Yeast Competent Cell"] = sample_check_result[:ids_to_make]
+          integrant_check_result = sample_check(ids, assert_property: "Integrant")
+          errors.concat integrant_check_result[:errors]
+          new_tasks["Fragment Construction"] = integrant_check_result[:ids_to_make]
+        when "yeast_plate_ids"
+          sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
+          sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
           errors.concat sample_check_result[:errors]
           new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
-        elsif t.task_prototype.name == "Gibson Assembly"
-          inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
-          errors.concat inventory_check_result[:errors]
-          new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
-          errors.concat sample_check(ids, assert_property: "Length")[:errors]
-        end
-      when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
-        sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-        errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
-      when "num_colonies"
-        ids.each do |id|
-          errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
-        end
-      when "plasmid"
-        errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
-      when "yeast_transformed_strain_ids"
-        sample_check_result = sample_check(ids, assert_property: "Parent")
-        errors.concat sample_check_result[:errors]
-        new_tasks["Yeast Competent Cell"] = sample_check_result[:ids_to_make]
-        integrant_check_result = sample_check(ids, assert_property: "Integrant")
-        errors.concat integrant_check_result[:errors]
-        new_tasks["Fragment Construction"] = integrant_check_result[:ids_to_make]
-      when "yeast_plate_ids"
-        sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
-        sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
-        errors.concat sample_check_result[:errors]
-        new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
-      when "yeast_strain_ids"
-        ids_to_make = []
-        ids.each do |id|
-          yeast_strain = find(:sample, id: id)[0]
-          if (collection_type_contain_has_colony id, "Divided Yeast Plate").empty?
-            errors.push "Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
-            glycerol_stock = yeast_strain.in("Yeast Glycerol Stock")[0]
-            if glycerol_stock
-              ids_to_make.push glycerol_stock
-            else
-              errors.push "Yeast Strain #{yeast_strain.name} needs a Yeast Glycerol Stock to automatically submit Streak Plate tasks"
+        when "yeast_strain_ids"
+          ids_to_make = []
+          ids.each do |id|
+            yeast_strain = find(:sample, id: id)[0]
+            if (collection_type_contain_has_colony id, "Divided Yeast Plate").empty?
+              errors.push "Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
+              glycerol_stock = yeast_strain.in("Yeast Glycerol Stock")[0]
+              if glycerol_stock
+                ids_to_make.push glycerol_stock
+              else
+                errors.push "Yeast Strain #{yeast_strain.name} needs a Yeast Glycerol Stock to automatically submit Streak Plate tasks"
+              end
             end
-          end
-        end # ids
-        new_tasks["Streak Plate"] = ids_to_make
-      end # case
-      new_tasks.each do |task_type_name, ids|
-        created_tasks = create_new_tasks(ids, task_name: task_type_name, user_id: t.user.id)
-        new_task_ids.concat created_tasks[:new_task_ids]
-        notifs.concat created_tasks[:notifs]
+          end # ids
+          new_tasks["Streak Plate"] = ids_to_make
+        end # case
+        new_tasks.each do |task_type_name, ids|
+          created_tasks = create_new_tasks(ids, task_name: task_type_name, user_id: t.user.id)
+          new_task_ids.concat created_tasks[:new_task_ids]
+          notifs.concat created_tasks[:notifs]
+        end
+      end # errors.empty?
+    end # t.spec.each
+    argument_lengths.uniq!
+    errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
+    job_id = defined?(jid) ? jid : nil
+    if errors.any?
+      errors.each { |error| t.notify "[Error] #{error}", job_id: job_id }
+      unless t.status == "waiting"
+        t.status = "waiting"
+        t.save
       end
-    end # errors.empty?
-  end # t.spec.each
-  argument_lengths.uniq!
-  errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
-  job_id = defined?(jid) ? jid : nil
-  if errors.any?
-    errors.each { |error| t.notify "[Error] #{error}", job_id: job_id }
-    unless t.status == "waiting"
-      t.status = "waiting"
-      t.save
+    else
+      unless t.status == "ready"
+        t.status = "ready"
+        t.notify "This task has passed input checking and ready to go!", job_id: job_id
+        t.save
+      end
     end
-  else
-    unless t.status == "ready"
-      t.status = "ready"
-      t.notify "This task has passed input checking and ready to go!", job_id: job_id
-      t.save
-    end
-  end
+  end # end if t.task_prototype.name == "Sequencing Verification"
   if notifs.any?
     notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: job_id }
   end
@@ -347,18 +353,10 @@ def create_new_tasks ids, p={}
   }
 end
 
-def sequencing_verification_task_processing p={}
-  params = ({ group: "" }).merge p
-  tasks_to_process = find(:task, { task_prototype: { name: "Sequencing Verification" } })
-  if !params[:group].empty?
-    user_group = params[:group] == "technicians"? "cloning": params[:group]
-    group_info = Group.find_by_name(user_group)
-    tasks_to_process.select! { |t| t.user.member? group_info.id }
-  end
+def sequencing_verification_task_processing t
   new_task_ids = []
   status_to_process = ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"]
-  tasks_to_process.select! { |t| status_to_process.include? t.status }
-  tasks_to_process.each do |t|
+  if status_to_process.include? t.status
     discard_item_ids = [] # list of items to discard
     stock_item_ids = [] # list of items to glycerol stock
     plasmid_stock_id = t.simple_spec[:plasmid_stock_ids][0]
@@ -385,11 +383,11 @@ def sequencing_verification_task_processing p={}
     new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock", user_id: t.user.id)
     notifs = new_discard_tasks[:notifs] + new_stock_tasks[:notifs]
     new_task_ids.concat new_discard_tasks[:new_task_ids] + new_stock_tasks[:new_task_ids]
-    if notifs.any?
-      notifs.each { |notif| t.notify "[Notif] #{notif}", job_id: job_id }
-    end
     t.status = "done"
     t.save
   end
-  return new_task_ids
+  return {
+    new_task_ids: new_task_ids,
+    notifs: notifs
+  }
 end
