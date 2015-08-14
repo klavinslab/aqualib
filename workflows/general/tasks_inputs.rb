@@ -32,7 +32,7 @@ class Protocol
     |t| %w[waiting ready].include? t.status }
     # add seqeuncing verification tasks to process if discard item or glycerol stock
     if ["Discard Item", "Glycerol Stock"].include? io_hash[:task_name]
-      tasks_to_process.push find(:task,{ task_prototype: { name: "Sequencing Verification" } }).select { |t| ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"].include? t.status }
+      tasks_to_process.concat find(:task,{ task_prototype: { name: "Sequencing Verification" } }).select { |t| ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"].include? t.status }
     end
     # filter out tasks based on group input
     user_group = io_hash[:group] == "technicians"? "cloning": io_hash[:group]
