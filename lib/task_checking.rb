@@ -33,7 +33,7 @@ end
 
 # return a descriptive sample with html link
 def sample_html_link sample
-  return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}' target='_top'>#{sample.id}: #{sample.name}</a>".html_safe
+  return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}' target='_top'>#{sample.name}</a>".html_safe
 end
 
 # return a link for task
