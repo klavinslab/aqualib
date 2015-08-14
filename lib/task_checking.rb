@@ -33,22 +33,22 @@ end
 
 # return a descriptive sample with html link
 def sample_html_link sample
-  return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}'>#{sample.id}: #{sample.name}</a>".html_safe
+  return "#{sample.sample_type.name} " + "<a href='/samples/#{sample.id}' target='_top'>#{sample.id}: #{sample.name}</a>".html_safe
 end
 
 # return a link for task
 def task_html_link task
-  return "<a href='/tasks/#{task.id}'>#{task.name}</a>".html_safe
+  return "<a href='/tasks/#{task.id}' target='_top'>#{task.name}</a>".html_safe
 end
 
 # return a link for task_prototype task_prototype_name
 def task_prototype_html_link task_prototype_name
   tp = TaskPrototype.where(name: task_prototype_name)[0]
-  return "<a href='/tasks?task_prototype_id=#{tp.id}'>#{task_prototype_name}</a>".html_safe
+  return "<a href='/tasks?task_prototype_id=#{tp.id}' target='_top'>#{task_prototype_name}</a>".html_safe
 end
 
 def item_or_sample_html_link id, item_or_sample
-  return "<a href='/#{item_or_sample}s/#{id}'>#{id}</a>".html_safe
+  return "<a href='/#{item_or_sample}s/#{id}' target='_top'>#{id}</a>".html_safe
 end
 
 def indefinite_articlerize(params_word)
