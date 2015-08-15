@@ -158,18 +158,18 @@ def sample_check ids, p={}
       else
         warnings.push "#{sample_field_name} is required."
       end # if properties[field]
-      if params[:assert_logic] == "and"
-        puts warnings
-        errors.concat warnings.flatten
-      elsif params[:assert_logic] == "or"
-        puts warnings
-        puts warnings.length
-        puts assert_properties.length
-        if warnings.length == assert_properties.length
-          errors.push warnings.flatten.join(" or ")
-        end
-      end
     end # assert_properties.each
+    if params[:assert_logic] == "and"
+      puts warnings
+      errors.concat warnings.flatten
+    elsif params[:assert_logic] == "or"
+      puts warnings
+      puts warnings.length
+      puts assert_properties.length
+      if warnings.length == assert_properties.length
+        errors.push warnings.flatten.join(" or ")
+      end
+    end
   end # ids.each
   errors.uniq!
   ids_to_make.uniq!
