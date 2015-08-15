@@ -162,6 +162,7 @@ def sample_check ids, p={}
         puts warnings
         errors.concat warnings.flatten
       elsif params[:assert_logic] == "or"
+        puts warnings
         if warnings.length == assert_properties.length
           errors.push warnings.flatten.join(" or ")
         end
