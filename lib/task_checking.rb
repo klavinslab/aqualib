@@ -97,9 +97,9 @@ def sample_check ids, p={}
     sample = find(:sample, id: id)[0]
     sample_name = sample_html_link sample
     properties = sample.properties.deep_dup
+    warnings = [] # to store temporary errors for each id
     assert_properties.each do |field|
       sample_field_name = "#{sample_name}'s #{field}"
-      warnings = [] # to store temporary errors
       if properties[field]
         property = properties[field]
         case field
