@@ -160,12 +160,8 @@ def sample_check ids, p={}
       end # if properties[field]
     end # assert_properties.each
     if params[:assert_logic] == "and"
-      puts warnings
       errors.concat warnings.flatten
     elsif params[:assert_logic] == "or"
-      puts warnings
-      puts warnings.length
-      puts assert_properties.length
       if warnings.length == assert_properties.length
         errors.push warnings.flatten.join(" or ")
       end
