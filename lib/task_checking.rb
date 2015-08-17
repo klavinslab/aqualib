@@ -359,6 +359,7 @@ def create_new_tasks ids, p={}
       if ["done", "received and stocked", "imaged and stored in fridge"].include? task.status
         task.status = "waiting"
         task.save
+        task.notify "Status changed back to waiting to make more."
         notifs.push "#{auto_create_task_name_link} changed status to waiting to make more."
         new_task_ids.push task.id
       elsif ["failed","canceled"].include? task.status
