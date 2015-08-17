@@ -271,7 +271,7 @@ def task_status_check t
           ids.each do |id|
             yeast_strain = find(:sample, id: id)[0]
             if (collection_type_contain_has_colony id, "Divided Yeast Plate").empty?
-              errors.push "Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
+              errors.push "[Notif] Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
               glycerol_stock = yeast_strain.in("Yeast Glycerol Stock")[0]
               if glycerol_stock
                 ids_to_make.push glycerol_stock.id
