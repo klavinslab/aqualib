@@ -32,6 +32,8 @@ class Protocol
 
     yeast_glycerol_stocks = io_hash[:yeast_glycerol_stock_ids].collect { |yid| find(:item, id: yid )[0] }
 
+    glycerol_streaked_yeast_plates = []
+
     if yeast_glycerol_stocks.length > 0
 
       yeast_strains = yeast_glycerol_stocks.collect { |y| y.sample }
