@@ -274,7 +274,7 @@ def task_status_check t
               errors.push "Yeast Strain #{yeast_strain.name} needs a Divided Yeast Plate (Collection)."
               glycerol_stock = yeast_strain.in("Yeast Glycerol Stock")[0]
               if glycerol_stock
-                ids_to_make.push glycerol_stock
+                ids_to_make.push glycerol_stock.id
               else
                 errors.push "Yeast Strain #{yeast_strain.name} needs a Yeast Glycerol Stock to automatically submit Streak Plate tasks"
               end
