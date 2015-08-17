@@ -357,8 +357,8 @@ def create_new_tasks ids, p={}
     if task
       auto_create_task_name_link = task_html_link task
       if ["done", "received and stocked", "imaged and stored in fridge"].include? task.status
-        t.status = "waiting"
-        t.save
+        task.status = "waiting"
+        task.save
         notifs.push "#{auto_create_task_name_link} changed status to waiting to make more."
         new_task_ids.push task.id
       elsif ["failed","canceled"].include? task.status
