@@ -1,4 +1,5 @@
 include Krill::Base
+
 def after_save
   task_status_check self
 end
