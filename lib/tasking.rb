@@ -102,7 +102,7 @@ module Tasking
     task_prototype_name = task.task_prototype.name
     size = 0
     case task_prototype_name
-    when "Gibson Assembly"
+    when "Gibson Assembly", "Yeast Mating"
       size = 1
     when "Fragment Construction", "Mutagenized Fragment Construction"
       size = task.simple_spec[:fragments].length
@@ -116,8 +116,6 @@ module Tasking
       size = task.simple_spec[:yeast_transformed_strain_ids].length
     when "Sequencing Verification"
       size = task.simple_spec[:plasmid_stock_ids].length
-    when "Yeast Mating"
-      size = task.simple_spec[:yeast_mating_strain_ids].length
     when "Yeast Competent Cell", "Yeast Cytometry"
       size = task.simple_spec[:yeast_strain_ids].length
     when "Plasmid Extraction"
