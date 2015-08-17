@@ -266,7 +266,10 @@ def task_status_check t
           sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
           errors.concat sample_check_result[:errors]
           new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
-        when "yeast_strain_ids", "yeast_mating_strain_ids"
+        when "yeast_mating_strain_ids"
+          inventory_check_result = inventory_check(ids, inventory_types: "Yeast Glycerol Stock")
+          errors.concat inventory_check_result[:errors]
+        when "yeast_strain_ids"
           ids_to_make = []
           ids.each do |id|
             yeast_strain = find(:sample, id: id)[0]
