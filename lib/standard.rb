@@ -245,4 +245,20 @@ module Standard
     return matched_collections
   end
 
+	  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
+	def collection_type_contain_has_colony id, object_type
+		matched_collections = []
+		find_collections = Collection.containing Sample.find(id)
+		if find_collections[0]
+			(find_collections).each do |c|
+				if c.datum && c.location != "deleted"
+					if (c.datum[:num_colony] || 0) > 0
+					  matched_collections.push c
+					end
+				end
+			end
+		end
+		return matched_collections
+	end
+
 end
