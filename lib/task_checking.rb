@@ -266,7 +266,7 @@ def task_status_check t
           sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
           errors.concat sample_check_result[:errors]
           new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
-        when "yeast_strain_ids"
+        when "yeast_strain_ids", "yeast_mating_strain_ids"
           ids_to_make = []
           ids.each do |id|
             yeast_strain = find(:sample, id: id)[0]
@@ -291,6 +291,7 @@ def task_status_check t
     end # t.spec.each
     argument_lengths.uniq!
     errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
+    errors.push "yeast_mating_strain_ids needs to have the size of 2." if t.task_prototype.name == "Yeast Mating" # check if input size is 2 for yeast mating.
     job_id = defined?(jid) ? jid : nil
     if errors.any?
       warnings = errors.select { |error| error.include? "[Notif]" }
