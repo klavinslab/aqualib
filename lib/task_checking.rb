@@ -291,7 +291,7 @@ def task_status_check t
     end # t.spec.each
     argument_lengths.uniq!
     errors.push "Array argument needs to have the same size." if argument_lengths.length != 1  # check if array sizes are the same, for example, the Plasmid Verification and Sequencing.
-    errors.push "yeast_mating_strain_ids needs to have the size of 2." if t.task_prototype.name == "Yeast Mating" # check if input size is 2 for yeast mating.
+    errors.push "yeast_mating_strain_ids needs to have the size of 2." if t.task_prototype.name == "Yeast Mating" && argument_lengths != [2] # check if input size is 2 for yeast mating.
     job_id = defined?(jid) ? jid : nil
     if errors.any?
       warnings = errors.select { |error| error.include? "[Notif]" }
