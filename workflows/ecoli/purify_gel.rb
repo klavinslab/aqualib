@@ -153,10 +153,10 @@ class Protocol
           if find(:sample, id: fid)[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
             fragment_stock = fragment_stocks.select { |fs| fs.sample.id == fid }[0]
-            t.notify "This task produces #{item_link fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/μL)", job_id: jid
+            task.notify "This task produces #{item_link fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/μL)", job_id: jid
           else
             set_task_status(task, "failed")
-            t.notify "This task failed.", job_id: jid
+            task.notify "This task failed.", job_id: jid
           end
         else
           set_task_status(task,"done")
