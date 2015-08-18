@@ -107,7 +107,7 @@ module Tasking
     when "Fragment Construction", "Mutagenized Fragment Construction"
       size = task.simple_spec[:fragments].length
     when "Sequencing", "Primer Order"
-      size = task.simple_spec[:primer_ids].length
+      size = task.simple_spec[:primer_ids].flatten.length
     when "Plasmid Verification", "Yeast Strain QC"
       size = task.simple_spec[:num_colonies].inject { |sum, i| sum + i }
     when "Cytometer Reading", "Glycerol Stock", "Discard Item", "Streak Plate"
