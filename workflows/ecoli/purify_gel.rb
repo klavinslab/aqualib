@@ -153,13 +153,21 @@ class Protocol
           if find(:sample, id: fid)[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
             fragment_stock = fragment_stocks.select { |fs| fs.sample.id == fid }[0]
-            task.notify "This task produces #{item_link fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/μL)", job_id: jid
+            task.notify "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/μL) for #{sample_html_link fragment_stock.sample}", job_id: jid
           else
             set_task_status(task, "failed")
             task.notify "This task failed.", job_id: jid
           end
         else
+          notifs = []
           set_task_status(task,"done")
+          fragment_ids = task.simple_spec[:fragments]
+          produced_fragment_ids = fragment_stocks.collect { |fs| fs.sample.id } & fragment_ids
+          failed_fragment_ids = fragment_ids - produced_fragment_ids
+          failed_fragment_ids.each { |id| notifs.push "This task failed to produce a Fragment Stock for #{item_or_sample_html_link id, :sample}" }
+          produced_fragment_stocks = fragment_stocks.select { |fs| produced_fragment_ids.include? fs.sample.id }
+          produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/μL) for #{sample_html_link fragment_stock.sample}" }
+          notifs.each { |notif| t.notify notif, job_id: jid }
         end
       end
     end
