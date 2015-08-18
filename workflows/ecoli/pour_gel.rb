@@ -27,7 +27,7 @@ class Protocol
         true
       end
     end
-    
+
     comb_1 = io_hash[:comb_1] || "6 thick"
     comb_2 = io_hash[:comb_2] || "6 thick"
     comb_1 = comb_1.split(' ')
@@ -65,7 +65,7 @@ class Protocol
     gel_ids = []
 
     (1..num_gels).each do |gel_number|
-    
+
       show {
         title "Pour gel"
         check "Grab a flask from on top of the microwave M2."
@@ -130,15 +130,6 @@ class Protocol
 
     release stripwells
 
-    if io_hash[:task_ids]
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        # set_task_status(task,"pcr")
-        task.notify "gel poured", job_id: jid
-        task.save
-      end
-    end
-
     io_hash[:gel_ids] = gel_ids
 
     return { io_hash: io_hash }
@@ -146,4 +137,3 @@ class Protocol
   end
 
 end
-
