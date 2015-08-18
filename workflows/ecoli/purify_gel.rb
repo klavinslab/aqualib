@@ -149,10 +149,14 @@ class Protocol
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         if task.simple_spec[:fragments].length == 1
-          if find(:sample, id: task.simple_spec[:fragments][0])[0].in("Gel Slice").length > 0
+          fid = task.simple_spec[:fragments][0]
+          if find(:sample, id: fid)[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
+            fragment_stock = fragment_stocks.select { |fs| fs.sample.id == fid }[0]
+            t.notify "This task produces #{item_link fragment_stock} (conc: #{fragment_stock.datum[:concentration] ng/μL})", job_id: jid
           else
             set_task_status(task, "failed")
+            t.notify "This task failed.", job_id: jid
           end
         else
           set_task_status(task,"done")
@@ -164,11 +168,9 @@ class Protocol
       delete gel_slices
       release gel_slices
     end
-      
+
     return { io_hash: io_hash }
 
   end # main
 
 end # Protocol
-
-

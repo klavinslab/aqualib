@@ -52,6 +52,13 @@ def item_or_sample_html_link id, item_or_sample
   return "<a href='/#{item_or_sample}s/#{id}' target='_top'>#{id}</a>".html_safe
 end
 
+def item_link item
+  id = item.id
+  name = item.sample.name
+  container = item.object_type.name
+  return "<a href='/items/#{id}' target='_top'>#{container} #{id}: #{name}</a>".html_safe
+end
+
 def indefinite_articlerize(params_word)
     %w(a e i o u).include?(params_word[0].downcase) ? "an" : "a"
 end
