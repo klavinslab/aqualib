@@ -33,12 +33,17 @@ class Protocol
     } if io_hash[:debug_mode].downcase == "yes"
 
     genewiz_tracking_no = io_hash[:genewiz_tracking_no]
-    sequencing_uploads = show {
+    sequencing_uploads_zip = show {
       title "Upload Genewiz Sequencing Results"
       note "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       note "Find Genewiz sequencing results for Tracking Number #{genewiz_tracking_no}"
       note "If results are not showed up yet, abort this protocol, it will automatically rescheduled."
-      note "Download All Selected Trace Files, unzip the downloaded file and then upload all the upzipped ab1 file here."
+      note "Download All Selected Trace Files, upload the zip file here"
+      upload var: "sequencing_results"
+    }
+    sequencing_uploads = show {
+      title "Upload individual sequencing results"
+      note "Unzip the downloaded file and then upload all the upzipped ab1 file here."
       note "You can click Command + A on Mac or Ctrl + A on Windows to select all files."
       note "Wait until all the uploads finished (a number appears at the end of file name). "
       upload var: "sequencing_results"
@@ -53,6 +58,12 @@ class Protocol
       task = find(:task, id: tid)[0]
       set_task_status(task,"results back")
       if task.task_prototype.name == "Sequencing Verification"
+        # batched file notif link
+        upload_zip_id = sequencing_uploads_zip[:sequencing_results][0][:id]
+        upload_zip = Upload.find(upload_zip_id)
+        batched_sequencing_result_url = "<a href=#{upload_zip.url}>#{upload_zip.name}</a>".html_safe
+        task.notify "[Data] The batched sequencing results is here #{batched_sequencing_result_url}.", job_id: jid
+        # individual file link
         plasmid_stock_id = task.simple_spec[:plasmid_stock_ids][0]
         begin
           sequencing_uploads[:sequencing_results].each do |result|
