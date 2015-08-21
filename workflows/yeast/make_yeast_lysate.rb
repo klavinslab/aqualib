@@ -9,7 +9,7 @@ class Protocol
   def arguments
   	{
       io_hash: {},
-  		yeast_plate_ids: [13578,13579],
+  		yeast_plate_ids: [32170,32171],
   		num_colonies: [3,3],
   		debug_mode: "No",
       group: "cloning"
@@ -31,13 +31,14 @@ class Protocol
 
     raise "Incorrect inputs, yeast_plate_ids size does not match num_colonies size. They need to be one to one correspondence." if io_hash[:yeast_plate_ids].length != io_hash[:num_colonies].length
 
+    yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
+
   	show {
   		title "Protocol information"
-  		note "This protocol makes yeast lysates in stripwell tubes for the following plates"
-      note "#{io_hash[:yeast_plate_ids]}"
+  		note "This protocol makes yeast lysates in stripwell tubes for the following plates:"
+      note yeast_items.join(", ")
   	}
 
-  	yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
   	take yeast_items, interactive: true
 
   	yeast_samples = []
@@ -94,7 +95,7 @@ class Protocol
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
         if sw.num_samples <= 6
-          check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
+          check "Grab a new stripwell with 6 wells and label with the id #{sw}."
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
@@ -147,13 +148,14 @@ class Protocol
     	check "Spin down all stripwells until a small pellet is visible at the bottom of the tubes."
         stripwells.each do |sw|
           if sw.num_samples <= 6
-            check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
+            check "Grab a new stripwell with 6 wells and label with the id #{sw}."
           else
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
 	        note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
 	        check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
-	        check "Dispose the spundown stripwell with id #{sw}"
+          check "Keep the new stripwell on the bench for the next protocol to use."
+	        check "Dispose the spundown stripwell with id #{sw}."
 	        separator
         end
     }
