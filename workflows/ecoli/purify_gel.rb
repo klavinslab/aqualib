@@ -73,7 +73,7 @@ class Protocol
 
       show {
         title "Add the following volumes of QG buffer to the corresponding tube."
-        table [["Gel Slices", "QG Volume in µL"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes)
+        table [["Gel Slices", "QG Volume in µL"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes.collect { |v| { content: v, check: true } })
       }
 
       show {
@@ -86,7 +86,7 @@ class Protocol
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
-        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
+        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes.collect { |v| { content: v, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
