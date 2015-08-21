@@ -1,0 +1,95 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    task_name: "Yeast Time Series Cytometry"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place glycerol_stock_pre
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place overnight_fork
+  protocol: "aqualib:workflows/yeast/overnight_suspension_divided_plate_to_deepwell.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+  end
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place overnight_suspension
+  protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place glycerol_stock
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
+  group: group
+  marked: false
+  start: hours(15)
+  window: hours(1)
+end
+
+place dilute
+  protocol: "aqualib:workflows/yeast/dilute_yeast_culture_deepwell_plate.rb"
+  group: group
+  marked: false
+  start: hours(14)
+  window: hours(1)
+end
+
+place read
+  protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place next_read
+  protocol: "aqualib:workflows/yeast/cytometer_reading.rb"
+  group: group
+  marked: false
+  start: hours(5)
+  window: hours(1)
+end
+
+wire tasks_inputs => overnight
+wire overnight => dilute
+wire dilute => read
+wire read => next_read
+
+transition [ tasks_inputs ] => [ overnight ] when !error(0) && completed(0) end
+transition [ overnight ] => [ dilute ] when !error(0) && completed(0) end
+transition [ dilute ] => [ read ] when !error(0) && completed(0) end
+transition [ read ] => [ next_read ] when !error(0) && completed(0) end
+transition [ next_read ] => [] when !error(0) && completed(0) end
+
+# restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ overnight ] => [ overnight ] when error(0) end
+transition [ dilute ] => [ dilute ] when error(0) end
+transition [ read ] => [ read ] when error(0) end
+transition [ next_read ] => [ next_read ] when error(0) end
