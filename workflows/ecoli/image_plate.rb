@@ -151,8 +151,10 @@ class Protocol
 
             if colony_number[:"c#{plate_id}".to_sym] > 0
               set_task_status(task,"imaged and stored in fridge")
-              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
+              # notify the user about plate stored in fridge
               plate = find(:item, id: plate_id)[0]
+              t.notify "#{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
+              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
               primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
               if primer_ids_str
                 primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
