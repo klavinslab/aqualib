@@ -174,15 +174,28 @@ class Protocol
           end
 
         elsif task.task_prototype.name == "Yeast Transformation"
-          stored_plates.each do |p|
-            num_colony = p.datum[:num_colony]
-            num_colony = num_colony > 2 ? 2 : num_colony
-            tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
-            t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
-            t.save
-            t.notify "Automatically created from Yeast Transformation.", job_id: jid
+          yeast_ids = task.simple_spec[:yeast_transformed_strain_ids]
+          yeast_names = yeast_ids.collect { |id| find(:sample, id: id)[0].name }
+          task_stored_plates = []
+          stored_plates.each do |plate|
+            if yeast_names.include? plate.sample.name
+              task_stored_plates.push plate
+            end
           end
-          set_task_status(task,"imaged and stored in fridge")
+          if task_stored_plates.any?
+            task_stored_plates.each do |p|
+              task.notify "#{item_link p} with num_colony: #{p.datum[:num_colony]} is produced."
+              num_colony = p.datum[:num_colony]
+              num_colony = num_colony > 2 ? 2 : num_colony
+              tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
+              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
+              t.save
+              t.notify "Automatically created from Yeast Transformation.", job_id: jid
+            end
+            set_task_status(task,"imaged and stored in fridge")
+          else
+            set_task_status(task,"no colonies")
+          end
 
         else
           set_task_status(task,"imaged and stored in fridge")
