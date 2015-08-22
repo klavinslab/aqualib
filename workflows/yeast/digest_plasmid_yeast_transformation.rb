@@ -67,9 +67,6 @@ class Protocol
     end
 
     scan_result = yeast_strain_transformation_scan io_hash[:yeast_transformed_strain_ids]
-    show {
-      note scan_result.to_json
-    }
     io_hash[:yeast_transformed_strain_ids] = scan_result[:ready_ids]
     if scan_result[:not_ready_ids].any?
       not_done_task_ids = []
