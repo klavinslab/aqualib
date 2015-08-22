@@ -153,7 +153,7 @@ class Protocol
               set_task_status(task,"imaged and stored in fridge")
               # notify the user about plate stored in fridge
               plate = find(:item, id: plate_id)[0]
-              task.notify "#{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
+              task.notify "[Data] #{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
               # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
               primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
               if primer_ids_str
@@ -184,7 +184,7 @@ class Protocol
           end
           if task_stored_plates.any?
             task_stored_plates.each do |p|
-              task.notify "#{item_link p} with num_colony: #{p.datum[:num_colony]} is produced."
+              task.notify "[Data] #{item_link p} with num_colony: #{p.datum[:num_colony]} is produced."
               num_colony = p.datum[:num_colony]
               num_colony = num_colony > 2 ? 2 : num_colony
               tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
