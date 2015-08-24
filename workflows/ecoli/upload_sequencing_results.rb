@@ -42,16 +42,18 @@ class Protocol
     }
 
     raise "The sequencing results have not shown up yet." if results_info[:results_back_or_not] == "No"
-    
+
     sequencing_uploads_zip = show {
-      title "Upload Genewiz Sequencing Results"
+      title "Upload Genewiz Sequencing Results zip file"
       note "Click the button 'Download All Selected Trace Files' (Not Download All Sequence Files), which should download a zip file named #{genewiz_tracking_no}_ab1.zip."
       note "Upload the #{genewiz_tracking_no}_ab1.zip file here."
       upload var: "sequencing_results"
     }
     sequencing_uploads = show {
       title "Upload individual sequencing results"
-      note "Unzip the downloaded zip file named #{genewiz_tracking_no}_ab1.zip and then upload all the upzipped ab1 file here. If the files are ending with .seq, you downloaded the wrong file."
+      note "Unzip the downloaded zip file named #{genewiz_tracking_no}_ab1.zip."
+      note "If you are on a Windows machine, right click the #{genewiz_tracking_no}_ab1.zip file, click Extract All, then click Extract."
+      note "Upload all the unzipped ab1 file below by navigating to the upzipped folder."
       note "You can click Command + A on Mac or Ctrl + A on Windows to select all files."
       note "Wait until all the uploads finished (a number appears at the end of file name). "
       upload var: "sequencing_results"
