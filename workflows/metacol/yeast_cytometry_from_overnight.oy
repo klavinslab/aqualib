@@ -9,7 +9,7 @@ place tasks_inputs
   argument
     debug_mode: debug_mode
     group: group
-    task_name: "Yeast Cytometry from Overnight"
+    task_name: "Yeast Cytometry"
   end
   marked: true
   start: now()
