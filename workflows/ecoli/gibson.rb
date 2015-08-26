@@ -188,9 +188,9 @@ class Protocol
       fragment_stocks[idx].each_with_index do |f, idy|
         if volume_empty[:"c#{f.id}".to_sym] == "No"
           not_enough_volume_stocks.push f
-          if f.sample.in("Fragment Stock")[1]
-            replacement_stocks.push f.sample.in("Fragment Stock")[1]
-            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[1]
+          if f.sample.in("Fragment Stock")[-2]
+            replacement_stocks.push f.sample.in("Fragment Stock")[-2]
+            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[-2]
           end
         end
       end
