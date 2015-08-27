@@ -42,20 +42,27 @@ class Protocol
         task = find(:task, id: tid)[0]
         io_hash[:yeast_item_ids].concat task.simple_spec[:item_ids]
         io_hash[:inducers].concat task.simple_spec[:inducers]
+        io_hash[:when_to_add_inducer].concat task.simple_spec[:when_to_add_inducer]
       end
     end
+
     yeast_items = []
     io_hash[:inducer_additions] = []
     io_hash[:yeast_item_ids].each_with_index do |yid,idx|
-      yeast_items.push find(:item, id: yid )[0]
-      io_hash[:inducer_additions].push "None"
+      yeast_item = find(:sample, id: yid)[0]
       (io_hash[:inducers][idx] || []).each do |inducer|
-        yeast_items.push find(:item, id: yid )[0]
-        io_hash[:inducer_additions].push inducer
+        yeast_items.push yeast_item
+        if io_hash[:when_to_add_inducer][idx].include? "start"
+          io_hash[:inducer_additions].push inducer
+        else
+          io_hash[:inducer_additions].push "None"
+        end
       end
     end
+
     yeast_strains = yeast_items.collect { |y| y.sample }
     take yeast_items.uniq, interactive: true
+
     show {
       title "Protocol information"
       note "This protocol is used to prepare yeast overnight suspensions from glycerol stocks, plates or overnight suspensions into Eppendorf 96 Deepwell Plate."
@@ -69,7 +76,7 @@ class Protocol
     media_str = (1..yeast_items.length).collect { |y| "#{io_hash[:volume]} µL"}
     load_samples_variable_vol( ["#{io_hash[:media_type]}","Yeast items", "Inducers"], [
         media_str, yeast_items_str,io_hash[:inducer_additions]
-      ], deepwells ) 
+      ], deepwells )
     show {
       title "Seal the plate with a breathable sealing film"
       note "Put a breathable sealing film on the plate after inoculation."

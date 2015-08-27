@@ -8,6 +8,19 @@ argument
   group: group, "choose the group to assign this metacol"
 end
 
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    task_name: "Cytometer Reading"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
 place overnight
   protocol: "aqualib:workflows/yeast/overnight_suspension_deepwell_plate.rb"
   group: group
@@ -15,7 +28,7 @@ place overnight
     debug_mode: debug_mode
     group: group
   end
-  marked: true
+  marked: false
   start: now()
   window: hours(1)
 end
@@ -44,16 +57,19 @@ place next_read
   window: hours(1)
 end
 
+wire tasks_inputs => overnight
 wire overnight => dilute
 wire dilute => read
 wire read => next_read
 
+transition [ tasks_inputs ] => [ overnight ] when !error(0) && completed(0) end
 transition [ overnight ] => [ dilute ] when !error(0) && completed(0) end
 transition [ dilute ] => [ read ] when !error(0) && completed(0) end
 transition [ read ] => [ next_read ] when !error(0) && completed(0) end
 transition [ next_read ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
 transition [ dilute ] => [ dilute ] when error(0) end
 transition [ read ] => [ read ] when error(0) end

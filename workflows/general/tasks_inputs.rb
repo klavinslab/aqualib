@@ -145,7 +145,7 @@ class Protocol
       # additional io_hash key: values
       io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"
 
-    when "Yeast Cytometry"
+    when "Yeast Cytometry", "Cytometer Reading"
       # a general task processing script without uniqing variable content.
       io_hash[:task_ids].each_with_index do |tid, idx|
         task = find(:task, id: tid)[0]
