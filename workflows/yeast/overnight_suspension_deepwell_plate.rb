@@ -33,22 +33,11 @@ class Protocol
         true
       end
     end
-    io_hash = { inducers: [], yeast_item_ids:[], inducers: [], task_mode: "Yes", volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)" }.merge io_hash
-    if io_hash[:task_mode] == "Yes"
-      tasks = find(:task,{ task_prototype: { name: "Cytometer Reading" } })
-      waiting_ids = (tasks.select { |t| t.status == "waiting" }).collect {|t| t.id}
-      io_hash[:task_ids] = task_group_filter(waiting_ids, io_hash[:group])
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id: tid)[0]
-        io_hash[:yeast_item_ids].concat task.simple_spec[:item_ids]
-        io_hash[:inducers].concat task.simple_spec[:inducers]
-        io_hash[:when_to_add_inducer].concat task.simple_spec[:when_to_add_inducer]
-      end
-    end
+    io_hash = { inducers: [], yeast_item_ids:[], inducers: [], task_mode: "Yes", volume: 1000, dilution_rate: 0.01, media_type: "800 mL SC liquid (sterile)", when_to_add_inducer: [] }.merge io_hash
 
     yeast_items = []
     io_hash[:inducer_additions] = []
-    io_hash[:yeast_item_ids].each_with_index do |yid,idx|
+    io_hash[:item_ids].each_with_index do |yid,idx|
       yeast_item = find(:sample, id: yid)[0]
       (io_hash[:inducers][idx] || []).each do |inducer|
         yeast_items.push yeast_item
