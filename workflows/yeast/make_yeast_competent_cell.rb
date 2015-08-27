@@ -46,6 +46,34 @@ class Protocol
     end
 
     cultures = io_hash[:yeast_culture_ids].collect { |cid| find(:item, id:cid)[0] }
+
+    tasks_to_process = find(:task,{ task_prototype: { name: "Yeast Transformation" } }).select {
+    |t| %w[waiting ready].include? t.status }
+
+    # process task_status
+    tasks = task_status tasks_to_process
+    task_ids = tasks[:waiting_ids] + tasks[:ready_ids]
+    yeast_strain_ids = []
+    task_ids.each do |id|
+      task = find(:task, id: id)[0]
+      yeast_strain_ids.concat task.simple_spec[:yeast_transformed_strain_ids]
+    end
+    yeast_strain_id_quantity_hash = Hash.new(0)
+    # a hash to store how many competent cell you want for each yeast strain
+    # to indicate that we want as many W303a (29) and W303alpha (30) competent cell as possible
+    yeast_strain_id_quantity_hash[29] = 100
+    yeast_strain_id_quantity_hash[30] = 100
+    yeast_strain_ids.each do |id|
+      yeast_strain = find(:sample, id: id)[0]
+      begin
+        yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] += 1
+      rescue
+      end
+    end
+    show {
+      note yeast_strain_id_quantity_hash.to_json
+    } if io_hash[:debug_mode].downcase == "yes"
+
     take cultures, interactive: true
 
     num = cultures.length
@@ -61,26 +89,26 @@ class Protocol
       check "Pour all contents from the flask into the labeled #{io_hash[:falcon_tube_size]} mL falcon tube according to the tabel below. Left over foams are OK."
       table [["Flask Label","#{io_hash[:falcon_tube_size]} mL Tube Number"]].concat(cultures.collect { |c| { content: c.id, check: true } } .zip (1..num).to_a)
     }
-    
+
     show{
       title "Centrifuge at 3000xg for 5 min"
       note "If you have never used the big centrifuge before, or are unsure about any aspect of what you have just done. ASK A MORE EXPERIENCED LAB MEMBER BEFORE YOU HIT START!"
       check "Balance the #{io_hash[:falcon_tube_size]} mL tubes so that they all weigh approximately (within 0.1g) the same."
       check "Load the #{io_hash[:falcon_tube_size]} mL tubes into the large table top centerfuge such that they are balanced."
-      check "Set the speed to 3000xg." 
+      check "Set the speed to 3000xg."
       check "Set the time to 5 minutes."
       warning "MAKE SURE EVERYTHING IS BALANCED"
       check "Hit start"
-      
+
     }
-    
+
     show {
       title "Pour out supernatant"
       check "After spin, take out all #{io_hash[:falcon_tube_size]} mL falcon tubes and place them in a rack."
       check "Take to the sink at the tube washing station without shaking tubes. Pour out liquid from tubes in one smooth motion so as not to disturb cell pellet."
       check "Recap tubes and take back to the bench."
     }
-    
+
     show {
       title "Water washing in #{io_hash[:falcon_tube_size]} mL tube"
       check "Add 1 mL of molecular grade water to each #{io_hash[:falcon_tube_size]} mL tube and recap."
@@ -88,7 +116,7 @@ class Protocol
       check "Aliquot 1.5 mL from each #{io_hash[:falcon_tube_size]} mL tube into the corresponding labeled 1.5 mL tube that has the same label number."
       note "It is OK if you have more than 1.5 mL of the resuspension. 1.5 mL is enough. If you have less than 1.5 mL, pipette as much as possible from tubes."
     }
-    
+
     show {
       title "Water washing in 1.5 mL tube"
       check "Spin down all 1.5 mL tubes for 20 seconds or till cells are pelleted."
@@ -138,7 +166,7 @@ class Protocol
       check "Vortex the tubes till cell pellet is resuspended."
     }
 
-    # calculate the total volumes with a margin, instead of 5 times pellet_volume, use 4.6 times pellet_volume
+    # calculate the total volumes with a margin, instead of 5 times pellet_volume, use 4.6 times pellet_volume to leave margin
     volumes = []
     (1..num).each do |x|
       volume = 4.6 * pellet_volume[:"#{x}".to_sym]
@@ -150,7 +178,11 @@ class Protocol
     yeast_compcell_aliquots = []
     cultures.each_with_index do |culture,idx|
       yeast_compcell_aliquots_temp = []
-      (1..num_of_aliquots[idx]).each do |i|
+      quantity = [num_of_aliquots[idx], yeast_strain_id_quantity_hash[culture.sample.id]].min # the lessor of num_of_aliquots the tube can make or the required number from Yeast Transformation
+      show {
+        note "#{quantity} for #{culture} with sample id #{culture.sample.id}"
+      }
+      (1..quantity).each do |i|
         yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Cell"
         yeast_compcell_aliquots.push yeast_compcell_aliquot
         yeast_compcell_aliquots_temp.push yeast_compcell_aliquot
