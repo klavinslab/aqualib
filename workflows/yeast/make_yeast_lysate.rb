@@ -107,11 +107,10 @@ class Protocol
 
     # add colonies to stripwells
     pcrs.each do |t, pcr|
-      load_samples_variable_vol( [ "Colony from plate, 1/3 size" ], [
+      load_samples_variable_vol( [ "Colony cx from plate, 1/3 size" ], [
           pcr[:yeast_colonies],
         ], pcr[:stripwells] ) {
-        note "If colonies on the plate are already marked with circles as c1, c2, c3 ..., scrape colonies following the order on the plates for those marked colonies. Otherwise mark required number of colonies with c1, c2, c3, ..."
-        note "If the plate is a streaked plate which has multipled sections as c1, c2, c3 ..., scrape one medium-large round shaped colony from each section until reach the required number in the table and circle them with the stripwell id."
+        note "For each plate id.cx (x = 1,2,3,...), if a colony cx is not marked on the plate, mark it with a circle and write done cx (x = 1,2,3,...) nearby. If a colony cx is alread marked on the plate, scrape that colony."
         note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, swirl tip inside the well until mixed."
       }
     end
