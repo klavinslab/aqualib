@@ -44,9 +44,10 @@ class Protocol
   	yeast_samples = []
   	yeast_colonies = []
   	yeast_items.each_with_index do |y,idx|
+      start_colony = (y.datum[:QC_result] || []).length
   		(1..io_hash[:num_colonies][idx]).each do |x|
   			yeast_samples.push y.sample
-  			yeast_colonies.push y
+  			yeast_colonies.push "#{y.id}.c#{start_colony+x}"
   		end
   	end
 
@@ -106,7 +107,7 @@ class Protocol
 
     # add colonies to stripwells
     pcrs.each do |t, pcr|
-      load_samples( [ "Colony from plate, 1/3 size" ], [
+      load_samples_variable_vol( [ "Colony from plate, 1/3 size" ], [
           pcr[:yeast_colonies],
         ], pcr[:stripwells] ) {
         note "If colonies on the plate are already marked with circles as c1, c2, c3 ..., scrape colonies following the order on the plates for those marked colonies. Otherwise mark required number of colonies with c1, c2, c3, ..."
@@ -119,7 +120,7 @@ class Protocol
     thermocycler = show {
       title "Start the lysate reactions"
       check "Put the cap on each stripwell #{stripwells.collect { |sw| sw.id } }. Press each one very hard to make sure it is sealed."
-      separator
+      check "Vortex all the stripwells on a green tube holder on a vortexer."
       check "Place the stripwells into an available thermal cycler and close the lid."
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       separator
