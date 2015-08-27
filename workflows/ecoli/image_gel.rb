@@ -95,7 +95,7 @@ class Protocol
   			check "Put the camera hood on, turn on the transilluminator and take a picture using the camera control interface on computer."
   			note "Rename the picture you just took as gel_#{gel.id}. Upload it!"
   			upload var: "my_gel_pic"
-        check "Discard the gel after a clear picture has been taken."
+        check "Discard the gel after a clear picture has been taken and uploaded."
   		}
       if io_hash[:gel_band_verify].downcase == "yes"
         gel_band_verify gel, except: [ [0,0], [1,0] ], plate_ids: io_hash[:yeast_plate_ids]
