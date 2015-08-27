@@ -38,7 +38,7 @@ class Protocol
     yeast_items = []
     io_hash[:inducer_additions] = []
     io_hash[:item_ids].each_with_index do |yid,idx|
-      yeast_item = find(:sample, id: yid)[0]
+      yeast_item = find(:item, id: yid)[0]
       (io_hash[:inducers][idx] || []).each do |inducer|
         yeast_items.push yeast_item
         if io_hash[:when_to_add_inducer][idx].include? "start"
