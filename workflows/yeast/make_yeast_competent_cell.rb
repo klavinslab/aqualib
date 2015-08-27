@@ -189,7 +189,7 @@ class Protocol
       end
       show {
         title "Aliquoting competent cells from 1.5 mL tube #{idx+1}"
-        check "Label #{num_of_aliquots[idx]} empty 1.5 mL tubes with the following ids #{yeast_compcell_aliquots_temp.collect {|y| y.id}}."
+        check "Label #{quantity} empty 1.5 mL tubes with the following ids #{yeast_compcell_aliquots_temp.collect {|y| y.id}}."
         check "Add 50 µL from tube #{idx+1} to each newly labled tube."
       }
     end
