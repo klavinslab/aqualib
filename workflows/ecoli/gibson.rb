@@ -236,6 +236,7 @@ class Protocol
     show {
       title "Place on a heat block"
       note "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
+      note "Set a 1 hr timer on Google to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
     move gibson_results, "50 C heat block"
