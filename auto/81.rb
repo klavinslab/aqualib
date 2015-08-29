@@ -52,9 +52,9 @@ class Protocol
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 
-    puts "#{o.data.tc.get}"
+    puts "#{o.data.tc.get[0]}"
     
-    o.data.tc.get[:instantiation].length.times do |i|
+    o.data.tc.get[0][:instantiation].length.times do |i|
       puts "setting d[i] = #{d[i]} to data[:tc] = #{data[:tc]}"
       d[i] = data[:tc]
     end
