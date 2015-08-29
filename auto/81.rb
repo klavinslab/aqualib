@@ -51,6 +51,8 @@ class Protocol
       note "Set the annealing temperature to #{o.parameter.annealing_temperature[0]}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
+
+    puts "#{o.data.tc.get[:instantiation]}"
     
     o.data.tc.get[:instantiation].length.times do |i|
       puts "setting d[i] = #{d[i]} to data[:tc] = #{data[:tc]}"
