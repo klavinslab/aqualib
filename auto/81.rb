@@ -55,8 +55,8 @@ class Protocol
     puts "#{o.data.tc.get[0]}"
     
     o.data.tc.get[0][:instantiation].length.times do |i|
-      puts "setting d[i] = #{d[i]} to data[:tc] = #{data[:tc]}"
-      d[i] = data[:tc]
+      puts "#{o.data.tc.get[0][:instantiation][i]} to data[:tc] = #{data[:tc]}"
+      o.data.tc.get[0][:instantiation][i] = data[:tc]
     end
     
     o.input.all.release
