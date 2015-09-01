@@ -12,10 +12,8 @@ class Protocol
 
     # load the gel with ladder
     o.input.gel.collections.each do |gel|
-      puts "putting ladder in gel #{gel.inspect}"
-      gel.set 0, 0, o.input.ladder.instances.first[:item]
-      gel.set 1, 0, o.input.ladder.instances.first[:item]      
-      puts "matrix is now #{gel.matrix}"
+      gel.set 0, 0, o.input.ladder.instances.first[:sample]
+      gel.set 1, 0, o.input.ladder.instances.first[:sample]      
     end
 
     # load the fragments
