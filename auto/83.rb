@@ -8,9 +8,20 @@ class Protocol
 
     o = op input
 
-    show do 
-      title "Generic Protocol"
+    o.input.all.take
+
+    # load the gel with ladder
+    o.input.gel.collections.each |gel| do 
+      gel.set 0, 0, o.input.ladder.instances.first[:item]
     end
+
+    # load the fragments
+
+    show do 
+      title "Run the gel"
+    end
+
+    o.output.all.release
 
     return o.result
 
