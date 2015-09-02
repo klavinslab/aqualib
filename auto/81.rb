@@ -14,7 +14,7 @@ class Protocol
     
     # collection wise
 
-    puts "  number of outputs: #{o.output.fragment.specs.length}"
+    puts "  output fragment specs: #{o.output.fragment.specs}"
 
     stripwells.slots do |index,slot|
       if index < o.output.fragment.specs.length 
