@@ -13,6 +13,9 @@ class Protocol
     stripwells = o.output.fragment.new_collections
     
     # collection wise
+
+    puts "  number of outputs: #{o.output.fragment.specs.length}"
+
     stripwells.slots do |index,slot|
       if index < o.output.fragment.specs.length 
         o.output.fragment.associate index, slot
