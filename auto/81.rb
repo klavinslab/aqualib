@@ -14,7 +14,7 @@ class Protocol
     
     # collection wise
     stripwells.slots do |index,slot|
-      if index < o.output.fragment.samples.length 
+      if index < o.output.fragment.specs.length 
         o.output.fragment.associate index, slot
         slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
         slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
