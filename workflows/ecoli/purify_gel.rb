@@ -166,7 +166,7 @@ class Protocol
           failed_fragment_ids = fragment_ids - produced_fragment_ids
           failed_fragment_ids.each { |id| notifs.push "This task failed to produce a Fragment Stock for #{item_or_sample_html_link id, :sample}" }
           produced_fragment_stocks = fragment_stocks.select { |fs| produced_fragment_ids.include? fs.sample.id }
-          produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}" }
+          produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/uL) for #{sample_html_link fragment_stock.sample}" }
           notifs.each { |notif| task.notify notif, job_id: jid }
         end
       end

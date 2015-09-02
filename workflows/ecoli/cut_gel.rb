@@ -147,8 +147,10 @@ class Protocol
           begin
             upload_id = gel_uploads[id][:my_gel_pic][0][:id]
             upload_url = Upload.find(upload_id).url
-            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link fid, :sample }.join(", ")
-            image_url = "<a href=#{upload_url}>image</a>".html_safe
+            associated_gel = collection_from id
+            gel_matrix = associated_gel.matrix
+            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')})" }.join(", ")
+            image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
             notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
           rescue
           end
