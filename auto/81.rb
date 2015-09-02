@@ -14,9 +14,9 @@ class Protocol
 
     ingredients = Table.new 
       fwd: "Forward Primer ID",
-      rev: "Reverse Primer ID"
-      template: "Template ID"
-      template_vol: "Template Volume"
+      rev: "Reverse Primer ID",
+      template: "Template ID",
+      template_vol: "Template Volume",
       mix_vol: "Master Mix Volume",
       water_vol: "Water Volume"
 
