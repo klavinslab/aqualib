@@ -13,6 +13,7 @@ class Protocol
     stripwells = o.output.fragment.new_collections
 
     ingredients = Table.new(
+      well: "Well",
       fwd: "Forward Primer ID",
       rev: "Reverse Primer ID",
       template: "Template ID",
@@ -23,6 +24,7 @@ class Protocol
     o.threads.spread(stripwells) do |t, slot| 
       t.output.fragment.associate slot
       ingredients
+        .well(slot.col)
         .fwd(t.input.fwd.item_id)
         .rev(t.input.rev.item_id)
         .template(t.input.template.item_id)
