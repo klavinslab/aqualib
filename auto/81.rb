@@ -27,7 +27,7 @@ class Protocol
         .rev(t.input.rev.item_id)
         .template(t.input.template.item_id)
         .template_vol(1+0.1*t.index)
-        .mix_vol(3.0),
+        .mix_vol(3.0)
         .water_vol(10-0.1*t.index)
         .append
     end
