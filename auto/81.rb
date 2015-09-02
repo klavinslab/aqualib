@@ -12,13 +12,13 @@ class Protocol
     o.input.all.take
     stripwells = o.output.fragment.new_collections
 
-    ingredients = Table.new 
+    ingredients = Table.new(
       fwd: "Forward Primer ID",
       rev: "Reverse Primer ID",
       template: "Template ID",
       template_vol: "Template Volume",
       mix_vol: "Master Mix Volume",
-      water_vol: "Water Volume"
+      water_vol: "Water Volume")
 
     o.threads.spread(stripwells) do |t, slot| 
       t.output.fragment.associate slot
