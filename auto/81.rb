@@ -23,11 +23,11 @@ class Protocol
     #   end
     # end
 
-    show do
-      o.threads.each do |thread|
-        note thread
-      end
-    end
+    # show do
+    #   o.threads.each do |thread|
+    #     note thread
+    #   end
+    # end
 
     # bothwise
     # o.threads.spread(stripwells).each do |thread, slot| 
