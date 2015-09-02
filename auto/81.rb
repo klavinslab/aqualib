@@ -22,7 +22,7 @@ class Protocol
 
     o.threads.spread(stripwells) do |t, slot| 
       t.output.fragment.associate slot
-      ingredients.
+      ingredients
         .fwd(t.input.fwd.item_id)
         .rev(t.input.rev.item_id)
         .template(t.input.template.item_id)
