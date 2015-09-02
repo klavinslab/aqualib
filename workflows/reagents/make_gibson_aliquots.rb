@@ -32,6 +32,33 @@ class Protocol
         end
       end
 
+
+
+      inventory_hash = {
+        #{}"5X ISO Buffer" => "Enzyme Buffer Stock",
+        "T5 exonuclease" => "Enzyme Stock",
+        "Phusion Polymerase" => "Enzyme Stock",
+        "Taq DNA Ligase" => "Enzyme Stock"
+      }
+      messages = []
+      inventory_hash.each do |sample_name, container_name|
+        stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+        if stock == nil
+          messages.push "#{sample_name} does not have a #{container_name}"
+        end
+
+      end
+
+      if messages.any?
+        show {
+          title "Some stock is empty!"
+          messages.each do |message|
+            note message
+          end
+        }
+        return
+      end
+
 #takes inputs from arguments
 #      iso_buffer = input[:iso_buffer]
       t5 = input[:t5]
@@ -59,157 +86,39 @@ class Protocol
 #      iso_stock = find(:sample, id: iso_buffer)[0].in("Enzyme Buffer Stock")[0]
 #      iso_stock = find(:item, sample: { object_type: { name: "Enzyme Buffer" }, sample: { name: "5X ISO Buffer" } } )
 
-      inventory_hash = {
-        "5X ISO Buffer" => "Enzyme Buffer Stock",
-        "T5 exonuclease" => "Enzyme Stock"
-      }
-      messages = []
-      inventory_hash.each do |sample_name, container_name|
-        stock = find(:sample, name: sample_name)[0].in(container_name)[0]
-        messages.push "#{sample_name} does not have a #{container_name}"
-      end
 
-      if messages.any?
-        show {
-          title "Some stock is empty!"
-          messages.each do |message|
-            note message
-          end
-        }
-        return
-      end
-
-
-       iso_buffer = find(:sample, name: "5X ISO Buffer" )[0]
-       iso_stock = find(:sample, id: iso_buffer.id)[0].in("Enzyme Buffer Stock")[0]
-
-        if iso_stock == nil
-          show {
-            title "Caution !!"
-            note "This Buffer does not have a stock in the lab"
-          }
-          return
-        end
-
-        t5 = find(:sample, name: "T5 exonuclease" )[0]
-        t5_stock = find(:sample, id: t5)[0].in("Enzyme Stock")[0]
-
-        if t5_stock == nil
-          show{
-            title "Caution !!"
-            note "This Enzyme does not have a stock in the lab"
-            }
-        end
-
-        phusion_pol = find(:sample, name: "Phusion Polymerase" )[0]
-        phu_stock = find(:sample, id: phusion_pol)[0].in("Enzyme Stock")[0]
-
-        if phu_stock == nil
-          show{
-            title "Caution !!"
-            note "This Enzyme does not have a stock in the lab"
-          }
-        end
-
-        ligase = find(:sample, name: "Taq DNA Ligase" )[0]
-        ligase_stock = find(:sample, id: ligase)[0].in("Enzyme Stock")[0]
-
-        if ligase_stock == nil
-          show{
-            title "Caution !!"
-            note "This Enzyme does not have a stock in the lab"
-          }
-        end
 
 #if stock is found, then interatively shows where to take stocks from
+         messages = []
+         inventory_hash.each do |sample_name, container_name|
+         stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+         isEmpty = show{
+           take [stock], interactive: true, method: "boxes"
+           title "Technician Feedback Needed"
+           get "text", var: "y", label: "Is the sample empty", default: "no"
+           }
+           if isEmpty[:y].downcase == "yes"
+             stock.mark_as_deleted
+             stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+             if stock == nil
+               messages.push "#{sample_name} does not have a #{container_name}"
+             else
+               take [stock], interactive: true, method: "boxes"
+             end
 
-        if iso_stock != nil
-          take [iso_stock], interactive: true, method: "boxes"
-          isEmpty = show{
-            title "Technician Feedback Needed"
-            get "text", var: "y", label: "Is the sample empty", default: "no"
-            }
-          if isEmpty[:y].downcase == "yes"
-            iso_stock.mark_as_deleted
-            iso_stock = find(:sample, id: iso_buffer.id)[0].in("Enzyme Buffer Stock")[0]
-            if iso_stock == nil
-              show{
-                title "Caution !!"
-                note "This Buffer does not have a stock in the lab"
-              }
-            end
-            if iso_stock != nil
-              take [iso_stock], interactive: true, method: "boxes"
-            end
-          end
-        end
+           end
 
+         end
 
-        if t5_stock != nil
-          take [t5_stock], interactive: true, method: "boxes"
-          isEmpty = show{
-            title "Technician Feedback Needed"
-            get "text", var: "y", label: "Is the sample empty", default: "no"
-            }
-          if isEmpty[:y].downcase == "yes"
-            t5_stock.mark_as_deleted
-            t5_stock = find(:sample, id: t5)[0].in("Enzyme Stock")[0]
-            if t5_stock == nil
-              show{
-                title "Caution !!"
-                note "This Enzyme does not have a stock in the lab"
-              }
-            end
-            if t5_stock != nil
-              take [t5_stock], interactive: true, method: "boxes"
-            end
-          end
-
-        end
-
-        if phu_stock != nil
-          take [phu_stock], interactive: true, method: "boxes"
-          isEmpty = show{
-            title "Technician Feedback Needed"
-            get "text", var: "y", label: "Is the sample empty", default: "no"
-            }
-          if isEmpty[:y].downcase == "yes"
-            phu_stock.mark_as_deleted
-            phu_stock = find(:sample, id: phusion_pol)[0].in("Enzyme Stock")[0]
-            if phu_stock == nil
-              show{
-                title "Caution !!"
-                note "This Enzyme does not have a stock in the lab"
-              }
-            end
-            if phu_stock != nil
-              take [phu_stock], interactive: true, method: "boxes"
-            end
-          end
-
-        end
-
-        if ligase_stock != nil
-          take [ligase_stock], interactive: true, method: "boxes"
-          isEmpty = show{
-            title "Technician Feedback Needed"
-            get "text", var: "y", label: "Is the sample empty", default: "no"
-            }
-          if isEmpty[:y].downcase == "yes"
-            ligase_stock.mark_as_deleted
-            ligase_stock = find(:sample, id: ligase)[0].in("Enzyme Stock")[0]
-            if ligase_stock == nil
-              show{
-                title "Caution"
-                note "This Enzyme does not have a stock in the lab"
-              }
-            end
-            if ligase_stock != nil
-              take [ligase_stock], interactive: true, method: "boxes"
-            end
-          end
-
-        end
+         if messages.any?
+           show {
+             title "Some stock is empty!"
+             messages.each do |message|
+               note message
+             end
+           }
+           return
+         end
 
 
 #protocol instructions
@@ -244,21 +153,13 @@ class Protocol
         }
 
 #release stocks interactively once the protocol is finished
-        if iso_stock != nil
-          release [iso_stock], interactive: true, method: "boxes"
+        inventory_hash.each do |sample_name, container_name|
+        stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+        release [stock], interactive: true, method: "boxes"
+
         end
 
-        if t5_stock != nil
-          release [t5_stock], interactive: true, method: "boxes"
-        end
 
-        if phu_stock != nil
-          release [phu_stock], interactive: true, method: "boxes"
-        end
-
-        if ligase_stock != nil
-          release [ligase_stock], interactive: true, method: "boxes"
-        end
 
 #the produce part is still not very clear to me ... That needs to be filled in still
 
