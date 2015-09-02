@@ -25,7 +25,6 @@ class Protocol
 
     show do
       o.threads.each do |thread|
-        puts "respond_to? = #{thread.respond_to? :fragment}"
         note "Output: #{thread.output.fragment}"
       end
     end
