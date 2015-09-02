@@ -6,13 +6,13 @@ class Protocol
 
   def main
 
+    puts "Starting run gel"
+
     o = op input
 
     o.input.all.take
 
     # load the gel with ladder
-
-    puts "ladders = #{o.input.ladder.samples}"
 
     o.input.gel.collections.each do |gel|
       gel.set 0, 0, o.input.ladder.samples.first

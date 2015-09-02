@@ -7,6 +7,8 @@ class Protocol
 
   def main
 
+    puts "Starting pour gel"
+
     o = op input
 
     o.input.all.take
