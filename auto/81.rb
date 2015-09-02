@@ -12,26 +12,26 @@ class Protocol
     o.input.all.take
     stripwells = o.output.fragment.new_collections
     
-    stripwells.slots do |index,slot|
-      if index < o.output.fragment.length 
-        o.output.fragment.associate index, slot
-        slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
-        slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
-        slot.ingredients[:template]   = { id: o.input.template.item_ids[index], volume: 3 }
-        slot.ingredients[:master_mix] = { volume: 4 }
-        slot.ingredients[:water]      = { volume: 5 }
+    # stripwells.slots do |index,slot|
+    #   if index < o.output.fragment.length 
+    #     o.output.fragment.associate index, slot
+    #     slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
+    #     slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
+    #     slot.ingredients[:template]   = { id: o.input.template.item_ids[index], volume: 3 }
+    #     slot.ingredients[:master_mix] = { volume: 4 }
+    #     slot.ingredients[:water]      = { volume: 5 }
+    #   end
+    # end
+
+    show {
+      o.threads.each do |thread|
+        note thread
       end
     end
 
-    # threadwise
-    # (o.threads.reject { |t| t[:error] }).each do |thread|
-    #   stripwells.slot[thread.index] = thread[:fragment][:sample]
-    #   stripwells.slot[thread.index].ingredients[:rev] = { id: thread[:rev][:item], volume: 1 }
-    # end
-
     # bothwise
-    # o.threads.zip(stripwells, include_errors: false).each do |thread, slot| 
-    #   slot.ingredients[:rev] = { id: thread[:rev][:item], volume: 1} 
+    # o.threads.spread(stripwells).each do |thread, slot| 
+    #  thread.output.fragment.associate slot
     # end
     
     o.output.fragment.produce
@@ -39,11 +39,11 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", col: "Well", fwd: "Forward primer", rev: "Reverse Primer", template: "Template")
+        note "Table #{i} here"
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table stripwells.table(i, id: "Stripwell", col: "Well", master_mix: "Master Mix", water: "Water")
+        table "Table #{i} here"
       }
     end
     
