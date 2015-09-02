@@ -41,7 +41,7 @@ class Protocol
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table ingredients.from(i).to(i+11).choose([:mix_vol,:water_vol])
+        table ingredients.from(i).to(i+11).choose([:mix_vol,:water_vol]).render
       }
     end
     
