@@ -11,6 +11,9 @@ class Protocol
     o.input.all.take
 
     # load the gel with ladder
+
+    puts "ladders = #{o.input.ladder.samples}"
+
     o.input.gel.collections.each do |gel|
       gel.set 0, 0, o.input.ladder.samples.first
       gel.set 1, 0, o.input.ladder.samples.first
