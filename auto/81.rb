@@ -37,11 +37,11 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        note ingredients.from(i).to(i+11).choose([:fwd,:rev,:template,:template_vol]).render
+        table ingredients.from(i).to(i+11).choose([:fwd,:rev,:template,:template_vol]).render
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        note ingredients.from(i).to(i+11).choose([:mix_vol,:water_vol])
+        table ingredients.from(i).to(i+11).choose([:mix_vol,:water_vol])
       }
     end
     
