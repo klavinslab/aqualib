@@ -29,10 +29,9 @@ class Protocol
       end
     end
 
-    # bothwise
-    # o.threads.spread(stripwells).each do |thread, slot| 
-    #  thread.output.fragment.associate slot
-    # end
+    o.threads.spread(stripwells) do |thread, slot| 
+      thread.output.fragment.associate slot
+    end
     
     o.output.fragment.produce
     
