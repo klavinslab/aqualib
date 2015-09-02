@@ -14,9 +14,9 @@ class Protocol
     stripwells.slots do |index,slot|
       if index < o.output.fragment.samples.length 
         o.output.fragment.associate index, slot
-        slot.ingredients[:fwd]        = { id: o.input.fwd.item_specs[index], volume: 1 }
-        slot.ingredients[:rev]        = { id: o.input.rev.item_specs[index], volume: 2 }
-        slot.ingredients[:template]   = { id: o.input.template.item_specs[index], volume: 3 }
+        slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
+        slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
+        slot.ingredients[:template]   = { id: o.input.template.item_ids[index], volume: 3 }
         slot.ingredients[:master_mix] = { volume: 4 }
         slot.ingredients[:water]      = { volume: 5 }
       end
