@@ -25,7 +25,7 @@ class Protocol
 
     show do
       o.threads.each do |thread|
-        note "Output: #{thread.output.fragment}"
+        note "Output: #{thread.output.fragment.sample_id}"
       end
     end
 
