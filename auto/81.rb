@@ -12,12 +12,8 @@ class Protocol
     o.input.all.take
     stripwells = o.output.fragment.new_collections
     
-    # collection wise
-
-    puts "  output fragment specs: #{o.output.fragment.specs}"
-
     stripwells.slots do |index,slot|
-      if index < o.output.fragment.specs.length 
+      if index < o.output.fragment.length 
         o.output.fragment.associate index, slot
         slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
         slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
