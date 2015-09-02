@@ -23,7 +23,7 @@ class Protocol
     #   end
     # end
 
-    show {
+    show do
       o.threads.each do |thread|
         note thread
       end
