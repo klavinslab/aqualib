@@ -11,26 +11,25 @@ class Protocol
     o = op input
     o.input.all.take
     stripwells = o.output.fragment.new_collections
-    
-    # stripwells.slots do |index,slot|
-    #   if index < o.output.fragment.length 
-    #     o.output.fragment.associate index, slot
-    #     slot.ingredients[:fwd]        = { id: o.input.fwd.item_ids[index], volume: 1 }
-    #     slot.ingredients[:rev]        = { id: o.input.rev.item_ids[index], volume: 2 }
-    #     slot.ingredients[:template]   = { id: o.input.template.item_ids[index], volume: 3 }
-    #     slot.ingredients[:master_mix] = { volume: 4 }
-    #     slot.ingredients[:water]      = { volume: 5 }
-    #   end
-    # end
 
-    show do
-      o.threads.each do |thread|
-        note "Output #{thread.index}: #{thread.output.fragment.sample.id}"
-      end
-    end
+    ingredients = Table.new 
+      fwd: "Forward Primer ID",
+      rev: "Reverse Primer ID"
+      template: "Template ID"
+      template_vol: "Template Volume"
+      mix_vol: "Master Mix Volume",
+      water_vol: "Water Volume"
 
-    o.threads.spread(stripwells) do |thread, slot| 
-      thread.output.fragment.associate slot
+    o.threads.spread(stripwells) do |t, slot| 
+      t.output.fragment.associate slot
+      ingredients.
+        .fwd(t.input.fwd.item_id)
+        .rev(t.input.rev.item_id)
+        .template(t.input.template.item_id)
+        .template_vol(1+0.1*t.index)
+        .mix_vol(3.0),
+        .water_vol(10-0.1*t.index)
+        .append
     end
     
     o.output.fragment.produce
@@ -38,11 +37,11 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        note "Table #{i} here"
+        note ingredients.from(i).to(i+11).choose(:fwd,:rev,:template,:template_vol).render
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table "Table #{i} here"
+        note ingredients.from(i).to(i+11).choose(:mix_vol,:water_vol)
       }
     end
     
