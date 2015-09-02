@@ -25,8 +25,7 @@ class Protocol
 
     show do
       o.threads.each do |thread|
-        puts "#{thread.inputs}"
-        note "#{thread.inputs}"
+        note "Output: #{thread.output.fragment}"
       end
     end
 
