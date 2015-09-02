@@ -24,7 +24,7 @@ class Protocol
     o.threads.spread(stripwells) do |t, slot| 
       t.output.fragment.associate slot
       ingredients
-        .well(slot.col)
+        .well(slot.col+1)
         .fwd(t.input.fwd.item_id)
         .rev(t.input.rev.item_id)
         .template(t.input.template.item_id)
@@ -39,7 +39,7 @@ class Protocol
     stripwells.length.times do |i|
       show {
         title "Load primers and template for stripwell #{stripwells[i].id}"
-        table ingredients.from(i).to(i+11).choose([:fwd,:rev,:template,:template_vol]).render
+        table ingredients.from(i).to(i+11).choose([:row,:fwd,:rev,:template,:template_vol]).render
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
