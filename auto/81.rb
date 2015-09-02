@@ -25,7 +25,8 @@ class Protocol
 
     show do
       o.threads.each do |thread|
-        note "#{thread.inputs.collect { |i| i[:name] }}"
+        puts "#{thread.inputs}"
+        note "#{thread.inputs}"
       end
     end
 
