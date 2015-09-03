@@ -6,8 +6,6 @@ class Protocol
 
   def main
 
-    puts "Starting run gel"
-
     o = op input
 
     o.input.all.take
@@ -19,8 +17,8 @@ class Protocol
     end
 
     # load the fragments
-    o.threads.spread(gels.nonempty).each do |thread, slot| 
-
+    o.threads.spread(gels,non_empty: true) do |thread, slot| 
+      thread.output.fragment.associate slot
     end
 
     show do 

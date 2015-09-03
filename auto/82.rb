@@ -7,8 +7,6 @@ class Protocol
 
   def main
 
-    puts "Starting pour gel"
-
     o = op input
 
     o.input.all.take
@@ -19,6 +17,7 @@ class Protocol
     }
 
     o.output.all.produce
+    
     o.input.all.release
     o.output.all.release
 

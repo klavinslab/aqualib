@@ -6,8 +6,6 @@ class Protocol
 
   def main
 
-    puts "Starting PCR"
-
     o = op input
     o.input.all.take
     stripwells = o.output.fragment.new_collections
@@ -59,6 +57,7 @@ class Protocol
     
     o.input.all.release
     o.output.all.release
+
     return o.result     
 
   end
