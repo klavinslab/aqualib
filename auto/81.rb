@@ -12,7 +12,7 @@ class Protocol
     o.input.all.take
     stripwells = o.output.fragment.new_collections
 
-    ingredients = Table.new
+    ingredients = Table.new(
       well: "Well",
       fwd: "Forward Primer ID",
       rev: "Reverse Primer ID",
