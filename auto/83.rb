@@ -19,7 +19,7 @@ class Protocol
     end
 
     # load the fragments
-    o.threads.spread(gels,non_empty: true) do |thread, slot| 
+    o.threads.spread(gels,skip_occupied: true) do |thread, slot| 
       thread.output.fragment.associate slot
     end
 
