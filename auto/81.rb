@@ -12,7 +12,7 @@ class Protocol
     o.input.all.take
     stripwells = o.output.fragment.new_collections
 
-    ingredients = Table.new(
+    ingredients = Table.new
       well: "Well",
       fwd: "Forward Primer ID",
       rev: "Reverse Primer ID",
@@ -43,7 +43,7 @@ class Protocol
       }
       show {
         title "Load master mix and water for stripwell #{stripwells[i].id}"
-        table ingredients.from(i).to(i+11).choose([:mix_vol,:water_vol]).render
+        table ingredients.from(i).to(i+11).choose([:well,:mix_vol,:water_vol]).render
       }
     end
     
@@ -53,8 +53,8 @@ class Protocol
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 
-    o.data.tc.get[0][:instantiation].length.times do |i|
-      o.data.tc.get[0][:instantiation][i] = data[:tc]
+    o.threads.each do |t|
+      t.data.tc = data[:tc]
     end
     
     o.input.all.release
