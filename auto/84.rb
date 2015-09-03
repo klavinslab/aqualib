@@ -15,7 +15,7 @@ class Protocol
     t = Table.new(
       gel: "Gel id",
       row: "Row",
-      col: "Lane"
+      col: "Lane",
       slice: "Gel Slice Id"
     )
 
@@ -29,7 +29,7 @@ class Protocol
 
     show do
       title "Cut the gel slices and put them in new 1.5 uL tubes"
-      table t.render
+      table t.choose([:gel,:row,:col,:slice]).render
     end
 
     o.input.all.release
