@@ -22,7 +22,7 @@ class Protocol
     o.threads.each do |thread|
       t.gel(thread.input.fragment.collection_id)
        .row(thread.input.fragment.row)
-       .col(thread.input.fragment.col)
+       .col(thread.input.fragment.column
        .slice(thread.output.fragment.item_id)
        .append
     end
