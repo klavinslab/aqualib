@@ -27,6 +27,7 @@ class Protocol
       title "Run the gel"
     end
 
+    o.input.all.release
     o.output.all.release
 
     return o.result
