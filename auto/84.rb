@@ -10,11 +10,28 @@ class Protocol
 
     o.input.all.take
 
-    show do 
-      title "Cut gel the"
+    o.output.all.produce
+
+    t = Table.new(
+      gel: "Gel id",
+      row: "Row",
+      col: "Lane"
+      slice: "Gel Slice Id"
+    )
+
+    o.threads.each do |thread|
+      t.gel(thread.input.gel.collection_id)
+       .row(thread.input.gel.row)
+       .col(thread.input.gel.col)
+       .slice(thread.output.fragment.item_id)
+       .append
     end
 
-    o.output.all.produce
+    show do
+      title "Cut the gel slices and put them in new 1.5 uL tubes"
+      table t.render
+    end
+
     o.input.all.release
     o.output.all.release
 
