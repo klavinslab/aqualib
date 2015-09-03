@@ -10,8 +10,10 @@ class Protocol
 
     o.input.all.take
 
+    gels = o.input.gel.collections
+
     # load the gel with ladder
-    o.input.gel.collections.each do |gel|
+    gels.each do |gel|
       gel.set 0, 0, o.input.ladder.sample_ids.first
       gel.set 1, 0, o.input.ladder.sample_ids.first
     end
