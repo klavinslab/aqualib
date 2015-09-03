@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [35004,35005],
+      plate_ids: [46419,46420],
       debug_mode: "Yes",
       image_option: "No",
       task_ids: []
@@ -79,19 +79,21 @@ class Protocol
       if p.datum[:matrix]
         new_matrix = [[]]
         num_colony = 0
+        section_num_colony = []
         p.datum[:matrix][0].each_with_index do |x, index|
           new_matrix[0][index] = x
+          section_num_colony[index] = colony_number[:"c#{p.id}.#{index+1}".to_sym]
           if colony_number[:"c#{p.id}.#{index+1}".to_sym] == 0
             new_matrix[0][index] = -1
-            show {
-              note colony_number[:"c#{p.id}.#{index+1}".to_sym]
-              note new_matrix
-            }
+            # show {
+            #   note colony_number[:"c#{p.id}.#{index+1}".to_sym]
+            #   note new_matrix
+            # }
           elsif colony_number[:"c#{p.id}.#{index+1}".to_sym]
             num_colony += colony_number[:"c#{p.id}.#{index+1}".to_sym]
           end
         end
-        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony })
+        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony, section_num_colony: section_num_colony })
       else
         p.datum = (p.datum).merge({ num_colony: colony_number[:"c#{p.id}".to_sym] })
       end
