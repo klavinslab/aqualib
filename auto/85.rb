@@ -12,14 +12,14 @@ class Protocol
     o.output.all.produce
 
     ingredients = Table.new(
-      from: "Gel slice id",
-      to: "Fragment stock id"
+      slice: "Gel slice id",
+      stock: "Fragment stock id"
     )
 
     o.threads.each do |thread|
       ingredients
-        .from(thread.input.fragment.item_id)
-        .to(thread.output.fragment.item_id)
+        .slice(thread.input.fragment.item_id)
+        .stock(thread.output.fragment.item_id)
         .append
     end
 
