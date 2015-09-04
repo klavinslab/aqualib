@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [35004,35005],
+      plate_ids: [46419,46420],
       debug_mode: "Yes",
       image_option: "No",
       task_ids: []
@@ -79,19 +79,21 @@ class Protocol
       if p.datum[:matrix]
         new_matrix = [[]]
         num_colony = 0
+        section_num_colony = []
         p.datum[:matrix][0].each_with_index do |x, index|
           new_matrix[0][index] = x
+          section_num_colony[index] = colony_number[:"c#{p.id}.#{index+1}".to_sym]
           if colony_number[:"c#{p.id}.#{index+1}".to_sym] == 0
             new_matrix[0][index] = -1
-            show {
-              note colony_number[:"c#{p.id}.#{index+1}".to_sym]
-              note new_matrix
-            }
+            # show {
+            #   note colony_number[:"c#{p.id}.#{index+1}".to_sym]
+            #   note new_matrix
+            # }
           elsif colony_number[:"c#{p.id}.#{index+1}".to_sym]
             num_colony += colony_number[:"c#{p.id}.#{index+1}".to_sym]
           end
         end
-        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony })
+        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony, section_num_colony: section_num_colony })
       else
         p.datum = (p.datum).merge({ num_colony: colony_number[:"c#{p.id}".to_sym] })
       end
@@ -151,8 +153,10 @@ class Protocol
 
             if colony_number[:"c#{plate_id}".to_sym] > 0
               set_task_status(task,"imaged and stored in fridge")
-              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
+              # notify the user about plate stored in fridge
               plate = find(:item, id: plate_id)[0]
+              task.notify "[Data] #{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
+              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
               primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
               if primer_ids_str
                 primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
@@ -172,15 +176,28 @@ class Protocol
           end
 
         elsif task.task_prototype.name == "Yeast Transformation"
-          stored_plates.each do |p|
-            num_colony = p.datum[:num_colony]
-            num_colony = num_colony > 2 ? 2 : num_colony
-            tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
-            t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
-            t.save
-            t.notify "Automatically created from Yeast Transformation.", job_id: jid
+          yeast_ids = task.simple_spec[:yeast_transformed_strain_ids]
+          yeast_names = yeast_ids.collect { |id| find(:sample, id: id)[0].name }
+          task_stored_plates = []
+          stored_plates.each do |plate|
+            if yeast_names.include? plate.sample.name
+              task_stored_plates.push plate
+            end
           end
-          set_task_status(task,"imaged and stored in fridge")
+          if task_stored_plates.any?
+            task_stored_plates.each do |p|
+              task.notify "[Data] #{item_link p} with num_colony: #{p.datum[:num_colony]} is produced."
+              num_colony = p.datum[:num_colony]
+              num_colony = num_colony > 2 ? 2 : num_colony
+              tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
+              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id)
+              t.save
+              t.notify "Automatically created from Yeast Transformation.", job_id: jid
+            end
+            set_task_status(task,"imaged and stored in fridge")
+          else
+            set_task_status(task,"no colonies")
+          end
 
         else
           set_task_status(task,"imaged and stored in fridge")

@@ -1,8 +1,3 @@
-# same incuder after dilution
-# how long you want after dilution to read
-# cell count before dilution
-# daily tasks
-
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
@@ -14,15 +9,23 @@ place tasks_inputs
   argument
     debug_mode: debug_mode
     group: group
-    task_name: "Cytometer Reading"
+    task_name: "Yeast Time Series Cytometry"
   end
   marked: true
   start: now()
   window: hours(1)
 end
 
-place overnight
-  protocol: "aqualib:workflows/yeast/overnight_suspension_deepwell_plate.rb"
+place glycerol_stock_pre
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place overnight_fork
+  protocol: "aqualib:workflows/yeast/overnight_suspension_divided_plate_to_deepwell.rb"
   group: group
   argument
     debug_mode: debug_mode
@@ -30,6 +33,22 @@ place overnight
   end
   marked: false
   start: now()
+  window: hours(1)
+end
+
+place overnight_suspension
+  protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place glycerol_stock
+  protocol: "aqualib:workflows/ecoli/glycerol_stock.rb"
+  group: group
+  marked: false
+  start: hours(15)
   window: hours(1)
 end
 

@@ -95,6 +95,7 @@ class Protocol
   			check "Put the camera hood on, turn on the transilluminator and take a picture using the camera control interface on computer."
   			note "Rename the picture you just took as gel_#{gel.id}. Upload it!"
   			upload var: "my_gel_pic"
+        check "Discard the gel after a clear picture has been taken and uploaded."
   		}
       if io_hash[:gel_band_verify].downcase == "yes"
         gel_band_verify gel, except: [ [0,0], [1,0] ], plate_ids: io_hash[:yeast_plate_ids]
@@ -109,7 +110,7 @@ class Protocol
             tp = TaskPrototype.where("name = 'Glycerol Stock'")[0]
             t = Task.new(
                 name: "#{p.sample.name}_plate_#{p.id}",
-                specification: { "item_ids Yeast Plate" => [p.id] }.to_json,
+                specification: { "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension" => [p.id] }.to_json,
                 task_prototype_id: tp.id,
                 status: "waiting",
                 user_id: p.sample.user.id)
@@ -127,7 +128,10 @@ class Protocol
       end
     end
 
-  	release gels, interactive: true
+    gels.each do |gel|
+      gel.mark_as_deleted
+    end
+
     return { io_hash: io_hash }
   end # main
 

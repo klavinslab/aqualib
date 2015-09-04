@@ -1,24 +1,9 @@
-needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
 class Protocol
 
-  include Standard
   include Cloning
   require 'matrix'
-
-  def argument
-    {
-      io_hash: {},
-      #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4291,4275],[4125,3953],[2058,2062]],
-      #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
-      sample_or_item: "sample",
-      #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [5985,5496,5205],
-      debug_mode: "Yes",
-    }
-  end
 
   def gibson_vector row
     if row == 0
@@ -38,6 +23,19 @@ class Protocol
     else
       return 0
     end
+  end
+
+  def arguments
+    {
+      io_hash: {},
+      #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
+      fragment_ids: [[4291,4275],[4125,3953],[2058,2062]],
+      #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
+      sample_or_item: "sample",
+      #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
+      plasmid_ids: [5985,5496,5205],
+      debug_mode: "Yes",
+    }
   end
 
   def main
@@ -61,7 +59,7 @@ class Protocol
     if io_hash[:item_choice_mode].downcase == "yes"
       fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name, object_type: "Fragment Stock"}}
     else
-      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[-1]}}
     end
 
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
@@ -190,9 +188,9 @@ class Protocol
       fragment_stocks[idx].each_with_index do |f, idy|
         if volume_empty[:"c#{f.id}".to_sym] == "No"
           not_enough_volume_stocks.push f
-          if f.sample.in("Fragment Stock")[1]
-            replacement_stocks.push f.sample.in("Fragment Stock")[1]
-            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[1]
+          if f.sample.in("Fragment Stock")[-2]
+            replacement_stocks.push f.sample.in("Fragment Stock")[-2]
+            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[-2]
           end
         end
       end
@@ -237,7 +235,8 @@ class Protocol
     # Place all reactions in 50 C heat block
     show {
       title "Place on a heat block"
-      note "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
+      check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
+      check "Set a 1 hr timer on Google to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
     move gibson_results, "50 C heat block"

@@ -73,7 +73,7 @@ class Protocol
 
       show {
         title "Add the following volumes of QG buffer to the corresponding tube."
-        table [["Gel Slices", "QG Volume in µL"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes)
+        table [["Gel Slices", "QG Volume in µL"]].concat(gel_slices.collect {|s| s.id}.zip qg_volumes.collect { |v| { content: v, check: true } })
       }
 
       show {
@@ -86,7 +86,7 @@ class Protocol
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
-        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes)
+        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes.collect { |v| { content: v, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
@@ -149,13 +149,25 @@ class Protocol
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         if task.simple_spec[:fragments].length == 1
-          if find(:sample, id: task.simple_spec[:fragments][0])[0].in("Gel Slice").length > 0
+          fid = task.simple_spec[:fragments][0]
+          if find(:sample, id: fid)[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
+            fragment_stock = fragment_stocks.select { |fs| fs.sample.id == fid }[0]
+            task.notify "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/μL) for #{sample_html_link fragment_stock.sample}", job_id: jid
           else
             set_task_status(task, "failed")
+            task.notify "This task failed.", job_id: jid
           end
         else
+          notifs = []
           set_task_status(task,"done")
+          fragment_ids = task.simple_spec[:fragments]
+          produced_fragment_ids = fragment_stocks.collect { |fs| fs.sample.id } & fragment_ids
+          failed_fragment_ids = fragment_ids - produced_fragment_ids
+          failed_fragment_ids.each { |id| notifs.push "This task failed to produce a Fragment Stock for #{item_or_sample_html_link id, :sample}" }
+          produced_fragment_stocks = fragment_stocks.select { |fs| produced_fragment_ids.include? fs.sample.id }
+          produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/uL) for #{sample_html_link fragment_stock.sample}" }
+          notifs.each { |notif| task.notify notif, job_id: jid }
         end
       end
     end
@@ -164,11 +176,9 @@ class Protocol
       delete gel_slices
       release gel_slices
     end
-      
+
     return { io_hash: io_hash }
 
   end # main
 
 end # Protocol
-
-

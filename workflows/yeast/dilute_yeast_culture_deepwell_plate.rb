@@ -134,7 +134,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", new_inducers: [], range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
+    io_hash = { debug_mode: "No", new_inducers: [], when_to_add_inducer: "start, dilute", range_to_dilute: { from: [[1,1],[]], to: [[],[]] } }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -147,14 +147,14 @@ class Protocol
     num_of_wells = range_of_adding io_hash[:yeast_deepwell_plate_ids], io_hash[:range_to_dilute]
     show {
       title "Take new deepwell plates"
-      note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.collect {|d| d.id}}."
+      note "Grab #{yeast_deepwell_plates.length} Eppendorf 96 Deepwell Plate. Label with #{yeast_deepwell_plates.join(", ")}."
       yeast_deepwell_plates.each_with_index do |y,idx|
         note "Add #{io_hash[:volume]*(1-io_hash[:dilution_rate])} µL of #{io_hash[:media_type]} into first #{num_of_wells[idx]} wells."
       end
     }
     show {
       title "Vortex the deepwell plates."
-      note "Gently vortex the deepwell plates #{deepwell_plates.collect { |d| d.id }} on a table top vortexer at settings 6 for about 20 seconds."
+      note "Gently vortex the deepwell plates #{deepwell_plates.join(", ")} on a table top vortexer at settings 6 for about 20 seconds."
     }
 
     transfer(deepwell_plates, yeast_deepwell_plates, range_to_read: io_hash[:range_to_dilute]) {
@@ -163,7 +163,18 @@ class Protocol
     }
 
     if io_hash[:new_inducers].length > 0
-      io_hash[:inducer_additions] = io_hash[:new_inducers]
+      io_hash[:inducers] = io_hash[:new_inducers]
+    end
+
+    io_hash[:inducer_additions] = []
+    io_hash[:inducers].each_with_index do |inducer_array,idx|
+      inducer_array.each do |inducer|
+        if io_hash[:when_to_add_inducer][idx].include? "dilute"
+          io_hash[:inducer_additions].push inducer
+        else
+          io_hash[:inducer_additions].push "None"
+        end
+      end
     end
 
     load_samples_variable_vol( ["Inducers"], [
@@ -172,7 +183,7 @@ class Protocol
 
     show {
       title "Place the deepwell plates in the washing station"
-      note "Place the following deepwell plates #{deepwell_plates.collect { |d| d.id }} in the washing station "
+      note "Place the following deepwell plates #{deepwell_plates.join(", ")} in the washing station "
     }
 
     deepwell_plates.each do |d|

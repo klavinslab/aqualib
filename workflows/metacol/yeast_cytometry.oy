@@ -1,8 +1,3 @@
-# same incuder after dilution
-# how long you want after dilution to read
-# cell count before dilution
-# daily tasks
-
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
@@ -14,7 +9,7 @@ place tasks_inputs
   argument
     debug_mode: debug_mode
     group: group
-    task_name: "Cytometer Reading"
+    task_name: "Yeast Cytometry"
   end
   marked: true
   start: now()
@@ -22,7 +17,7 @@ place tasks_inputs
 end
 
 place overnight
-  protocol: "aqualib:workflows/yeast/overnight_suspension_deepwell_plate.rb"
+  protocol: "aqualib:workflows/yeast/overnight_suspension_divided_plate_to_deepwell.rb"
   group: group
   argument
     debug_mode: debug_mode

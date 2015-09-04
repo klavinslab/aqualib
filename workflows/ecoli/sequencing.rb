@@ -45,8 +45,9 @@ class Protocol
       end
     end
 
-    sequencing_info = task_status name: "Sequencing", group: io_hash[:group]
-    io_hash[:sequencing_task_ids] = sequencing_info[:ready_ids]
+    sequencing_tasks_list = find_tasks task_prototype_name: "Sequencing", group: io_hash[:group]
+    sequencing_info = task_status sequencing_tasks_list
+    io_hash[:sequencing_task_ids] = task_choose_limit(sequencing_info[:ready_ids], "Sequencing")
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
@@ -73,8 +74,6 @@ class Protocol
     end
 
     plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
-    primer_aliquots = primer_ids.collect{|pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0]}
-
     # create order table for sequencing
     sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
     plasmid_stocks.each_with_index do |p,idx|
@@ -99,11 +98,12 @@ class Protocol
       check "Print out the form and enter the Genewiz tracking number below."
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
+    diluted_primer_aliquots = dilute_samples primers_need_to_dilute(primer_ids)
+    primer_aliquots = (primer_ids).collect{ |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
     if io_hash[:item_choice_mode].downcase == "yes"
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
-
-    take plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
+    take plasmid_stocks + (primer_aliquots - diluted_primer_aliquots), interactive: true, method: "boxes"
 
     # calculate volumes based on Genewiz guide
     plasmid_volume_list = []

@@ -31,7 +31,7 @@ class Protocol
     #
     not_ready_primer_ids = []
     #
-    primer_stocks = primer_ids.collect { |id|
+    primer_stocks = primer_ids.collect do |id|
       primer_stock = find(:sample, id: id)[0].in("Primer Stock")[0]
       # show {
       #   note primer_stock.id
@@ -41,7 +41,7 @@ class Protocol
         not_ready_primer_ids.push id
       end
       primer_stock
-    }
+    end
 
     #
     if not_ready_primer_ids.length > 0

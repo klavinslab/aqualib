@@ -9,7 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      gel_ids: [28420],
+      gel_ids: [22668,20059],
+      task_ids: [5826,3865],
       debug_mode: "No"
     }
   end
@@ -44,7 +45,7 @@ class Protocol
     #   end
     # }
 
-    routes.each do |r| 
+    routes.each do |r|
       m[r[:lane][0]][r[:lane][1]] = 3.14 if verify_data[:"verify#{r[:lane][0]}_#{r[:lane][1]}".to_sym] == "No"
     end
 
@@ -97,8 +98,9 @@ class Protocol
     gels = io_hash[:gel_ids].collect { |i| collection_from i }
     take gels, interactive: true
     slices = []
+    gel_uploads = {}
     gels.each do |gel|
-      show {
+      gel_uploads[gel.id] = show {
        title "Image gel #{gel.id}"
        check "Clean the transilluminator with ethanol."
        check "Put the gel #{gel.id} on the transilluminator."
@@ -124,11 +126,37 @@ class Protocol
   end
 
   release slices, interactive: true, method: "boxes"
-  
+
   if io_hash[:task_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       set_task_status(task,"gel cut")
+      if task.task_prototype.name == "Fragment Construction"
+        fragment_ids = task.simple_spec[:fragments]
+        associated_gel_ids = {}
+        gels.each do |gel|
+          gel_fragment_ids = gel.matrix
+          gel_fragment_ids.flatten!
+          gel_fragment_ids.delete(-1)
+          if (fragment_ids & gel_fragment_ids).any?
+            associated_gel_ids[gel.id] =  fragment_ids & gel_fragment_ids
+          end
+        end
+        notifs = []
+        associated_gel_ids.each do |id, fragment_ids|
+          begin
+            upload_id = gel_uploads[id][:my_gel_pic][0][:id]
+            upload_url = Upload.find(upload_id).url
+            associated_gel = collection_from id
+            gel_matrix = associated_gel.matrix
+            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')})" }.join(", ")
+            image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
+            notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
+          rescue
+          end
+        end
+        notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
+      end
     end
   end
 
@@ -137,6 +165,3 @@ class Protocol
 end
 
 end
-
-
-

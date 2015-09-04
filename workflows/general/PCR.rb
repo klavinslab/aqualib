@@ -10,16 +10,15 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
-      template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
+      # template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
       debug_mode: "Yes",
-      item_choice_mode: "No",
     }
   end
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", item_choice_mode: "No", template_stock_ids: [] }.merge io_hash # set default value of io_hash
+    io_hash = { debug_mode: "No", fragment_ids: [], template_stock_ids: [] }.merge io_hash # set default value of io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -28,18 +27,35 @@ class Protocol
       end
     end
 
-    # collect fragment pcr
+    # return if no fragments are ready to build
+    if io_hash[:fragment_ids].length == 0
+      show {
+        title "No fragments ready to build"
+      }
+      io_hash[:stripwell_ids] = []
+      return { io_hash: io_hash }
+    end
+
+    predited_time = time_prediction io_hash[:fragment_ids].length, "PCR"
+
+    # tell the user what we are doing
+    show {
+      title "Fragment Information"
+      note "This protocol will build the following #{io_hash[:fragment_ids].length} fragments:"
+      note io_hash[:fragment_ids].join(", ")
+      note "The predicted time needed is #{predited_time} min."
+    }
+
+    dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
+    dilute_sample_ids.flatten!
+    diluted_stocks = dilute_samples dilute_sample_ids
+
+    # collect fragment pcr information
     fragment_info_list = []
-    not_ready = []
 
     io_hash[:fragment_ids].each do |fid|
-      if io_hash[:item_choice_mode].downcase == "yes"
-        pcr = fragment_info fid, item_choice: true
-      else
-        pcr = fragment_info fid
-      end
-      fragment_info_list.push pcr   if pcr
-      not_ready.push fid if !pcr
+      pcr = fragment_recipe fid
+      fragment_info_list.push pcr
     end
 
     if io_hash[:template_stock_ids].length > 0
@@ -54,36 +70,12 @@ class Protocol
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
-    # return if no fragments are ready to build
-    if all_fragments.length == 0
-      show {
-        title "No fragments ready to build"
-      }
-      io_hash[:stripwell_ids] = []
-      return { io_hash: io_hash }
-    end
-
-    predited_time = time_prediction all_fragments.length, "PCR"
-
-    # tell the user what we are doing
-    show {
-      title "Fragment Information"
-      note "This protocol will build the following #{all_fragments.length} fragments:"
-      note (all_fragments.collect { |f| "#{f.id}" })
-      note "The predicted time needed is #{predited_time} min."
-      if not_ready.length > 0
-        separator
-        note "The following fragments have missing ingredients and will not be built:"
-        note not_ready.to_s
-      end
-    }
-
     # take the primers and templates
-    take all_templates + all_forward_primers + all_reverse_primers, interactive: true,  method: "boxes"
+    take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks, interactive: true,  method: "boxes"
 
     # get phusion enzyme
-    phusion_stock_item = choose_sample "Phusion HF Master Mix"
-    take [phusion_stock_item], interactive: true, method: "boxes" 
+    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [phusion_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
@@ -93,8 +85,10 @@ class Protocol
         key = :t70
       elsif fi[:tanneal] >= 67
         key = :t67
-      else
+      elsif fi[:tanneal] >= 64
         key = :t64
+      else
+        key = :t60
       end
       pcrs[key][:fragment_info].push fi
     end
@@ -124,7 +118,7 @@ class Protocol
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
         if sw.num_samples <= 6
-          check "Grab a new stripwell with 6 wells and label with the id #{sw}." 
+          check "Grab a new stripwell with 6 wells and label with the id #{sw}."
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
@@ -188,8 +182,8 @@ class Protocol
     release [ phusion_stock_item ], interactive: true, method: "boxes"
 
     # release the templates, primers
-    release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes" 
-    
+    release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes"
+
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]

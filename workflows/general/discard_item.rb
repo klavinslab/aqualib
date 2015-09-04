@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "item_ids Yeast Plates" => [1234],
+      "item_ids Yeast Plates" => [11529,8121,4318,4538,5016,44055,21463,21461,44149,1898,44147,44148],
       task_ids: [2310, 2309],
       debug_mode: "Yes"
     }
@@ -25,6 +25,7 @@ class Protocol
     end
   	items = io_hash[:item_ids].collect { |id| find(:item, id: id)[0] }
     items = items.compact
+    items = items.sort_by { |i| i.location }
   	take items, interactive: true, method: "boxes"
   	show {
   		title "Dispose or recycle depending on the items"

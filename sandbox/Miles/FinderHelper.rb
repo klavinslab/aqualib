@@ -8,7 +8,7 @@ class Protocol
 def arguments
     {
     #Enter the item numbers you wish to receive the location for 
-    item_number: [17032,17034,17039],
+    item_number: [],
     
     #Enter the sample numbers you wish to receive inventory for
     #sample_number: [3546, 3547, 3539]
