@@ -6,11 +6,19 @@ class Protocol
 
   def main
 
-    show do 
-      title "Generic Protocol"
+    o = op input
+
+    o.input.all.take
+    o.output.all.produce
+
+    show do
+      title "Instructions here"
     end
 
-    return { todo: "make new items" }
+    o.input.all.release
+    o.output.all.release
+
+    return o.result
 
   end
 
