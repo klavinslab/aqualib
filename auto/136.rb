@@ -12,7 +12,7 @@ class Protocol
     o.output.all.produce
 
     show do
-      title "Instructions here"
+      title "Instructions for this protocol go here"
     end
 
     o.input.all.release
