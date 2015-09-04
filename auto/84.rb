@@ -20,7 +20,6 @@ class Protocol
     )
 
     o.threads.each do |thread|
-      puts "addin thread #{thread.index}"
       t.gel(thread.input.fragment.collection_id)
        .row(thread.input.fragment.row)
        .col(thread.input.fragment.column)
