@@ -29,7 +29,7 @@ class Protocol
 
     show do
       title "Cut the gel slices and put them in new 1.5 uL tubes"
-      table ingredients.choose([:gel,:row,:col,:slice]).render
+      table ingredients.all.render
     end
 
     o.input.all.release
