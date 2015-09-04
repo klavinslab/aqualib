@@ -9,10 +9,9 @@ class Protocol
     o = op input
 
     o.input.all.take
-
     o.output.all.produce
 
-    t = Table.new(
+    ingredients = Table.new(
       gel: "Gel id",
       row: "Row",
       col: "Lane",
@@ -20,7 +19,8 @@ class Protocol
     )
 
     o.threads.each do |thread|
-      t.gel(thread.input.fragment.collection_id)
+      ingredients
+       .gel(thread.input.fragment.collection_id)
        .row(thread.input.fragment.row)
        .col(thread.input.fragment.column)
        .slice(thread.output.fragment.item_id)
@@ -29,7 +29,7 @@ class Protocol
 
     show do
       title "Cut the gel slices and put them in new 1.5 uL tubes"
-      table t.choose([:gel,:row,:col,:slice]).render
+      table ingredients.choose([:gel,:row,:col,:slice]).render
     end
 
     o.input.all.release

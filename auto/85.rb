@@ -9,12 +9,25 @@ class Protocol
     o = op input
 
     o.input.all.take
+    o.output.all.produce
 
-    show do 
-      title "Purify the gel"
+    ingredients = Table.new(
+      from: "Gel slice id",
+      to: "Fragment stock id"
+    )
+
+    o.threads.each do |thread|
+      ingredients
+        .from(thread.input.fragment.item_id)
+        .to(thread.output.fragment.item_id)
+        .append
     end
 
-    o.output.all.produce
+    show do
+      title "Purify the gel slices and put the results in the 1.5 uL tubes"
+      table ingredients.all.render
+    end
+
     o.input.all.release
     o.output.all.release
 
