@@ -8,15 +8,11 @@ class Protocol
 
     o = op input
 
-    o.input.all.take
-    o.output.all.produce
-
     show do
-      title "Instructions here"
+      o.threads.each do |thread|
+        note "Buy primer #{thread.input.primer.sample}"
+      end
     end
-
-    o.input.all.release
-    o.output.all.release
 
     return o.result
 
