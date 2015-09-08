@@ -8,14 +8,14 @@ class Protocol
 
     o = op input
 
-    o.input.all.take
     o.output.all.produce
 
     show do
-      title "Instructions here"
+      o.threads.each do |thread|
+        title "make aliquot #{thread.output.aliquot.item_id} and #{thread.output.stock.item_id} "
+      end
     end
 
-    o.input.all.release
     o.output.all.release
 
     return o.result
