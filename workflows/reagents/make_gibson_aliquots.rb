@@ -92,8 +92,8 @@ class Protocol
          messages = []
          inventory_hash.each do |sample_name, container_name|
          stock = find(:sample, name: sample_name)[0].in(container_name)[0]
+         take [stock], interactive: true, method: "boxes"
          isEmpty = show{
-           take [stock], interactive: true, method: "boxes"
            title "Technician Feedback Needed"
            get "text", var: "y", label: "Is the sample empty", default: "no"
            }
