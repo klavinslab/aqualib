@@ -1,5 +1,9 @@
 class Protocol
 
+  def debug
+    true
+  end
+
   def main
 
     o = op input

@@ -162,17 +162,18 @@ class Protocol
       note "Using either 6 channel pipettor or single pipettor."
     }
 
-    if io_hash[:new_inducers].length > 0
-      io_hash[:inducers] = io_hash[:new_inducers]
-    end
-
     io_hash[:inducer_additions] = []
-    io_hash[:inducers].each_with_index do |inducer_array,idx|
-      inducer_array.each do |inducer|
-        if io_hash[:when_to_add_inducer][idx].include? "dilute"
-          io_hash[:inducer_additions].push inducer
-        else
-          io_hash[:inducer_additions].push "None"
+
+    if io_hash[:new_inducers].length > 0
+      io_hash[:inducer_additions] = io_hash[:new_inducers]
+    else
+      io_hash[:inducers].each_with_index do |inducer_array,idx|
+        inducer_array.each do |inducer|
+          if io_hash[:when_to_add_inducer][idx].include? "dilute"
+            io_hash[:inducer_additions].push inducer
+          else
+            io_hash[:inducer_additions].push "None"
+          end
         end
       end
     end
@@ -180,6 +181,12 @@ class Protocol
     load_samples_variable_vol( ["Inducers"], [
         io_hash[:inducer_additions].flatten
       ], yeast_deepwell_plates )
+
+    show {
+      title "Seal the deepwell plate(s) with a breathable sealing film"
+      note "Put a breathable sealing film on following deepwell plate(s) #{yeast_deepwell_plates.join(", ")}."
+      note "Place the deepwell plate(s) into the 30 C shaker incubator, make sure it is secure."
+    }
 
     show {
       title "Place the deepwell plates in the washing station"
@@ -196,7 +203,7 @@ class Protocol
       d.save
     end
 
-    release yeast_deepwell_plates, interactive: true
+    release yeast_deepwell_plates
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|

@@ -1,9 +1,5 @@
 class Protocol
 
-  def debug
-    true
-  end
-
   def main
 
     o = op input
@@ -47,7 +43,7 @@ class Protocol
     
     data = show {
       title "Put stripwells in thermocycler"
-      note "Set the annealing temperature to #{o.parameter.annealing_temperature[0]}"
+      note "Set the annealing temperature to #{o.parameter.tanneal[0]}"
       get "number", var: "tc", label: "What thermocycler was used?", default: 1
     }
 

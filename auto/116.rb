@@ -1,5 +1,9 @@
 class Protocol
 
+  def debug
+    true
+  end
+
   def main
 
     o = op input
@@ -8,7 +12,7 @@ class Protocol
     o.output.all.produce
 
     show do
-      title "Instructions here"
+      title "Instructions go here"
     end
 
     o.input.all.release
