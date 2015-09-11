@@ -149,27 +149,32 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        notifs = []
+        produced_fragment_stocks = []
         if task.simple_spec[:fragments].length == 1
           fid = task.simple_spec[:fragments][0]
           if find(:sample, id: fid)[0].in("Gel Slice").length > 0
             set_task_status(task, "done")
             fragment_stock = fragment_stocks.select { |fs| fs.sample.id == fid }[0]
-            task.notify "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}", job_id: jid
+            produced_fragment_stocks.push fragment_stock
           else
             set_task_status(task, "failed")
-            task.notify "This task failed.", job_id: jid
+            notifs.push "This task failed."
           end
         else
-          notifs = []
-          set_task_status(task,"done")
           fragment_ids = task.simple_spec[:fragments]
           produced_fragment_ids = fragment_stocks.collect { |fs| fs.sample.id } & fragment_ids
+          if produced_fragment_ids.empty?
+            set_task_status(task,"failed")
+          else
+            set_task_status(task,"done")
+          end
           failed_fragment_ids = fragment_ids - produced_fragment_ids
           failed_fragment_ids.each { |id| notifs.push "This task failed to produce a Fragment Stock for #{item_or_sample_html_link id, :sample}" }
           produced_fragment_stocks = fragment_stocks.select { |fs| produced_fragment_ids.include? fs.sample.id }
-          produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}".html_safe }
-          notifs.each { |notif| task.notify notif, job_id: jid }
         end
+        produced_fragment_stocks.each { |fragment_stock| notifs.push "This task produces Fragment Stock #{item_or_sample_html_link fragment_stock.id, :item} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}" }
+        notifs.each { |notif| task.notify notif, job_id: jid }
       end
     end
 
