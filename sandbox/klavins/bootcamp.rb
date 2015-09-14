@@ -14,7 +14,7 @@ class Protocol
       title "You entered #{result[:x]}"
     end
     
-    return { x: x, y: "that was fun" }
+    return { x: result[:x], y: "that was fun" }
   
   end
   
