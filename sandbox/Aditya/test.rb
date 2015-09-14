@@ -2,7 +2,7 @@ Class Protocol
 
 def main
 
-resu;lt=show{
+result=show{
 title: "Bootcamp"
 note "Test Text"
 check: "Check This"
@@ -13,6 +13,6 @@ show do
   title "You entered #x"
 end
 
-return {x:result[:x],y:"That was fun"}
+return {y:"That was fun"}
   end 
 end
