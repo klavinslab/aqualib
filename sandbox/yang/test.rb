@@ -12,6 +12,10 @@ class Protocol
     
     x = result[:choice]
     
+    show {
+      note "You entered #{x}."
+    }
+    
     return { x: x, y: "that was fun" }
   
   end
