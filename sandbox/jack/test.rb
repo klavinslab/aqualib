@@ -7,7 +7,7 @@ class Protocol
       note "What am I doing"
       table[["A","C"], [1,3]]
       check "Check this!"
-      select["E","F"], var:"x", label: "Select an option"
+      select [ "A", "B", "C" ], var: "x", label: "Choose something", default: 1
     }
     
     show do
