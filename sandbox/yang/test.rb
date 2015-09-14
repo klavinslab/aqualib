@@ -14,7 +14,7 @@ class Protocol
       note "You entered #{result[:choice]}."
     }
     
-    return { x: x, y: "that was fun" }
+    return { x: result[:choice], y: "that was fun" }
   
   end
   
