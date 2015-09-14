@@ -2,7 +2,7 @@ class Protocol
 
   def main
   
-    show {
+    result = show {
       title "This is cool!"
       note "What am I doing"
       table[["A","C"], [1,3]]
@@ -14,7 +14,7 @@ class Protocol
      title "You entered #{result[:x]}"
     end
     
-    return {x:x, y:"That was fun"}
+    return {x: result[:x], y:"That was fun"}
   end
   
 end
