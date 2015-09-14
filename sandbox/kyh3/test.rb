@@ -11,7 +11,7 @@ class Protocol
     }
     
     show do 
-      title "You entered #{x}"
+      title "You entered #{:x}"
     end
   
     return {x: result[:x], y: "that was fun"}
