@@ -3,8 +3,8 @@ Class Protocol
 def main
 
 result=show{
-title: "Bootcamp"
-note "Test Text"
+title:"Bootcamp"
+note:"Test Text"
 check: "Check This"
 }
 x=result[:x]
