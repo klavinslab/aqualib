@@ -2,7 +2,7 @@ class Protocol
 
   def main
   
-    show do
+    result = show do
       title "Hello Bootcamp!"
       note "Seriously? 9-1 for real???"
       table [["A", "2"],[3,4]]
