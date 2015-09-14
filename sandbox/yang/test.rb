@@ -10,10 +10,8 @@ class Protocol
       select [ "A", "B", "C" ], var: "choice", label: "Choose something", default: 1
     }
     
-    x = result[:choice]
-    
     show {
-      note "You entered #{x}."
+      note "You entered #{result[:choice]}."
     }
     
     return { x: x, y: "that was fun" }
