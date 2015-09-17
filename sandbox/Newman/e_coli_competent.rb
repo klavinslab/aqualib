@@ -33,7 +33,6 @@ class Protocol
 		# Title
 		show {
 			title "Quick Competent E. coli Purpose/Description"
-			note "#{io_hash}"
 			note "This protocol is to prepare any cell strain for electroporation. It is specifically for strains that are not frequently transformed and for which we do not have freezer stocks, including strains with one plasmid that you'd like to add a second plasmid to or new strains that you haven't tested out yet. Primarily the cells need to be cold (below 4 C) and washed of as many conductive ions as possible to maximize transformation efficiency."
 		}
 
@@ -44,9 +43,9 @@ class Protocol
 
 	    # Parse out plate_ids, num_colonies, initials for plasmid that has marker info entered.
 	    info_needed_plate_ids = []
-	    plate_ids = io_hash[:plate_ids]
-	    num_colonies = io_hash[:num_colonies]
-	    primer_ids = io_hash[:primer_ids]
+	    plate_ids = []
+	    num_colonies = []
+	    primer_ids = []
 	    io_hash[:plate_ids].each_with_index do |pid,idx|
 	     # if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
 	       # info_needed_plate_ids.push pid
