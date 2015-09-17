@@ -8,7 +8,7 @@ class Protocol
       note "Total worktime: 30 minutes"
     }
     
-    show 
+    show {
       title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
     }
     
