@@ -16,6 +16,9 @@ class Protocol
 			note "This protocol is to prepare any cell strain for electroporation. It is specifically for strains that are not frequently transformed and for which we do not have freezer stocks, including strains with one plasmid that you'd like to add a second plasmid to or new strains that you haven't tested out yet. Primarily the cells need to be cold (below 4 C) and washed of as many conductive ions as possible to maximize transformation efficiency."
 		}
 
+		# Step 1
+
+
 		# Step 2
 		show {
 			title "Incubate"
@@ -37,7 +40,7 @@ class Protocol
 		show {
 			title "Dilute culture"
 			note "Dilute overnight culture for 1 minute and 50 seconds into #{3 * aliquot_num} mL fresh broth (#{60 * aliquot_num} uL overnight culture)."
-			timer { hours: 0, minutes: 1, seconds: 50}
+			timer initial: { hours: 0, minutes: 1, seconds: 50}
 		}
 
 		# Step 5
@@ -45,7 +48,7 @@ class Protocol
 			title "Incubate and check OD600"
 			note "Incubate at 37 C for 1-3 hours. Check OD600 on Nanodrop after 1 hour. The target OD600 is 0.4-0.6."
 			note "Note: Multiply the absorbance value at 600 nm measured by the Nanodrop by a factor of 10 to get OD600."
-			timer { hours: 1, minutes: 0, seconds: 0}
+			timer initial: { hours: 1, minutes: 0, seconds: 0}
 		}
 
 		# Step 6
@@ -59,7 +62,7 @@ class Protocol
 			show {
 				title "Run in Centrifuge"
 				note "Pellet cell culture in 1.5 mL tubes (1 mL culture per tube) by running in refrigerated centrifuge (4 C) for 1 minute at 6000 xg."
-				timer { hours: 0, minutes: 1, seconds: 0}
+				timer initial: { hours: 0, minutes: 1, seconds: 0}
 			}
 
 			# Step 8
