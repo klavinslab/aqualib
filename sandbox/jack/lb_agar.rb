@@ -6,6 +6,8 @@ class Protocol
       note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
       note "Total duration: 3 hours"
       note "Total worktime: 30 minutes"
+      warning "Wait until the agar has cooled enough to touch with bare hands and add the appropriate amount of antibiotic while stirring"
+      warning ""
     }
     
     show {
@@ -31,6 +33,7 @@ class Protocol
     
     show {
       title "Remove from Autoclave: put on thermal gloves and take bottle out of autoclave, place on stir plate."
+      warning "Stuff caked at the bottom: after autoclaving, there is stuff caked at the bottom, do not use this batch, shake harder in step 5, make sure that everything is solvated before autoclaving"
     }
     
     show {
