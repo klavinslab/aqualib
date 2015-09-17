@@ -54,7 +54,7 @@ class Protocol
 	        plate_ids.push pid
 	        num_colonies.push io_hash[:num_colonies][idx]
 	        primer_ids.push io_hash[:primer_ids][idx]
-	      end
+	      #end
 	    end
 
 	    show {
