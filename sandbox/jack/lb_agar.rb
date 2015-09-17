@@ -10,13 +10,11 @@ class Protocol
     }
     
     show {
-      title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar 
-          from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+      title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
     }
     
     show {
-      title "Weigh Agar: Using the gram scale, large weigh boat, and chemical spatula, weigh out 29.6 grams of LB Agar
-          powder and pour into the bottle."
+      title "Weigh Agar: Using the gram scale, large weigh boat, and chemical spatula, weigh out 29.6 grams of LB Agar powder and pour into the bottle."
       }
       
     show {
@@ -29,6 +27,7 @@ class Protocol
     
     show {
       title "Autoclave: stick autoclave tape on top of bottle cap, loosen top and autoclave at 110C for 15 minutes."
+      timer initial: { hours: 0, minutes: 15, seconds: 0}
     }
     
     show {
