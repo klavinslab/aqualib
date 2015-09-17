@@ -48,9 +48,9 @@ class Protocol
 	    num_colonies = io_hash[:num_colonies]
 	    primer_ids = io_hash[:primer_ids]
 	    io_hash[:plate_ids].each_with_index do |pid,idx|
-	      if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
-	        info_needed_plate_ids.push pid
-	      else
+	     # if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
+	       # info_needed_plate_ids.push pid
+	     # else
 	        plate_ids.push pid
 	        num_colonies.push io_hash[:num_colonies][idx]
 	        primer_ids.push io_hash[:primer_ids][idx]
@@ -149,6 +149,12 @@ class Protocol
 	    io_hash[:overnight_ids] = overnights.collect { |o| o.id }
 	    io_hash[:glycerol_overnight_ids] = glycerol_overnights.collect { |o| o.id }
 	    io_hash[:primer_ids] = sequencing_primer_ids
+
+	    # TEMP
+	    show {
+	    	title "Create overnight cultures"
+	    	note "WIP!"
+	    }
 
 		# Step 2
 		show {
