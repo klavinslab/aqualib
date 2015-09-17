@@ -11,7 +11,7 @@ class Protocol
     
     show {
       title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
-      take Glass Liter Bottle, interactive: true
+      items = find(:item, {  object_type: { name: "Glass Liter Bottle" } } )
     }
     
     show {
@@ -38,6 +38,7 @@ class Protocol
     
     show {
       title "Stir: Heat to 65C while stirring at 700 rpm."
+      release items
     }
 
   
