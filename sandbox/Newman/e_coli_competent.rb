@@ -36,6 +36,7 @@ class Protocol
 			note "This protocol is to prepare any cell strain for electroporation. It is specifically for strains that are not frequently transformed and for which we do not have freezer stocks, including strains with one plasmid that you'd like to add a second plasmid to or new strains that you haven't tested out yet. Primarily the cells need to be cold (below 4 C) and washed of as many conductive ions as possible to maximize transformation efficiency."
 		}
 
+		=begin
 		# Step 1
 		# raise errors if inputs are not valid
 	    raise "Incorrect inputs, plate_ids and num_colonies must have the same length." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
@@ -47,13 +48,13 @@ class Protocol
 	    num_colonies = []
 	    primer_ids = []
 	    io_hash[:plate_ids].each_with_index do |pid,idx|
-	     # if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
-	       # info_needed_plate_ids.push pid
-	     # else
+	      if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
+	        info_needed_plate_ids.push pid
+	      else
 	        plate_ids.push pid
 	        num_colonies.push io_hash[:num_colonies][idx]
 	        primer_ids.push io_hash[:primer_ids][idx]
-	      #end
+	      end
 	    end
 
 	    show {
@@ -148,6 +149,7 @@ class Protocol
 	    io_hash[:overnight_ids] = overnights.collect { |o| o.id }
 	    io_hash[:glycerol_overnight_ids] = glycerol_overnights.collect { |o| o.id }
 	    io_hash[:primer_ids] = sequencing_primer_ids
+	    =end
 
 	    # TEMP
 	    show {
