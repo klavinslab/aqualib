@@ -43,9 +43,9 @@ class Protocol
 
 	    # Parse out plate_ids, num_colonies, initials for plasmid that has marker info entered.
 	    info_needed_plate_ids = []
-	    plate_ids = []
-	    num_colonies = []
-	    primer_ids = []
+	    plate_ids = io_hash[:plate_ids]
+	    num_colonies = io_hash[:num_colonies]
+	    primer_ids = io_hash[:primer_ids]
 	    io_hash[:plate_ids].each_with_index do |pid,idx|
 	      if find(:item, id: pid)[0].sample.properties["Bacterial Marker"] == ""
 	        info_needed_plate_ids.push pid
