@@ -37,4 +37,4 @@ class Protocol
     show {
       title "Stir: Heat to 65C while stirring at 700 rpm."
     }
-      
+  end
