@@ -28,7 +28,7 @@ class Protocol
    		end
     	# Make sure have the following hash indexes
     	io_hash = { plate_ids: [], num_colonies: [], primer_ids: [], glycerol_stock_ids: [] }.merge io_hash
-		aliquot_num = io_hash[:aliquot_num]
+		aliquot_num = io_hash[plate_ids:].length
 
 		# Title
 		show {
