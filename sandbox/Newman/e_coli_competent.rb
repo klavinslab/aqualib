@@ -7,6 +7,9 @@ class Protocol
 	end
 
 	def main
+
+		aliquot_num = input[:aliquot_num]
+
 		# Title
 		show {
 			title "Quick Competent E. coli Purpose/Description"
