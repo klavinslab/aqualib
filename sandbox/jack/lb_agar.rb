@@ -1,15 +1,14 @@
 class Protocol
 
   def main
-  
     show {
       title "LB Agar"
-      note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells.
+      note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
       note "Total duration: 3 hours"
       note "Total worktime: 30 minutes"
     }
     
-    show {
+    show 
       title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
     }
     
@@ -37,5 +36,8 @@ class Protocol
     show {
       title "Stir: Heat to 65C while stirring at 700 rpm."
     }
+
+  
   end
+  
 end
