@@ -14,7 +14,7 @@ class Protocol
     
     show {
       title "Remove from Autoclave: put on thermal gloves and take bottle out of autoclave, place on stir plate."
-      warning "Stuff caked at the bottom: after autoclaving, there is stuff caked at the bottom, do not use this batch, shake harder in step 5, make sure that everything is solvated before autoclaving"
+      warning "Stuff caked at the bottom: after autoclaving, if there is stuff caked at the bottom, do not use this batch, remake the media and make sure that everything is solvated before autoclaving (shake harder)"
     }
     
     show {
