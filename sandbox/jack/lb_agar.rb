@@ -6,7 +6,7 @@ class Protocol
     o.input.all.take
     o.output.all.produce
 
-show {
+    show {
       title "LB Agar"
       note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
       note "Total duration: 3 hours"
