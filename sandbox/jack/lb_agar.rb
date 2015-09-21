@@ -1,7 +1,12 @@
 class Protocol
 
   def main
-    show {
+    o = op input
+
+    o.input.all.take
+    o.output.all.produce
+
+show {
       title "LB Agar"
       note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
       note "Total duration: 3 hours"
@@ -38,6 +43,11 @@ class Protocol
     show {
       title "Stir: Heat to 65C while stirring at 700 rpm."
     }
+
+    o.input.all.release
+    o.output.all.release
+
+    return o.result
 
   
   end
