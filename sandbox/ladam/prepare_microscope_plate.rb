@@ -10,19 +10,25 @@ class Protocol
 
     def arguments
         {
-            overnight_id: 36164,
-            debug_mode: "No"
+          io_hash: {},
+          overnight_id: 0,
+          debug_mode: "No"
         }
     end
 
     def main
-        if input[:debug_mode].downcase == "yes"
-            def debug
-                true
-            end
-        end
 
-        overnight_id = input[:overnight_id]
+      io_hash = input[:io_hash]
+      io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+      io_hash = { overnight_id: 0, debug_mode: "No" }.merge io_hash
+      if io_hash[:debug_mode].downcase == "yes"
+        def debug
+          true
+        end
+      end
+
+
+        overnight_id = io_hash[:overnight_ids][0]
         overnight_in_aq = find(:item, id: overnight_id)[0]
 
         #use take items
@@ -67,7 +73,11 @@ class Protocol
             note "Put the Microscope-YAPD plate with parafilm in the fridge B13.120."
             note "Get ready to take the microsopce plate to the microsocpe room."
         }
+        if io_hash[:task_id]
+            task = find(:task, id: io_hash[:task_id])[0]
+            set_task_status(task,"microscope_plate_ready")
+        end
 
-
+        return { io_hash: io_hash }
     end
 end

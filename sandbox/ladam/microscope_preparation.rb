@@ -8,16 +8,20 @@ class Protocol
 
     def arguments
         {
-            debug_mode: "No"
+          io_hash: {},
+          debug_mode: "No"
         }
     end
 
     def main
-        if input[:debug_mode].downcase == "yes"
-            def debug
-                true
-            end
+      io_hash = input[:io_hash]
+      io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+      io_hash = { debug_mode: "No" }.merge io_hash
+      if io_hash[:debug_mode].downcase == "yes"
+        def debug
+          true
         end
+      end
 
 
         #
@@ -108,6 +112,12 @@ class Protocol
         }
 
 
+        if io_hash[:task_id]
+            task = find(:task, id: io_hash[:task_id])[0]
+            set_task_status(task,"microscope_ready")
+        end
+
+        return { io_hash: io_hash }
 
     end
 end

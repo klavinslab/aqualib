@@ -3,6 +3,13 @@
 argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
+  yeast_id: number, "The id of your yeast strain."
+  duration: string, "How long should the microscope acquisition last? eg: 6h",
+  intervals: string, "How much time between images? eg: 3min",
+  how_many_individual_cells: number, "How many single cells you'd like ? eg: 5"
+  how_many_group_3or4_cells: number, "How many group of 3 to 4 cells you'd like ? eg: 3"
+  note_about_choosing_cells: string, "You can put a specific message for the technician. eg: Good luck",
+  FP_channels: string, " choose between GFP,mCherry,YFP, leave empty if brightfield (will always be taken)",
 end
 
 place tasks_inputs
@@ -24,6 +31,7 @@ place overnight
   argument
     debug_mode: debug_mode
     group: group
+    item_ids: [yeast_id]
   end
   marked: false
   start: now()
@@ -31,15 +39,15 @@ place overnight
 end
 
 place dilute
-  protocol: "dillute_centrifuge.rb"
+  protocol: "aqualib:sandbox/ladam/dillute_centrifuge.rb"
   group: group
   marked: false
   start: hours(14)
-  window: hours(1)
+  window: hours(3)
 end
 
 place setup_microscope
-  protocol: "microscope_preparation.rb"
+  protocol: "aqualib:sandbox/ladam/microscope_preparation.rb"
   group: group
   marked: false
   start: hours(4)
@@ -47,7 +55,7 @@ place setup_microscope
 end
 
 place prepare_plate
-  protocol: "prepare_microscope_plate.rb"
+  protocol: "aqualib:sandbox/ladam/prepare_microscope_plate.rb"
   group: group
   marked: false
   start: hours(1)
@@ -55,23 +63,31 @@ place prepare_plate
 end
 
 place lens
-  protocol: "microscope_lens.rb"
+  protocol: "aqualib:sandbox/ladam/microscope_lens.rb"
   group: group
   marked: false
   start: now()
-  window: hours(0)
+  window: minutes(5)
 end
 
 place timelapse_NIS
-  protocol: "timelapse_NIS.rb"
+  protocol: "aqualib:sandbox/ladam/timelapse_NIS.rb"
   group: group
+  argument
+    duration: duration
+    intervals: intervals
+    how_many_individual_cells: how_many_individual_cells
+    how_many_group_3or4_cells: how_many_group_3or4_cells
+    note_about_choosing_cells: note_about_choosing_cells
+    FP_channels: FP_channels
+  end
   marked: false
   start: now()
-  window: hours(0)
+  window: minutes(5)
 end
 
 place cleanup
-  protocol: "clean_up_microscope.rb"
+  protocol: "aqualib:sandbox/ladam/clean_up_microscope.rb"
   group: group
   marked: false
   start: hours(12)

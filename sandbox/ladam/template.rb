@@ -10,8 +10,9 @@ class Protocol
 
     def arguments
         {
-            plate_id: 36164,
-            debug_mode: "No"
+          io_hash: {},
+          plate_id: 36164,
+          debug_mode: "No"
         }
     end
 
