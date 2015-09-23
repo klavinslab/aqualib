@@ -64,7 +64,7 @@ class Protocol
             note "Go to the computer, start NIS Element."
             note "In the menu, choose 'Calibration > Optical configuration'. Then click 'Restore' and choose within Dropbox/Microscope/yeast_optical_configuration.xml"
             note "Click on the play buttom and then Auto Scale LUTs whithin the live view."
-            note "Make sure you can also see Ti-pad and ND_Acquisition. If not, right click in the empty space next to the live view and select them."
+            note "Make sure you can also see Ti-pad and ND_Acquisition (in Acquisition Controls). If not, right click in the empty space next to the live view and select them."
             note "In the Ti-pad, you might need to click on the red/green button to turn on the light. It should be at 4M."
             image "live_view"
         }
@@ -81,6 +81,7 @@ class Protocol
             note "In ND Acquisition, choose the lambda tab."
             note "ALWAYS leave brightfield on."
             note "The user wants the following channels: #{channels}. Select those accordingly. (If it is empty or None, leave only brightfield checked.)"
+            note "In Advanced settings, verify that Brightfield will execute before caputre C/Auxin/Macros/preset_lamp.mac"
             note "Again, make sure brightfield is selected, we always need at least that one!"
         }
 
@@ -103,7 +104,7 @@ class Protocol
             warning "Always switch off the room light when you take images and keep the curtain close."
             note "Verify your nd_acquisition will work: click on the '1 time loop'. Wait and see that the resulting images are good. Discard after."
             note "If not, fix it by going over the previous steps again."
-            note "If it looks good, select 'save to file' in ND Acquisition. Path is 'XXXX' and filename is #{Date.today.to_s}_#{overnight_id}."
+            note "If it looks good, select 'save to file' in ND Acquisition. Path is 'Dropbox/Microscope/AquariumYMTask_ndfiles' and filename is #{Date.today.to_s}_#{overnight_id}."
             note "Leave the room dark: lights must be off, curtain closed."
         }
         if io_hash[:task_id]

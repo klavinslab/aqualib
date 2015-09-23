@@ -43,7 +43,7 @@ class Protocol
         show {
             title "Get items"
             note "Take overnight #{overnight_id} at #{overnight_in_aq.location}"
-            note "Take a centrifuge tube from XXXX. Label it with #{overnight_id}_D."
+            note "Take a centrifuge tube from B1.230. Label it with #{overnight_id}_D."
         }
         show {
             title "Get media"
