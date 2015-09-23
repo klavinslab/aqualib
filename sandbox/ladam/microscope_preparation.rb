@@ -58,12 +58,8 @@ class Protocol
             title "Turn on the shutter controller"
             note "Labeled 2, must be turned on second. The switch is in the back"
             image "shutter controller label 2"
-        }
-
-        show {
-            title "Center the shutter controller"
-            note "Flip the tuner switch up and down TWICE, and verifies it aligned in the center to reset the controller fully"
-            note "The switch should be aligned to the 'Auto' position"
+            note "Center the shutter controller:"
+            note "Flip the tuner switch up and down TWICE, and verifies it aligned in the middle ('Auto' position). This will reset the controller fully"
         }
 
         show {
@@ -81,7 +77,8 @@ class Protocol
         show {
             title "Turn on the microscope light"
             note "Labeled 5 and produces the light from the mechanism above the incubator"
-            note "The button is on the left side. Make sure the knob side-eye on the right to on side (computer)."
+            note "The button is on the left side. "
+            note "Make sure the knob 'Port' side to eye, located on the opposite side, is switch on side (computer)."
             image "microscope light label 5"
         }
 
@@ -95,20 +92,20 @@ class Protocol
             title "Turn on the fine Z tunning controller"
             note "Labeled 7 and adjusts our focal points when searching for cells"
             note "The switch is on the left side of the controller"
-            note "Remeber that if the z controller do not work, it might be that the sliding element on the bottom left side of the microscope is on the manual position only. You need to slide it where the knob next it cannot move."
+            note "Remember that if the z controller does not work, it might be that the sliding element on the bottom left side of the microscope is on the microscope position only. You need to slide it to the middle, then Z can be controlled from bot the Z controller or the microscope knob (bottom right)."
             image "z_focus_label 7"
         }
 
         show {
           title "Turn on the microscope incubator"
-          note "Turn on the incubator for the microscope"
+          note "Turn on the incubator for the microscope."
           note "The incubator will be labeled with '0' and should be set to 30 degrees celsius for yeast cells (37 for E.coli)"
           image "incubator_controller"
         }
 
         show {
           title "Finished!"
-          note "It takes about 30min to heat up to 30C"
+          note "It takes about 30min to heat up to 30C."
         }
 
 

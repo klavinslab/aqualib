@@ -32,18 +32,19 @@ class Protocol
         #
         show {
             title "Stop Stofware"
-            note "Go back to the microscope room. Make sure the experiment is finished, that the file is saved. Upload it."
+            note "Go back to the microscope room. Make sure the experiment is finished."
+            check "Verify that the file is saved in the Dropbox. Upload it below."
             upload var: "nd_file"
-            note "Quit NIS Element."
+            check "Quit NIS Element."
         }
 
         #
         show {
             title "Turn off microscope"
-            note "Lower the Z to minimum."
-            note "Remove the microscope plate."
-            note "Turn off, in reverse order, all the components of the microscope. Finish by 1."
-            note "Leave the room and discard the microscope plate in the wet lab biohazard bin."
+            check "Lower the Z to minimum."
+            check "Remove the microscope plate."
+            check "Turn off, in reverse order, all the components of the microscope. Finish by 1."
+            check "Leave the room and discard the microscope plate in the wet lab biohazard bin."
         }
         show {
             title "Done!"

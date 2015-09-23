@@ -43,33 +43,35 @@ class Protocol
         #
         show {
             title "Centrifuge tube"
-            note "Take the centrifuge tube #{overnight_id}_D from the shaker incubator."
-            note "Centrifuge it for 5min at 3,000. Use the tube 1mL H2O next to the centrifuge to balance it."
-            note "Go get next the items in the meantime."
+            check "Take the centrifuge tube #{overnight_id}_D from the shaker incubator."
+            check "Centrifuge it for 5min at 3,000. Use the tube 1mL H2O next to the centrifuge to balance it."
+            note "Go get next items in the meantime."
         }
         show {
             title "Get items"
-            note "Clean you bench top. Use Kim wipes and ethanol spray."
-            note "Find a plate in the fridge B13.120 labelled Microscope-YAPD. It should have some little holes! If you can't find one, go get a new YAPD plate and name it \"Microscope-YAPD\"."
-            note "Grab a new bottom glass mini plate from B9.500."
+            check "Clean you bench top. Use Kim wipes and ethanol spray."
+            check "Find a plate in the fridge B13.120 labelled Microscope-YAPD. "
+            note "It should have some little holes! If you can't find one, go get a new YAPD plate and name it \"Microscope-YAPD\"."
+            check "Grab a new bottom glass mini plate from B9.500."
         }
         #
         show {
             title "Place cells"
-            note "Return to the centrifuge and get #{overnight_id}_D."
-            note "Remove 950uL of the supernatant from #{overnight_id}_D."
-            note "Use the bench top vortexer to resuspend the cells in the tube."
-            note "Take 1uL and put it onto the central disc of the microscope mini plate. Make sure there is no bubbles."
-            note "Grab a 1,000 uL pipette tip or two and use its larger opening to cut a patch from the YAPD plate."
-            note "Place patch onto the yeast cells (the drop) and press gently to spread the liquid."
-            note "Close microscope plate and place it on a KIM wipe (for transport.)"
+            check "Return to the centrifuge and get #{overnight_id}_D."
+            check "Remove 950uL of the supernatant from #{overnight_id}_D."
+            check "Use the bench top vortexer to resuspend the cells in the tube."
+            check "Take 1uL and put it onto the central disc of the microscope mini plate. "
+            note "Make sure there is no bubbles."
+            check "Grab a 1,000 uL pipette tip or two and use its larger opening to cut a patch from the YAPD plate, use second to drop it."
+            check "Place patch onto the yeast cells (the drop) and press gently to spread the liquid."
+            check "Put the lid back on the microscope plate and place it on a KIM wipe (for transport.)"
             image "press_agar_patch"
         }
         #
         show {
             title "Clean-up"
             note "Discard #{overnight_id}_D."
-            note "Put the Microscope-YAPD plate with parafilm in the fridge B13.120."
+            check "Put the Microscope-YAPD plate with parafilm in the fridge B13.120."
             note "Get ready to take the microsopce plate to the microscope room."
         }
         if io_hash[:task_id]

@@ -45,6 +45,7 @@ class Protocol
             title "Turn on the fluorescent light bulb"
             note "Labeled '1' and must be turned on first because it draws an extremely high current."
             warning "FAILURE TO DO THIS FIRST MAY RESULT IN A BROKEN SYSTEM."
+            check "Do this and that."
             image "fluorescent lamp label 1"
         }
 

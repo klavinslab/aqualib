@@ -35,30 +35,30 @@ class Protocol
         #
         show {
             title "Dillute overnight"
-            note "We will perform a 1:100 dillution of the overnight in a centrifuge tube."
+            note "We will perform a 1:1000 dillution of the overnight in a centrifuge tube."
         }
 
 
         #
         show {
             title "Get items"
-            note "Take overnight #{overnight_id} at #{overnight_in_aq.location}"
-            note "Take a centrifuge tube from B1.230. Label it with #{overnight_id}_D."
+            check "Take overnight #{overnight_id} at #{overnight_in_aq.location}"
+            check "Take a centrifuge tube from B1.230. Label it with #{overnight_id}_D."
         }
         show {
             title "Get media"
-            note "Put 1mL of YAPD in the centrifuge tube #{overnight_id}_D."
+            check "Put 1mL of YAPD in the centrifuge tube #{overnight_id}_D."
         }
         #
         show {
             title "Dillute overnight"
-            note "Pipette 1uL of the overnight #{overnight_id} into the centrifuge tube #{overnight_id}_D."
+            check "Pipette 1uL of the overnight #{overnight_id} into the centrifuge tube #{overnight_id}_D."
         }
         #
         show {
             title "Return items"
-            note "Return #{overnight_id} to #{overnight_in_aq.location}"
-            note "Return #{overnight_id}_D in the 30C shaker incubator. After 5 hours, the yeasts should be ready to be imaged."
+            check "Return #{overnight_id} to #{overnight_in_aq.location}"
+            check "Return #{overnight_id}_D in the 30C shaker incubator. After 5 hours, the yeasts should be ready to be imaged."
         }
 
         if io_hash[:task_id]
