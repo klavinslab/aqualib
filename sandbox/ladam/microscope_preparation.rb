@@ -28,12 +28,6 @@ class Protocol
         show {
             title "Prepare the microscope for use"
             note "This protocol outlines the procedures for safe setup of the microscope. Adhering to this protocol may save you thousands in damage costs!"
-            note "Click next to begin this protocol."
-
-        }
-
-        show {
-            title "Go to the microscope room"
             note "Go to the microscope room and resume the protocol from there. If already in the microscope room click next."
 
         }
@@ -49,17 +43,17 @@ class Protocol
 
         show {
             title "Turn on the fluorescent light bulb"
-            note "Labeled '1' and must be turned on first because it draws an extremely high current."
+            check "Labeled '1' and must be turned on first because it draws an extremely high current."
             warning "FAILURE TO DO THIS FIRST MAY RESULT IN A BROKEN SYSTEM."
             image "fluorescent lamp label 1"
         }
 
         show {
             title "Turn on the shutter controller"
-            note "Labeled 2, must be turned on second. The switch is in the back"
+            check "Labeled 2, must be turned on second. The switch is in the back"
             image "shutter controller label 2"
             note "Center the shutter controller:"
-            note "Flip the tuner switch up and down TWICE, and verifies it aligned in the middle ('Auto' position). This will reset the controller fully"
+            check "Flip the tuner switch up and down TWICE, and verifies it aligned in the middle ('Auto' position). This will reset the controller fully"
         }
 
         show {
@@ -70,13 +64,13 @@ class Protocol
 
         show {
             title "Turn on the microscope"
-            note "Labeled number 4. The switch is a little difficult to find so you may need to feel around for it."
+            check "Labeled number 4. The switch is a little difficult to find so you may need to feel around for it."
             image "micrscope label 4"
         }
 
         show {
             title "Turn on the microscope light"
-            note "Labeled 5 and produces the light from the mechanism above the incubator"
+            check "Labeled 5 and produces the light from the mechanism above the incubator"
             note "The button is on the left side. "
             note "Make sure the knob 'Port' side to eye, located on the opposite side, is switch on side (computer)."
             image "microscope light label 5"
@@ -84,13 +78,13 @@ class Protocol
 
         show {
             title "Turn on the X-Y controller"
-            note "Labeled 6 and helps us pan through the surface to find cells at a fixed focal point z"
+            check "Labeled 6 and helps us pan through the surface to find cells at a fixed focal point z"
             image "xy_controller_label 6"
         }
 
         show {
             title "Turn on the fine Z tunning controller"
-            note "Labeled 7 and adjusts our focal points when searching for cells"
+            check "Labeled 7 and adjusts our focal points when searching for cells"
             note "The switch is on the left side of the controller"
             note "Remember that if the z controller does not work, it might be that the sliding element on the bottom left side of the microscope is on the microscope position only. You need to slide it to the middle, then Z can be controlled from bot the Z controller or the microscope knob (bottom right)."
             image "z_focus_label 7"
@@ -98,8 +92,8 @@ class Protocol
 
         show {
           title "Turn on the microscope incubator"
-          note "Turn on the incubator for the microscope."
-          note "The incubator will be labeled with '0' and should be set to 30 degrees celsius for yeast cells (37 for E.coli)"
+          check "Turn on the incubator for the microscope labeled 0."
+          note "It should be set to 30 degrees celsius for yeast cells (37 for E.coli)"
           image "incubator_controller"
         }
 

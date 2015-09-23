@@ -4,8 +4,8 @@ argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
   yeast_id: number, "The id of your yeast strain item to be used (glycerol stock or plate)."
-  duration: string, "How long should the microscope acquisition last? eg: 6h"
-  intervals: string, "How much time between images? eg: 3min"
+  duration: number, "How long should the microscope acquisition last? IN MINUTES eg: 360 --> 360min=6h"
+  intervals: number, "How much time between images? IN MINUTES eg: 3 --> 3min"
   how_many_individual_cells: number, "How many single cells you'd like ? eg: 5"
   how_many_group_3or4_cells: number, "How many group of 3 to 4 cells you'd like ? eg: 3"
   note_about_choosing_cells: string, "You can put a specific message for the technician. eg: Good luck"
@@ -92,8 +92,8 @@ place cleanup
   protocol: "aqualib:sandbox/ladam/clean_up_microscope.rb"
   group: group
   marked: false
-  start: hours(12)
-  window: hours(3)
+  start: minutes(duration)
+  window: hours(2)
 end
 
 

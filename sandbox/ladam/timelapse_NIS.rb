@@ -72,7 +72,7 @@ class Protocol
             title "Load experiment and configure time"
             check "In ND Acquisition, choose 'load' at the bottom and select file 'Dropbox/Microscope/FP_Yeast.xml'"
             note "Start with the 'time' tab."
-            check "Configure it so that the duration is #{duration} and the intervals is #{intervals}."
+            check "Configure it so that the duration is #{duration} MINUTE(S) and the intervals is #{intervals} MINUTE(S)."
             note "In advanced settings, verify that Autofocus has 'step in range' selected, it will adjust Z so that the cells remain in focus overtime."
             image "nd_acquisition_time"
         }
