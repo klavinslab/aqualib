@@ -25,7 +25,14 @@ class Protocol
     def main
       io_hash = input[:io_hash]
       io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-      io_hash = { duration: "6h",intervals: "3min",how_many_individual_cells: 5,how_many_group_3or4_cells: 3,note_about_choosing_cells: "Good luck",FP_channels: "GFP,mCherry,YFP",overnight_id:0,debug_mode: "No" }.merge io_hash
+      io_hash = { duration: input[:duration],
+        intervals: input[:intervals],
+        how_many_individual_cells: input[:how_many_individual_cells],
+        how_many_group_3or4_cells: input[:how_many_group_3or4_cells],
+        note_about_choosing_cells: input[:note_about_choosing_cells],
+        FP_channels: input[:FP_channels],
+        overnight_id:input[:overnight_id],
+        debug_mode: input[:debug_mode] }.merge io_hash
       if io_hash[:debug_mode].downcase == "yes"
         def debug
           true
@@ -35,7 +42,6 @@ class Protocol
         duration = io_hash[:duration]
         intervals = io_hash[:intervals]
         channels = io_hash[:FP_channels]
-        overnight_id =io_hash[:overnight_id]
         how_many_individual_cells= io_hash[:how_many_individual_cells]
         how_many_group_3or4_cells=io_hash[:how_many_group_3or4_cells]
         note_about_choosing_cells=io_hash[:note_about_choosing_cells]

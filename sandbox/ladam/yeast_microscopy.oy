@@ -4,12 +4,12 @@ argument
   debug_mode: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
   yeast_id: number, "The id of your yeast strain."
-  duration: string, "How long should the microscope acquisition last? eg: 6h",
-  intervals: string, "How much time between images? eg: 3min",
+  duration: string, "How long should the microscope acquisition last? eg: 6h"
+  intervals: string, "How much time between images? eg: 3min"
   how_many_individual_cells: number, "How many single cells you'd like ? eg: 5"
   how_many_group_3or4_cells: number, "How many group of 3 to 4 cells you'd like ? eg: 3"
-  note_about_choosing_cells: string, "You can put a specific message for the technician. eg: Good luck",
-  FP_channels: string, " choose between GFP,mCherry,YFP, leave empty if brightfield (will always be taken)",
+  note_about_choosing_cells: string, "You can put a specific message for the technician. eg: Good luck"
+  channels: string, " choose between GFP,mCherry,YFP, leave empty if brightfield (will always be taken)"
 end
 
 place tasks_inputs
@@ -79,7 +79,7 @@ place timelapse_NIS
     how_many_individual_cells: how_many_individual_cells
     how_many_group_3or4_cells: how_many_group_3or4_cells
     note_about_choosing_cells: note_about_choosing_cells
-    FP_channels: FP_channels
+    channels: FP_channels
   end
   marked: false
   start: now()

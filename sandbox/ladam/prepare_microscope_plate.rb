@@ -20,7 +20,7 @@ class Protocol
 
       io_hash = input[:io_hash]
       io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-      io_hash = { overnight_id: 0, debug_mode: "No" }.merge io_hash
+      io_hash = { overnight_id: input[:overnight_id], debug_mode: input[:debug_mode] }.merge io_hash
       if io_hash[:debug_mode].downcase == "yes"
         def debug
           true
@@ -29,7 +29,6 @@ class Protocol
 
 
         overnight_id = io_hash[:overnight_ids][0]
-        overnight_in_aq = find(:item, id: overnight_id)[0]
 
         #use take items
         #take items, interactive: true

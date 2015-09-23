@@ -19,7 +19,7 @@ class Protocol
     def main
         io_hash = input[:io_hash]
         io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-        io_hash = { overnight_id: 0, debug_mode: "No" }.merge io_hash
+        io_hash = { overnight_id: input[:overnight_id], debug_mode: input[:debug_mode] }.merge io_hash
         if io_hash[:debug_mode].downcase == "yes"
           def debug
             true

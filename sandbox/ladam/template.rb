@@ -17,11 +17,15 @@ class Protocol
     end
 
     def main
-        if input[:debug_mode].downcase == "yes"
-            def debug
-                true
-            end
+      io_hash = input[:io_hash]
+      io_hash = input if !input[:io_hash] || input[:io_hash].empty?
+      io_hash = { debug_mode: input[:debug_mode] }.merge io_hash
+      if io_hash[:debug_mode].downcase == "yes"
+        def debug
+          true
         end
+      end
+
 
         plate_id = input[:plate_id]
         plate_in_aq = find(:item, id: plate_id)[0]
