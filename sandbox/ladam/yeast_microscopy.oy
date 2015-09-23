@@ -81,7 +81,7 @@ place timelapse_NIS
     how_many_individual_cells: how_many_individual_cells
     how_many_group_3or4_cells: how_many_group_3or4_cells
     note_about_choosing_cells: note_about_choosing_cells
-    channels: FP_channels
+    channels: channels
   end
   marked: false
   start: now()
