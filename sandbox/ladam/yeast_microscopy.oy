@@ -12,18 +12,18 @@ argument
   channels: string, " choose between GFP,mCherry,YFP, leave empty if brightfield (will always be taken)"
 end
 
-place tasks_inputs
-  protocol: "aqualib:workflows/general/tasks_inputs.rb"
-  group: group
-  argument
-    debug_mode: debug_mode
-    group: group
-    task_name: "Yeast Microscopy"
-  end
-  marked: true
-  start: now()
-  window: hours(1)
-end
+#place tasks_inputs
+  #protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  #group: group
+  #argument
+  #  debug_mode: debug_mode
+  #  group: group
+  #  task_name: "Yeast Microscopy"
+#  end
+#  marked: true
+#  start: now()
+#  window: hours(1)
+#end
 
 place overnight
   protocol: "aqualib:workflows/yeast/overnight_suspension.rb"
@@ -32,8 +32,10 @@ place overnight
     debug_mode: debug_mode
     group: group
     item_ids: [yeast_id]
+    media_type: "800 mL YPAD liquid (sterile)"
+    volume: 2
   end
-  marked: false
+  marked: true
   start: now()
   window: hours(1)
 end
@@ -50,7 +52,7 @@ place setup_microscope
   protocol: "aqualib:sandbox/ladam/microscope_preparation.rb"
   group: group
   marked: false
-  start: hours(4)
+  start: hours(5)
   window: hours(1)
 end
 
@@ -58,8 +60,8 @@ place prepare_plate
   protocol: "aqualib:sandbox/ladam/prepare_microscope_plate.rb"
   group: group
   marked: false
-  start: hours(1)
-  window: hours(1)
+  start: minutes(30)
+  window: minutes(30)
 end
 
 place lens
@@ -95,7 +97,7 @@ place cleanup
 end
 
 
-wire tasks_inputs => overnight
+#wire tasks_inputs => overnight
 wire overnight => dilute
 wire dilute => setup_microscope
 wire setup_microscope => prepare_plate
@@ -105,7 +107,7 @@ wire timelapse_NIS => cleanup
 
 
 
-transition [ tasks_inputs ] => [ overnight ] when !error(0) && completed(0) end
+#transition [ tasks_inputs ] => [ overnight ] when !error(0) && completed(0) end
 transition [ overnight ] => [ dilute ] when !error(0) && completed(0) end
 transition [ dilute ] => [ setup_microscope ] when !error(0) && completed(0) end
 transition [ setup_microscope ] => [ prepare_plate ] when !error(0) && completed(0) end
@@ -116,7 +118,7 @@ transition [ cleanup ] => [ ] when !error(0) && completed(0) end
 
 
 # restart if errored out
-transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+#transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
 transition [ dilute ] => [ setup_microscope ] when error(0) end
 transition [ setup_microscope ] => [ prepare_plate ] when error(0) end

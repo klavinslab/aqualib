@@ -42,7 +42,7 @@ class Protocol
         #
         show {
             title "Get items"
-            note "Take Plate #{overnight_id} at #{overnight_in_aq.location}"
+            note "Take overnight #{overnight_id} at #{overnight_in_aq.location}"
             note "Take a centrifuge tube from XXXX. Label it with #{overnight_id}_D."
         }
         show {
@@ -58,7 +58,7 @@ class Protocol
         show {
             title "Return items"
             note "Return #{overnight_id} to #{overnight_in_aq.location}"
-            note "Return #{overnight_id}_D in the 30C shaker incubator. After 5 hours, the yeast should be ready to be imaged."
+            note "Return #{overnight_id}_D in the 30C shaker incubator. After 5 hours, the yeasts should be ready to be imaged."
         }
 
         if io_hash[:task_id]

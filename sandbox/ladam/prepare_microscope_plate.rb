@@ -70,7 +70,7 @@ class Protocol
             title "Clean-up"
             note "Discard #{overnight_id}_D."
             note "Put the Microscope-YAPD plate with parafilm in the fridge B13.120."
-            note "Get ready to take the microsopce plate to the microsocpe room."
+            note "Get ready to take the microsopce plate to the microscope room."
         }
         if io_hash[:task_id]
             task = find(:task, id: io_hash[:task_id])[0]
