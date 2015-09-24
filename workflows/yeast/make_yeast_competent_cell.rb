@@ -10,7 +10,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_culture_ids: [34887,34888],
+      yeast_culture_ids: [15866,45659],
       overnight_ids: [34883,34884,34885],
       debug_mode: "Yes"
     }
@@ -61,12 +61,14 @@ class Protocol
     yeast_strain_id_quantity_hash = Hash.new(0)
     # a hash to store how many competent cell you want for each yeast strain
     # to indicate that we want as many W303a (29) and W303alpha (30) competent cell as possible
-    yeast_strain_id_quantity_hash[29] = 100
-    yeast_strain_id_quantity_hash[30] = 100
     yeast_strain_ids.each do |id|
       yeast_strain = find(:sample, id: id)[0]
       begin
         yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] += 1
+        parent_strain = yeast_strain.properties["Parent"]
+        if parent_strain.description.include?("comp_cell_limit: no")
+          yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] = 100
+        end
       rescue
       end
     end
