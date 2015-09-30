@@ -13,19 +13,19 @@ class Protocol
     }
     
     show {
-      title "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+      note "Get Bottle and Stir Bar: Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
     }
     
     show {
-      title "Weigh Agar: Using the gram scale, large weigh boat, and chemical spatula, weigh out 29.6 grams of LB Agar powder and pour into the bottle."
+      note "Weigh Agar: Using the gram scale, large weigh boat, and chemical spatula, weigh out 29.6 grams of LB Agar powder and pour into the bottle."
       }
       
     show {
-      title "Using the graduated cylinder measure out 800 mL of DI water."
+      note "Using the graduated cylinder measure out 800 mL of DI water."
     }
     
     show {
-      title "Measure out Water: fill bottle with DI water, shake to get all powder solvated."
+      note "Measure out Water: fill bottle with DI water, shake to get all powder solvated."
     }
     
     o.input.all.release
