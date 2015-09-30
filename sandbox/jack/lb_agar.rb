@@ -9,8 +9,6 @@ class Protocol
     show {
       title "LB Agar"
       note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
-      note "Total duration: 3 hours"
-      note "Total worktime: 30 minutes"
       warning "Wait until the agar has cooled enough to touch with bare hands and add the appropriate amount of antibiotic while stirring"
     }
     
