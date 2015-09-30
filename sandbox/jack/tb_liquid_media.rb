@@ -10,25 +10,27 @@ class Protocol
     show {
       title "TB Liquid Media"
       note "Description: This prepares a bottle of TB Media for growing bacteria"
-      note "Total duration: 3 hours"
-      note "Total worktime: 30 minutes"
       warning "To add antibotics, wait for contents to cool to 40 C and add the appropriate amount of antibiotics"
     }
     
     show {
-      title "Place large weigh boat on gram scale and zero"
+      title "Zero Scale"
+      note "Place large weigh boat on gram scale and zero"
     }
     
     show {
-      title "Measure out 20 grams of TB media powder and pour contents into liter bottle"
+      title "Weigh TB Powder"
+      note "Measure out 20 grams of TB media powder and pour contents into liter bottle"
       }
       
     show {
-      title "Measure out 800 mL of DI water using the graduated cyinder and pour into liter bottle"
+      title "Measure Water"
+      note "Measure out 800 mL of DI water using the graduated cyinder and pour into liter bottle"
     }
     
     show {
-      title "Close liter bottle and shake until all contents are solvated"
+      title "Mix Solution"
+      note "Close liter bottle and shake until all contents are solvated"
     }
     
     o.input.all.release
