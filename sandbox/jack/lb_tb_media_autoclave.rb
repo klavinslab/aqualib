@@ -14,15 +14,18 @@ class Protocol
     }
     
     show {
+      title "Tape Bottle"
       note "Stick autoclave tape on top of the bottle"
     }
     
     show {
+      title "Autoclave"
       note "Loosen cap and autoclave at 110C for 15 minutes"
       note "Click next to start timer"
     }
     
     show {
+      title "Timer"
       timer initial: { hours: 0, minutes: 15, seconds: 0}
     }
     
