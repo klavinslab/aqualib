@@ -10,27 +10,19 @@ class Protocol
     show {
       title "Autoclave for Bacteria"
       note "Description: This protocol is for sterilizing the media used for bacteria"
-      warning "Wait until the agar has cooled enough to touch with bare hands and add the appropriate amount of antibiotic while stirring"
     }
     
     show {
       title "Tape Bottle"
       note "Stick autoclave tape on top of the bottle"
+      warning "Make sure that the tape seals the cap to the bottle so that when you open the bottle you have to break the tape"
     }
     
     show {
       title "Autoclave"
+      note "Check the water levels in the autoclave"
       note "Loosen cap and autoclave at 110C for 15 minutes"
-      note "Click next to start timer"
-    }
-    
-    show {
-      title "Timer"
-      timer initial: { hours: 0, minutes: 15, seconds: 0}
-    }
-    
-    show {
-      warning "Stuff caked at the bottom: after autoclaving, if there is stuff caked at the bottom, do not use this batch, remake the media and make sure that everything is solvated before autoclaving (shake harder)"
+      note "5 beeps will signify that the autoclave is done"
     }
 
     o.input.all.release
