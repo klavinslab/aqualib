@@ -9,7 +9,6 @@ class Protocol
     show {
       title "LB Agar"
       note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
-      warning "Wait until the agar has cooled enough to touch with bare hands and add the appropriate amount of antibiotic while stirring"
     }
     
     show {
@@ -20,16 +19,18 @@ class Protocol
     show {
       title "Weigh Agar"
       note "Using the gram scale, large weigh boat, and chemical spatula, weigh out 29.6 grams of LB Agar powder and pour into the bottle."
+      warning "Before and after using the spatula, clean with ethanol"
       }
       
     show {
       title "Measure Water"
-      note "Using the graduated cylinder measure out 800 mL of DI water."
+      note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
     }
     
     show {
       title "Mix solution"
-      note "fill bottle with DI water, shake to get all powder solvated."
+      note "Shake until most of the powder is dissolved."
+      note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
     o.input.all.release
