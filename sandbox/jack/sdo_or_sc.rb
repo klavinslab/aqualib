@@ -12,5 +12,36 @@ class Protocol
     }
     
     show {
-      
+      title "Weigh Chemicals"
+      note "Weight out nitrogen base, DO media, dextrose, and adenine sulfate and add to 1000 mL bottle"
     }
+    
+    show {
+      title "Add Amino Acid"
+      note "Add amino acid solutions (Leu/His/Trp/Ura) to bottle (based on dropout type)"
+    }
+    
+    show {
+      title "Add dlH2O"
+      note "Add 500 mL dIH2O to bottle, close cap tightly and shake to mix"
+    }
+
+    show {
+      title "Add Water"
+      note "Add water to 800 mL mark on bottle, shake again to mix"
+    }
+    
+    show {
+      title "Cap Bottle"
+      note "Place cap on bottle loosely"
+    }
+    
+    o.input.all.release
+    o.output.all.release
+
+    return o.result
+
+  
+  end
+  
+end
