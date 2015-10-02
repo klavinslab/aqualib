@@ -22,9 +22,6 @@ class Protocol
       note "Remove from Autoclave: put on thermal gloves and take bottle out of autoclave, place on stir plate."
     }
     
-    show {
-      note "Stir: Heat to 65C while stirring at 700 rpm."
-    }
 
     o.input.all.release
     o.output.all.release
