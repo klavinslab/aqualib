@@ -33,6 +33,10 @@ class Protocol
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
+    show {
+      title "Label Media"
+    }
+    
     o.input.all.release
     o.output.all.release
 
