@@ -6,31 +6,39 @@ class Protocol
 
     o.input.all.take
     o.output.all.produce
+    
+    boo = o.output.all.item
 
     show {
       title "TB Liquid Media"
       note "Description: This prepares a bottle of TB Media for growing bacteria"
-      warning "To add antibotics, wait for contents to cool to 40 C and add the appropriate amount of antibiotics"
     }
     
     show {
-      title "Zero Scale"
-      note "Place large weigh boat on gram scale and zero"
+      title "Get Bottle and Stir Bar"
+      note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
     }
     
     show {
-      title "Weigh TB Powder"
-      note "Measure out 20 grams of TB media powder and pour contents into liter bottle"
+      title "Weight Out TB" 
+      note "Using the gram scale, large weigh boat, and chemical spatula, weigh out 20 grams of TB media powder and pour into the bottle."
+      warning "Before and after using the spatula, clean with ethanol"
       }
-      
+    
     show {
       title "Measure Water"
-      note "Measure out 800 mL of DI water using the graduated cyinder and pour into liter bottle"
+      note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
+    }
+      
+    show {
+      title "Mix solution"
+      note "Shake until most of the powder is dissolved."
+      note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
     show {
-      title "Mix Solution"
-      note "Close liter bottle and shake until all contents are solvated"
+      title "Label Media"
+      note "Label the bottle with '\LB Liquid Media\', \'Your initials\', and \'#{boo}\'"
     }
     
     o.input.all.release
