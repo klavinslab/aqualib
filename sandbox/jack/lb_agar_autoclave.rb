@@ -8,20 +8,22 @@ class Protocol
     o.output.all.produce
 
     show {
-      title "LB Agar"
-      note "Description: This protocol is for the preperation of LB Agar, the common plate media for growing bacteria cells."
-      warning "Wait until the agar has cooled enough to touch with bare hands and add the appropriate amount of antibiotic while stirring"
+      title "Autoclave for Bacteria"
+      note "Description: This protocol is for sterilizing the media used for bacteria"
     }
     
     show {
-      note "Autoclave: stick autoclave tape on top of bottle cap, loosen top and autoclave at 110C for 15 minutes."
-      timer initial: { hours: 0, minutes: 15, seconds: 0}
+      title "Tape Bottle"
+      note "Stick autoclave tape on top of the bottle"
+      warning "Make sure that the tape seals the cap to the bottle so that when you open the bottle you have to break the tape"
     }
     
     show {
-      note "Remove from Autoclave: put on thermal gloves and take bottle out of autoclave, place on stir plate."
+      title "Autoclave"
+      note "Check the water levels in the autoclave"
+      note "Loosen cap and autoclave at 110C for 15 minutes"
+      note "5 beeps will signify that the autoclave is done"
     }
-    
 
     o.input.all.release
     o.output.all.release
