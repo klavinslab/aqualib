@@ -5,6 +5,8 @@ class Protocol
 
     o.input.all.take
     o.output.all.produce
+    
+    boo = output.all.item
 
     show {
       title "LB Agar"
