@@ -37,7 +37,7 @@ class Protocol
     
     show {
       title "Label Media"
-      note "Label the bottle with 'LB Liquid Media', 'Your initials', and '#{ id }'"
+      note "Label the bottle with 'LB Agar', 'Your initials', and '#{ id[0] }'"
     }
     
     o.input.all.release
