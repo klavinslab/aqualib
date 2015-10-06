@@ -6,7 +6,7 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    boo = o.output.all.item_ids
+    boo = o.output.media.item_ids
    
     show {
       title "LB Liquid Media"
