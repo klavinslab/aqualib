@@ -40,7 +40,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo }'"
+      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo.join(", ") }'"
     }
     
     o.input.all.release
