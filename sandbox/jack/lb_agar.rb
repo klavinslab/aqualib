@@ -6,7 +6,7 @@ class Protocol
     o.input.all.take
     o.output.all.produce
 
-    boo = o.output.all.item_ids
+    id = o.output.media.item_ids
 
     show {
       title "LB Agar"
@@ -37,7 +37,7 @@ class Protocol
     
     show {
       title "Label Media"
-      note "Label the bottle with 'LB Liquid Media', 'Your initials', and '#{ boo[0] }'"
+      note "Label the bottle with 'LB Liquid Media', 'Your initials', and '#{ id }'"
     }
     
     o.input.all.release
