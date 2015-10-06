@@ -6,11 +6,12 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    boo = o.output.media.item_ids
+    id = o.output.media.item_ids
+    type = o.input.parameter_names
    
     show {
-      title "LB Liquid Media"
-      note "Description: This prepares a bottle of LB Media for growing bacteria"
+      title "#{type[0]} Liquid Media"
+      note "Description: This prepares a bottle of #{type[0]} Media for growing bacteria"
     }
 
     show {
@@ -19,8 +20,8 @@ class Protocol
     }
     
     show {
-      title "Weight Out LB" 
-      note "Using the gram scale, large weigh boat, and chemical spatula, weigh out 20 grams of LB media powder and pour into the bottle."
+      title "Weight Out #{type[0]}" 
+      note "Using the gram scale, large weigh boat, and chemical spatula, weigh out 20 grams of #{type[0]} media powder and pour into the bottle."
       warning "Before and after using the spatula, clean with ethanol"
       }
       
@@ -37,7 +38,7 @@ class Protocol
     
     show {
       title "Label Media"
-      note "Label the bottle with 'LB Liquid Media', 'Your initials', and '#{ boo[0] }'"
+      note "Label the bottle with '#{type[0]} Liquid Media', 'Your initials', and '#{ id[0] }'"
     }
     
     o.input.all.release
