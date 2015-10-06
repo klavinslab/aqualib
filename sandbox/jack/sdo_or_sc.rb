@@ -20,7 +20,7 @@ class Protocol
     
     show {
       title "Add Amino Acid"
-      note "Add #{boo.join(" ")} solutions to bottle"
+      note "Add #{boo.join(", ")} solutions to bottle"
     }
     
     show {
@@ -40,7 +40,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Your initials', #{ boo.join(', ') }"
+      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo.join("', ') }'"
     }
     
     o.input.all.release
