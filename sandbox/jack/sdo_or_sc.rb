@@ -6,7 +6,14 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
+    
+    #include a check for non included reagents (reverse)
     boo = o.input.all.parameter_names
+    
+    show {
+      title "Get Bottle and Stir Bar"
+      note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+    }
     
     show {
       title "Make SDO or SC Media"
@@ -15,22 +22,23 @@ class Protocol
     
     show {
       title "Weigh Chemicals"
-      note "Weight out nitrogen base, DO media, dextrose, and adenine sulfate and add to 1000 mL bottle"
+      note "Weight out 5.36 grams of nitrogen base, 1.12 grams of DO media, 16 grams of dextrose, and .064 grams of adenine sulfate and add to 1000 mL bottle"
     }
     
     show {
       title "Add Amino Acid"
-      note "Add #{boo.join(", ")} solutions to bottle"
-    }
-    
-    show {
-      title "Add dlH2O"
-      note "Add 500 mL dIH2O to bottle, close cap tightly and shake to mix"
+      note "Add 8 mL of #{boo.join(", ")} solutions each to bottle"
     }
 
     show {
-      title "Add Water"
-      note "Add water to 800 mL mark on bottle, shake again to mix"
+      title "Measure Water"
+      note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
+    }
+    
+    show {
+      title "Mix solution"
+      note "Shake until most of the powder is dissolved."
+      note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
     show {
