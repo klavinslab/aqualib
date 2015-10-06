@@ -6,6 +6,8 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
+    boo = o.input.all.parameter_names
+    
     show {
       title "Make SDO or SC Media"
       note "Description: Makes 800 mL of synthetic dropout (SDO) or synthetic complete (SC) media with 2% glucose and adenine supplement (800mL)"
@@ -34,6 +36,11 @@ class Protocol
     show {
       title "Cap Bottle"
       note "Place cap on bottle loosely"
+    }
+    
+    show {
+      title "Label Bottle"
+      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo }'"
     }
     
     o.input.all.release
