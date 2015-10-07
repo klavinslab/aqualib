@@ -58,9 +58,8 @@ class Protocol
       task = find(:task, id: id)[0]
       yeast_strain_ids.concat task.simple_spec[:yeast_transformed_strain_ids]
     end
-    yeast_strain_id_quantity_hash = Hash.new(0)
+    yeast_strain_id_quantity_hash = Hash.new(2)
     # a hash to store how many competent cell you want for each yeast strain
-    # to indicate that we want as many W303a (29) and W303alpha (30) competent cell as possible
     yeast_strain_ids.each do |id|
       yeast_strain = find(:sample, id: id)[0]
       begin
