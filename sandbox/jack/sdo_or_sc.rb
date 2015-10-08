@@ -9,6 +9,7 @@ class Protocol
     acids = o.input.parameter_names
     check = ["Leu", "His", "Trp", "Ura"]
     label_array = check - acids
+    acids_wa = acids - ["agar"]
     
     if acids.include?("agar")
       agar = ", 16g tryptone"
@@ -39,7 +40,7 @@ class Protocol
     
     show {
       title "Add Amino Acid"
-      note "Add 8 mL of #{acids.delete("agar").join(", ")} solutions each to bottle"
+      note "Add 8 mL of #{acids_wa.join(", ")} solutions each to bottle"
     }
 
     show {
