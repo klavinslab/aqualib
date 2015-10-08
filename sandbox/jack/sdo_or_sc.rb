@@ -6,13 +6,16 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    #which amino acids? agar?
+    #parameters
     param = o.input.parameter_names
+    
+    #get array of just amino acid parameters
     acids = param - ["agar"]
     
-    #get the not included amino acids
+    #get array of not included amino acids
     label_array = ["Leu", "His", "Trp", "Ura"] - acids
       
+    #modify label for bottle depending on # of amino acids and presence of agar
     if acids.length == 4
       label = "SC Media #{param.include?("agar") ? " + Agar" : ""}"
     else
