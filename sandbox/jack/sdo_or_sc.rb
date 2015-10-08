@@ -10,10 +10,8 @@ class Protocol
     
     if acids.include?("agar")
       agar = ", 16g tryptone"
-      agar_check = "+ Agar"
     else 
       agar = ""
-      agar_check = ""
     end
     
     label_array = ["Leu", "His", "Trp", "Ura"] - acids
@@ -23,7 +21,7 @@ class Protocol
     if acids.length == 4
       label = "SC Media #{agar_check}"
     else
-      label = "SDO -#{label_array.join(" -")} #{agar_check}"
+      label = "SDO -#{label_array.join(" -")} #{agar.empty? ? "" : " + Agar"}"
     end
     
     show {
