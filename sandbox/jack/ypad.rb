@@ -6,11 +6,11 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    boo = o.output.all.item_ids
+    item_id = o.output.all.item_ids
     
     show {
       title "Make YPAD Media"
-      note "Description: Make 800 mL of yeast extract-peptone-dextrose medium + adenine (YPAD)"
+      note "Description: Make 800 mL of yeast extract-tryptone-dextrose medium + adenine (YPAD)"
     }
     
     show {
@@ -36,7 +36,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo[0] }'"
+      note "Label the bottle with 'YPAD', 'Your initials', '#{item_id[0]}'"
     }
     
     o.input.all.release
