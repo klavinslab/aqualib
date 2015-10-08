@@ -17,7 +17,7 @@ class Protocol
     end
       
     show {
-      title "Autoclave for Bacteria"
+      title "Autoclave Media"
       note "Description: This protocol is for sterilizing the media used for bacteria"
     }
     
