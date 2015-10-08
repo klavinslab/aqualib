@@ -6,22 +6,15 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
+    #which amino acids? agar?
     acids = o.input.parameter_names
     
-    if acids.include?("agar")
-      agar = ", 16g tryptone"
-    else 
-      agar = ""
-    end
-    
     label_array = ["Leu", "His", "Trp", "Ura"] - acids
-    
-    acids.delete("agar")
       
     if acids.length == 4
       label = "SC Media #{agar_check}"
     else
-      label = "SDO -#{label_array.join(" -")} #{agar.empty? ? "" : " + Agar"}"
+      label = "SDO -#{label_array.join(" -")} #{acids.include?("agar") ? " + Agar" : ""}"
     end
     
     show {
@@ -36,7 +29,7 @@ class Protocol
     
     show {
       title "Weigh Chemicals"
-      note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate#{agar} and add to 1000 mL bottle"
+      note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate#{acids.include?("agar") ? ", 16g tryptone" : ""} and add to 1000 mL bottle"
     }
     
     show {
