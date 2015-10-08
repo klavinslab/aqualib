@@ -8,10 +8,17 @@ class Protocol
     
     id = o.output.media.item_ids
     type = o.input.parameter_names
+    
+    if type[0] == "LB Agar"
+      amount = 29.6
+    elsif (type[0] == "LB Liquid Media") || (type[0] == "TB Liquid Media")
+      amount = 20
+    else 
+      raise ArgumentError, "Parameter is not valid"
    
     show {
-      title "#{type[0]} Liquid Media"
-      note "Description: This prepares a bottle of #{type[0]} Media for growing bacteria"
+      title "#{type[0]}"
+      note "Description: This prepares a bottle of #{type[0]} for growing bacteria"
     }
 
     show {
@@ -21,7 +28,7 @@ class Protocol
     
     show {
       title "Weight Out #{type[0]}" 
-      note "Using the gram scale, large weigh boat, and chemical spatula, weigh out 20 grams of #{type[0]} media powder and pour into the bottle."
+      note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{type[0]} powder and pour into the bottle."
       warning "Before and after using the spatula, clean with ethanol"
       }
       
@@ -38,7 +45,7 @@ class Protocol
     
     show {
       title "Label Media"
-      note "Label the bottle with '#{type[0]} Liquid Media', 'Your initials', and '#{ id[0] }'"
+      note "Label the bottle with '#{type[0]}', 'Your initials', and '#{id[0]}'"
     }
     
     o.input.all.release
