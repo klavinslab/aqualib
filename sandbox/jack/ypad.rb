@@ -15,17 +15,23 @@ class Protocol
     
     show {
       title "Weigh Chemicals"
-      note "Weight out yeast extract, peptone, dextrose, and adenine sulfate (and optional agar) and add to 1000 mL bottle"
+      note "Weight out 8g yeast extract, 16g tryptone, 16g dextrose, .064g adenine sulfate and add to 1000 mL bottle"
     }
     
     show {
-      title "Add diH2O"
-      note "Add 500 mL dIH2O to bottle, close cap tightly and shake to mix"
+      title "Measure Water"
+      note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
     }
     
     show {
-      title "Add Water and Mix"
-      note "Add water to 800 mL mark on bottle, shake again to mix"
+      title "Mix solution"
+      note "Shake until most of the powder is dissolved."
+      note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
+    }
+    
+    show {
+      title "Cap Bottle"
+      note "Place cap on bottle loosely"
     }
     
     show {
