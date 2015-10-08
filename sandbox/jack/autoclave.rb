@@ -14,6 +14,7 @@ class Protocol
       temp = 110
     else 
       raise ArgumentError, 'Parameter is not valid'
+    end
       
     show {
       title "Autoclave for Bacteria"
