@@ -8,7 +8,7 @@ class Protocol
     
     #which amino acids? agar?
     param = o.input.parameter_names
-    acids = acids - ["agar"]
+    acids = param - ["agar"]
     
     #get the not included amino acids
     label_array = ["Leu", "His", "Trp", "Ura"] - acids
