@@ -19,7 +19,7 @@ class Protocol
     if acids.length == 4
       label = "SC Media"
     else
-      label = "SDO -#{label.join("', '-")} #{agar}"
+      label = "SDO -#{label_array.join("', '-")} #{agar}"
     end
     
     show {
