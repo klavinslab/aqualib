@@ -12,7 +12,7 @@ class Protocol
     label_array = ["Leu", "His", "Trp", "Ura"] - acids
       
     if acids.length == 4
-      label = "SC Media #{agar_check}"
+      label = "SC Media #{acids.include?("agar") ? " + Agar" : ""}"
     else
       label = "SDO -#{label_array.join(" -")} #{acids.include?("agar") ? " + Agar" : ""}"
     end
