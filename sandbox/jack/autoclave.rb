@@ -6,7 +6,15 @@ class Protocol
 
     o.input.all.take
     o.output.all.produce
-
+    
+    type = o.input.parameter_names
+    if boo[0] == "bacteria"
+      temp = 121
+    else if boo[0] == "yeast" || boo[0] == "yeast + bacteria"
+      temp = 110
+    else 
+      raise ArgumentError, 'Parameter is not valid'
+      
     show {
       title "Autoclave for Bacteria"
       note "Description: This protocol is for sterilizing the media used for bacteria"
@@ -21,7 +29,7 @@ class Protocol
     show {
       title "Autoclave"
       note "Check the water levels in the autoclave"
-      note "Loosen cap and autoclave at 110C for 15 minutes"
+      note "Loosen cap and autoclave at 110C for #{temp} minutes"
       note "5 beeps will signify that the autoclave is done"
     }
 
