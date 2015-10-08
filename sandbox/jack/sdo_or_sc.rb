@@ -6,11 +6,26 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    
-    
-    #include a check for non included reagents (reverse)
     acids = o.input.parameter_names
+    check = ["Leu", "His", "Trp", "Ura"]
+    label_array = check - acids
     
+    if acids.include?("agar")
+      agar = ", 16g tryptone"
+    else 
+      agar = ""
+    end
+      
+    if acids.length == 4
+      label = "SC Media"
+    else
+      label = "SDO -#{label.join("', '-)} #{agar}"
+    end
+    
+    show {
+      title "#{label}"
+      note "Description: Makes 800 mL of #{label} media with 2% glucose and adenine supplement"
+    }
     
     show {
       title "Get Bottle and Stir Bar"
@@ -18,13 +33,8 @@ class Protocol
     }
     
     show {
-      title "Make SDO or SC Media"
-      note "Description: Makes 800 mL of synthetic dropout (SDO) or synthetic complete (SC) media with 2% glucose and adenine supplement (800mL)"
-    }
-    
-    show {
       title "Weigh Chemicals"
-      note "Weight out 5.36 grams of nitrogen base, 1.12 grams of DO media, 16 grams of dextrose, and .064 grams of adenine sulfate and add to 1000 mL bottle"
+      note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate #{agar} and add to 1000 mL bottle"
     }
     
     show {
@@ -50,7 +60,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Your initials', '#{ boo.join("', ') }'"
+      note "Label the bottle with '#{label}', 'date', 'Your initials'"
     }
     
     o.input.all.release
