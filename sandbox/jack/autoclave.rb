@@ -8,9 +8,9 @@ class Protocol
     o.output.all.produce
     
     type = o.input.parameter_names
-    if boo[0] == "bacteria"
+    if type[0] == "bacteria"
       temp = 121
-    elsif (boo[0] == "yeast") || (boo[0] == "yeast + bacteria")
+    elsif (type[0] == "yeast") || (type[0] == "yeast + bacteria")
       temp = 110
     else 
       raise ArgumentError, 'Parameter is not valid'
