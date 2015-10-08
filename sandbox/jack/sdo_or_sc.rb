@@ -7,8 +7,10 @@ class Protocol
     o.output.all.produce
     
     
+    
     #include a check for non included reagents (reverse)
-    boo = o.input.all.parameter_names
+    acids = o.input.parameter_names
+    
     
     show {
       title "Get Bottle and Stir Bar"
