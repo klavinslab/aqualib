@@ -15,7 +15,8 @@ class Protocol
       amount = 20
     else 
       raise ArgumentError, "Parameter is not valid"
-   
+    end
+    
     show {
       title "#{type[0]}"
       note "Description: This prepares a bottle of #{type[0]} for growing bacteria"
