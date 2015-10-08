@@ -7,15 +7,16 @@ class Protocol
     o.output.all.produce
     
     acids = o.input.parameter_names
-    check = ["Leu", "His", "Trp", "Ura"]
-    label_array = check - acids
-    #acids_wa = acids - ["agar"]
     
     if acids.include?("agar")
       agar = ", 16g tryptone"
     else 
       agar = ""
     end
+    
+    label_array = ["Leu", "His", "Trp", "Ura"] - acids
+    
+    acids.delete("agar")
       
     if acids.length == 4
       label = "SC Media"
