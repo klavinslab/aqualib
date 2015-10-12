@@ -32,24 +32,8 @@ place pcr
   window: hours(1)
 end
 
-place pour_gel
-  protocol: "aqualib:workflows/ecoli/pour_gel.rb"
-  group: group
-  marked: false
-  start: now()
-  window: hours(1)
-end
-
-place run_gel
-  protocol: "aqualib:workflows/ecoli/run_gel.rb"
-  group: group
-  marked: false
-  start: now()
-  window: hours(1)
-end
-
 place image_gel
-  protocol: "aqualib:workflows/ecoli/image_gel.rb"
+  protocol: "aqualib:workflows/general/fragment_analyzing.rb"
   group: group
   marked: false
   start: now()
@@ -58,21 +42,15 @@ end
 
 wire tasks_inputs => lysate
 wire lysate => pcr
-wire pcr => pour_gel
-wire pour_gel => run_gel
-wire run_gel => image_gel
+wire pcr => image_gel
 
 transition [ tasks_inputs ] => [ lysate ] when !error(0) && completed(0) end
 transition [ lysate ] => [ pcr ] when !error(0) && completed(0) end
-transition [ pcr ] => [ pour_gel ] when !error(0) && completed(0) end
-transition [ pour_gel ] => [ run_gel ] when !error(0) && completed(0) end
-transition [ run_gel ] => [ image_gel ] when !error(0) && completed(0) end
+transition [ pcr ] => [ image_gel ] when !error(0) && completed(0) end
 transition [ image_gel ] => [] when !error(0) && completed(0) end
 
 # restart if errored out
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ lysate ] => [ lysate ] when error(0) end
 transition [ pcr ] => [ pcr ] when error(0) end
-transition [ pour_gel ] => [ pour_gel ] when error(0) end
-transition [ run_gel ] => [ run_gel ] when error(0) end
 transition [ image_gel ] => [ image_gel ] when error(0) end
