@@ -1,4 +1,4 @@
-class Protocol
+Class Protocol
   def main
     show {
       title "Hello World!"
