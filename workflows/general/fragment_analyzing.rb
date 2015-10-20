@@ -8,8 +8,8 @@ class Protocol
     {
       io_hash: {},
       gel_band_verify: "Yes",
-      stripwell_ids: [46657,46658],
-      yeast_plate_ids: [45926,45927],
+      stripwell_ids: [51355,37245],
+      yeast_plate_ids: [51085,51071],
       debug_mode: "No"
     }
   end
