@@ -7,10 +7,11 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    type = o.input.parameter_names
-    if type[0] == "bacteria"
+    type = o.input.all.type2.at(0)
+    
+    if type == "bacteria"
       temp = 121
-    elsif (type[0] == "yeast") || (type[0] == "yeast + bacteria")
+    elsif (type == "yeast") || (type == "yeast + bacteria")
       temp = 110
     else 
       raise ArgumentError, 'Parameter is not valid'
@@ -18,7 +19,7 @@ class Protocol
       
     show {
       title "Autoclave Media"
-      note "Description: This protocol is for sterilizing the media used for bacteria"
+      note "Description: This protocol is for sterilizing the media used for #{type}"
     }
     
     show {
