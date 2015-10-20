@@ -91,6 +91,11 @@ class Protocol
     end
     take stripwells, interactive: true
     show {
+      title "Fill empty wells with buffer"
+      note "Add any stripwells necessary to have 12 wells in each row."
+      note "Use EB buffer to fill any empty stripwells."
+    }
+    show {
       title "Run through fragment analyzer"
       check "Run all the following stripwells through fragment analyzer."
       note stripwells.collect { |s| "#{s}" }
