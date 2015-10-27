@@ -9,8 +9,8 @@ class Protocol
       io_hash: {},
       gel_band_verify: "Yes",
       stripwell_ids: [51355,37245],
-      yeast_plate_ids: [51085,51071],
-      debug_mode: "No"
+      yeast_plate_ids: [52318,52319],
+      debug_mode: "Yes"
     }
   end
 
@@ -82,7 +82,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [] }.merge io_hash
-  	stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -92,25 +92,47 @@ class Protocol
     take stripwells, interactive: true
     show {
       title "Fill empty wells with buffer"
-      note "Add any stripwells necessary to have 12 wells in each row."
-      note "Use EB buffer to fill any empty stripwells."
+      check "Arrange the following stripwells on separate rows of the analysis tray:"
+      note stripwells.collect { |s| "#{s}" }
+      check "Add any stripwells necessary to have 12 wells in each row."
+      check "Use EB buffer to fill any empty stripwells."
+      # stripwell photo here
     }
     show {
-      title "Run through fragment analyzer"
-      check "Run all the following stripwells through fragment analyzer."
-      note stripwells.collect { |s| "#{s}" }
+      title "Put stripwells into machine"
+      check "Make sure there are no air bubbles in the samples."
+      check "Uncap the samples."
     }
-  	stripwells.each do |stripwell|
-  		show {
-  			title "Upload fragment analyzer result image for stripwell #{stripwell.id}"
-        note "Take a screen shot of the 'gel' image of the stripwell #{stripwell.id}."
-  			note "Rename the file as stripwell_#{stripwell.id}. Upload it!"
-  			upload var: "stripwell_#{stripwell.id}"
-  		}
+    show {
+      title "Prepare software for fragment analysis"
+      check "Under \"Process\" -> \"Process Profile\", make sure \"PhusionPCR\" is selected."
+      note "Click \"Back to Wizard\" if previous data is displayed."
+      check "Under \"Sample selection\", unselect any empty rows.";
+      note "\"Sample info\" is optional."
+      # software screenshots
+    }
+    show {
+      title "Final checks before running analysis"
+      note "Under \"run check\", manually confirm"
+      check "Selected rows contain samples."
+      check "Alignment marker is loaded (changed every few weeks)."
+      # alignment marker photo
+    }
+    show {
+      title "Run analysis"
+      check "Click \"run\""
+      note "Estimated time is given on bottom of screen."
+    }
+    stripwells.each do |stripwell|
+      show {
+        title "Upload fragment analyzer result image for stripwell #{stripwell.id}"
+        check "Rename the gel image file of stripwell #{stripwell.id} as \"stripwell_#{stripwell.id}\". Upload it!"
+        upload var: "stripwell_#{stripwell.id}"
+      }
       if io_hash[:gel_band_verify].downcase == "yes"
         stripwell_band_verify stripwell, plate_ids: io_hash[:yeast_plate_ids]
       end
-  	end
+    end
 
     if io_hash[:gel_band_verify].downcase == "yes"
       plates = io_hash[:yeast_plate_ids].collect { |id| find(:item, id: id)[0] }
@@ -138,10 +160,17 @@ class Protocol
       end
     end
 
+    release stripwells
+
     show {
       title "Discard stripwells"
       note "Discard the following stripwells:"
       note stripwells.collect { |s| "#{s}" }
+    }
+    show {
+      title "Make sure machine in parked position"
+      note "If an error message occurs after the reports were generated, click \"okay.\""
+      check "Click \"Processes\" -> \"Parked\" icon."
     }
 
     stripwells.each do |stripwell|
