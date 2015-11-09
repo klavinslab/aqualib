@@ -37,7 +37,9 @@ class Protocol
     end
 
     verify_data = show {
-      title "Stripwell #{col}: verify that each lane matches expected size "
+      title "Stripwell #{col}: verify that each lane matches expected size"
+      note "Look at the gel image, and match bands with the lengths listed on the side of the gel image."
+      note "For more accurate values, select each well under \"analyze\" -> \"electropherogram\" to see peaks for fragments found with labeled lengths."
       note "Select No if there is no band or band does not match expected size,
       select N/A if expected length is N/A and there is a band."
       routes.each_with_index do |r,idx|
@@ -78,6 +80,12 @@ class Protocol
 
   end #gel_band_verify
 
+  module RowNamer
+    def row_name i
+      "Row #{(i.to_s.ord - '0'.ord + 'A'.ord).chr}"
+    end #row_name
+  end #RowName
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -92,43 +100,68 @@ class Protocol
     take stripwells, interactive: true
     show {
       title "Fill empty wells with buffer"
-      check "Arrange the following stripwells on separate rows of the analysis tray:"
-      note stripwells.collect { |s| "#{s}" }
-      check "Add any stripwells necessary to have 12 wells in each row."
-      check "Use EB buffer to fill any empty stripwells."
-      # stripwell photo here
+      check "Add 10 &micro;L of EB buffer to empty wells (need rows of 12)."
     }
     show {
-      title "Put stripwells into machine"
+      title "Move to analyzer"
+      note "Carry the stripwells over to the fragment analyzer machine."
+      image "frag_an_setup"
+    }
+    show {
+      title "Remove bubbles"
       check "Make sure there are no air bubbles in the samples."
       check "Uncap the samples."
+      image "frag_an_no_bubbles"
     }
     show {
-      title "Prepare software for fragment analysis"
+      extend RowNamer
+      title "Put stripwells in analyzer"
+      check "Arrange the following stripwells on separate rows of the analysis tray starting from the top row:"
+      stripwells.each_with_index.collect { |s, i| note "#{row_name i}: #{s}" }
+      check "Close the lid on the machine."
+      image "frag_an_stripwell_placement"
+    }
+    show {
+      title "Select PhusionPCR"
       check "Under \"Process\" -> \"Process Profile\", make sure \"PhusionPCR\" is selected."
+      image "frag_an_phusion_pcr"
+    }
+    show {
+      title "Unselect empty rows"
       note "Click \"Back to Wizard\" if previous data is displayed."
       check "Under \"Sample selection\", unselect any empty rows.";
-      note "\"Sample info\" is optional."
-      # software screenshots
+      image "frag_an_sample_selection"
     }
     show {
       title "Final checks before running analysis"
       note "Under \"run check\", manually confirm"
       check "Selected rows contain samples."
       check "Alignment marker is loaded (changed every few weeks)."
-      # alignment marker photo
+      image "frag_an_run_check"
     }
     show {
       title "Run analysis"
       check "Click \"run\""
       note "Estimated time is given on bottom of screen."
+      image "frag_an_run"
     }
-    stripwells.each do |stripwell|
+    show {
+      title "Upload PDF"
+      note "If an error message occurs after the reports were generated, click \"okay.\""
+      note "A PDF report is generated. Note that a separate \"gel image\" is generated for each stripwell row."
+      note "When asked to upload a gel image in the next steps, first right-click on the corresponding gel image in the PDF and paste into Paint. Then save as a JPEG for upload."
+      check "Upload the PDF"
+      upload var: "Fragment Analysis Report"
+    }
+    stripwells.each_with_index do |stripwell, i|
       show {
-        title "Upload fragment analyzer result image for stripwell #{stripwell.id}"
-        check "Rename the gel image file of stripwell #{stripwell.id} as \"stripwell_#{stripwell.id}\". Upload it!"
+        extend RowNamer
+        title "Upload resulting gel image for stripwell #{stripwell.id}"
+        check "Copy gel image for #{row_name i} into Paint and save as \"stripwell_#{stripwell.id}.jpg\". Upload it!"
         upload var: "stripwell_#{stripwell.id}"
+        image "frag_an_gel_image"
       }
+
       if io_hash[:gel_band_verify].downcase == "yes"
         stripwell_band_verify stripwell, plate_ids: io_hash[:yeast_plate_ids]
       end
@@ -160,18 +193,43 @@ class Protocol
       end
     end
 
-    release stripwells
-
+    show {
+      title "Prepare to upload resulting analyzer data"
+      check "Under \"Analysis,\" \"Gel Image\" tab, click \"Select All.\""
+      check "Under the \"View\" tab, check \"Show Analysis Parameters.\""
+      image "frag_an_select_all"
+    }
+    show {
+      title "Upload resulting analyzer data"
+      check "Under the \"Report\" tab, click \"Start Report/Export.\""
+      note "Wait while the files are generated."
+      check "Under \"File\"->\"Open Data Directory\", click \"Export.\""
+      image "frag_an_files_to_upload"
+      note "Upload the files ending in the following sequences:"
+      note "_Rw"
+      upload var: "Raw XML"
+      note "_Rw.csv"
+      upload var: "Raw CSV"
+      note "_Go_150dpi_1"
+      upload var: "Gel Image"
+      note "_Ex_PeakCalling.csv"
+      upload var: "Peak Calling CSV"
+    }
     show {
       title "Discard stripwells"
       note "Discard the following stripwells:"
       note stripwells.collect { |s| "#{s}" }
     }
+    release stripwells
     show {
       title "Make sure machine in parked position"
-      note "If an error message occurs after the reports were generated, click \"okay.\""
       check "Click \"Processes\" -> \"Parked\" icon."
+      image "frag_an_parked"
     }
+    show {
+      title "Have a good weekend!"
+      note "This will eventually prompt the user to move the cartridge into the fridge"
+    } if Time.now.friday?
 
     stripwells.each do |stripwell|
       stripwell.mark_as_deleted
