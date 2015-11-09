@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [46419,46420],
+      plate_ids: [52320,52321],
       debug_mode: "Yes",
       image_option: "No",
       task_ids: []
@@ -21,7 +21,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { image_option: "Yes" }.merge io_hash
+    io_hash = { image_option: "No" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -65,10 +65,14 @@ class Protocol
         # deal with when p is a collection with matrix defined. Assume all the plates are defined as 1xn dimension
         if p.datum[:matrix]
           p.datum[:matrix][0].each_with_index do |x, index|
-            get "number", var: "c#{p.id}.#{index+1}", label: "Estimate colony numbers for plate #{p.id}.#{index+1}", default: 5 if x > 0
+            if x > 0
+              get "number", var: "c#{p.id}.#{index+1}", label: "Estimate colony numbers for plate #{p.id}.#{index+1}", default: 5
+              select ["normal", "contamination", "lawn"], var: "report#{p.id}.#{index+1}", label: "If the plate is contaminated, choose \"contamination.\" If there is a lawn of colonies, choose \"lawn.\"", default: 0
+            end
           end
         else
           get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
+          select ["normal", "contamination", "lawn"], var: "report#{p.id}", label: "If the plate is contaminated, choose \"contamination.\" If there is a lawn of colonies, choose \"lawn.\"", default: 0
         end
       end
     }
