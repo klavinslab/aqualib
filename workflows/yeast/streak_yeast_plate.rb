@@ -60,6 +60,8 @@ class Protocol
 
       show {
         title "Inoculation from glycerol stock in M80 area"
+        check "Go to M80 area, clean out the pipette tip waste box, clean any mess that remains there."
+        check "Put on new gloves, grab a new tip box (green: 10 - 100 µL) and a pipettor (10 - 100 µL), and bring a test tube rack to M80 area."
         check "Grab the plates and go to M80 area to perform inoculation steps in the next pages."
         note "Be extremely cautious about your sterile technique during inoculation."
         note "Grab one glycerol stock at a time out of the M80 freezer."
@@ -73,7 +75,7 @@ class Protocol
           warning "Be extremely cautious about your sterile technique."
           image "divided_yeast_plate_colony"
           check "Grab one glycerol stock at a time out of the M80 freezer."
-          check "Use a sterile 100 µL tip with pipettor and vigorously scrape a big chuck of glycerol stock swirl onto a side corner of the yeast plate agar section"
+          check "Use a sterile 100 µL tip with the pipettor and vigorously scrape a big chunk of glycerol stock swirl onto a side corner of the yeast plate agar section"
         }
 
       release yeast_glycerol_stocks
@@ -125,8 +127,7 @@ class Protocol
 
     show {
       title "Wait till cell dry"
-      note "Wait till the yeast cells are dried on the plate."
-      timer initial: { hours: 0, minutes: 3, seconds: 0 }
+      note "Wait till the yeast cells are dried on the plate, which means you can see there is no more liquid form on the plate."
     }
 
     show {
