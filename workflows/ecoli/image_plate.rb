@@ -11,7 +11,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [52320,52321],
+      plate_ids: [52320,52321,52326],
       debug_mode: "Yes",
       image_option: "No",
       task_ids: []
@@ -67,12 +67,12 @@ class Protocol
           p.datum[:matrix][0].each_with_index do |x, index|
             if x > 0
               get "number", var: "c#{p.id}.#{index+1}", label: "Estimate colony numbers for plate #{p.id}.#{index+1}", default: 5
-              select ["normal", "contamination", "lawn"], var: "report#{p.id}.#{index+1}", label: "If the plate is contaminated, choose \"contamination.\" If there is a lawn of colonies, choose \"lawn.\"", default: 0
+              select ["normal", "contamination", "lawn"], var: "report#{p.id}.#{index+1}", label: "If plate #{p.id}.#{index+1} is contaminated, choose contamination. If there is a lawn of colonies, choose lawn.", default: 0
             end
           end
         else
           get "number", var: "c#{p.id}", label: "Estimate colony numbers for plate #{p.id}", default: 5
-          select ["normal", "contamination", "lawn"], var: "report#{p.id}", label: "If the plate is contaminated, choose \"contamination.\" If there is a lawn of colonies, choose \"lawn.\"", default: 0
+          select ["normal", "contamination", "lawn"], var: "report#{p.id}", label: "If plate #{p.id} is contaminated, choose contamination. If there is a lawn of colonies, choose lawn.", default: 0
         end
       end
     }
@@ -84,22 +84,20 @@ class Protocol
         new_matrix = [[]]
         num_colony = 0
         section_num_colony = []
+        section_status = []
         p.datum[:matrix][0].each_with_index do |x, index|
           new_matrix[0][index] = x
           section_num_colony[index] = colony_number[:"c#{p.id}.#{index+1}".to_sym]
+          section_status[index] = colony_number[:"report#{p.id}.#{index+1}".to_sym]
           if colony_number[:"c#{p.id}.#{index+1}".to_sym] == 0
             new_matrix[0][index] = -1
-            # show {
-            #   note colony_number[:"c#{p.id}.#{index+1}".to_sym]
-            #   note new_matrix
-            # }
           elsif colony_number[:"c#{p.id}.#{index+1}".to_sym]
             num_colony += colony_number[:"c#{p.id}.#{index+1}".to_sym]
           end
         end
-        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony, section_num_colony: section_num_colony })
+        p.datum = (p.datum).merge({ matrix: new_matrix, num_colony: num_colony, section_num_colony: section_num_colony, section_status: section_status })
       else
-        p.datum = (p.datum).merge({ num_colony: colony_number[:"c#{p.id}".to_sym] })
+        p.datum = (p.datum).merge({ num_colony: colony_number[:"c#{p.id}".to_sym], status: colony_number[:"report#{p.id}".to_sym] })
       end
       p.save
     end
