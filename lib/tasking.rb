@@ -117,7 +117,7 @@ module Tasking
       while ave_limit > 0
         user_task_hash.each do |user, ids|
           task_ids_to_return.concat user_task_hash[user].take(ave_limit)
-          user_task_hash[user] = user_task_hash.drop(ave_limit)
+          user_task_hash[user] = user_task_hash[user].drop(ave_limit)
         end
         user_task_hash.delete_if { |k, v| v.empty? }
         num_of_user = user_task_hash.keys.length
