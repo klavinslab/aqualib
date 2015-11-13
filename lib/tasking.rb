@@ -93,7 +93,48 @@ module Tasking
     limit_input[:limit] ||= sizes[-1]
     limit_num = limit_input[:limit].to_i
     limit_idx = sizes.index(limit_num)
-    return task_ids.take(limit_idx)
+    if ((limit_idx + 1) == limit_num) && limit_num < sizes[-1]
+      # this means each tasks only contain one unit
+      # We will select tasks based on users and the limit num
+      user_task_hash = Hash.new {|h,k| h[k] = [] }
+      task_ids.each do |id|
+        task = find(:task, id: tid)[0]
+        user_task_hash[task.user.login] = user_task_hash[task.user.login].push id
+      end
+      show {
+        note "before loop"
+        note user_task_hash
+      }
+      # give each user a priority based on the average limit
+      num_of_user = user_task_hash.keys.length
+      ave_limit = (limit_num/num_of_user).to_i
+      task_ids_to_return = []
+      while ave_limit > 0
+        user_task_hash.each do |user, ids|
+          task_ids_to_return.concat user_task_hash[user].take(ave_limit)
+          user_task_hash[user] = user_task_hash.drop(ave_limit)
+        end
+        user_task_hash.delete_if { |k, v| v.empty? }
+        num_of_user = user_task_hash.keys.length
+        remaining_capacity = limit_num - task_ids_to_return.length
+        ave_limit = (remaining_limit/num_of_user).to_i
+        show {
+          note "after loop"
+          note user_task_hash
+        }
+      end
+      # use remaining_task_ids to fill up the remaining_capacity
+      if remaining_capacity > 0
+        remaining_task_ids = task_ids - task_ids_to_return
+        task_ids_to_return.concat remaining_task_ids.take(remaining_capacity)
+      end
+
+    else # this means some tasks contain more than one unit
+      task_ids_to_return =  task_ids.take(limit_idx)
+    end
+
+    return task_ids_to_return
+
   end
 
   # return the size of a task
