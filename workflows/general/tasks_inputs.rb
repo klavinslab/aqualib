@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      debug_mode: "Yes",
-      task_name: "Fragment Construction",
+      debug_mode: "No",
+      task_name: "Gibson Assembly",
       group: "technicians"
     }
   end
