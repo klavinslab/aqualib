@@ -108,7 +108,7 @@ module Tasking
       end
       show {
         note "before loop"
-        note user_task_hash
+        note user_task_hash.to_json
       }
       # give each user a priority based on the average limit
       num_of_user = user_task_hash.keys.length
@@ -122,10 +122,10 @@ module Tasking
         user_task_hash.delete_if { |k, v| v.empty? }
         num_of_user = user_task_hash.keys.length
         remaining_capacity = limit_num - task_ids_to_return.length
-        ave_limit = (remaining_limit/num_of_user).to_i
+        ave_limit = (remaining_capacity/num_of_user).to_i
         show {
           note "after loop"
-          note user_task_hash
+          note user_task_hash.to_json
         }
       end
       # use remaining_task_ids to fill up the remaining_capacity
