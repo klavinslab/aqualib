@@ -104,7 +104,7 @@ module Tasking
       user_task_hash = Hash.new {|h,k| h[k] = [] }
       task_ids.each do |tid|
         task = find(:task, id: tid)[0]
-        user_task_hash[task.user.login] = user_task_hash[task.user.login].push id
+        user_task_hash[task.user.login] = user_task_hash[task.user.login].push tid
       end
       show {
         note "before loop"
