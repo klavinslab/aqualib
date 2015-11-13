@@ -102,7 +102,7 @@ module Tasking
       # this means each tasks only contain one unit
       # We will select tasks based on users and the limit num
       user_task_hash = Hash.new {|h,k| h[k] = [] }
-      task_ids.each do |id|
+      task_ids.each do |tid|
         task = find(:task, id: tid)[0]
         user_task_hash[task.user.login] = user_task_hash[task.user.login].push id
       end
