@@ -93,6 +93,11 @@ module Tasking
     limit_input[:limit] ||= sizes[-1]
     limit_num = limit_input[:limit].to_i
     limit_idx = sizes.index(limit_num)
+    show {
+      note "limit_idx is #{limit_idx}"
+      note "limit_num is #{limit_num}"
+      note "size is #{sizes}"
+    }
     if ((limit_idx + 1) == limit_num) && limit_num < sizes[-1]
       # this means each tasks only contain one unit
       # We will select tasks based on users and the limit num
