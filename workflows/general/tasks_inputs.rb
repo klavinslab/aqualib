@@ -137,7 +137,9 @@ class Protocol
           io_hash[variable_name] = [] if idx == 0
           io_hash[variable_name].concat ids
           if idx == io_hash[:task_ids].length - 1
-            io_hash[variable_name].uniq!
+            if variable_name != :fragment_ids
+              io_hash[variable_name].uniq!
+            end
             io_hash[:size] = io_hash[variable_name].length
           end
         end
