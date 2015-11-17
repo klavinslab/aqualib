@@ -10,6 +10,14 @@ module Cloning
     end
   end
 
+  # this function is to process the inventory of particular object_type and return the items that beyond a certain time frame.
+
+  def items_beyond_days object_type, days
+    items = find(:item, {object_type: { name: object_type }})
+    items_to_return = items.select { |i| (Time.zone.now - i.created_at)/(1.day) > days && i.datum["keep_item"] != "Yes" }
+    return items_to_return
+  end
+
   # this function process fragment ids that passed task_inputs, return their PCR recipe template stock, primer aliquts, annealing temperature and length, also return samples whose stock need to be diluted.
   def fragment_recipe id, p={}
     fragment = find(:sample, { id: id })[0]
