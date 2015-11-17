@@ -91,15 +91,7 @@ class Protocol
     end
     glycerol_stocks.each do |glycerol_stock|
       if glycerol_stock.object_type.name == "Yeast Glycerol Stock"
-        tp = TaskPrototype.where("name = 'Streak Plate'")[0]
-        t = Task.new(
-            name: "#{glycerol_stock.sample.name}_streak_plate",
-            specification: { "item_ids Yeast Glycerol Stock" => [glycerol_stock.id] }.to_json,
-            task_prototype_id: tp.id,
-            status: "waiting",
-            user_id: glycerol_stock.sample.user.id)
-        t.save
-        t.notify "Automatically created after glycerol stock made.", job_id: jid
+        create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id)
       end
     end
     io_hash[:glycerol_stock_ids] = io_hash[:glycerol_stock_ids].concat glycerol_stocks.collect { |g| g.id }
