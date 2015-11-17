@@ -91,7 +91,11 @@ class Protocol
     end
     glycerol_stocks.each do |glycerol_stock|
       if glycerol_stock.object_type.name == "Yeast Glycerol Stock"
-        create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id)
+        new_tasks = create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id)
+        new_tasks[:new_task_ids].each do |tid|
+          t = find(:task, id: tid)[0]
+          t.notify "Automatically created after glycerol stock made.", job_id: jid
+        end
       end
     end
     io_hash[:glycerol_stock_ids] = io_hash[:glycerol_stock_ids].concat glycerol_stocks.collect { |g| g.id }
