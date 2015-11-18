@@ -110,6 +110,7 @@ module Tasking
       num_of_user = user_task_hash.keys.length
       ave_limit = (limit_num/num_of_user).to_i
       task_ids_to_return = []
+      remaining_capacity = 0
       while ave_limit > 0
         user_task_hash.each do |user, ids|
           task_ids_to_return.concat user_task_hash[user].take(ave_limit)
