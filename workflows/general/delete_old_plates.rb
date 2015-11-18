@@ -23,8 +23,8 @@ class Protocol
         true
       end
     end
-    divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 75
-    yeast_plates_to_delete = items_beyond_days "Yeast Plate", 75
+    divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 70
+    yeast_plates_to_delete = items_beyond_days "Yeast Plate", 70
     take divided_yeast_plates_to_delete + yeast_plates_to_delete, interactive: true
     show {
       title "Dispose the old plates you just took"
