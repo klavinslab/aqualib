@@ -51,6 +51,7 @@ class Protocol
       io_hash: {},
       plasmid_stock_ids: [9189,11546,11547,34376,6222,9111],
       debug_mode: "Yes",
+      yeast_transformed_strain_ids: [11024,11025,11022],
       item_choice_mode: "No"
     }
   end
@@ -106,15 +107,19 @@ class Protocol
       return { io_hash: io_hash }
     end
 
+    # sample_stocks means fragmet stock or plasmid stock
+
     if io_hash[:item_choice_mode].downcase == "yes"
-      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name, object_type: "Plasmid Stock" }
+      sample_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| choose_sample find(:item, id: pid )[0].sample.name, object_type: "Plasmid Stock" }
     else
-      plasmid_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
+      sample_stocks = io_hash[:plasmid_stock_ids].collect{ |pid| find(:item, id: pid )[0] }
     end
 
-    plasmids = plasmid_stocks.collect { |p| p.sample }
+    plasmids = sample_stocks.collect { |p| p.sample }
 
-    take plasmid_stocks, interactive: true, method: "boxes"
+    take sample_stocks, interactive: true, method: "boxes"
+
+    ensure_stock_concentration sample_stocks
 
     cut_smart = choose_sample "Cut Smart", take: true
 
@@ -127,7 +132,7 @@ class Protocol
 
     pmeI = choose_sample "PmeI", take: true
 
-    num = (plasmid_stocks.select { |p| p.object_type.name == "Plasmid Stock" }).length
+    num = (sample_stocks.select { |p| p.object_type.name == "Plasmid Stock" }).length
 
     water_volume = 42 * num + 21
     buffer_volume = 5 * num + 2.5
@@ -171,8 +176,25 @@ class Protocol
       end
     }
 
-    load_samples( ["Plasmid, 2 µL"], [plasmid_stocks], stripwells ) {
-      note "Add 2 µL of each plasmid into the stripwell indicated."
+    sample_stocks_volume_list = []
+    sample_stocks.each do |s|
+      conc = s.datum[:concentration]
+      if conc > 300 && conc < 500
+        sample_stocks_volume_list.push 2
+      else
+        sample_stocks_volume_list.push (1000.0/conc).round(1)
+      end
+    end
+
+    # set minimal volume to be 0.5 µL
+    sample_stocks_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
+    # set maximal volume to be 15 µL
+    sample_stocks_volume_list.collect! { |x| x > 15 ? 15 : x }
+
+    sample_stocks_with_volume = sample_stocks.map.with_index { |s,i| sample_stocks_volume_list[i].to_s + " µL of " + s.id.to_s }
+
+    load_samples_variable_vol( ["Sample stock"], [sample_stocks_with_volume], stripwells ) {
+      note "Add volume of each sampel stock into the stripwell indicated."
       warning "Use a fresh pipette tip for each transfer."
     }
 
@@ -189,7 +211,7 @@ class Protocol
     end
 
     release stripwells
-    release plasmid_stocks, interactive: true, method: "boxes"
+    release sample_stocks, interactive: true, method: "boxes"
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|

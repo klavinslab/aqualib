@@ -10,6 +10,24 @@ module Cloning
     end
   end
 
+  # a function that scans all the stocks to find the stocks that do not have concentration in data filed, instructs the tech to nanodrop and enter in concentration.
+  def ensure_stock_concentration sample_stocks
+    sample_stocks.compact!
+    sample_stocks_need_to_measure = sample_stocks.select { |f| !f.datum[:concentration]}
+    if sample_stocks_need_to_measure.length > 0
+      data = show {
+        title "Nanodrop the following stocks."
+        sample_stocks_need_to_measure.each do |x|
+          get "number", var: "c#{x.id}", label: "Go to B9 and nanodrop tube #{x.id}, enter DNA concentrations in the following", default: 30.2
+        end
+      }
+      sample_stocks_need_to_measure.each do |x|
+        x.datum = {concentration: data[:"c#{x.id}".to_sym]}
+        x.save
+      end
+    end
+  end
+
   # this function is to process the inventory of particular object_type and return the items that beyond a certain time frame.
 
   def items_beyond_days object_type, days
