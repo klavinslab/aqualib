@@ -1,7 +1,9 @@
-Aquarium Klavins Lab Cloning workflow Change Log
+Aquarium Klavins Lab Cloning Workflow
 ===
+Change Log
+---
 #### 2015-11-17
-* Yeast plate and divided yeast plates that are longer than 110 days (will be changed to 100 days and 90 days after a few weeks) will be automatically submitted to Discard Item task and will be deleted when techs run the Discard Item workflow every day. If you don't want particular old plate to be deleted, in the item data field, write "keep_item": "Yes". (updated by Yaoyu Yang)
+* Yeast plates and divided yeast plates that are longer than 110 days (will be changed to 90 days after a few weeks) will be automatically submitted to Discard Item task and will be deleted when techs run the Discard Item workflow every day. If you don't want particular old plate to be deleted, in the item data field, write "keep_item": "Yes". (updated by Yaoyu Yang)
 * Gibson Assembly will now take the oldest fragment stock (i.e. fragment stock with lowest item id) if there are multiple fragment stocks in the inventory. It used to take the newest stock based on some people's feedbacks but David Younger insists we should take the oldest fragment stock. (updated by Yaoyu Yang)
 
 #### 2015-11-16
