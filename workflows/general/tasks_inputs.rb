@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      debug_mode: "No",
-      task_name: "Gibson Assembly",
+      debug_mode: "Yes",
+      task_name: "Discard Item",
       group: "technicians"
     }
   end
@@ -42,9 +42,18 @@ class Protocol
     if io_hash[:task_name] == "Discard Item"
       divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 100
       yeast_plates_to_delete = items_beyond_days "Yeast Plate", 100
-      plates_to_delete = divided_yeast_plates_to_delete + yeast_plates_to_delete
       new_discard_item_task_ids = []
-      plates_to_delete.each do |p|
+      divided_yeast_plates_to_delete.each do |p|
+        # find the first sample id that is not -1 in the matrix
+        sample_id = p.datum[:matrix].flatten().select { |i| i!=-1 }[0]
+        sample = find(:sample, id: sample_id)[0]
+        if sample
+          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: sample.user.id)[:new_task_ids]
+        else
+          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: 5)[:new_task_ids]
+        end
+      end
+      yeast_plates_to_delete.each do |p|
         new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: p.sample.user.id)[:new_task_ids]
       end
       show_task_table new_discard_item_task_ids

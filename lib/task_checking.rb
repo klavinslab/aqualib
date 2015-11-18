@@ -361,7 +361,11 @@ def create_new_tasks ids, p={}
       item = find(:item, id: id)[0]
       sample = item.sample
       item_type_name = item.object_type.name.split(" ").collect { |i| i.downcase }.join("_")
-      auto_create_task_name = "#{sample.name}_#{item_type_name}_#{item.id}_#{tp_name}"
+      if sample
+        auto_create_task_name = "#{sample.name}_#{item_type_name}_#{item.id}_#{tp_name}"
+      else
+        auto_create_task_name = "#{item_type_name}_#{item.id}_#{tp_name}"
+      end
     end
     task = find(:task, name: auto_create_task_name)[0]
     task_prototype_name_link = task_prototype_html_link task_prototype_name
