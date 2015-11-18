@@ -2,6 +2,9 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-11-18
+* When digesting plasmid/fragment stock for yeast transformation, now it will take variable amount of plasmid/fragment stock based on the concentration. The rule is that between 300-500 ng/µL, take 2 µL. Outside that range, take 1000/concentration uL but restricted in the range of 0.5-15 µL.
+
 #### 2015-11-17
 * Streak Plate task will be automatically submitted when a new yeast glycerol stock is made. This will make tasks such as Yeast Competent Cell and Yeast Cytometry that requires divided yeast plate happens a bit faster.
 * Yeast plates and divided yeast plates that are longer than 110 days (will be changed to 90 days a few weeks later) will be automatically submitted to Discard Item task and will be deleted when techs run the Discard Item workflow every day. If you don't want particular old plate to be deleted, in the item data field, write "keep_item": "Yes". (updated by Yaoyu Yang)
