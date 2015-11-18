@@ -1,0 +1,23 @@
+place daily
+  protocol: "aqualib:workflows/general/delete_old_plates.rb"
+  argument
+    type: "Daily"
+  end
+  group: "technicians"
+  marked: true
+  window: hours(24)
+end
+
+place daily_wait
+  marked: true
+end
+
+last_daily_update = -1
+
+transition [daily]        => [daily]  when completed(0) && time()[:day] == last_daily_update
+
+transition [daily_wait]   => [daily_wait] when time()[:day] != last_daily_update
+  do
+    last_daily_update = time()[:day]
+  end
+end

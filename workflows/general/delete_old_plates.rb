@@ -23,11 +23,15 @@ class Protocol
     end
     divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 75
     yeast_plates_to_delete = items_beyond_days "Yeast Plate", 75
+    take divided_yeast_plates_to_delete + yeast_plates_to_delete, interactive: true
     show {
-      note divided_yeast_plates_to_delete.length
-      note yeast_plates_to_delete.length
+      title "Dispose the old plates you just took"
+      check "Dispose in the biohazard box."
     }
-
+    (divided_yeast_plates_to_delete + yeast_plates_to_delete).each do |x|
+      x.mark_as_deleted
+      x.save
+    end
   end
 
 end
