@@ -14,7 +14,7 @@ module Cloning
 
   def items_beyond_days object_type, days
     items = find(:item, {object_type: { name: object_type }})
-    items_to_return = items.select { |i| (Time.zone.now - i.created_at)/(1.day) > days && i.datum["keep_item"] != "Yes" }
+    items_to_return = items.select { |i| (Time.zone.now - i.created_at)/(1.day) > days && i.datum[:keep_item] != "Yes" }
     return items_to_return
   end
 
