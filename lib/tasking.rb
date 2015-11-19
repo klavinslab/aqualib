@@ -98,7 +98,7 @@ module Tasking
     #   note "limit_num is #{limit_num}"
     #   note "size is #{sizes}"
     # }
-    if limit_idx == limit_num && limit_num < sizes[-1]
+    if sizes[-1] == sizes.index(sizes[-1]) && limit_num < sizes[-1]
       # this means each tasks only contain one unit
       # We will select tasks based on users and the limit num
       user_task_hash = Hash.new {|h,k| h[k] = [] }
