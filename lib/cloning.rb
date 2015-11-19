@@ -22,7 +22,7 @@ module Cloning
         end
       }
       sample_stocks_need_to_measure.each do |x|
-        x.datum = {concentration: data[:"c#{x.id}".to_sym]}
+        x.datum = (x.datum).merge({ concentration: data[:"c#{x.id}".to_sym] })
         x.save
       end
     end

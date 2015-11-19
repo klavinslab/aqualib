@@ -91,7 +91,7 @@ class Protocol
     take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
     ensure_stock_concentration fragment_stocks_flatten
-    
+
     fragment_volumes = []
     fragment_stocks.each do |fs|
       conc_over_length = fs.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
@@ -176,9 +176,9 @@ class Protocol
       fragment_stocks[idx].each_with_index do |f, idy|
         if volume_empty[:"c#{f.id}".to_sym] == "No"
           not_enough_volume_stocks.push f
-          if f.sample.in("Fragment Stock")[-2]
-            replacement_stocks.push f.sample.in("Fragment Stock")[-2]
-            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[-2]
+          if f.sample.in("Fragment Stock")[1]
+            replacement_stocks.push f.sample.in("Fragment Stock")[1]
+            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[1]
           end
         end
       end
@@ -194,6 +194,7 @@ class Protocol
           fragment_stocks[idx].each_with_index do |f,m|
             tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
           end
+          gibson_result.datum = gibson_result.datum.merge({ from: fragment_stocks[idx].collect { |f| f.id } })
           show {
             title "Load Gibson Reaction #{gibson_result} with new stocks"
             note "Make sure the gibson aliquot is thawed before pipetting."
@@ -214,6 +215,7 @@ class Protocol
       else
 
         gibson_results = gibson_results.push gibson_result
+        gibson_result.datum = gibson_result.datum.merge({ from: fragment_stocks[idx].collect { |f| f.id } })
 
       end
 
