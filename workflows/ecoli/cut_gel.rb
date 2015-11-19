@@ -127,6 +127,7 @@ class Protocol
 
   release slices, interactive: true, method: "boxes"
 
+  errors = []
   if io_hash[:task_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
@@ -149,10 +150,11 @@ class Protocol
             upload_url = Upload.find(upload_id).url
             associated_gel = collection_from id
             gel_matrix = associated_gel.matrix
-            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')})" }.join(", ")
+            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')}; length: #{find(:sample, id: fid)[0].properties["Length"]})" }.join(", ")
             image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
             notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
-          rescue
+          rescue Exception => e
+            errors.push e.to_s
           end
         end
         notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
@@ -160,6 +162,7 @@ class Protocol
     end
   end
 
+  io_hash[:errors] = errors
   io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
   return { io_hash: io_hash }
 end
