@@ -50,6 +50,9 @@ class Protocol
     }
 
     transformed_aliquots = items_to_transform.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
+    transformed_aliquots.each_with_index do |transformed_aliquot,idx|
+      transformed_aliquot.datum = transformed_aliquot.datum.merge({ from: items_to_transform[idx].id })
+    end
     ids = transformed_aliquots.collect {|t| t.id}
     num = transformed_aliquots.length
     num_arr = *(1..num)

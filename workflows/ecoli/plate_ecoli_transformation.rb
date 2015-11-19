@@ -38,6 +38,9 @@ class Protocol
     take all_transformed_aliquots, interactive: true if all_transformed_aliquots.length > 0
 
     all_plates = all_transformed_aliquots.collect { |t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid" }
+    all_plates.each_with_index do |all_plate,idx|
+      all_plate.datum = all_plate.datum.merge({ from: all_transformed_aliquots[idx].id })
+    end
 
     plates_marker_hash = Hash.new { |h,k| h[k] = [] }
     all_plates.each do |p|
