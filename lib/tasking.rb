@@ -131,9 +131,10 @@ module Tasking
       task_ids_to_return =  task_ids.take(limit_idx)
     end
 
-    task_ids_to_return.sort_by { |tid| find(:task, id: tid)[0].user.name }
+    # sort task_ids_to_return by user name
+    sorted_task_ids = task_ids_to_return.sort_by { |tid| find(:task, id: tid)[0].user.name }
 
-    return task_ids_to_return
+    return sorted_task_ids
 
   end
 
