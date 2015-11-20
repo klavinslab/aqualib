@@ -2,6 +2,9 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-11-20
+* Fragment analyzing protocol now reports the gel images in task notifications. This will make Yeast Strain QC users have easier access to gel images.
+
 #### 2015-11-19
 * Batched tasks to run in each workflow will be sorted by user id. This way, all the relevant tasks, samples, items in each workflow for each user will be in closer proximity so that they will have an easier time to look at the log or do any analysis.
 
