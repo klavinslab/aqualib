@@ -2,8 +2,11 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-11-19
+* Batched tasks to run in each workflow will be sorted by user name. This way, all the relevant tasks, samples, items in each workflow for each user will be in closer proximity so that they will have an easier time to look at the log or do any analysis.
+
 #### 2015-11-18
-* When digesting plasmid/fragment stock for yeast transformation, now it will take variable amount of plasmid/fragment stock based on the concentration. The rule is that between 300-500 ng/µL, take 2 µL. Outside that range, take 1000/concentration uL but restricted in the range of 0.5-15 µL.
+* When digesting plasmid/fragment stock for yeast transformation, now it will take variable amount of plasmid/fragment stock based on the concentration. The rule is that between 300-500 ng/µL, take 2 µL. Outside that range, take 1000/concentration uL but restricted in the range of 0.5-15 µL. (updated by Yaoyu Yang)
 
 #### 2015-11-17
 * Streak Plate task will be automatically submitted when a new yeast glycerol stock is made. This will make tasks such as Yeast Competent Cell and Yeast Cytometry that requires divided yeast plate happens a bit faster.
