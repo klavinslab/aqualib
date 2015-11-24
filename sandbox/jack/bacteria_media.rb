@@ -6,8 +6,8 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    id = o.output.media.item_ids
-    type = o.input.all.type1.at(0)
+    id = o.output.all.item_ids
+    type = o.input.all.samples
     
     if type == "LB Agar"
       amount = 29.6
