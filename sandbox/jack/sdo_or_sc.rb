@@ -6,21 +6,26 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
+    label = o.output.all.samples
+    typeSDO = temp.scan(/-[a-z]+/)
+    acids = typeSDO.collect{|x| x.gsub(/-/, '')}
+    includeAcids = ["Leu", "His", "Trp", "Ura"] - acids
+    
     #parameters
-    param = o.input.parameter_names
+    #param = o.input.parameter_names
     
     #get array of just amino acid parameters
-    acids = param - ["agar"]
+    #acids = param - ["agar"]
     
     #get array of not included amino acids
-    label_array = ["Leu", "His", "Trp", "Ura"] - acids
+    #label_array = ["Leu", "His", "Trp", "Ura"] - acids
       
     #modify label for bottle depending on # of amino acids and presence of agar
-    if acids.length == 4
-      label = "SC Media #{param.include?("agar") ? " + Agar" : ""}"
-    else
-      label = "SDO -#{label_array.join(" -")} #{param.include?("agar") ? " + Agar" : ""}"
-    end
+    #if acids.length == 4
+    #  label = "SC Media #{label.include?("agar") ? " + Agar" : ""}"
+    #else
+    #  label = "SDO -#{label_array.join(" -")} #{param.include?("agar") ? " + Agar" : ""}"
+    #end
     
     show {
       title "#{label}"
@@ -34,7 +39,7 @@ class Protocol
     
     show {
       title "Weigh Chemicals"
-      note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate#{param.include?("agar") ? ", 16g tryptone" : ""} and add to 1000 mL bottle"
+      note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate#{label.include?("agar") ? ", 16g tryptone" : ""} and add to 1000 mL bottle"
     }
     
     show {
