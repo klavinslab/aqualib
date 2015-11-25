@@ -5,7 +5,6 @@ class Protocol
 
     o.output.all.produce
     
-    id = o.output.all.item_ids
     type = o.input.all.samples
     
     if type == "LB Agar"
