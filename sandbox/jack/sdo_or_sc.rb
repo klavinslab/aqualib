@@ -63,7 +63,7 @@ class Protocol
     
     show {
       title "Add Amino Acid"
-      note "Add 8 mL of #{acids.join(", ")} solutions each to bottle"
+      note "Add 8 mL of #{includeAcids.join(", ")} solutions each to bottle"
     }
 
     show {
