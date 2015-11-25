@@ -3,14 +3,29 @@ class Protocol
   def main
     o = op input
     
-    o.input.all.take
     o.output.all.produce
+    label = "SDO -leu (unsterile)"
     
-    label = o.output.all.samples
-    typeSDO = temp.scan(/-[a-z]+/)
+    ingredients = find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}}) + 
+        find(:item,{object_type:{name:"Dextrose"}}) + find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}}) 
+            
+    if label.include?("agar")
+      ingredients += find(:item, {object_type:{name:"Bacto Tryptone"}})
+    
+    typeSDO = label.scan(/-[a-z]+/)
     acids = typeSDO.collect{|x| x.gsub(/-/, '')}
-    includeAcids = ["Leu", "His", "Trp", "Ura"] - acids
+    includeAcids = ["leu", "his", "trp", "ura"] - acids
+    includeAcids.each do |i|
+      if(i == "leu")
+        ingredients += find(:item,{object_type:{name:"Leucine Solution"}})
+      elsif(i == "his")
+        ingredients += find(:item,{object_type:{name:"Histidine Solution"}})
+      elsif(i == "trp")
+        ingredients += find(:item,{object_type:{name:"Tryptophan Solution"}})
+      else
+        ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
     
+    take ingredients, interactive: true
     #parameters
     #param = o.input.parameter_names
     
@@ -65,10 +80,10 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with '#{label}', 'date', 'Your initials'"
+      note "Label the bottle with '#{label.gsub(/(unsterile)/, ''}', 'date', 'Your initials'"
     }
     
-    o.input.all.release
+    release ingredients, interactive: true
     o.output.all.release
 
     return o.result
