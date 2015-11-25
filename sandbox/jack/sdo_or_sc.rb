@@ -18,38 +18,22 @@ class Protocol
     includeAcids = ["leu", "his", "trp", "ura"] - acids
     includeAcids.each do |i|
       if(i == "leu")
-        ingredients + find(:item,{object_type:{name:"Leucine Solution"}})
+        ingredients += find(:item,{object_type:{name:"Leucine Solution"}})
       elsif(i == "his")
-        ingredients + find(:item,{object_type:{name:"Histidine Solution"}})
+        ingredients += find(:item,{object_type:{name:"Histidine Solution"}})
       elsif(i == "trp")
-        ingredients + find(:item,{object_type:{name:"Tryptophan Solution"}})
+        ingredients += find(:item,{object_type:{name:"Tryptophan Solution"}})
       else
-        ingredients + find(:item,{object_type:{name:"Uracil Solution"}})
+        ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
       end
     end
     
     take ingredients, interactive: true
-    item_id = o.output.all.item_ids
-    #parameters
-    #param = o.input.parameter_names
-    
-    #get array of just amino acid parameters
-    #acids = param - ["agar"]
-    
-    #get array of not included amino acids
-    #label_array = ["Leu", "His", "Trp", "Ura"] - acids
-      
-    #modify label for bottle depending on # of amino acids and presence of agar
-    #if acids.length == 4
-    #  label = "SC Media #{label.include?("agar") ? " + Agar" : ""}"
-    #else
-    #  label = "SDO -#{label_array.join(" -")} #{param.include?("agar") ? " + Agar" : ""}"
-    #end
+
     
     show {
       title "#{label}"
       note "Description: Makes 800 mL of #{label} media with 2% glucose and adenine supplement"
-      note "#{includeAcids}"
     }
     
     show {
