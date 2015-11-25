@@ -15,7 +15,6 @@ class Protocol
     show {
       title "Make YPAD Media"
       note "Description: Make 800 mL of yeast extract-tryptone-dextrose medium + adenine (YPAD)"
-      note "#{itemOne}"
     }
     
     show {
