@@ -9,8 +9,9 @@ class Protocol
     ingredients = find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}}) + 
         find(:item,{object_type:{name:"Dextrose"}}) + find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}}) 
             
-    if label.include?("agar")
+    if(label.include?("agar"))
       ingredients += find(:item, {object_type:{name:"Bacto Tryptone"}})
+    end
     
     typeSDO = label.scan(/-[a-z]+/)
     acids = typeSDO.collect{|x| x.gsub(/-/, '')}
@@ -24,6 +25,7 @@ class Protocol
         ingredients += find(:item,{object_type:{name:"Tryptophan Solution"}})
       else
         ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
+      end
     end
     
     take ingredients, interactive: true
