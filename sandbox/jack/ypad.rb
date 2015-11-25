@@ -10,7 +10,6 @@ class Protocol
         find(:item, { object_type: { name: "Dextrose" } } ) + find(:item, { object_type: { name: "Bacto Yeast Extract" } } ) +
             find(:item, { object_type: { name: "Bacto Tryptone" } } )
     take ingredients, interactive: true
-    item_id = o.output.all.item_ids
     
     show {
       title "Make YPAD Media"
@@ -40,7 +39,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Date', Your initials', '#{item_id[0]}'"
+      note "Label the bottle with 'YPAD', 'Date', Your initials'"
     }
     
     release ingredients, interactive: true
