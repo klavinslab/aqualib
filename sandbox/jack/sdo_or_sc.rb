@@ -24,6 +24,7 @@ class Protocol
         ingredients += find(:item,{object_type:{name:"Tryptophan Solution"}})
       else
         ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
+    end
     
     take ingredients, interactive: true
     item_id = o.output.all.item_ids
