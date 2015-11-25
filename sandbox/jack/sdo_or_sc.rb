@@ -26,6 +26,7 @@ class Protocol
         ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
     
     take ingredients, interactive: true
+    item_id = o.output.all.item_ids
     #parameters
     #param = o.input.parameter_names
     
@@ -80,7 +81,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with '#{label.gsub(/(unsterile)/, ''}', 'date', 'Your initials'"
+      note "Label the bottle with '#{label.gsub(/(unsterile)/, ''}', 'Date', 'Your initials', '#{item_id[0]}'"
     }
     
     release ingredients, interactive: true
