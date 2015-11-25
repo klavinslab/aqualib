@@ -43,7 +43,7 @@ class Protocol
       note "Label the bottle with 'YPAD', 'Your initials', '#{item_id[0]}'"
     }
     
-    release itemOne, interactive: true
+    release ingredients, interactive: true
     o.output.all.release
 
     return o.result
