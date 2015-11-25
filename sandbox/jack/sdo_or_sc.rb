@@ -81,7 +81,7 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with '#{label.gsub(/(unsterile)/, ''}', 'Date', 'Your initials', '#{item_id[0]}'"
+      note "Label the bottle with '#{label.gsub(/(unsterile)/, '')}', 'Date', 'Your initials', '#{item_id[0]}'"
     }
     
     release ingredients, interactive: true
