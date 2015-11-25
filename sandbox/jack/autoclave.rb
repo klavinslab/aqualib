@@ -8,6 +8,7 @@ class Protocol
     o.output.all.produce
     
     type = o.input.all.samples
+    label = type.gsub(/(unsterile)/,'')
     
     if (type.include? "LB" || type.include? "TB")
       temp = 121
@@ -19,7 +20,7 @@ class Protocol
       
     show {
       title "Autoclave Media"
-      note "Description: This protocol is for sterilizing the media used for #{type}"
+      note "Description: This protocol is for sterilizing the media used for #{label}"
     }
     
     show {
