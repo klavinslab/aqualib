@@ -6,11 +6,14 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
+    itemOne = find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )
+    take itemOne
     item_id = o.output.all.item_ids
     
     show {
       title "Make YPAD Media"
       note "Description: Make 800 mL of yeast extract-tryptone-dextrose medium + adenine (YPAD)"
+      note "#{itemOne}"
     }
     
     show {
