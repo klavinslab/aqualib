@@ -8,7 +8,7 @@ class Protocol
     o.output.all.produce
     
     type = o.input.all.samples
-    label = type.gsub(/(unsterile)/,'')
+    label = type.gsub(/\(unsterile\)/,'')
     
     if (type.include? "LB" || type.include? "TB")
       temp = 121
