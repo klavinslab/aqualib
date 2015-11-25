@@ -18,13 +18,13 @@ class Protocol
     includeAcids = ["leu", "his", "trp", "ura"] - acids
     includeAcids.each do |i|
       if(i == "leu")
-        ingredients += find(:item,{object_type:{name:"Leucine Solution"}})
+        ingredients + find(:item,{object_type:{name:"Leucine Solution"}})
       elsif(i == "his")
-        ingredients += find(:item,{object_type:{name:"Histidine Solution"}})
+        ingredients + find(:item,{object_type:{name:"Histidine Solution"}})
       elsif(i == "trp")
-        ingredients += find(:item,{object_type:{name:"Tryptophan Solution"}})
+        ingredients + find(:item,{object_type:{name:"Tryptophan Solution"}})
       else
-        ingredients += find(:item,{object_type:{name:"Uracil Solution"}})
+        ingredients + find(:item,{object_type:{name:"Uracil Solution"}})
       end
     end
     
