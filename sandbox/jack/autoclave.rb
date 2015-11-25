@@ -12,7 +12,7 @@ class Protocol
     
     if (type.include? "LB" || type.include? "TB")
       temp = 121
-    elsif(type.include? "SDO" || type.include? "SC")
+    elsif(type.include? "SDO" || type.include? "SC" || type.include? "YPAD")
       temp = 110
     else 
       raise ArgumentError, 'Parameter is not valid'
