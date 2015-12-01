@@ -2,6 +2,9 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-12-01
+* Ecoli transformation and Gibson assembly task can now accept multiple antibiotic markers. For example, if you enter Amp, Kan in the Bacterial marker property in the plasmid sample page, the protocol will instruct the techs the plate on LB+Amp+Kan plate.
+
 #### 2015-11-20
 * Fragment analyzing protocol now reports the gel images in task notifications. This will make Yeast Strain QC users have easier access to gel images. (updated by Yaoyu Yang)
 
