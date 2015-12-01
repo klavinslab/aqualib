@@ -7,11 +7,12 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    type = o.input.all.type2.at(0)
+    type = o.input.all.samples
+    label = type.gsub(/\(unsterile\)/,'')
     
-    if type == "bacteria"
+    if (type.include? "LB" || type.include? "TB")
       temp = 121
-    elsif (type == "yeast") || (type == "yeast + bacteria")
+    elsif(type.include? "SDO" || type.include? "SC" || type.include? "YPAD")
       temp = 110
     else 
       raise ArgumentError, 'Parameter is not valid'
@@ -19,7 +20,7 @@ class Protocol
       
     show {
       title "Autoclave Media"
-      note "Description: This protocol is for sterilizing the media used for #{type}"
+      note "Description: This protocol is for sterilizing the media used for #{label}"
     }
     
     show {
