@@ -38,7 +38,7 @@ class Protocol
 
     idt = show {
       title "Create an IDT DNA oligos order"
-      check "Go to the <a href='http://www.idtdna.com' target='_blank'>IDT website</a>, log in with the lab account. (Username: klavins_lab, password is the lab general password)."
+      check "Go to the <a href='https://www.idtdna.com/site/account' target='_blank'>IDT website</a>, log in with the lab account. (Username: klavins_lab, password is the lab general password)."
       check "Click Custom DNA Oligos, click Bulk Input. Copy paste the following table and then click the Update button."
       table tab
       check "Click Add to Order, review the shopping cart to double check that you entered correctly. There should be #{primers.length} primers in the cart."
