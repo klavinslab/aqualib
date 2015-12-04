@@ -2,6 +2,9 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-12-04
+* Update to the new OligoCard way of ordering primers. No more biochem store runs for picking up primers!
+
 #### 2015-12-01
 * Ecoli transformation and Gibson assembly task can now accept multiple antibiotic markers. For example, if you enter Amp, Kan in the Bacterial marker property in the plasmid sample page, the protocol will instruct the techs the plate on LB+Amp+Kan plate.
 
