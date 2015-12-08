@@ -3,6 +3,9 @@ Aquarium Klavins Lab Cloning Workflow
 Changelog
 ---
 #### 2015-12-04
+* Add a link to the Genewiz website in sequencing protocol
+
+#### 2015-12-04
 * Update to the new OligoCard way of ordering primers. No more biochem store runs for picking up primers!
 
 #### 2015-12-01
