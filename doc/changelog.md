@@ -2,7 +2,10 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
-#### 2015-12-04
+#### 2015-12-09
+* Automatically submitted Plasmid Verification task default to pick only one colony.
+
+#### 2015-12-06
 * Add a link to the Genewiz website in sequencing protocol
 
 #### 2015-12-04
