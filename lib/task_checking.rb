@@ -399,6 +399,7 @@ def create_new_tasks ids, p={}
 end
 
 def create_new_plasmid_verification plate, original_task
+  task_id = nil
   if plate
     primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
     if primer_ids_str
@@ -412,6 +413,7 @@ def create_new_plasmid_verification plate, original_task
             t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
             t.save
             t.notify "Automatically created from wrong sequencing verifcation.", job_id: jid
+            task_id = t.id
           elsif num_of_overnights_started > 1
             original_task.notify "The original plate has already been sequenced 2 times. Manually submit another Plasmid Verfication task if you need to do so."
           elsif num_colony < num_of_overnights_started
@@ -421,6 +423,7 @@ def create_new_plasmid_verification plate, original_task
       end
     end
   end
+  return task_id
 end
 
 def sequencing_verification_task_processing t
@@ -453,7 +456,8 @@ def sequencing_verification_task_processing t
 
     # submit plasmid verification again if sequencing is wrong
     if t.status == "sequence wrong"
-      create_new_plasmid_verification plate, t
+      new_plasmid_verification_task_id = create_new_plasmid_verification plate, t
+      new_task_ids.push new_plasmid_verification_task_id if new_plasmid_verification_task_id
     end
 
     # create new tasks
