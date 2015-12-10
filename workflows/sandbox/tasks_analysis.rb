@@ -14,7 +14,7 @@ class Protocol
 
   def main
     seq_veri_tasks = find(:task, { task_prototype: { name: "Sequencing Verification" } })
-    done_seq_veri_tasks = seq_veri_tasks.select { |t| t.status == "done" && t.id > 8000 }
+    done_seq_veri_tasks = seq_veri_tasks.select { |t| t.status == "done" && t.id > 10000 }
     redundant_tasks = done_seq_veri_tasks.select { |t| t.notifications.collect { |notif| notif.content }.join.include? "sequence correct but redundant" }
     correct_tasks, wrong_tasks, redundant_tasks = [], [], []
     done_seq_veri_tasks.each do |t|
