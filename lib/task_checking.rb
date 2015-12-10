@@ -453,7 +453,7 @@ def sequencing_verification_task_processing t
 
     # submit plasmid verification again if sequencing is wrong
     if t.status == "sequence wrong"
-      create_new_plasmid_verification plate
+      create_new_plasmid_verification plate, t
     end
 
     # create new tasks
