@@ -9,7 +9,7 @@ class Protocol
       io_hash: {},
       gel_band_verify: "Yes",
       stripwell_ids: [51355,37245],
-      yeast_plate_ids: [52318,52319],
+      yeast_plate_ids: [57317,57208],
       task_ids: [13967,13966],
       debug_mode: "Yes"
     }
@@ -91,14 +91,25 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [] }.merge io_hash
-    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    take stripwells, interactive: true
+    old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    take old_stripwells, interactive: true
+
+    # To do
+    # come up with new_stripwell_ids that contains either old_stripwell_ids or new_stripwell_ids
+    # a plan to make new_stripwells
+    # new_stripwell = produce new_collection "Stripwell", 1, 12
+
+    io_hash[:new_stripwell_ids] = io_hash[:stripwell_ids]
+
+    stripwells = io_hash[:new_stripwell_ids].collect { |i| collection_from i }
+    take stripwells
+
     show {
       title "Fill empty wells with buffer"
       check "Add 10 &micro;L of EB buffer to empty wells (need rows of 12)."

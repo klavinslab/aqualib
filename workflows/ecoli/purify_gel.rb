@@ -111,7 +111,7 @@ class Protocol
         check "Spin at top speed (> 17,900 g) for 1 minute to remove all PE buffer from columns"
       }
 
-      fragment_stocks = gel_slices.collect { |gs| produce new_sample gs.sample.name, of: "Fragment", as: "Fragment Stock" }
+      fragment_stocks = gel_slices.collect { |gs| gs.sample.make_item "Fragment Stock" }
 
       show {
         title "Transfer to 1.5 mL tube"
