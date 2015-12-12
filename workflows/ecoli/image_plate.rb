@@ -28,6 +28,7 @@ class Protocol
       end
     end
     plates = io_hash[:plate_ids].collect { |x| find(:item, id: x)[0] }
+    plates.compact!  # delete empty plates
     take plates, interactive: true
 
     if io_hash[:image_option] == "Yes"
