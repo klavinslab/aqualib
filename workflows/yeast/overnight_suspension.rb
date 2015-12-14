@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the item id that you are going to start overnight with
-      item_ids: [28338,28338,28212,28204,28212,28212],
+      item_ids: [57600,57537,57488],
       #media_type could be YPAD or SC or anything you'd like to start with
       media_type: "800 mL YPAD liquid (sterile)",
       #The volume of the overnight suspension to make
@@ -86,7 +86,7 @@ class Protocol
     }
 
     overnights = []
-    
+
     if yeast_type_hash.empty?
       show {
         title "No overnights need to be prepared"
@@ -104,13 +104,14 @@ class Protocol
         show {
           title "Media preparation in media bay"
           check "Grab #{overnight.length} of #{io_hash[:tube_size]} mL Test Tube"
+          check "Slowly shake the bottle of #{io_hash[:media_type]} media to make sure it is still sterile!!!"
           check "Add #{io_hash[:volume]} mL of #{io_hash[:media_type]} to each empty #{io_hash[:tube_size]} mL test tube using serological pipette"
           check "Write down the following ids on the cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
           check "Go to the M80 area and work there." if key == "Yeast Glycerol Stock"
         }
         take values
         inoculation_tab = [["Item id", "Location", "#{io_hash[:tube_size]} mL tube id", "Colony Selection"]]
-        
+
         # a hash to record how many of the same plate need to be innoculated
         value_num = Hash.new {|h,k| h[k] = 0 }
         value_num_original = Hash.new {|h,k| h[k] = 0 }
@@ -157,8 +158,8 @@ class Protocol
     io_hash[:old_overnight_ids]  = io_hash[:overnight_ids]
 
     io_hash[:overnight_ids] = overnights.collect {|x| x.id}
-    
+
     return { io_hash: io_hash }
   end
 
-end  
+end
