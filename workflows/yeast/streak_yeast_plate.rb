@@ -31,22 +31,24 @@ class Protocol
     num_of_section = 4
 
     yeast_glycerol_stocks = io_hash[:yeast_glycerol_stock_ids].collect { |yid| find(:item, id: yid )[0] }
+    yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
 
     glycerol_streaked_yeast_plates = []
+    overnight_streaked_yeast_plates = []
 
     if yeast_glycerol_stocks.length > 0
 
-      yeast_strains = yeast_glycerol_stocks.collect { |y| y.sample }
-
-      # glycerol_streaked_yeast_plates = yeast_glycerol_stocks.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
+      yeast_strains = yeast_glycerol_stocks.collect { |y| y.sample } + yeast_overnights.collect { |y| y.sample }
 
       glycerol_streaked_yeast_plates = produce spread yeast_strains, "Divided Yeast Plate", 1, num_of_section
+      overnight_streaked_yeast_plates = produce spread yeast_strains, "Divided Yeast Plate", 1, num_of_section
 
       show {
         title "Grab yeast plates"
-        if glycerol_streaked_yeast_plates.length > 0
-          check "Grab #{glycerol_streaked_yeast_plates.length} of YPAD plates, label with follow ids:"
-          note glycerol_streaked_yeast_plates.collect { |p| "#{p}"}
+        if glycerol_streaked_yeast_plates.length > 0 || overnight_streaked_yeast_plates.length > 0
+          total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length
+          check "Grab #{total_num_plates} of YPAD plates, label with the following ids:"
+          note glycerol_streaked_yeast_plates.collect { |p| "#{p}"} + overnight_streaked_yeast_plates.collect { |p| "#{p}"}
           check "Divide up each plate with #{num_of_section} sections and mark each with circled #{(1..num_of_section).to_a.join(',')}"
           image "divided_yeast_plate"
         end
@@ -61,10 +63,9 @@ class Protocol
       show {
         title "Inoculation from glycerol stock in M80 area"
         check "Go to M80 area, clean out the pipette tip waste box, clean any mess that remains there."
-        check "Put on new gloves, grab a new tip box (green: 10 - 100 µL) and a pipettor (10 - 100 µL), and bring a test tube rack to M80 area."
+        check "Put on new gloves, and bring a new tip box (green: 10 - 100 µL), a pipettor (10 - 100 µL), and an Eppendorf tube rack to the M80 area."
         check "Grab the plates and go to M80 area to perform inoculation steps in the next pages."
-        note "Be extremely cautious about your sterile technique during inoculation."
-        note "Grab one glycerol stock at a time out of the M80 freezer."
+        image "streak_yeast_plate_setup"
       }
 
       yeast_glycerol_stock_locations = yeast_glycerol_stocks.collect { |y| y.location }
@@ -73,33 +74,28 @@ class Protocol
           yeast_glycerol_stocks.collect { |y| "#{y}" }, yeast_glycerol_stock_locations
         ], glycerol_streaked_yeast_plates ) {
           warning "Be extremely cautious about your sterile technique."
+          check "Grab one glycerol stock at a time out of the M80 freezer and place in the tube rack."
+          check "Use a sterile 100 µL tip with the pipettor and carefully scrape a half-pea-sized chunk of glycerol stock."
+          image "streak_yeast_plate_glycerol_stock"
+          check "Place the chunk about 1 cm away from the edge of the yeast plate agar section."
           image "divided_yeast_plate_colony"
-          check "Grab one glycerol stock at a time out of the M80 freezer."
-          check "Use a sterile 100 µL tip with the pipettor and vigorously scrape a big chunk of glycerol stock swirl onto a side corner of the yeast plate agar section"
         }
 
       release yeast_glycerol_stocks
 
     end
 
-    overnight_streaked_yeast_plates = []
-
     if io_hash[:yeast_overnight_ids].length > 0
 
-      yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
-      overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
+      #yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
+      #overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
       show {
         title "Grab yeast plates"
-        if io_hash[:yeast_selective_plate_types].length > 0
-          io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-            check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
-          end
-        else
-          check "Grab #{overnight_streaked_yeast_plates.length} of YPAD plates, label with follow ids:"
-          note overnight_streaked_yeast_plates.collect { |p| "#{p}"}
+        io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
+          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
         end
-      }
+      } if io_hash[:yeast_selective_plate_types].length > 0
 
       take yeast_overnights, interactive: true
 
@@ -126,18 +122,15 @@ class Protocol
     end
 
     show {
-      title "Wait till cell dry"
-      note "Wait till the yeast cells are dried on the plate, which means you can see there is no more liquid form on the plate."
+      title "Wait until glycerol stock dries"
+      note "Wait until the yeast cells are dried on the plate, as in the image below."
+      image "streak_yeast_plate_dry"
     }
 
     show {
       title "Streak out the plates"
       note "Streak out the plates using either sterile toothpick or pipette tip by moving forward and back on the agar surface with a shallow angle."
-      note "For divided plate:"
-      image "divided_yeast_plate_streak"
-      note "For non divided plate:"
-      image "streak_yeast_plate"
-
+      image "streak_yeast_plate_video"
     }
 
     streaked_yeast_plates = glycerol_streaked_yeast_plates + overnight_streaked_yeast_plates

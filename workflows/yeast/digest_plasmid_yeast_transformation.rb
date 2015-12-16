@@ -132,21 +132,38 @@ class Protocol
 
     pmeI = choose_sample "PmeI", take: true
 
-    num = (sample_stocks.select { |p| p.object_type.name == "Plasmid Stock" }).length
+    num_stocks = (sample_stocks.select { |p| p.object_type.name == "Plasmid Stock" }).length
+    io_hash[:num_stocks] = num_stocks
+    make_master_mix = num_stocks > 1
 
-    water_volume = 42 * num + 21
-    buffer_volume = 5 * num + 2.5
-    enzyme_volume = 1 * num + 0.5
+    water_volume = 42
+    buffer_volume = 5
+    enzyme_volume = 1
+    if make_master_mix
+      if num_stocks < 5
+        water_volume = water_volume * num_stocks + 21
+        buffer_volume = buffer_volume * num_stocks + 2.5
+        enzyme_volume = enzyme_volume * num_stocks + 0.5
+      elsif num_stocks < 8
+        water_volume = water_volume * num_stocks + 42
+        buffer_volume = buffer_volume * num_stocks + 5
+        enzyme_volume = enzyme_volume * num_stocks + 1
+      else
+        water_volume = water_volume * num_stocks + 63
+        buffer_volume = buffer_volume * num_stocks + 7.5
+        enzyme_volume = enzyme_volume * num_stocks + 1.5
+      end
 
-    show {
-      title "Make master mix"
-      check "Label a new eppendorf tube MM."
-      check "Add #{water_volume.round(1)} µL of water to the tube."
-      check "Add #{buffer_volume.round(1)} µL of the cutsmart buffer to the tube."
-      check "Add #{enzyme_volume.round(1)} µL of the PmeI to the tube."
-      check "Vortex for 5-10 seconds."
-      warning "Keep the master mix in an ice block while doing the next steps".upcase
-    }
+      show {
+        title "Make Master Mix"
+        check "Label a new eppendorf tube MM."
+        check "Add #{water_volume.round(1)} µL of water to the tube."
+        check "Add #{buffer_volume.round(1)} µL of the cutsmart buffer to the tube."
+        check "Add #{enzyme_volume.round(1)} µL of the PmeI to the tube."
+        check "Vortex for 5-10 seconds."
+        warning "Keep the master mix in an ice block while doing the next steps".upcase
+      }
+    end
 
     release [pmeI] + [cut_smart], interactive: true, method: "boxes"
 
@@ -167,15 +184,34 @@ class Protocol
       end
     end
 
-    show {
+    leftover_mix = show {
       title "Prepare Stripwell Tubes"
       stripwells.each_with_index do |sw, index|
-        check "Label a new stripwell with the id #{sw}. Use enough number of wells to write down the id number."
+        check "Label a new stripwell with the id #{sw}. Write on enough wells to transcribe the full id number."
         check "Pipette 48 µL of water into wells " + water_wells[index].join(", ") if water_wells[index]
-        check "Pipette 48 µL from tube MM into wells " + mm_wells[index].join(", ") if mm_wells[index]
+        if make_master_mix
+          check "Pipette 48 µL from tube MM into wells " + mm_wells[index].join(", ") if mm_wells[index]
+          select ["Yes", "No"], var: "leftover", label: "Do you have leftover master mix?", default: 0
+        else
+          check "Pipette #{water_volume.round(1)} µL of water, #{buffer_volume.round(1)} µL of the cutsmart buffer, and #{enzyme_volume.round(1)} µL of the PmeI into the well." if mm_wells[index]
+          check "Carefully flick the well a couple of times to ensure thorough mixing."
+        end
       end
     }
-
+    if make_master_mix
+      prepare = show {
+        if leftover_mix[:leftover] == "Yes"
+          title "Record Leftover Master Mix"
+          get "number", var: "mix_remaining", label: "Please record the approximate remaining volume (in µL) of mix. Aq devs thank you!", default: 0
+        else
+          title "Record Extra Master Mix Aliquots"
+          get "number", var: "mix_extra_aliquots", label: "Please record how many extra aliquots of master mix you had to prepare. Aq devs thank you!", default: 1
+        end
+      }
+      io_hash[:mix_remaining] = prepare[:mix_remaining]
+      io_hash[:mix_extra_aliquots] = prepare[:mix_extra_aliquots]
+    end
+    
     sample_stocks_volume_list = []
     sample_stocks.each do |s|
       conc = s.datum[:concentration]
@@ -194,7 +230,7 @@ class Protocol
     sample_stocks_with_volume = sample_stocks.map.with_index { |s,i| sample_stocks_volume_list[i].to_s + " µL of " + s.id.to_s }
 
     load_samples_variable_vol( ["Sample stock"], [sample_stocks_with_volume], stripwells ) {
-      note "Add volume of each sampel stock into the stripwell indicated."
+      note "Add volume of each sample stock into the stripwell indicated."
       warning "Use a fresh pipette tip for each transfer."
     }
 
