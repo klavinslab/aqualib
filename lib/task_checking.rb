@@ -91,6 +91,8 @@ def inventory_check ids, p={}
   }
 end
 
+# a function to return all primer sequences currently in the database
+
 # detect if there are already primer with the same sequences in the Aquarium inventory
 # detect if there are already primer stock in the Aquarium inventory
 

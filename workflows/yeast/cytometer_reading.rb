@@ -130,6 +130,8 @@ class Protocol
       note "#{io_hash}" if io_hash[:debug_mode] == "Yes"
     }
 
+    results = []
+
     yeast_deepwell_plates.each_with_index do |yeast_deepwell_plate, idx|
 
       yeast_ubottom_plate = nil
@@ -227,7 +229,7 @@ class Protocol
         end
       }
 
-      show {
+      result = show {
         title "Export data"
         check "Go to Desktop/FCS Exports, trash all the folders and files there."
         check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
@@ -236,6 +238,12 @@ class Protocol
         check "Upload this zip file by dragging it here."
         upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
       }
+
+      cytometry_result_id = result["cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}".to_sym][0][:id]
+
+      cytometry_result_url = Upload.find(cytometry_result_id).url
+
+      results.push({ id: cytometry_result_id, url: cytometry_result_url })
 
       show {
         title "Clean run"
@@ -247,6 +255,8 @@ class Protocol
       release [yeast_ubottom_plate]
 
     end
+
+    io_hash[:results] = results
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
