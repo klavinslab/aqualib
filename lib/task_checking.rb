@@ -91,6 +91,20 @@ def inventory_check ids, p={}
   }
 end
 
+# detect if there are already primer with the same sequences in the Aquarium inventory
+# detect if there are already primer stock in the Aquarium inventory
+
+def primer_duplication_detection ids
+  ids = [ids] if ids.is_a? Numeric
+  errors = []
+  ids.each do |id|
+    primer = find(:sample, id: id)[0]
+    if primer.in("Primer Stock").length > 0
+      errors.push "There is already a #{item_link primer.in("Primer Stock")[0]} associated with #{sample_html_link primer}."
+    end
+  end
+end
+
 def sample_check ids, p={}
   params = ({ assert_property: [], assert_logic: "and" }).merge p
   ids = [ids] if ids.is_a? Numeric
@@ -236,6 +250,7 @@ def task_status_check t
         when "primer_ids"
           if t.task_prototype.name == "Primer Order"
             errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
+            errors.concat primer_duplication_detection(ids)
           else  # for Sequencing, Plasmid Verification
             inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
