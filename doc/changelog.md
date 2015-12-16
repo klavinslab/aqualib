@@ -2,6 +2,17 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-12-15
+  * Digest Yeast Plasmid
+    * Protocol now only prompts the user to make a master mix if there is more than one plasmid stock in the job. 
+    * Volumes of extra water, buffer, and enzyme for master mix now scale linearly with plasmid stock count.
+  * Streak Yeast Plate
+    * Total requisite YPAD plates for streaking are now consolodated into the beginning of the protocol (including streaking from glycerol stock and overnight).
+    * Some instructions have been clarified.
+    * Pictures have been added.
+  * Fragment Analyzing Protocol
+    * Some instructions have been clarified.
+
 #### 2015-12-09
 * Automatically submitted Plasmid Verification task default to pick only one colony.
 
