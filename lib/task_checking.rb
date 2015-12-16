@@ -99,6 +99,7 @@ def primer_duplication_detection ids
   errors = []
   ids.each do |id|
     primer = find(:sample, id: id)[0]
+    seq = primer.properties["Overhang Sequence"]||"" + primer.properties["Anneal Sequence"]||""
     if primer.in("Primer Stock").length > 0
       errors.push "There is already a #{item_link primer.in("Primer Stock")[0]} associated with #{sample_html_link primer}."
     end
