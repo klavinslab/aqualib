@@ -112,7 +112,8 @@ class Protocol
 
     show {
       title "Fill empty wells with buffer"
-      check "Add 10 &micro;L of EB buffer to empty wells (need rows of 12)."
+      check "Gather enough stripwell tubes to have 12 tubes total for each row."
+      check "Add 10 µL of EB buffer to empty wells."
     }
     show {
       title "Move to analyzer"
@@ -135,18 +136,18 @@ class Protocol
     }
     show {
       title "Select PhusionPCR"
+      note "Click \"Back to Wizard\" if previous data is displayed."
       check "Under \"Process\" -> \"Process Profile\", make sure \"PhusionPCR\" is selected."
       image "frag_an_phusion_pcr"
     }
     show {
-      title "Unselect empty rows"
-      note "Click \"Back to Wizard\" if previous data is displayed."
-      check "Under \"Sample selection\", unselect any empty rows.";
+      title "Deselect empty rows"
+      check "Under \"Sample selection\", deselect all rows that do not have stripwells in them.";
       image "frag_an_sample_selection"
     }
     show {
       title "Final checks before running analysis"
-      note "Under \"run check\", manually confirm"
+      note "Under \"Run Check\", manually confirm"
       check "Selected rows contain samples."
       check "Alignment marker is loaded (changed every few weeks)."
       image "frag_an_run_check"
@@ -154,24 +155,28 @@ class Protocol
     show {
       title "Run analysis"
       check "Click \"run\""
-      note "Estimated time is given on bottom of screen."
+      note "Estimated time is given on the bottom of the screen."
       image "frag_an_run"
     }
+    job_id = jid # jid not accessible within the scope of show block
     show {
-      title "Upload PDF"
+      extend RowNamer
+      title "Save PDF and gel images, and upload PDF"
       note "If an error message occurs after the reports were generated, click \"okay.\""
       note "A PDF report is generated. Note that a separate \"gel image\" is generated for each stripwell row."
-      note "When asked to upload a gel image in the next steps, first right-click on the corresponding gel image in the PDF and paste into Paint. Then save as a JPEG for upload."
-      check "Upload the PDF"
+      check "For each gel image in the PDF, right-click on the image, copy it, and paste it into Paint. Then save to \"Documents/Gel Images\" for each row:"
+      stripwells.each_with_index.collect { |s, i| note "#{row_name i}: \"stripwell_#{s.id}.JPG\"" }
+      check "On the PDF, select \"File\" -> \"Save As\", navigate to \"Documents/PDF Report\", and save the PDF as \"#{Time.now.strftime("%Y-%m-%d")}_#{job_id}\"."
+      note "Upload the PDF"
       upload var: "Fragment Analysis Report"
+      note "Close the PDF."
     }
     gel_uploads = {}
     stripwells.each_with_index do |stripwell, i|
       gel_uploads[stripwell.id] = show {
-        extend RowNamer
         title "Upload resulting gel image for stripwell #{stripwell.id}"
-        check "Copy gel image for #{row_name i} into Paint and save as \"stripwell_#{stripwell.id}.jpg\". Upload it!"
-        upload var: "stripwell"
+        note "Upload \"stripwell_#{stripwell.id}.JPG\"."
+        upload var: "stripwell_#{stripwell.id}"
         image "frag_an_gel_image"
       }
 
@@ -235,16 +240,24 @@ class Protocol
 
     show {
       title "Prepare to upload resulting analyzer data"
-      check "Under \"Analysis,\" \"Gel Image\" tab, click \"Select All.\""
-      check "Under the \"View\" tab, check \"Show Analysis Parameters.\""
+      check "Under \"Analysis\". \"Gel Image\" tab, click \"Select All\"."
+      check "Under the \"View\" tab, check \"Show Analysis Parameters\"."
       image "frag_an_select_all"
     }
     show {
-      title "Upload resulting analyzer data"
-      check "Under the \"Report\" tab, click \"Start Report/Export.\""
+      title "Save resulting analyzer data"
+      check "Under the \"Report\" tab, click \"Start Report/Export\"."
       note "Wait while the files are generated."
-      check "Under \"File\"->\"Open Data Directory\", click \"Export.\""
+      check "Under \"File\"->\"Open Data Directory\", click \"Export\"."
+      check "Copy the following files with today's date, and paste into \"Documents/Raw Data\":"
+      note "_Rw"
+      note "_Rw.csv"
+      note "_Go_150dpi_1"
+      note "_Ex_PeakCalling.csv"
       image "frag_an_files_to_upload"
+    }
+    show {
+      title "Upload resulting analyzer data"
       note "Upload the files ending in the following sequences:"
       note "_Rw"
       upload var: "Raw XML"

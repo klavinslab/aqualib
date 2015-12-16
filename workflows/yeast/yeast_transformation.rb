@@ -115,7 +115,7 @@ class Protocol
         title "Yeast transformation preparation"
         check "Spin down all the Yeast Competent Aliquots on table top centrifuge for 20 seconds"
         check "Add 240 µL of 50 percent PEG 3350 into each competent aliquot tube."
-        warning "Be careful when pipetting PEG as it is very viscus. Pipette slowly"
+        warning "Be careful when pipetting PEG as it is very viscous. Pipette slowly"
         check "Add 36 µL of 1M LiOAc to each tube"
         check "Add 25 µL of Salmon Sperm DNA (boiled) to each tube"
         warning "The order of reagents added is super important for suceess of transformation."
@@ -123,7 +123,7 @@ class Protocol
 
       load_samples_variable_vol(["Yeast Competent Aliquot"],[yeast_competent_cells_full], stripwells) {
         title "Load 50 µL from each well into corresponding yeast aliquot"
-        note "Pieptte 50 µL from each well into corresponding yeast aliquot"
+        note "Pipette 50 µL from each well into corresponding yeast aliquot"
         note "Discard the stripwell into waste bin."
       }
 
