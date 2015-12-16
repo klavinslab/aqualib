@@ -1,0 +1,23 @@
+place p1
+	protocol:
+	group: ""
+	marked:
+	start:
+	window:
+end
+
+place p2
+	protocol:
+	group: ""
+	marked:
+	start:
+	window:
+end
+
+place p3
+	protocol:
+	group: ""
+	marked:
+	start:
+	window:
+end
