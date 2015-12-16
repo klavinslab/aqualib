@@ -1,6 +1,14 @@
 place p1
 	protocol:
-	group: ""
+	group: "technician"
+	marked: true 
+	start:
+	window: 
+end
+
+place wait overnight
+	protocol:
+	group: "technician"
 	marked:
 	start:
 	window:
@@ -8,7 +16,7 @@ end
 
 place p2
 	protocol:
-	group: ""
+	group: "technician"
 	marked:
 	start:
 	window:
@@ -16,8 +24,15 @@ end
 
 place p3
 	protocol:
-	group: ""
+	group: "technician"
 	marked:
 	start:
 	window:
 end
+
+transition [p1] => [p2] when completed(0)
+transition [p2] => [p3] when hours_elapsed(0,15)
+transition [p3] => [p4] when hours_elapsed(0,1)
+transition [p4] => [p5] when hours_elapsed(0,1)
+transition [p5] => [p6] when hours_elapsed(0,2)
+transition [p6] => [p7] when minutes_elapsed(0,30)
