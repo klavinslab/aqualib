@@ -103,6 +103,7 @@ def primer_duplication_detection ids
       errors.push "There is already a #{item_link primer.in("Primer Stock")[0]} associated with #{sample_html_link primer}."
     end
   end
+  return errors
 end
 
 def sample_check ids, p={}
