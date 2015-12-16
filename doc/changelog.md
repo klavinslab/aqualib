@@ -12,6 +12,7 @@ Changelog
     * Pictures have been added.
   * Fragment Analyzing Protocol
     * Some instructions have been clarified.
+
 Updated by Garrett Newman
 
 #### 2015-12-09
