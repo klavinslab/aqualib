@@ -36,8 +36,7 @@ class Protocol
     io_hash[:primer_ids].sort!
 
     show {
-      title "Go the biochem store to pick up primers"
-      note "Walk accross the campus to the biochem store to pick up primers."
+      title "Go the EE office to pick up primers"
       note "Abort this protocol if no primer is showed up. It will automatically rescheduled."
     }
 

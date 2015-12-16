@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [3798,3797,3799],
+      plate_ids: [55310,55312,55313],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
       debug_mode: "No",
@@ -45,6 +45,14 @@ class Protocol
         plate_ids.push pid
         num_colonies.push io_hash[:num_colonies][idx]
         primer_ids.push io_hash[:primer_ids][idx]
+
+        # record how many times this plate has been started overnight from
+        plate = find(:item, id: pid)[0]
+        num_of_overnights_started = plate.datum[:num_of_overnights_started] || 0
+        num_of_overnights_started += io_hash[:num_colonies][idx]
+        plate.datum = (plate.datum).merge({ num_of_overnights_started: num_of_overnights_started } )
+        plate.save
+
       end
     end
 

@@ -91,6 +91,22 @@ def inventory_check ids, p={}
   }
 end
 
+# detect if there are already primer with the same sequences in the Aquarium inventory
+# detect if there are already primer stock in the Aquarium inventory
+
+def primer_duplication_detection ids
+  ids = [ids] if ids.is_a? Numeric
+  errors = []
+  ids.each do |id|
+    primer = find(:sample, id: id)[0]
+    seq = primer.properties["Overhang Sequence"]||"" + primer.properties["Anneal Sequence"]||""
+    if primer.in("Primer Stock").length > 0
+      errors.push "There is already a #{item_link primer.in("Primer Stock")[0]} associated with #{sample_html_link primer}."
+    end
+  end
+  return errors
+end
+
 def sample_check ids, p={}
   params = ({ assert_property: [], assert_logic: "and" }).merge p
   ids = [ids] if ids.is_a? Numeric
@@ -236,6 +252,7 @@ def task_status_check t
         when "primer_ids"
           if t.task_prototype.name == "Primer Order"
             errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
+            errors.concat primer_duplication_detection(ids)
           else  # for Sequencing, Plasmid Verification
             inventory_check_result = inventory_check ids, inventory_types: ["Primer Aliquot", "Primer Stock"]
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
@@ -398,6 +415,34 @@ def create_new_tasks ids, p={}
   }
 end
 
+def create_new_plasmid_verification plate, original_task
+  task_id = nil
+  if plate
+    primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
+    if primer_ids_str
+      primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
+      if primer_ids.all? { |i| i != 0 }
+        num_colony = plate.datum[:num_colony]
+        num_of_overnights_started = plate.datum[:num_of_overnights_started]
+        if num_of_overnights_started
+          if num_of_overnights_started < 2 && num_colony >= num_of_overnights_started
+            tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
+            t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+            t.save
+            t.notify "Automatically created from wrong sequencing verifcation.", job_id: jid
+            task_id = t.id
+          elsif num_of_overnights_started > 1
+            original_task.notify "The original plate has already been sequenced 2 times. Manually submit another Plasmid Verfication task if you need to do so."
+          elsif num_colony < num_of_overnights_started
+            original_task.notify "Not enough colonies on the original plate to submit another Plasmid Verification task."
+          end
+        end
+      end
+    end
+  end
+  return task_id
+end
+
 def sequencing_verification_task_processing t
   new_task_ids = []
   status_to_process = ["sequence correct", "sequence correct but keep plate", "sequence correct but redundant", "sequence wrong"]
@@ -425,6 +470,13 @@ def sequencing_verification_task_processing t
       discard_item_ids.push plasmid_stock.id if plasmid_stock
       discard_item_ids.push overnight.id if overnight
     end
+
+    # submit plasmid verification again if sequencing is wrong
+    if t.status == "sequence wrong"
+      new_plasmid_verification_task_id = create_new_plasmid_verification plate, t
+      new_task_ids.push new_plasmid_verification_task_id if new_plasmid_verification_task_id
+    end
+
     # create new tasks
     new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item", user_id: t.user.id)
     new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock", user_id: t.user.id)

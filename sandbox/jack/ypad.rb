@@ -6,7 +6,10 @@ class Protocol
     o.input.all.take
     o.output.all.produce
     
-    item_id = o.output.all.item_ids
+    ingredients = find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } ) + 
+        find(:item, { object_type: { name: "Dextrose" } } ) + find(:item, { object_type: { name: "Bacto Yeast Extract" } } ) +
+            find(:item, { object_type: { name: "Bacto Tryptone" } } )
+    take ingredients, interactive: true
     
     show {
       title "Make YPAD Media"
@@ -36,10 +39,10 @@ class Protocol
     
     show {
       title "Label Bottle"
-      note "Label the bottle with 'YPAD', 'Your initials', '#{item_id[0]}'"
+      note "Label the bottle with 'YPAD', 'Date', Your initials'"
     }
     
-    o.input.all.release
+    release ingredients, interactive: true
     o.output.all.release
 
     return o.result

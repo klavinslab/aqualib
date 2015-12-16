@@ -89,7 +89,7 @@ class Protocol
     num = primer_ids.length
     genewiz = show {
       title "Create a Genewiz order"
-      check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
+      check "Go the <a href='https://clims3.genewiz.com/default.aspx' target='_blank'>GENEWIZ website</a>, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
       check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
       table sequencing_tab

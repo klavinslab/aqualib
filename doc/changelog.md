@@ -2,8 +2,23 @@ Aquarium Klavins Lab Cloning Workflow
 ===
 Changelog
 ---
+#### 2015-12-09
+* Automatically submitted Plasmid Verification task default to pick only one colony.
+
+#### 2015-12-06
+* Add a link to the Genewiz website in sequencing protocol
+
+#### 2015-12-04
+* Update to the new OligoCard way of ordering primers. No more biochem store runs for picking up primers!
+
+#### 2015-12-01
+* Ecoli transformation and Gibson assembly task can now accept multiple antibiotic markers. For example, if you enter Amp, Kan in the Bacterial marker property in the plasmid sample page, the protocol will instruct the techs the plate on LB+Amp+Kan plate.
+
+#### 2015-11-20
+* Fragment analyzing protocol now reports the gel images in task notifications. This will make Yeast Strain QC users have easier access to gel images. (updated by Yaoyu Yang)
+
 #### 2015-11-19
-* Batched tasks to run in each workflow will be sorted by user name. This way, all the relevant tasks, samples, items in each workflow for each user will be in closer proximity so that they will have an easier time to look at the log or do any analysis.
+* Batched tasks to run in each workflow will be sorted by user id. This way, all the relevant tasks, samples, items in each workflow for each user will be in closer proximity so that they will have an easier time to look at the log or do any analysis. (updated by Yaoyu Yang)
 
 #### 2015-11-18
 * When digesting plasmid/fragment stock for yeast transformation, now it will take variable amount of plasmid/fragment stock based on the concentration. The rule is that between 300-500 ng/µL, take 2 µL. Outside that range, take 1000/concentration uL but restricted in the range of 0.5-15 µL. (updated by Yaoyu Yang)

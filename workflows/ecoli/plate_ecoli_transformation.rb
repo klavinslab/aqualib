@@ -6,6 +6,14 @@ class Protocol
   include Standard
   include Cloning
 
+  def formalize_marker_name marker
+    if marker
+      marker = marker.delete(' ')
+      marker = marker.downcase
+      marker = marker[0].upcase + marker[1..marker.length]
+    end
+    return marker
+  end
 
 
   def arguments
@@ -44,35 +52,40 @@ class Protocol
 
     plates_marker_hash = Hash.new { |h,k| h[k] = [] }
     all_plates.each do |p|
-      plates_marker_hash[p.sample.properties["Bacterial Marker"].downcase[0,3]].push p
+      marker_key = "LB"
+      p.sample.properties["Bacterial Marker"].split(',').each do |marker|
+        marker_key = marker_key + "+" + formalize_marker_name(marker)
+      end
+      plates_marker_hash[marker_key].push p
     end
 
     deleted_plates = []
 
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
-      unless marker == ""
+      unless marker == "LB"
         marker = "chlor" if marker == "chl"
         plates_with_initials = plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
         num = plates.length
+        plate_type = "#{marker}"
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
-          check "Grab #{num} LB+#{marker[0].upcase}#{marker[1..marker.length]} Plate (sterile)"
+          check "Grab #{num} #{plate_type} Plate (sterile)"
           check "Label with the following ids #{plates_with_initials}"
         }
         show {
           title "Plating"
           check "Use sterile beads to plate 200 µL from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
           check "Discard used transformed aliquots after plating."
-          table [["1.5 mL tube", "LB+#{marker[0].upcase}#{marker[1,2]} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
+          table [["1.5 mL tube", "#{plate_type} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
       else
         show {
           title "No marker info found"
           note "Place the following tubes into DFP and inform the plasmid owner that they need their Bacterial Marker info entered in the plasmid sample page."
           note "#{transformed_aliquots.collect { |t| t.id }}"
-          note "Discard the following plates:"
-          note "#{plates.collect { |p| p.id }}"
+          # note "Discard the following plates:"
+          # note "#{plates.collect { |p| p.id }}"
         }
         deleted_plates.concat plates
       end

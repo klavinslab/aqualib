@@ -3,19 +3,24 @@ class Protocol
   def main
     o = op input
 
-    o.input.all.take
     o.output.all.produce
     
-    id = o.output.media.item_ids
-    type = o.input.all.type1.at(0)
+    type = o.input.all.samples
     
     if type == "LB Agar"
       amount = 29.6
-    elsif (type == "LB Liquid Media") || (type == "TB Liquid Media")
+      ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})
+    elsif (type == "LB Liquid Media")
       amount = 20
+      ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})
+    elsif (type == "TB Liquid Media")
+      amount = 20
+      ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})
     else 
       raise ArgumentError, "Parameter is not valid"
     end
+    
+    take ingredient, interactive: true
    
     show {
       title "#{type}"
@@ -46,10 +51,10 @@ class Protocol
     
     show {
       title "Label Media"
-      note "Label the bottle with '#{type}', 'Your initials', and '#{id[0]}'"
+      note "Label the bottle with '#{type}', 'Your initials'"
     }
     
-    o.input.all.release
+    release ingredients, interactive: true
     o.output.all.release
 
     return o.result

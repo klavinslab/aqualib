@@ -9,7 +9,8 @@ class Protocol
       io_hash: {},
       gel_band_verify: "Yes",
       stripwell_ids: [51355,37245],
-      yeast_plate_ids: [52318,52319],
+      yeast_plate_ids: [57317,57208],
+      task_ids: [13967,13966],
       debug_mode: "Yes"
     }
   end
@@ -89,15 +90,26 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [] }.merge io_hash
-    stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [] }.merge io_hash
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    take stripwells, interactive: true
+    old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
+    take old_stripwells, interactive: true
+
+    # To do
+    # come up with new_stripwell_ids that contains either old_stripwell_ids or new_stripwell_ids
+    # a plan to make new_stripwells
+    # new_stripwell = produce new_collection "Stripwell", 1, 12
+
+    io_hash[:new_stripwell_ids] = io_hash[:stripwell_ids]
+
+    stripwells = io_hash[:new_stripwell_ids].collect { |i| collection_from i }
+    take stripwells
+
     show {
       title "Fill empty wells with buffer"
       check "Gather enough stripwell tubes to have 12 tubes total for each row."
@@ -159,8 +171,9 @@ class Protocol
       upload var: "Fragment Analysis Report"
       note "Close the PDF."
     }
+    gel_uploads = {}
     stripwells.each_with_index do |stripwell, i|
-      show {
+      gel_uploads[stripwell.id] = show {
         title "Upload resulting gel image for stripwell #{stripwell.id}"
         note "Upload \"stripwell_#{stripwell.id}.JPG\"."
         upload var: "stripwell_#{stripwell.id}"
@@ -191,12 +204,39 @@ class Protocol
       end
     end
 
-    if io_hash[:task_ids]
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id:tid)[0]
-        set_task_status(task,"gel imaged")
+    errors = []
+
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id:tid)[0]
+      set_task_status(task,"gel imaged")
+      task_yeast_plate_ids = task.simple_spec[:yeast_plate_ids]
+      task_yeast_strain_ids = task_yeast_plate_ids.collect { |id| find(:item, id: id)[0].sample.id }
+      associated_stripwell_ids = {}
+      stripwells.each do |stripwell|
+        stripwell_strain_ids = stripwell.matrix
+        stripwell_strain_ids.flatten!
+        stripwell_strain_ids.delete(-1)
+        if (task_yeast_strain_ids & stripwell_strain_ids).any?
+          associated_stripwell_ids[stripwell.id] = task_yeast_strain_ids & stripwell_strain_ids
+        end
       end
+      notifs = []
+      associated_stripwell_ids.each do |id, yeast_ids|
+        begin
+          upload_id = gel_uploads[id][:stripwell][0][:id]
+          upload_url = Upload.find(upload_id).url
+          associated_gel = collection_from id
+          gel_matrix = associated_gel.matrix
+          yeast_ids_link = yeast_ids.collect { |id| item_or_sample_html_link(id, :sample) + " (location: #{Matrix[*gel_matrix].index(id).collect { |i| i + 1}.join(',')})" }.join(", ")
+          image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
+          notifs.push "#{'Yeast Strain'.pluralize(yeast_ids.length)} #{yeast_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
+        rescue Exception => e
+          errors.push e.to_s
+        end
+      end
+      notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
     end
+
 
     show {
       title "Prepare to upload resulting analyzer data"
@@ -248,6 +288,7 @@ class Protocol
       stripwell.mark_as_deleted
     end
 
+    io_hash[:errors] = errors
     return { io_hash: io_hash }
   end # main
 
