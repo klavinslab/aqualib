@@ -38,10 +38,11 @@ class Protocol
 
     if yeast_glycerol_stocks.length > 0
 
-      yeast_strains = yeast_glycerol_stocks.collect { |y| y.sample } + yeast_overnights.collect { |y| y.sample }
+      yeast_strains_glycerol = yeast_glycerol_stocks.collect { |y| y.sample }
+      yeast_strains_overnight = yeast_overnights.collect { |y| y.sample }
 
-      glycerol_streaked_yeast_plates = produce spread yeast_strains, "Divided Yeast Plate", 1, num_of_section
-      overnight_streaked_yeast_plates = produce spread yeast_strains, "Divided Yeast Plate", 1, num_of_section
+      glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
+      overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
 
       show {
         title "Grab yeast plates"
