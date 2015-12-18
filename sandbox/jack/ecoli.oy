@@ -2,7 +2,7 @@ place p1
 	protocol:
 	group: "technician"
 	marked: true 
-	start:
+	start: now()
 	window: 
 end
 
