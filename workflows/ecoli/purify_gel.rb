@@ -141,7 +141,8 @@ class Protocol
         fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
         fs.save
       end
-
+      # Give a touch history in log
+      take fragment_stocks
       release fragment_stocks, interactive: true, method: "boxes"
       io_hash[:fragment_stock_ids] = fragment_stocks.collect{ |fs| fs.id }
     end
