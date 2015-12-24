@@ -3,15 +3,7 @@ place p1
 	group: "technician"
 	marked: true 
 	start: now()
-	window: 
-end
-
-place wait overnight
-	protocol:
-	group: "technician"
-	marked:
-	start:
-	window:
+	window: hours(1)
 end
 
 place p2
@@ -19,7 +11,7 @@ place p2
 	group: "technician"
 	marked:
 	start:
-	window:
+	window: hours(1)
 end
 
 place p3
@@ -27,7 +19,23 @@ place p3
 	group: "technician"
 	marked:
 	start:
-	window:
+	window: hours(1)
+end
+
+place p4
+	protocol:
+	group: "technician"
+	marked:
+	start:
+	window: minutes(30)
+end
+
+place p5
+	protocol:
+	group: "technician"
+	marked:
+	start:
+	window: minutes(5)
 end
 
 transition [p1] => [p2] when completed(0)
