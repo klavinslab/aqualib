@@ -1,39 +1,39 @@
 place p1
-	protocol:
+	protocol: "ecoli1.rb"
 	group: "technician"
-	marked: true 
+	marked: false
 	start: now()
 	window: hours(1)
 end
 
 place p2
-	protocol:
+	protocol: "ecoli2.rb"
 	group: "technician"
-	marked:
+	marked: false
 	start:
 	window: hours(1)
 end
 
 place p3
-	protocol:
+	protocol: "ecoli3.rb"
 	group: "technician"
-	marked:
+	marked: false
 	start:
 	window: hours(1)
 end
 
 place p4
-	protocol:
+	protocol: "ecoli4.rb"
 	group: "technician"
-	marked:
+	marked: false
 	start:
 	window: minutes(30)
 end
 
 place p5
-	protocol:
+	protocol: "ecoli5.rb"
 	group: "technician"
-	marked:
+	marked: false
 	start:
 	window: minutes(5)
 end
