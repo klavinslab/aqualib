@@ -5,6 +5,8 @@ class Protocol
 				find(:item, object_type: { name: "500 mL Bottle"}) + find(:item, object_type: { name: "Difco LB Broth, Miller"}) +
 				find(:item, object_type: { name: "50 percent Glycerol (sterile)"})
 
+		take ingredients, interactive: true
+
 		lb_liquid = produce new_object "800 mL LB liquid (unsterile)"
 		glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
 		water = produce new_object "1000 mL DI Water (unsterile)"
