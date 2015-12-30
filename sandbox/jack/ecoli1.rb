@@ -1,7 +1,7 @@
 class Protocol
 	
 	def arguments
-    		get "number", var: "batch", label: "Enter 1 for single batch 2 for double batch", default: 1
+    		{ batch: 1 }
 	 end
 	
 	def main
