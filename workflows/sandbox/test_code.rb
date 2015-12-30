@@ -44,7 +44,7 @@ class Protocol
     full_name = str.split
     begin
       cap_initials = full_name[0][0].upcase + full_name[1][0].upcase
-    rescue 
+    rescue
       cap_initials = ""
     end
     return cap_initials
@@ -101,10 +101,12 @@ class Protocol
     # end
     # yeast_competent_cells = produce new_sample "U6-pGAL1-FAR1, L5G-AFB2, OK-pACT1-GEV, T4-pGAL1-GAVNY in W303alpha", of: "Yeast Strain", as: "Yeast Competent Aliquot"
     item = find(:item, id: 1242)[0]
-    sample = find(:sample, id: 4087)[0] 
+    sample = find(:sample, id: 4087)[0]
+    object_item = find(:item, { object_type: { name: "50 percent Glycerol (sterile)" } })[0]
     show {
       note "#{item}"
       note "#{sample.in("Primer Aliquot").length}"
+      note "#{object_item}"
     }
     item1 = item[0]
     # show {
