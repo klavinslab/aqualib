@@ -1,9 +1,11 @@
 class Protocol
+	
+	def arguments
+    		get "number", var: "batch", label: "Enter 1 for single batch 2 for double batch", default: 1
+	 end
+	
 	def main
-
-		# ingredients = find(:item, object_type: { name: "1 L Bottle"}) + find(:item, object_type: { name: "1 L Bottle"}) +
-		# 		find(:item, object_type: { name: "500 mL Bottle"}) + find(:item, object_type: { name: "Difco LB Broth, Miller"}) +
-		# 		find(:item, object_type: { name: "50 percent Glycerol (sterile)" } )[0]
+		
 		bottle_1L = find(:item, object_type: { name: "1 L Bottle"})[0]
 		bottle_500mL = find(:item, object_type: { name: "500 mL Bottle"})[0]
 		broth = find(:item, object_type: { name: "Difco LB Broth, Miller"})[0]
