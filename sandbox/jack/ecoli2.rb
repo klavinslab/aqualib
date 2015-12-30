@@ -1,8 +1,17 @@
 class Protocol
 	def main
 
-		ingredients = find(:item, object_type: { name: "125 mL baffled flask"})
-		take ingredients, interactive: true
+		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
+		stock = find(:item, object_type: { name: ""})[0]
+		
+		take [flask, stock], interactive: true
+		dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
+		
+		show {
+			title "Label Baffled Flask"	
+			note "Label the flask '125 mL baffled flask', #{flask.id}, initials, and date"
+		}
+		
 		show {
 			title "Add LB Liquid"
 			note "Using the serological pipette, add 25 mL LB liquid to the baffled flask"
@@ -20,7 +29,7 @@ class Protocol
 			note "Take lid off flask"
 			note "Put tip on pipette"
 			note "Leaving glycerol stock in rack, take off cryotube lid, scrape a large chunk from glycerol stock, and replace cryotube lid"
-			note "Carefully glycerol scrape into flask of LB by tipping flask and swirling tip into media"
+			note "Carefully scrape glycerol into flask of LB by tipping flask and swirling tip into media"
 			note "Discard tip"
 			note "Return cap on flask"
 			note "Return glycerol stock"
@@ -29,9 +38,12 @@ class Protocol
 		show {
 			title "Clean up"
 			note "Take pipette, tips back to bench"
-
+		}
+		
+		show {
+			title "Return"
+			note "Place flask into the 37 shaker"
 		}
 
-		release([ingredients], interactive: true)
 	end
 end
