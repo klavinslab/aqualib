@@ -52,7 +52,7 @@ class Protocol
 
 		show {
 			title "Prepare 1 L DI Water (unsterile)"
-			note "Label remaining 1 L bottle '1 L DI Water (unsterile)', #{water_sterile.id}, initials, and date"
+			note "Label remaining 1 L bottle '1 L DI Water', #{water_sterile.id}, initials, and date"
 		}
 
 		show {
