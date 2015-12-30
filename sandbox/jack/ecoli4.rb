@@ -1,8 +1,18 @@
 class Protocol
+  
+  def arguments
+    		{
+    			io_hash: {}
+    		}
+	 end
+  
+  
   def main
   
-  
-    ingredients = find(:item, object_type: { name: "2000 mL flask"}) + find(:item, object_type: { name: "2000 mL flask"})
+    io_hash = input[:io_hash]
+    flask2000 = find(:item, object_type: { name: "2000 mL flask"}) 
+    lb_liquid = io_hash[:]
+    overnight_flask = 
   
     show {
       title "Carefully pour warmed LB into 2000 mL flask"
