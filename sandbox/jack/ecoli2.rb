@@ -2,9 +2,9 @@ class Protocol
 	def main
 
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
-		stock = find(:item, object_type: { name: ""})[0]
+		#stock = find(:item, object_type: { name: ""})[0]
 		
-		take [flask, stock], interactive: true
+		take [flask], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
 		
 		show {
