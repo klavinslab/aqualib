@@ -13,14 +13,14 @@ class Protocol
 		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "E coli Glycerol Stock" }})[0]
 		
 		take [flask, stock], interactive: true
-		#dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
-		#d5alpha.location = "37 shaker"
-		#io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
+		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "250 mL Flask of E coli cells"
+		d5alpha.location = "37 degree shaker"
+		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
 		#flask.mark_as_deleted
 		
 		show {
 			title "Label Baffled Flask"	
-			#note "Label the flask 'DH5alpha', #{dh5alpha.id}, initials, and date"
+			note "Label the flask 'DH5alpha', #{dh5alpha.id}, initials, and date"
 		}
 		
 		show {
@@ -52,9 +52,9 @@ class Protocol
 			note "Take pipette, tips back to bench"
 		}
 		
-		#release([d5alpha], interactive: true) {
-		#	note "Place flask in 37 shaker"
-		#}
+		release([d5alpha], interactive: true) {
+			note "Place flask in 37 shaker"
+		}
 		
 		
 
