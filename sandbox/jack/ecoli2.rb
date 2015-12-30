@@ -14,7 +14,7 @@ class Protocol
 		
 		take [flask, stock], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "250 mL Flask of E coli cells"
-		d5alpha.location = "37 degree shaker"
+		dh5alpha.location = "37 degree shaker"
 		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
 		#flask.mark_as_deleted
 		
