@@ -1,4 +1,12 @@
 class Protocol
+	
+	def arguments
+		{
+			io_hash = {}
+		}
+	end
+	
+	
 	def main
 		lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)"})[0]
 		take lb_liquid, interactive: true
@@ -7,5 +15,9 @@ class Protocol
 			show "Set heat bath to 37"
 			show "Once temperature reaches 37, immerse LB in beads"
 		}
+		lb_liquid.location = "beads"
+		io_hash = {new_lb_liquid: lb_liquid}.merge(io_hash)
+		release(lb_liquid, interactive: true)
+		return { io_hash: io_hash }
 	end
 end
