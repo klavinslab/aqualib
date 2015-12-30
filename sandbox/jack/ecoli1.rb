@@ -15,7 +15,7 @@ class Protocol
 		#glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
 		#water = produce new_object "1000 mL DI Water (unsterile)"
 		#lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
-		#lb_liquid.mark_as_deleted
+		lb_liquid.mark_as_deleted
 
 		show {
 			title "Prepare Bottles"
