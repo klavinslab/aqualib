@@ -7,9 +7,9 @@ class Protocol
 		bottle_1L = find(:item, object_type: { name: "1 L Bottle"})[0]
 		bottle_500mL = find(:item, object_type: { name: "500 mL Bottle"})[0]
 		broth = find(:item, object_type: { name: "Difco LB Broth, Miller"})[0]
-		glycerol = find(:item, object_type: { name: "50 percent Glycerol (sterile)" } )[0]
+		50glycerol = find(:item, object_type: { name: "50 percent Glycerol (sterile)" } )[0]
 
-		take [bottle_1L, bottle_1L, bottle_500mL, broth, glycerol], interactive: true
+		take [bottle_1L, bottle_1L, bottle_500mL, broth, 50glycerol], interactive: true
 
 		lb_liquid = produce new_object "800 mL LB liquid (unsterile)"
 		glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
@@ -61,6 +61,6 @@ class Protocol
 			note "Set autoclave to 121 C for 15 minutes, and start"
 		}
 
-		release([lb_liquid, glycerol, water, lb_liquid_sterile, ingredients], interactive: true);
+		release([glycerol_sterile, water_sterile, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, 50glycerol], interactive: true);
 	end
 end
