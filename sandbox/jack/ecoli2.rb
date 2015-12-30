@@ -1,6 +1,14 @@
 class Protocol
+	
+	def arguments
+    		{
+    			io_hash: {}
+    		}
+	 end	
+	
 	def main
 
+		io_hash = input[:io_hash]
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
 		#stock = find(:item, object_type: { name: ""})[0]
 		
