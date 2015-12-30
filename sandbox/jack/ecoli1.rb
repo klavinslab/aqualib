@@ -6,6 +6,7 @@ class Protocol
 	
 	def main
 		
+		batch = input[:batch]
 		bottle_1L = find(:item, object_type: { name: "1 L Bottle"})[0]
 		bottle_500mL = find(:item, object_type: { name: "500 mL Bottle"})[0]
 		broth = find(:item, object_type: { name: "Difco LB Broth, Miller"})[0]
