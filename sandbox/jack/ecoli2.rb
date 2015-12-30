@@ -14,6 +14,9 @@ class Protocol
 		
 		take [flask], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
+		d5alpha.location = "37 shaker"
+		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
+		#flask.mark_as_deleted
 		
 		show {
 			title "Label Baffled Flask"	
@@ -32,26 +35,28 @@ class Protocol
 
 		show {
 			title "Glycerol stock scrape, and add to media: QUICKLY"
-			note "Take DH5alpha glycerol stock, located at M80.X.X.X"
 			note "Put glycerol stock in tube rack, loosen cap"
 			note "Take lid off flask"
 			note "Put tip on pipette"
 			note "Leaving glycerol stock in rack, take off cryotube lid, scrape a large chunk from glycerol stock, and replace cryotube lid"
 			note "Carefully scrape glycerol into flask of LB by tipping flask and swirling tip into media"
 			note "Discard tip"
-			note "Return cap on flask"
+			note "Put the lid back on the flask"
 			note "Return glycerol stock"
 		}
-
+		
+		release([stock], interactive: true)
+		
 		show {
 			title "Clean up"
 			note "Take pipette, tips back to bench"
 		}
 		
-		show {
-			title "Return"
-			note "Place flask into the 37 shaker"
+		release([d5alpha], interactive: true) {
+			note "Place flask in 37 shaker"
 		}
+		
+		
 
 	end
 end
