@@ -29,7 +29,7 @@ class Protocol
 
 		show {
 			title "Prepare 800 mL LB liquid"
-			note "Label one 1 L bottle with '800 mL LB Liquid', #{lb_liquid.id}, initials, and date"
+			note "Label one 1 L bottle with '800 mL LB Liquid', #{lb_liquid_sterile.id}, initials, and date"
 			note "Wipe spatula with ethanol and kimwipe"
 			note "Measure out 20 g LB Broth, Miller on scale and add to labeled bottle"
 			note "Wipe spatula with ethanol and kimwipe"
@@ -37,13 +37,13 @@ class Protocol
 
 		show {
 			title "Prepare 500 mL 10 Percent Glycerol (unsterile)"
-			note "Label 500 mL bottle '500 mL 10% Glycerol', #{glycerol.id}, initials, and date"
+			note "Label 500 mL bottle '500 mL 10% Glycerol', #{glycerol_sterile.id}, initials, and date"
 			note "Using a serological pipette, add 100 mL 50% glycerol to 500 mL bottle"
 		}
 
 		show {
 			title "Prepare 1 L DI Water (unsterile)"
-			note "Label remaining 1 L bottle '1 L DI Water (unsterile)', #{water.id}, initials, and date"
+			note "Label remaining 1 L bottle '1 L DI Water (unsterile)', #{water_sterile.id}, initials, and date"
 		}
 
 		show {
