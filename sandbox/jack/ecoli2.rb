@@ -10,17 +10,17 @@ class Protocol
 
 		io_hash = input[:io_hash]
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
-		#stock = find(:item, object_type: { name: ""})[0]
+		stock = find(:item, sample: { object_type: { name: "E coli Glycerol Stock" }, sample: { name: "DH5alpha"}})[0]
 		
-		take [flask], interactive: true
-		dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
-		d5alpha.location = "37 shaker"
-		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
+		take [flask, stock], interactive: true
+		#dh5alpha = produce new_sample "DH5alpha", of: "E coli strains", as: "E coli Glycerol Stocks"
+		#d5alpha.location = "37 shaker"
+		#io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
 		#flask.mark_as_deleted
 		
 		show {
 			title "Label Baffled Flask"	
-			note "Label the flask '125 mL baffled flask', #{flask.id}, initials, and date"
+			#note "Label the flask 'DH5alpha', #{dh5alpha.id}, initials, and date"
 		}
 		
 		show {
@@ -52,9 +52,9 @@ class Protocol
 			note "Take pipette, tips back to bench"
 		}
 		
-		release([d5alpha], interactive: true) {
-			note "Place flask in 37 shaker"
-		}
+		#release([d5alpha], interactive: true) {
+		#	note "Place flask in 37 shaker"
+		#}
 		
 		
 
