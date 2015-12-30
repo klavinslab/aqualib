@@ -12,10 +12,14 @@ class Protocol
 		take [bottle_1L, bottle_1L, bottle_500mL, broth, glycerol], interactive: true
 
 		lb_liquid = produce new_object "800 mL LB liquid (unsterile)"
-		#glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
-		#water = produce new_object "1000 mL DI Water (unsterile)"
-		#lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
+		glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
+		water = produce new_object "1000 mL DI Water (unsterile)"
+		lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
+		glycerol_sterile = produce new_object "500 mL 10 Percent Glycerol (sterile)"
+		water_sterile = produce new_object "1000 mL DI Water (sterile)"
 		lb_liquid.mark_as_deleted
+		glycerol.mark_as_deleted
+		water.mark_as_deleted
 
 		show {
 			title "Prepare Bottles"
@@ -25,7 +29,7 @@ class Protocol
 
 		show {
 			title "Prepare 800 mL LB liquid"
-			note "Label one 1 L bottle with '800 mL LB Liquid', #{item number}, initials, and date"
+			note "Label one 1 L bottle with '800 mL LB Liquid', #{lb_liquid.id}, initials, and date"
 			note "Wipe spatula with ethanol and kimwipe"
 			note "Measure out 20 g LB Broth, Miller on scale and add to labeled bottle"
 			note "Wipe spatula with ethanol and kimwipe"
@@ -33,27 +37,27 @@ class Protocol
 
 		show {
 			title "Prepare 500 mL 10 Percent Glycerol (unsterile)"
-			note "Label 500 mL bottle “500 mL 10% Glycerol” with item number from silent produce, your initials, and the date"
+			note "Label 500 mL bottle '500 mL 10% Glycerol', #{glycerol.id}, initials, and date"
 			note "Using a serological pipette, add 100 mL 50% glycerol to 500 mL bottle"
 		}
 
 		show {
 			title "Prepare 1 L DI Water (unsterile)"
-			note "Label remaining 1 L bottle “1 L DI Water (sterile)” with item number from silent produce, your initials, and the date"
+			note "Label remaining 1 L bottle '1 L DI Water (unsterile)', #{water.id}, initials, and date"
 		}
 
 		show {
 			title "Add DI water"
-			note "Add DI water to “800 mL LB Liquid” up to 800 mL mark"
-			note "Add DI water to “500 mL 10% Glycerol” up to 500 mL mark"
-			note "Add DI water to “1 L DI Water (sterile)”  up to 1 L mark"
+			note "Add DI water to '800 mL LB Liquid' up to 800 mL mark"
+			note "Add DI water to '500 mL 10% Glycerol' up to 500 mL mark"
+			note "Add DI water to '1 L DI Water' up to 1 L mark"
 		}
 
 		show {
 			title "Autoclave"
-			note "Add autoclave tape to  800 mL LB Liquid, 500 mL 10% Glycerol, and 1 L DI Water (sterile)"
+			note "Add autoclave tape to '800 mL LB Liquid', '500 mL 10% Glycerol', and '1 L DI Water'"
 			note "Check water levels in autoclave"
-			note "Load 800 mL LB Liquid, 500 mL 10% Glycerol, and 1 L DI Water (sterile) into autoclave"
+			note "Load '800 mL LB Liquid', '500 mL 10% Glycerol', and '1 L DI Water' into autoclave"
 			note "Set autoclave to 121 C for 15 minutes, and start"
 		}
 
