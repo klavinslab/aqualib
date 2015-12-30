@@ -12,7 +12,7 @@ class Protocol
 		io_hash = input[:io_hash]
 		bottle_1L = find(:item, object_type: { name: "1 L Bottle"})[0]
 		lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)"})[6]
-		take bottle_1L, interactive: true
+		take [bottle_1L, lb_liquid], interactive: true
 		show {
 			title "Place LB in heat bath"
 			note "Set heat bath to 37"
