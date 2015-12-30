@@ -19,7 +19,7 @@ class Protocol
 		}
 		lb_liquid.location = "beads"
 		io_hash = {new_lb_liquid: lb_liquid}.merge(io_hash)
-		release(lb_liquid, interactive: true)
+		release([lb_liquid], interactive: true)
 		return { io_hash: io_hash }
 	end
 end
