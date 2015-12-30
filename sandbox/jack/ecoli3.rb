@@ -2,7 +2,7 @@ class Protocol
 	
 	def arguments
 		{
-			io_hash = {}
+			io_hash: {}
 		}
 	end
 	
