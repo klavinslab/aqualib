@@ -1,7 +1,10 @@
 class Protocol
 	
 	def arguments
-    		{ batch: 1 }
+    		{
+    			batch: 1,
+    			io_hash: {}
+    		}
 	 end
 	
 	def main
@@ -65,5 +68,6 @@ class Protocol
 		}
 
 		release([glycerol_sterile, water_sterile, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true);
+		return { io_hash: io_hash}
 	end
 end
