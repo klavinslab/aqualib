@@ -9,10 +9,10 @@ class Protocol
 		broth = find(:item, object_type: { name: "Difco LB Broth, Miller"})[0]
 		glycerol = find(:item, object_type: { name: "50 percent Glycerol (sterile)" } )[0]
 
-		take [bottle_1L, bottle_500mL, broth, glycerol], interactive: true
+		take [bottle_1L, bottle_1L, bottle_500mL, broth, glycerol], interactive: true
 
 		lb_liquid = produce new_object "800 mL LB liquid (unsterile)"
-		glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
+		#glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
 		water = produce new_object "1000 mL DI Water (unsterile)"
 		lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
 		lb_liquid.mark_as_deleted
