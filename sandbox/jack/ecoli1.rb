@@ -70,7 +70,7 @@ class Protocol
 			note "Set autoclave to 121 C for 15 minutes, and start"
 		}
 
-		release([glycerol_sterile, water_sterile, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true);
+		release([glycerol_sterile, water_sterile, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true)
 		return { io_hash: io_hash}
 	end
 end
