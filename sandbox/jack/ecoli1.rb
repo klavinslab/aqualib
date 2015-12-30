@@ -10,6 +10,7 @@ class Protocol
 	def main
 		
 		batch = input[:batch]
+		io_hash = input[:io_hash]
 		bottle_1L = find(:item, object_type: { name: "1 L Bottle"})[0]
 		bottle_500mL = find(:item, object_type: { name: "500 mL Bottle"})[0]
 		broth = find(:item, object_type: { name: "Difco LB Broth, Miller"})[0]
@@ -26,6 +27,8 @@ class Protocol
 		lb_liquid.mark_as_deleted
 		glycerol.mark_as_deleted
 		water.mark_as_deleted
+		
+		io_hash = {lb_liquid: lb_liquid_sterile, water: water_sterile, glycerol: glycerol_sterile}.merge(io_hash)
 
 		show {
 			title "Prepare Bottles"
