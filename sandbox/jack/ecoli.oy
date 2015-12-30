@@ -1,7 +1,14 @@
+argument 
+	batch: int, "1 or 2"
+end
+
+
 place p1
 	protocol: "ecoli1.rb"
 	group: "technician"
 	marked: false
+	argument
+	
 	start: now()
 	window: hours(1)
 end
