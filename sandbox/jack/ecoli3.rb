@@ -14,8 +14,8 @@ class Protocol
 		#take lb_liquid, interactive: true
 		show {
 			title "Place LB in heat bath"
-			show "Set heat bath to 37"
-			show "Once temperature reaches 37, immerse LB in beads"
+			note "Set heat bath to 37"
+			note "Once temperature reaches 37, immerse LB in beads"
 		}
 		lb_liquid.location = "beads"
 		io_hash = {new_lb_liquid: lb_liquid}.merge(io_hash)
