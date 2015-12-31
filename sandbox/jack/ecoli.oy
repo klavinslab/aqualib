@@ -4,7 +4,7 @@ end
 
 
 place p1
-	protocol: "ecoli1.rb"
+	protocol: "aqualib:sandbox/jack/ecoli1.rb"
 	group: "technician"
 	marked: false
 	argument
@@ -14,40 +14,44 @@ place p1
 end
 
 place p2
-	protocol: "ecoli2.rb"
+	protocol: "aqualib:sandbox/jack/ecoli2.rb"
 	group: "technician"
 	marked: false
-	start:
+	start: now()
 	window: hours(1)
 end
 
 place p3
-	protocol: "ecoli3.rb"
+	protocol: "aqualib:sandbox/jack/ecoli3.rb"
 	group: "technician"
 	marked: false
-	start:
+	start: now()
 	window: hours(1)
 end
 
 place p4
-	protocol: "ecoli4.rb"
+	protocol: "aqualib:sandbox/jack/ecoli4.rb"
 	group: "technician"
 	marked: false
-	start:
+	start: now()
 	window: minutes(30)
 end
 
-place p5
-	protocol: "ecoli5.rb"
-	group: "technician"
-	marked: false
-	start:
-	window: minutes(5)
-end
+#place p5
+#	protocol: "ecoli5.rb"
+#	group: "technician"
+#	marked: false
+#	start:
+#	window: minutes(5)
+#end
 
-transition [p1] => [p2] when completed(0)
-transition [p2] => [p3] when hours_elapsed(0,15)
-transition [p3] => [p4] when hours_elapsed(0,1)
-transition [p4] => [p5] when hours_elapsed(0,1)
-transition [p5] => [p6] when hours_elapsed(0,2)
-transition [p6] => [p7] when minutes_elapsed(0,30)
+wire p1 => p2
+wire p2 => p3
+wire p3 => p4
+
+transition [p1] => [p2] when when !error(0) && completed(0) end
+transition [p2] => [p3] when when !error(0) && completed(0) end
+transition [p3] => [p4] when when !error(0) && completed(0) end
+#transition [p4] => [p5] when hours_elapsed(0,1)
+#transition [p5] => [p6] when hours_elapsed(0,2)
+#transition [p6] => [p7] when minutes_elapsed(0,30)
