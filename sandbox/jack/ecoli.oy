@@ -8,7 +8,7 @@ place p1
 	group: "technician"
 	marked: false
 	argument
-		batch: batch
+		batch: 1
 	end
 	marked: true
 	start: now()
