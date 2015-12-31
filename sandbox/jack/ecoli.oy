@@ -1,6 +1,6 @@
-argument 
-	batch: int, "1 or 2"
-end
+#argument 
+#	batch: int, "1 or 2"
+#end
 
 
 place p1
