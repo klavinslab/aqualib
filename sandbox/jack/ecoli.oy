@@ -10,6 +10,7 @@ place p1
 	argument
 		batch: batch
 	end
+	marked: true
 	start: now()
 	window: hours(1)
 end
