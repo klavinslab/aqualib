@@ -11,7 +11,10 @@ class Protocol
 		
 		io_hash = input[:io_hash]
 		lb_liquid = io_hash[:lb_liquid]
-		take [lb_liquid], interactive: true
+		show {
+			note "#{lb_liquid.id}"
+		}
+		#take [lb_liquid], interactive: true
 		show {
 			title "Place LB in heat bath"
 			note "Set heat bath to 37"
