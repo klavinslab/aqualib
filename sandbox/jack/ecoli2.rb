@@ -10,10 +10,11 @@ class Protocol
 
 		io_hash = input[:io_hash]
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
+		lb_liquid = find(:item, object type: { name: "800 mL LB liquid (sterile)"})[0]
 		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "E coli Glycerol Stock" }})[0]
 		
-		take [flask, stock], interactive: true
-		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "250 mL Flask of E coli cells"
+		take [flask, lb_liquid], interactive: true
+		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "Overnight Suspension"
 		dh5alpha.location = "37 degree shaker"
 		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
 		#flask.mark_as_deleted
@@ -32,6 +33,8 @@ class Protocol
 			title "Go to -80 freezer"
 			note "Bring Eppendorf tube rack, P100 pipette, and P100 pipette tips"  
 		}
+		
+		take [stock], interactive: true
 
 		show {
 			title "Glycerol stock scrape, and add to media: QUICKLY"
@@ -42,7 +45,6 @@ class Protocol
 			note "Carefully scrape glycerol into flask of LB by tipping flask and swirling tip into media"
 			note "Discard tip"
 			note "Put the lid back on the flask"
-			note "Return glycerol stock"
 		}
 		
 		release([stock], interactive: true)
