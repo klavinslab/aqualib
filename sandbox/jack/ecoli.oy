@@ -50,9 +50,9 @@ wire p1 => p2
 wire p2 => p3
 wire p3 => p4
 
-transition [p1] => [p2] when when !error(0) && completed(0) end
-transition [p2] => [p3] when when !error(0) && completed(0) end
-transition [p3] => [p4] when when !error(0) && completed(0) end
+transition [p1] => [p2] when !error(0) && completed(0) end
+transition [p2] => [p3] when !error(0) && completed(0) end
+transition [p3] => [p4] when !error(0) && completed(0) end
 #transition [p4] => [p5] when hours_elapsed(0,1)
 #transition [p5] => [p6] when hours_elapsed(0,2)
 #transition [p6] => [p7] when minutes_elapsed(0,30)
