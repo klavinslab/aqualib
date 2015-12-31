@@ -10,7 +10,7 @@ class Protocol
 	def main
 		
 		io_hash = input[:io_hash]
-		lb_liquid = io_hash[:lb_liquid_sterile]
+		lb_liquid = io_hash[:lb_liquid]
 		take [lb_liquid], interactive: true
 		show {
 			title "Place LB in heat bath"
