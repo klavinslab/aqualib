@@ -10,7 +10,7 @@ class Protocol
 	def main
 		
 		io_hash = input[:io_hash]
-		lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)" } )[0]
+		lb_liquid = io_hash[:lb_liquid_sterile]
 		take [lb_liquid], interactive: true
 		show {
 			title "Place LB in heat bath"
