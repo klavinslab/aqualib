@@ -54,7 +54,7 @@ class Protocol
 			note "Take pipette, tips back to bench"
 		}
 		
-		release([dh5alpha], interactive: true) {
+		release([dh5alpha, lb_liquid, flask], interactive: true) {
 			note "Place flask in 37 shaker"
 		}
 		
