@@ -12,9 +12,8 @@ class Protocol
 		io_hash = input[:io_hash]
 		
 		lb_liquid = find(:item, id: (io_hash[:lb_liquid]))[0]
-		#take [lb_liquid], interactive: true
+		take [lb_liquid], interactive: true
 		show {
-			note "#{lb_liquid.id}"
 			title "Place LB in heat bath"
 			note "Set heat bath to 37"
 			note "Once temperature reaches 37, immerse LB in beads"
