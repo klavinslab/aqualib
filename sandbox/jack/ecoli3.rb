@@ -11,7 +11,7 @@ class Protocol
 		
 		io_hash = input[:io_hash]
 		
-		lb_liquid = find(:item, id: (io_hash[:lb_liquid]))
+		lb_liquid = find(:item, id: (io_hash[:lb_liquid]))[0]
 		#take [lb_liquid], interactive: true
 		show {
 			note "#{lb_liquid.id}"
