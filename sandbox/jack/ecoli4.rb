@@ -10,7 +10,7 @@ class Protocol
   def main
   
     io_hash = input[:io_hash]
-    flask2000 = find(:item, object_type: { name: "2000 mL flask"}) 
+    flask2000 = find(:item, object_type: { name: "2000 mL flask"})[0]
     lb_liquid = find(:item, id: (io_hash[:new_lb_liquid]))[0]
     overnight_flask = find(:item, id: (io_hash[:dh5alpha]))[0]
     
