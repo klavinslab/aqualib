@@ -11,8 +11,8 @@ class Protocol
   
     io_hash = input[:io_hash]
     flask2000 = find(:item, object_type: { name: "2000 mL flask"}) 
-    lb_liquid = io_hash[:new_lb_liquid]
-    overnight_flask = io_hash[:dh5alpha]
+    lb_liquid = find(:item, id: (io_hash[:new_lb_liquid]))[0]
+    overnight_flask = find(:item, id: (io_hash[:dh5alpha]))[0]
     
     take [flask2000, lb_liquid, overnight_flask], interactive: true
     over_night_flask.location = "Dishwashing Station"
@@ -39,7 +39,7 @@ class Protocol
     	note "Move 500 mL 10% glycerol and 1 L sterile DI water to fridge"
     }
     
-    io_hash = { dh5alpha_new: flask2000 }.merge(io_hash)
+    io_hash = { dh5alpha_new: flask2000.id }.merge(io_hash)
     return { io_hash: io_hash }
   
   end
