@@ -31,7 +31,7 @@ class Protocol
 		glycerol.mark_as_deleted
 		water.mark_as_deleted
 		
-		io_hash = {lb_liquid: lb_liquid_sterile, water: water_sterile, glycerol: glycerol_sterile}
+		io_hash = {lb_liquid: lb_liquid_sterile.id, water: water_sterile.id, glycerol: glycerol_sterile.id}
 
 		show {
 			title "Prepare Bottles"
