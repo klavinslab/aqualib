@@ -16,7 +16,7 @@ class Protocol
 		take [flask, lb_liquid], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "Overnight Suspension"
 		dh5alpha.location = "37 degree shaker"
-		io_hash = {dh5alpha: dh5alpha}.merge(io_hash)
+		io_hash = {dh5alpha: dh5alpha.id}.merge(io_hash)
 		#flask.mark_as_deleted
 		
 		show {
