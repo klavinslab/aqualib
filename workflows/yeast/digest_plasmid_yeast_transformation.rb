@@ -163,9 +163,8 @@ class Protocol
         check "Vortex for 5-10 seconds."
         warning "Keep the master mix in an ice block while doing the next steps".upcase
       }
+      release [pmeI] + [cut_smart], interactive: true, method: "boxes"
     end
-
-    release [pmeI] + [cut_smart], interactive: true, method: "boxes"
 
     water_wells = []
     mm_wells = []
@@ -210,6 +209,8 @@ class Protocol
       }
       io_hash[:mix_remaining] = prepare[:mix_remaining]
       io_hash[:mix_extra_aliquots] = prepare[:mix_extra_aliquots]
+    else
+      release [pmeI] + [cut_smart], interactive: true, method: "boxes"
     end
     
     sample_stocks_volume_list = []
