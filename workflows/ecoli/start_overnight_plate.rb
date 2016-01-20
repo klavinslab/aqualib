@@ -10,10 +10,11 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [55310,55312,55313],
+      plate_ids: [48087,48086,48082],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
-      debug_mode: "No",
+      glycerol_stock_ids: [8763,8759,8752],
+      debug_mode: "Yes",
       group: "cloning"
     }
   end #arguments
@@ -109,7 +110,7 @@ class Protocol
     take plates, interactive: true
 
     show {
-      title "Inoculation"
+      title "Inoculation from plate"
       note "Use 10 µL sterile tips to inoculate colonies from plate into 14 mL tubes according to the following table."
       check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated coloines on that plate."
       table [["Plate id", "Overnight id"]].concat(colony_plates.collect { |p| p.id }.zip overnights.collect { |o| { content: o.id, check: true } })
@@ -117,12 +118,17 @@ class Protocol
 
     if io_hash[:glycerol_stock_ids].length > 0
       glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |id| find(:item, id: id)[0] }
-      take glycerol_stocks, interactive: true, method: "boxes"
+      take glycerol_stocks
+      tab = [["Glycerol stock id", "Location", "Overnight id"]]
+      glycerol_stocks.each_with_index do |g,idx|
+        tab.push [g.id, { content: g.location, check: true }, { content: glycerol_overnights[idx].id, check: true } ]
+      end
 
       show {
-        title "Inoculation"
-        note "Use 100 µL sterile tips to vigerously scrape the glycerol stock to get a chunk of stock, add into 14 mL tubes according to the following table."
-        table [["Glycerol stock id", "Overnight id"]].concat(glycerol_stocks.collect { |g| g.id }.zip glycerol_overnights.collect { |o| { content: o.id, check: true } })
+        title "Inoculation from glycerol stock"
+        note "Extremely careful about sterile technique in this step!!!"
+        check "Grab one glycerol stock at a time! Use a pipettor with a 100 µL sterile tip to vigerously scrape the glycerol stock to get a chunk of stock, add and mix into the 14 mL overnight tubes according to the following table. Return glycerol stock immediately after use."
+        table tab
       }
     end
 
