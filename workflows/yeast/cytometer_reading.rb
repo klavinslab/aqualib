@@ -249,7 +249,7 @@ class Protocol
             check "Upload this zip file by dragging it here."
             upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
           }
-        elsif repeat_times < 6
+        elsif repeat_times < 4
           result = show {
             title "Please upload data"
             note "Clicking too fast and forgot to upload?"
@@ -260,6 +260,7 @@ class Protocol
           result = show {
             title "Hmm, well."
             note "Well, it seems like you really don't want to upload the zipfile. I don't know why but I'll give up here."
+            note "If there is anything wrong with the protocol or the process, please comment after you finish the job. Thanks!"
           }
           break
         end
