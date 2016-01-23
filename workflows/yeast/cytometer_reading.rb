@@ -236,17 +236,34 @@ class Protocol
 
       result = {}
       # repeat this step if no results is uploaded and debug_mode is no
+      repeat_times = 0
       while !result["cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}".to_sym] &&
         !debug_mode
-        result = show {
-          title "Export data"
-          check "Go to Desktop/FCS Exports, trash all the folders and files there."
-          check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
-          check "Go to Desktop/FCS Exports, find the folder you just exported."
-          check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
-          check "Upload this zip file by dragging it here."
-          upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
-        }
+        if repeat_times == 0
+          result = show {
+            title "Export and upload data"
+            check "Go to Desktop/FCS Exports, trash all the folders and files there."
+            check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
+            check "Go to Desktop/FCS Exports, find the folder you just exported."
+            check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
+            check "Upload this zip file by dragging it here."
+            upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
+          }
+        elsif repeat_times < 6
+          result = show {
+            title "Please upload data"
+            note "Clicking too fast and forgot to upload?"
+            check "Upload this zip file by dragging it here."
+            upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
+          }
+        else
+          result = show {
+            title "Hmm, well."
+            note "Well, it seems like you really don't want to upload the zipfile. I don't know why but I'll give up here."
+          }
+          break
+        end
+        repeat_times += 1
       end
 
       begin
