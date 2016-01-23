@@ -8,9 +8,7 @@ class Protocol
 
   def transfer sources, destinations, options={}
 
-     # go through each well of the sources and transfer it to the next empty well of
-     # destinations. Every time a source or destination is used up, advance to
-     # another step.
+     # go through each well of the sources and transfer it to the next empty well of destinations. Every time a source or destination is used up, advance to another step.
 
      opts = { skip_non_empty: true, range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No" }.merge options
 
@@ -55,6 +53,11 @@ class Protocol
 
        # if either is nil or if the source well is empty or if the source well has reached its range
        if !sr || !dr || sources[s].matrix[sr][sc] == -1 || [sr,sc] == [sr_end, sc_end]
+
+         # show routing information when in debug
+         show {
+           note routing.to_json
+         } if opts[:debug_mode].downcase == "yes"
 
          # display
          show {
@@ -117,7 +120,9 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
+    debug_mode = false
     if io_hash[:debug_mode].downcase == "yes"
+      debug_mode = true
       def debug
         true
       end
@@ -196,12 +201,12 @@ class Protocol
       job_id = jid
 
       show {
-        title "Cytometer reading"
+        title "Cytometer reading setup"
         check "Go to the software, click Auto Collect tab, click Eject Plate if the CSampler holder is not outside. If Eject Plate button is not clickable, click Close Run Display first and then click Eject Plate."
         check "Place the loaded u-bottom plate on the CSampler holder."
-        check "Find Plate Type, choose 96 well plate: U-bottom. Choose all the wells you are reading by clicking the plate layout."
-        check "Enter the following settings. Under Run Limits, 10000 events, 30 µL, check the check box for 30 µL. Under Fluidics, choose Fast. Under Set Threshold, choose FSC-H, enter 400000."
-        check "Click Apply Settings, it will popup a window to prompt you to save as a new file, go find the My Documents/Aquarium folder and save the file as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}. And the wells you just chose should turn to a different color."
+        check "Click File/Open workspace or template, choose No if there is a pop up. In My Documents/Aquarium folder, find 96_well_u_bottom_yeast_cytometry_template.c6t and open it."
+        check "Choose all the wells you are reading (the wells you just pipetted samples into) by clicking the plate layout."
+        check "Click Apply Settings, it will popup a window to prompt you to save as a new file, rename the file name as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}. And the wells you just chose should turn to a different color."
         check "Click Open Run Display, then click Autorun."
       }
 
@@ -229,21 +234,27 @@ class Protocol
         end
       }
 
-      result = show {
-        title "Export data"
-        check "Go to Desktop/FCS Exports, trash all the folders and files there."
-        check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
-        check "Go to Desktop/FCS Exports, find the folder you just exported."
-        check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
-        check "Upload this zip file by dragging it here."
-        upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
-      }
+      result = {}
+      # repeat this step if no results is uploaded and debug_mode is no
+      while !result["cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}".to_sym] &&
+        !debug_mode
+        result = show {
+          title "Export data"
+          check "Go to Desktop/FCS Exports, trash all the folders and files there."
+          check "Go back to the cytometer software, click File/Export ALL Samples as FCS"
+          check "Go to Desktop/FCS Exports, find the folder you just exported."
+          check "Click Send to/Compressed(zipped) folder, rename it as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}."
+          check "Upload this zip file by dragging it here."
+          upload var: "cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}"
+        }
+      end
 
-      cytometry_result_id = result["cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}".to_sym][0][:id]
-
-      cytometry_result_url = Upload.find(cytometry_result_id).url
-
-      results.push({ id: cytometry_result_id, url: cytometry_result_url })
+      begin
+        cytometry_result_id = result["cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}".to_sym][0][:id]
+        cytometry_result_url = Upload.find(cytometry_result_id).url
+        results.push({ id: cytometry_result_id, url: cytometry_result_url })
+      rescue
+      end
 
       show {
         title "Clean run"
