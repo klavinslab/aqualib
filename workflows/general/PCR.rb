@@ -95,10 +95,18 @@ class Protocol
 
     pcrs.each do |t, pcr|
       lengths = pcr[:fragment_info].collect { |fi| fi[:length] }
-      extension_time = (lengths.max)/1000.0*30 + 30
+      extension_time = (lengths.max)/1000.0*30
+      # adding more extension time for longer size PCR.
+      if lengths.max < 2000
+        extension_time += 30
+      elsif lengths.max < 3000
+        extension_time += 60
+      else
+        extension_time += 90
+      end
       pcr[:mm], pcr[:ss] = (extension_time.to_i).divmod(60)
-      pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(1, 9)
-      pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(1, 9)
+      pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(0, 9)
+      pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(0, 9)
 
       pcr[:fragments].concat pcr[:fragment_info].collect { |fi| fi[:fragment] }
       pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
