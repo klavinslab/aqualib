@@ -8,39 +8,63 @@ class Protocol
 	
 	def main
 		io_hash = input[:io_hash]
-		media = find(:item, id: (io_hash[:media]))[0]
-		label = media.name.gsub(/\(unsterile\)/,'')
-		autoclaved_media = produce_new_object media.name.gsub(/\(unsterile\)/,"(sterile)")
-		autoclaved_media.location = "Bench"
-		if(media.name.include? "LB" || media.name.include? "TB")
-			temp = 121
-		elsif(media.name.include? "SDO" || media.name.include? "SC" || media.name.include? "YPAD")
-			temp = 110	
+		data = show {
+			title "Select media type"
+			select ["LB Liquid", "TB Liquid", "LB Agar"], var: "choice", label: "Choose media", default: "LB Liquid"
+		}
+		media = data[:choice]
+		if(media == "LB Agar")
+			amount = 29.6
+			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
+			produced_media = produce new_object "800 mL LB liquid (unsterile)"
+		elsif(media == "LB Liquid Media")
+			amount = 20
+			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
+			produced_media = produce new_object "800 mL LB liquid (unsterile)"
+		elsif(media == "TB Liquid Media")
+			amount = 20
+			ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
+			produced_media = produce new_object "800 mL TB liquid (unsterile)"
 		else 
-			raise ArgumentError, "Media is not valid"
+			raise ArgumentError, "User input is not valid"
 		end
-		
+		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
+		take [ingredient, bottle], interactive: true
+		produced_media.location = "Bench"
+		bottle.mark_as_deleted
+		io_hash = {media: produced_media}.merge(io_hash)
 		show {
-			title "Autoclave Media"
-			note "Description: This protocol is for sterilizing the media used for #{label}"
+			title "#{media}"
+			note "Description: This prepares a bottle of #{media} for growing bacteria"
 		}
 		
 		show {
-			title "Tape Bottle"
-			note "Stick autoclave tape on top of the bottle"
-			warning "Make sure that the tape seals the cap to the bottle so that when you open the bottle you have to break the tape"
+			title "Get Bottle and Stir Bar"
+			note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
 		}
 		
 		show {
-			title "Autoclave"
-			note "Check the water levels in the autoclave"
-			note "Loosen cap and autoclave at #{temp}C for 15 minutes"
-			note "5 beeps will signify that the autoclave is done"
+			title "Weigh Out #{media}" 
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{media} powder and pour into the bottle."
+			warning "Before and after using the spatula, clean with ethanol"
 		}
 		
-		media.mark_as_deleted
-		io_hash = {media: autoclaved_media.id}.merge(io_hash)
-		release([autoclaved_media], interactive: true)
+		show {
+			title "Measure Water"
+			note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
+		}
+		
+		show {
+			title "Mix solution"
+			note "Shake until most of the powder is dissolved."
+			note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
+		}
+		
+		show {
+			title "Label Media"
+			note "Label the bottle with '#{media}', 'Your initials'"
+		}
+		release([ingredient, produced_media], interactive: true)
 		return {io_hash: io_hash}
 	end
 end
