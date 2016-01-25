@@ -9,6 +9,7 @@ class Protocol
 	def main
 		io_hash = input[:io_hash]
 		media = find(:item, id: (io_hash[:media]))[0]
+		take [media], interactive: true
 		label = media.name.gsub(/\(unsterile\)/,'')
 		autoclaved_media = produce_new_object media.name.gsub(/\(unsterile\)/,"(sterile)")
 		autoclaved_media.location = "Bench"
