@@ -6,16 +6,6 @@ class Protocol
   include Standard
   include Cloning
 
-  def formalize_marker_name marker
-    if marker
-      marker = marker.delete(' ')
-      marker = marker.downcase
-      marker = marker[0].upcase + marker[1..marker.length]
-    end
-    return marker
-  end
-
-
   def arguments
     {
       io_hash: {},

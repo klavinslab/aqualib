@@ -95,14 +95,18 @@ class Protocol
 
     overnight_marker_hash = Hash.new {|h,k| h[k] = [] }
     all_overnights.each do |x|
-      overnight_marker_hash[x.sample.properties["Bacterial Marker"].downcase[0,3]].push x
+      marker_key = "TB"
+      x.sample.properties["Bacterial Marker"].split(',').each do |marker|
+        marker_key = marker_key + "+" + formalize_marker_name(marker)
+      end
+      overnight_marker_hash[marker_key].push x
     end
 
     overnight_marker_hash.each do |marker, overnight|
       show {
         title "Media preparation in media bay"
         check "Grab #{overnight.length} of 14 mL Test Tube"
-        check "Add 3 mL of TB+#{marker[0].upcase}#{marker[1..marker.length]} to each empty 14 mL test tube using serological pipette"
+        check "Add 3 mL of #{marker} to each empty 14 mL test tube using serological pipette"
         check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
       }
     end

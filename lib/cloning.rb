@@ -10,6 +10,17 @@ module Cloning
     end
   end
 
+  # a function to formalize marker name to be like Amp, Kan, Chlor
+  def formalize_marker_name marker
+    if marker
+      marker = marker.delete(' ')
+      marker = marker.downcase
+      marker = marker[0].upcase + marker[1..marker.length]
+    end
+    return marker
+  end
+
+
   # a function that scans all the stocks to find the stocks that do not have concentration in data filed, instructs the tech to nanodrop and enter in concentration.
   def ensure_stock_concentration sample_stocks
     sample_stocks.compact!
