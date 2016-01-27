@@ -1,6 +1,6 @@
 place bacteria_media
   protocol: "aqualib:workflows/media/bacteria_media.rb"
-  group: technicians
+  group: "technicians"
   marked: true
   start: now()
   window: hours(1)
