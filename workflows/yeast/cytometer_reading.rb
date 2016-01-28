@@ -207,6 +207,7 @@ class Protocol
         check "Click File/Open workspace or template, choose No if there is a pop up. In My Documents/Aquarium folder, find 96_well_u_bottom_yeast_cytometry_template.c6t and open it."
         check "Choose all the wells you are reading (the wells you just pipetted samples into) by clicking the plate layout."
         check "Click Apply Settings, it will popup a window to prompt you to save as a new file, rename the file name as cytometry_#{job_id}_plate_#{yeast_deepwell_plate.id}. And the wells you just chose should turn to a different color."
+        check "If well A1 is not in the wells you are plan to read, click A1, then click Remove Settings, A1 should change to white. Don't do this if A1 is in the wells you are plan to read."
         check "Click Open Run Display, then click Autorun."
       }
 
