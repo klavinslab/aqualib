@@ -81,6 +81,7 @@ class Protocol
             not_done_task_ids.push tid
             set_task_status(task,"waiting")
             task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
+            task.save
           else
             notifs = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)[:notifs]
             notifs.each { |notif| task.notify "[Notif] #{notif}", job_id: jid }
@@ -212,7 +213,7 @@ class Protocol
     else
       release [pmeI] + [cut_smart], interactive: true, method: "boxes"
     end
-    
+
     sample_stocks_volume_list = []
     sample_stocks.each do |s|
       conc = s.datum[:concentration]
