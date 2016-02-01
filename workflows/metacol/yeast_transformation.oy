@@ -67,7 +67,7 @@ wire digest => make_plate
 wire make_plate => transformation
 wire transformation => plate
 wire plate => image
-wire image => re_image_plate
+wire plate => re_image_plate
 
 transition [ tasks_inputs ] => [ digest ] when !error(0) && completed(0) end
 transition [ digest ] => [ make_plate ] when !error(0) && completed(0) end
