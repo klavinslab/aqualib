@@ -116,7 +116,7 @@ class Protocol
     show {
       title "Inoculation from plate"
       note "Use 10 µL sterile tips to inoculate colonies from plate into 14 mL tubes according to the following table."
-      check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated coloines on that plate."
+      check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated colonies on that plate."
       table [["Plate id", "Overnight id"]].concat(colony_plates.collect { |p| p.id }.zip overnights.collect { |o| { content: o.id, check: true } })
     }
 

@@ -47,6 +47,7 @@ class Protocol
 
       take stripwells + gels, interactive: true
 
+      # combine following into one step
       ladder = choose_sample "1 kb Ladder"
       dye = choose_object "Gel Loading Dye Blue (6X)"
 
