@@ -253,7 +253,7 @@ def task_status_check t
         case variable_name
         when "primer_ids"
           if t.task_prototype.name == "Primer Order"
-            errors.push "New rules: argument #{variable_name} only accpects 1 item for easier tracking." if ids.length > 1
+            errors.push "New rule: #{variable_name} only accept 1 item for easier status tracking." if ids.length > 1
             errors.concat sample_check(ids, assert_property: ["Overhang Sequence", "Anneal Sequence"], assert_logic: "or")[:errors]
             errors.concat primer_duplication_detection(ids)
           else  # for Sequencing, Plasmid Verification
@@ -263,6 +263,7 @@ def task_status_check t
           end
         when "fragments"
           if t.task_prototype.name == "Fragment Construction"
+            errors.push "New rule: #{variable_name} only accept 1 item for easier status tracking." if ids.length > 1
             sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
             errors.concat sample_check_result[:errors]
             new_tasks["Primer Order"] = sample_check_result[:ids_to_make]
@@ -282,6 +283,7 @@ def task_status_check t
         when "plasmid"
           errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
         when "yeast_transformed_strain_ids"
+          errors.push "New rule: #{variable_name} only accept 1 item for easier status tracking." if ids.length > 1
           sample_check_result = sample_check(ids, assert_property: "Parent")
           errors.concat sample_check_result[:errors]
           new_tasks["Yeast Competent Cell"] = sample_check_result[:ids_to_make]
