@@ -26,6 +26,7 @@ class Protocol
 		set_task_status(task_to_run, "done")
 		# media = data[:choice]
 		if(media == 11762)
+			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
 				amount = 20
 				label = "LB Liquid Media"
@@ -37,7 +38,6 @@ class Protocol
 			else
 				raise ArgumentError, "Container specified is not valid"
 			end
-			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
 		elsif(media == 11763)
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
 				amount = 20
@@ -68,7 +68,7 @@ class Protocol
 		
 		show {
 			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{ingredient.object_type} powder and pour into the bottle."
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{ingredient.object_type.name} powder and pour into the bottle."
 			warning "Before and after using the spatula, clean with ethanol"
 		}
 		
