@@ -68,7 +68,7 @@ class Protocol
 		
 		show {
 			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{ingredient.name} powder and pour into the bottle."
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of #{ingredient.object_type} powder and pour into the bottle."
 			warning "Before and after using the spatula, clean with ethanol"
 		}
 		
