@@ -16,12 +16,12 @@ class Protocol
 		}
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		show {
-			note task_to_run.name
-			note task_to_run.id
-			note task_to_run.to_json
-			note task_to_run.simple_spec[:media_type]
-		}
+		# show {
+		# 	note task_to_run.name
+		# 	note task_to_run.id
+		# 	note task_to_run.to_json
+		# 	note task_to_run.simple_spec[:media_type]
+		# }
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
 		# media = data[:choice]
@@ -54,7 +54,7 @@ class Protocol
 		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
 		take [ingredient, bottle], interactive: true
 		produced_media.location = "Bench"
-		bottle.mark_as_deleted
+		# bottle.mark_as_deleted
 		io_hash = {media: produced_media}.merge(io_hash)
 		show {
 			title "#{label}"
@@ -87,8 +87,7 @@ class Protocol
 			title "Label Media"
 			note "Label the bottle with '#{label}', 'Your initials', and 'date'"
 		}
-		release([ingredient, produced_media], interactive: true)
+		release([bottle, ingredient, produced_media], interactive: true)
 		return {io_hash: io_hash}
 	end
 end
-
