@@ -10,13 +10,15 @@ class Protocol
 		io_hash = input[:io_hash]
 		media = find(:item, id: (io_hash[:media]))[0]
 		take [media], interactive: true
-		label = media.name.gsub(/\(unsterile\)/,'')
-		autoclaved_media = produce_new_object media.name.gsub(/\(unsterile\)/,"(sterile)")
-		autoclaved_media.location = "Bench"
+		#label = media.name.gsub(/\(unsterile\)/,'')
+		#autoclaved_media = produce_new_object media.name.gsub(/\(unsterile\)/,"(sterile)")
+		#autoclaved_media.location = "Bench"
 		if(media.name.include? "LB" || media.name.include? "TB")
 			temp = 121
+			label = "bacteria"
 		elsif(media.name.include? "SDO" || media.name.include? "SC" || media.name.include? "YPAD")
 			temp = 110	
+			label = "yeast"
 		else 
 			raise ArgumentError, "Media is not valid"
 		end
@@ -39,9 +41,9 @@ class Protocol
 			note "5 beeps will signify that the autoclave is done"
 		}
 		
-		media.mark_as_deleted
-		io_hash = {media: autoclaved_media.id}.merge(io_hash)
-		release([autoclaved_media], interactive: true)
+		#media.mark_as_deleted
+		#io_hash = {media: autoclaved_media.id}.merge(io_hash)
+		release([media], interactive: true)
 		return {io_hash: io_hash}
 	end
 end
