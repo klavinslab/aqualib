@@ -12,9 +12,8 @@ class Protocol
   end
 
   def main
-    (61784..61811).each do |i|
+    (61812..61820).each do |i|
       item = Item.find(i)
-      item.object_type_id = 478
       item.location = "Gel drawer"
       item.save
     end
