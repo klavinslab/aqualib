@@ -6,6 +6,72 @@ class Protocol
   include Standard
   include Cloning
 
+  def inducer_volume_item conc_inducer, master_volume
+    conc_inducer_arr = conc_inducer.split(" ").map(&:strip)
+    conc = conc_inducer_arr[0].to_f
+    unit = conc_inducer_arr[1]
+    inducer_name = conc_inducer_arr[2].downcase
+
+    unit_map = {
+      "pM" => "nM",
+      "nM" => "uM",
+      "uM" => "mM",
+      "ug/mL" => "mg⁄ml"
+    }
+
+    inducer_sample = find(:sample, name: inducer_name)[0]
+
+    if conc < 0
+      raise "conc less than zero is not allowed."
+    elsif conc < 10
+      volume = conc
+      inducer = inducer_sample.in("1 #{unit_map[unit]} stock")[0]
+    elsif conc < 100
+      volume = conc/10
+      inducer = inducer_sample.in("10 #{unit_map[unit]} stock")[0]
+    elsif conc < 1000
+      volume = conc/100
+      inducer = inducer_sample.in("100 #{unit_map[unit]} stock")[0]
+    else
+      raise "conc greater than 1000 is not allowed."
+    end
+
+    volume = volume*master_volume/1000
+
+    return {
+      volume: volume,
+      inducer: inducer
+    }
+  end
+
+  def process_inducer inducer_additions, master_volume
+
+    # Process inducer_addition text and return volume and item_id in inducer_instructions and required inducers to take in inducers
+
+    inducers, instructions = [], []
+    inducer_additions.each do |inducer_addition|
+      instruction = []
+      if ["0", "None", 0, "none"].include? inducer_addition
+        instruction.push "None"
+      else
+        conc_inducers = inducer_addition.split("and").map(&:strip)
+        conc_inducers.each do |conc_inducer|
+          result = inducer_volume_item conc_inducer, master_volume
+          instruction.push "#{result[:volume]} µL of #{result[:inducer].id}"
+          inducers.push result[:inducer]
+        end
+      end
+      instructions.push instruction.join(" and ")
+    end
+
+    inducers.uniq!
+
+    return {
+      instructions: instructions,
+      inducers: inducers
+    }
+  end
+
   def transfer sources, destinations, options={}
 
      # go through each well of the sources and transfer it to the next empty well of
@@ -125,7 +191,7 @@ class Protocol
       media_type: "800 mL SC liquid (sterile)",
       volume: 1000,
       dilution_rate: 0.01,
-      new_inducers: ["0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
+      new_inducers: ["20 uM auxin", "10 nM b-e and 20 uM auxin", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
       range_to_dilute: { from: [[2,1]], to: [[2,12]] },
       debug_mode: "Yes"
     }
@@ -178,8 +244,14 @@ class Protocol
       end
     end
 
+    list_of_items = []
+    list_of_volumes = []
+    results = process_inducer io_hash[:inducer_additions], io_hash[:volume]
+
+    take results[:inducers], interactive: true, method: "boxes"
+
     load_samples_variable_vol( ["Inducers"], [
-        io_hash[:inducer_additions].flatten
+        results[:instructions]
       ], yeast_deepwell_plates )
 
     show {

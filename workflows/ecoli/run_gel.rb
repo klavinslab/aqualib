@@ -48,10 +48,10 @@ class Protocol
       take stripwells + gels, interactive: true
 
       # combine following into one step
-      ladder = choose_sample "1 kb Ladder"
-      dye = choose_object "Gel Loading Dye Blue (6X)"
+      ladder = find(:sample, name: "1 kb Ladder")[0].in("Ladder Aliquot")[0]
+      dye = find(:sample, name: "6X Loading Dye")[0].in("Screw Cap Tube")[0]
 
-      take [ladder] + [dye], interactive: true
+      take [ladder, dye], interactive: true, method: "boxes"
 
       show {
         title "Set up the power supply"
