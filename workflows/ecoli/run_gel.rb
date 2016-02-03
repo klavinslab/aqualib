@@ -69,7 +69,7 @@ class Protocol
 
       show {
         title "Add loading dye"
-        note "Add #{volume / 5.0} µL of loading dye to each (used) well of the stripwells"
+        note "Add #{volume / 5.0} µL of loading dye #{dye} to each (used) well of the stripwells"
         stripwells.each do |sw|
           bullet "Stripwell #{sw.id}, wells #{sw.non_empty_string}"
         end
@@ -78,7 +78,7 @@ class Protocol
       show {
         title "Load DNA ladder"
         gels.each do |gel|
-          check "Using a 100 µL pipetter, pipet 10 µL of ladder (containing loading dye) from tube #{ladder} into wells 1 (top-left) and 7 (bottom left) of gel #{gel}."
+          check "Using a 100 µL pipetter, pipet 10 µL of ladder #{ladder} from tube #{ladder} into wells 1 (top-left) and 7 (bottom left) of gel #{gel}."
         end
         image "gel_begin_loading"
       }
