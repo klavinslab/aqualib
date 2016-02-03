@@ -44,14 +44,10 @@ class Protocol
       }
       stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
       gels = io_hash[:gel_ids].collect { |i| collection_from i }
-
-      take stripwells + gels, interactive: true
-
-      # combine following into one step
       ladder = find(:sample, name: "1 kb Ladder")[0].in("Ladder Aliquot")[0]
       dye = find(:sample, name: "6X Loading Dye")[0].in("Screw Cap Tube")[0]
 
-      take [ladder, dye], interactive: true, method: "boxes"
+      take stripwells + gels + [ladder, dye], interactive: true
 
       show {
         title "Set up the power supply"
