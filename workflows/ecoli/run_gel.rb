@@ -78,7 +78,7 @@ class Protocol
       show {
         title "Load DNA ladder"
         gels.each do |gel|
-          check "Using a 100 µL pipetter, pipet 10 µL of ladder #{ladder} from tube #{ladder} into wells 1 (top-left) and 7 (bottom left) of gel #{gel}."
+          check "Using a 100 µL pipetter, pipet 10 µL of ladder #{ladder} into wells 1 (top-left) and 7 (bottom left) of gel #{gel}."
         end
         image "gel_begin_loading"
       }
