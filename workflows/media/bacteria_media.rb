@@ -48,7 +48,7 @@ class Protocol
 				raise ArgumentError, "Container specified is not valid"
 			end
 		else
-			raise ArgumentError, "User input is not valid"
+			raise ArgumentError, "Chosen media is not valid"
 		end
 
 		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
