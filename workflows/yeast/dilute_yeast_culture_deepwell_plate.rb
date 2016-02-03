@@ -16,7 +16,7 @@ class Protocol
       "pM" => "nM",
       "nM" => "uM",
       "uM" => "mM",
-      "ug/mL" => "mg⁄ml"
+      "ug/mL" => "mg/mL"
     }
 
     inducer_sample = find(:sample, name: inducer_name)[0]
@@ -191,7 +191,7 @@ class Protocol
       media_type: "800 mL SC liquid (sterile)",
       volume: 1000,
       dilution_rate: 0.01,
-      new_inducers: ["20 uM auxin", "10 nM b-e and 20 uM auxin", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
+      new_inducers: ["400 ug/mL zeocin", "10 nM b-e and 20 uM auxin", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "20 uM auxin", "10 nM b-e", "0", "10 nM b-e", "0", "10 nM b-e"],
       range_to_dilute: { from: [[2,1]], to: [[2,12]] },
       debug_mode: "Yes"
     }
