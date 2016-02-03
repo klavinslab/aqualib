@@ -55,7 +55,7 @@ class Protocol
 		take [ingredient, bottle], interactive: true
 		produced_media.location = "Bench"
 		# bottle.mark_as_deleted
-		io_hash = {media: produced_media}.merge(io_hash)
+		io_hash = {type: "bacteria"}.merge(io_hash)
 		show {
 			title "#{label}"
 			note "Description: This prepares a bottle of #{label} for growing bacteria"
