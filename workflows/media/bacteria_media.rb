@@ -16,16 +16,17 @@ class Protocol
 		}
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		show {
-		 	note task_to_run.name
-		 	note task_to_run.id
-		 	note task_to_run.to_json
-			note task_to_run.simple_spec[:media_type]
-		}
+		# show {
+		#  	note task_to_run.name
+		#  	note task_to_run.id
+		#  	note task_to_run.to_json
+		# 	note task_to_run.simple_spec[:media_type]
+		# }
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
+		media_name = find(:sample, id: media)[0].name
 		# media = data[:choice]
-		if(media == 11762)
+		if(media_name == "LB")
 			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
 				amount = 20
@@ -38,7 +39,7 @@ class Protocol
 			else
 				raise ArgumentError, "Container specified is not valid"
 			end
-		elsif(media == 11763)
+		elsif(media_name == "TB")
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
 				amount = 20
 				label = "TB Liquid Media"
