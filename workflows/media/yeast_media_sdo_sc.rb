@@ -22,6 +22,7 @@ class Protocol
         show {
         	note media_name
         	note media_ingredients
+        	note media_ingredients.pop(0)
         }
         acid_bank = ["His", "Leu", "Ura", "Trp"]
         ingredients = []
