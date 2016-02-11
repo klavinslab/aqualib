@@ -1,0 +1,23 @@
+
+place p1
+	protocol: "aqualib:workflows/media/yeast_media_ypad.rb"
+	group: "technicians"
+	argument
+		io_hash: {}
+	end
+	marked: true
+	start: now()
+	window: hours(1)
+end
+
+place p2
+	protocol: "aqualib:workflows/media/autoclave.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: hours(1)
+end
+
+wire p1 => p2
+
+transition [p1] => [p2] when !error(0) && completed(0) end
