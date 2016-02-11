@@ -20,7 +20,7 @@ class Protocol
         media_name = find(:sample, id: media)[0].name
         media_ingredients = media_name.split(" -").pop(0)
         acid_bank = ["His", "Leu", "Ura", "Trp"]
-
+        ingredients = []
         if(media_name == "SC")
             produced_media = produce new_sample "SC", of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank
@@ -32,7 +32,6 @@ class Protocol
         else
             produced_media = produce new_sample media_name, of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank - media_ingredients
-            ingredients = []
             present_acid.each do |i|
                 if(i == "Leu")
                     ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
