@@ -19,11 +19,6 @@ class Protocol
         set_task_status(task_to_run, "done")
         media_name = find(:sample, id: media)[0].name
         media_ingredients = media_name.split(" -").drop(1)
-        # show {
-        # 	note media_name
-        # 	note media_ingredients
-        # 	note media_ingredients.pop(0)
-        # }
         acid_bank = ["His", "Leu", "Ura", "Trp"]
         ingredients = []
         if(media_name == "SC")
@@ -74,10 +69,12 @@ class Protocol
             note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate and add to 1000 mL bottle"
         }
 
-        show {
-            title "Add Amino Acid"
-            note "Add 8 mL of #{present_acid.join(", ")} solutions each to bottle"
-        }
+	if(media_name != "SDO")
+	        show {
+	            title "Add Amino Acid"
+	            note "Add 8 mL of #{present_acid.join(", ")} solutions each to bottle"
+	        }
+	end
 
         show {
             title "Measure Water"
