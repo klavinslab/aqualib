@@ -49,11 +49,11 @@ class Protocol
 	produced_media.location = "Bench"
 	io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
 
-        bottle = [find(:item,{object_type: { name: "1 L Bottle"}})[0]]
+        bottle = find(:item,{object_type: { name: "1 L Bottle"}})[0]
         ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
-        take bottle + ingredients, interactive: true
+        take [bottle] + ingredients, interactive: true
 
         show {
             title media_name
@@ -97,7 +97,7 @@ class Protocol
             title "Label Bottle"
             note "Label the bottle with '#{media_name}', 'Date', 'Your initials'"
         }
-        release (bottle)
+        release ([bottle])
         release(ingredients + [produced_media], interactive: true)
         return {io_hash: io_hash}
     end
