@@ -1,95 +1,102 @@
 class Protocol
 
-	def arguments
-	    {
-	    	io_hash: {}
-	    }
-	end
+    def arguments
+        {
+            io_hash: {}
+        }
+    end
 
-	def main
-		io_hash = input[:io_hash]
-		tasks = find(:task,{ task_prototype: { name: "SDO or SC" } }).select { |t| %w[waiting ready].include? t.status }
+    def main
+        io_hash = input[:io_hash]
+        tasks = find(:task, {task_prototype: {name: "Yeast SDO or SC"} }).select { |t| %w[waiting ready].include? t.status }
+        data = show {
+            title "Choose which task to run"
+            select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
+        }
 
-		data = show {
-			title "Choose which task to run"
-			select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
-		}
+        task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
+        media = task_to_run.simple_spec[:media_type]
+        set_task_status(task_to_run, "done")
+        media_name = find(:sample, id: media)[0].name
+        media_ingredients = media_name.split(" -").pop(0)
+        acid_bank = ["His", "Leu", "Ura", "Trp"]
 
-		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		# show {
-		#  	note task_to_run.name
-		#  	note task_to_run.id
-		#  	note task_to_run.to_json
-		# 	note task_to_run.simple_spec[:media_type]
-		# }
-		media = task_to_run.simple_spec[:media_type]
-		set_task_status(task_to_run, "done")
-		media_name = find(:sample, id: media)[0].name
-		# media = data[:choice]
-		if(media_name == "LB")
-			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
-			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
-				amount = 20
-				label = "LB Liquid Media"
-				produced_media = produce new_sample "LB", of: "Media", as: "800 mL Bottle"
-			elsif(task_to_run.simple_spec[:media] == "Agar Plate")
-				amount = 29.6
-				label = "LB Agar"
-				produced_media = produce new_sample "LB", of: "Media", as: "Agar Plate"
-			else
-				raise ArgumentError, "Container specified is not valid"
-			end
-		elsif(media_name == "TB")
-			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
-				amount = 20
-				label = "TB Liquid Media"
-				ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
-				produced_media = produce new_sample "TB", of: "Media", as: "800 mL Bottle"
-			else
-				raise ArgumentError, "Container specified is not valid"
-			end
-		else
-			raise ArgumentError, "Chosen media is not valid"
-		end
+        if(media_name == "SC")
+            produced_media = produce new_sample "SC", of: "Media", as: "800 mL Bottle"
+            present_acid = acid_bank
 
-		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
-		take [ingredient, bottle], interactive: true
+        elsif(media_name == "SDO")
+            produced_media = produce new_sample "SDO", of: "Media", as: "800 mL Bottle"
+            present_acid = []
+
+        else
+            produced_media = produce new_sample media_name, of: "Media", as: "800 mL Bottle"
+            present_acid = acid_bank - media_ingredients
+            ingredients = []
+            present_acid.each do |i|
+                if(i == "leu")
+                    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
+                elsif(i == "his")
+                    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
+                elsif(i == "trp")
+                    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
+                else
+                    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
+                end
+            end           
+        end
+        
 		produced_media.location = "Bench"
-		# bottle.mark_as_deleted
-		io_hash = {type: "bacteria"}.merge(io_hash)
-		show {
-			title "#{label}"
-			note "Description: This prepares a bottle of #{label} for growing bacteria"
-		}
-		
-		show {
-			title "Get Bottle and Stir Bar"
-			note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
-		}
-		
-		show {
-			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of '#{ingredient.object_type.name}' powder and pour into the bottle."
-			warning "Before and after using the spatula, clean with ethanol"
-		}
-		
-		show {
-			title "Measure Water"
-			note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
-		}
-		
-		show {
-			title "Mix solution"
-			note "Shake until most of the powder is dissolved."
-			note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
-		}
-		
-		show {
-			title "Label Media"
-			note "Label the bottle with '#{label}', 'Your initials', and 'date'"
-		}
-		release([bottle])
-		release([ingredient, produced_media], interactive: true)
-		return {io_hash: io_hash}
-	end
+		io_hash = {type: "yeast"}.merge(io_hash)
+
+        ingredients += [find(:item, object_type: { name: "1 L Bottle"})[0]]
+        ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
+        ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
+        ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
+        take ingredients, interactive: true
+
+        show {
+            title media_name
+            note "Description: Makes 800 mL of #{media_name} media with 2% glucose and adenine supplement"
+        }
+
+        show {
+            title "Get Bottle and Stir Bar"
+            note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+        }
+
+        show {
+            title "Weigh Chemicals"
+            note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate and add to 1000 mL bottle"
+        }
+
+        show {
+            title "Add Amino Acid"
+            note "Add 8 mL of #{present_acid.join(", ")} solutions each to bottle"
+        }
+
+        show {
+            title "Measure Water"
+            note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
+        }
+
+        show {
+            title "Mix solution"
+            note "Shake until most of the powder is dissolved."
+            note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
+        }
+
+        show {
+            title "Cap Bottle"
+            note "Place cap on bottle loosely"
+        }
+
+        show {
+            title "Label Bottle"
+            note "Label the bottle with '#{media_name}', 'Date', 'Your initials'"
+        }
+        release([bottle])
+        release(ingredients + [produced_media], interactive: true)
+        return {io_hash: io_hash}
+    end
 end
