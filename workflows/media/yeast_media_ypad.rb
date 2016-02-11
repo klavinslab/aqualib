@@ -19,6 +19,11 @@ class Protocol
         set_task_status(task_to_run, "done")
         media = task_to_run.simple_spec[:media_type]
         media_name = find(:sample, id: media)[0].name
+        
+        show {
+            note media
+            note media_name
+        }
         if(media == "YPAD")
             adenine = find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )[0] 
             dextrose = find(:item, { object_type: { name: "Dextrose" } } )[0] 
