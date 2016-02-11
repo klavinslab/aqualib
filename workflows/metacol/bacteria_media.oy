@@ -1,6 +1,9 @@
 place p1
 	protocol: "aqualib:workflows/media/bacteria_media.rb"
 	group: "technicians"
+	argument
+		io_hash: {}
+	end
 	marked: true
 	start: now()
 	window: hours(1)
