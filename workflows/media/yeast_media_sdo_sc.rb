@@ -53,6 +53,7 @@ class Protocol
         ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
+        ingredients += [find(:item, {object_type:{name:"Yeast Synthetic Drop-out Medium Supplements"}})[0]]
         take [bottle] + ingredients, interactive: true
 
         show {
