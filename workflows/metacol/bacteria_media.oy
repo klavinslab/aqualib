@@ -1,10 +1,19 @@
-place bacteria_media
-  protocol: "aqualib:workflows/media/bacteria_media.rb"
-  group: "technicians"
-  marked: true
-  start: now()
-  window: hours(1)
+place p1
+	protocol: "aqualib:workflows/media/bacteria_media.rb"
+	group: "technicians"
+	marked: true
+	start: now()
+	window: hours(1)
 end
 
-transition [ bacteria_media ] => [ bacteria_media ] when !error(0) && completed (0) end
-transition [ bacteria_media ] => [ bacteria_media ] when error(0) end
+place p2
+	protocol: "aqualib:sandbox/jack/autoclave.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: hours(1)
+end
+
+wire p1 => p2
+
+transition [p1] => [p2] when !error(0) && completed(0) end
