@@ -32,18 +32,19 @@ class Protocol
         else
             produced_media = produce new_sample media_name, of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank - media_ingredients
-            present_acid.each do |i|
-                if(i == "Leu")
-                    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
-                elsif(i == "His")
-                    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
-                elsif(i == "Trp")
-                    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
-                else
-                    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
-                end
-            end           
         end
+        
+	present_acid.each do |i|
+		if(i == "Leu")
+		    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
+		elsif(i == "His")
+		    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
+		elsif(i == "Trp")
+		    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
+		else
+		    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
+		end
+	end     
         
 	produced_media.location = "Bench"
 	io_hash = {type: "yeast"}.merge(io_hash)
