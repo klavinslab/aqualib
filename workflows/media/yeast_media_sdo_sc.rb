@@ -19,6 +19,9 @@ class Protocol
         set_task_status(task_to_run, "done")
         media_name = find(:sample, id: media)[0].name
         media_ingredients = media_name.split(" -").pop(0)
+        show {
+        	note media_ingredients
+        }
         acid_bank = ["His", "Leu", "Ura", "Trp"]
         ingredients = []
         if(media_name == "SC")
