@@ -94,7 +94,6 @@ class Protocol
             title "Label Bottle"
             note "Label the bottle with '#{media_name}', 'Date', 'Your initials'"
         }
-        release([bottle])
         release(ingredients + [produced_media], interactive: true)
         return {io_hash: io_hash}
     end
