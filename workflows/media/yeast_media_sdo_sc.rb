@@ -34,11 +34,11 @@ class Protocol
             present_acid = acid_bank - media_ingredients
             ingredients = []
             present_acid.each do |i|
-                if(i == "leu")
+                if(i == "Leu")
                     ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
-                elsif(i == "his")
+                elsif(i == "His")
                     ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
-                elsif(i == "trp")
+                elsif(i == "Trp")
                     ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
                 else
                     ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
