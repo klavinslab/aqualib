@@ -8,7 +8,7 @@ class Protocol
 
     def main
         io_hash = input[:io_hash]
-        tasks = find(:task, { task_prototype: { name: "YPAD" } }).select { |t| %w[waiting ready].include? t.status }
+        tasks = find(:task, { task_prototype: { name: "Yeast YPAD" } }).select { |t| %w[waiting ready].include? t.status }
 
         data = show {
             title "Choose which task to run"
