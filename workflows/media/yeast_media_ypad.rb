@@ -25,6 +25,7 @@ class Protocol
             dextrose = find(:item, { object_type: { name: "Dextrose" } } )[0] 
             bacto = find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0] 
             tryp = find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]
+            produced_media = produce new_sample "YPAD", of: "Media", as: "800 mL Bottle"
             if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
                 bottle = find(:item, { object_type: { name: "1 L Bottle" } } )[0]
             else
@@ -35,6 +36,8 @@ class Protocol
         end
         
         take [adenine, dextrose, bacto, tryp, bottle], interactive: true
+        
+        io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
 
         show {
           title "Make YPAD Media"
@@ -68,7 +71,7 @@ class Protocol
         }
 
         release([bottle])
-        release([adenine, dextrose, bacto, tryp], interactive: true)
+        release([adenine, dextrose, bacto, tryp, produced_media], interactive: true)
 
         return {io_hash: io_hash}
 
