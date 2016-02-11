@@ -20,7 +20,7 @@ class Protocol
         media_name = find(:sample, id: media)[0].name
         media_ingredients = media_name.split(" -").pop(0)
         show {
-        	note media_ingredients
+        	note media_name
         }
         acid_bank = ["His", "Leu", "Ura", "Trp"]
         ingredients = []
