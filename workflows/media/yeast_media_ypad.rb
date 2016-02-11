@@ -35,6 +35,7 @@ class Protocol
             raise ArgumentError, "Chosen media is not valid"
         end
         
+        produced_media.location = "Bench"
         take [adenine, dextrose, bacto, tryp, bottle], interactive: true
         
         io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
