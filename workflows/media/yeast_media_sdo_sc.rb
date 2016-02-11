@@ -47,7 +47,7 @@ class Protocol
 	end     
         
 	produced_media.location = "Bench"
-	io_hash = {type: "yeast"}.merge(io_hash)
+	io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
 
         ingredients += [find(:item,{object_type: { name: "1 L Bottle"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
