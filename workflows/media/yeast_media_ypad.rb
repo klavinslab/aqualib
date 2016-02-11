@@ -67,7 +67,7 @@ class Protocol
         }
 
         release([bottle])
-        release([adenine, dextrose, bacto, tryp], interactive: true
+        release([adenine, dextrose, bacto, tryp], interactive: true)
 
         return {io_hash: io_hash}
 
