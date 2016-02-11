@@ -92,5 +92,6 @@ class Protocol
             title "Label Bottle"
             note "Label the bottle with '#{media_name}', 'Date', 'Your initials'"
         }
+        return {io_hash: io_hash}
     end
 end
