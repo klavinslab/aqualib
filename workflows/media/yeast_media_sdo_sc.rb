@@ -18,9 +18,10 @@ class Protocol
         media = task_to_run.simple_spec[:media_type]
         set_task_status(task_to_run, "done")
         media_name = find(:sample, id: media)[0].name
-        media_ingredients = media_name.split(" -").pop(0)
+        media_ingredients = media_name.split(" -")
         show {
         	note media_name
+        	note media_ingredients
         }
         acid_bank = ["His", "Leu", "Ura", "Trp"]
         ingredients = []
