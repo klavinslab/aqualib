@@ -10,7 +10,7 @@ place p1
 end
 
 place p2
-	protocol: "aqualib:sandbox/jack/autoclave.rb"
+	protocol: "aqualib:workflows/media/autoclave.rb"
 	group: "technicians"
 	marked: false
 	start: now()
