@@ -98,7 +98,7 @@ class Protocol
       end
     end
     old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
-    take old_stripwells, interactive: true
+    # take old_stripwells, interactive: true
 
     # To do
     # come up with new_stripwell_ids that contains either old_stripwell_ids or new_stripwell_ids
@@ -108,7 +108,7 @@ class Protocol
     io_hash[:new_stripwell_ids] = io_hash[:stripwell_ids]
 
     stripwells = io_hash[:new_stripwell_ids].collect { |i| collection_from i }
-    take stripwells
+    take stripwells, interactive: true
 
     show {
       title "Fill empty wells with buffer"

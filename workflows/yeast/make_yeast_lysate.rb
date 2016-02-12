@@ -145,7 +145,7 @@ class Protocol
 
     show {
     	title "Spin down and dilute"
-    	check "Spin down all stripwells until a small pellet is visible at the bottom of the tubes."
+    	check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
         stripwells.each do |sw|
           if sw.num_samples <= 6
             check "Grab a new stripwell with 6 wells and label with the id #{sw}."

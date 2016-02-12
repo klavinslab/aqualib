@@ -51,7 +51,7 @@ class Protocol
     inducers, instructions = [], []
     inducer_additions.each do |inducer_addition|
       instruction = []
-      if ["0", "None", 0, "none"].include? inducer_addition
+      if ["0", "None", 0, "none", "N/A"].include? inducer_addition
         instruction.push "None"
       else
         conc_inducers = inducer_addition.split("and").map(&:strip)
