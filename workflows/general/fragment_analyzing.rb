@@ -294,6 +294,12 @@ class Protocol
         true
       end
     end
+
+    show {
+      title "Fragment analyzing info"
+      note "In this protocol, you will gather stripwells of fragments, organize them in the fragment analyzer machine, and upload the analysis results to Aquarium."
+    }
+
     old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     take old_stripwells, interactive: true
 
@@ -426,7 +432,7 @@ class Protocol
       (create_relabel_instructions new_labels, stripwell_cuts).each { |instruction|
         check instruction
       }
-      image "frag_an_cut_stripwell"
+      image "frag_an_relabel"
     }
 
     eb_labels = new_labels.select{ |x| x.stripwell == nil }
@@ -489,7 +495,7 @@ class Protocol
       table analyzer_well_table
     }
     show {
-      title "Final checks before running analysis"
+      title "Perform final checks before running analysis"
       note "Under \"Run Check\", manually confirm"
       check "Selected rows contain samples."
       check "Alignment marker is loaded (changed every few weeks)."
