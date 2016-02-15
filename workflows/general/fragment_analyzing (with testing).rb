@@ -303,6 +303,107 @@ class Protocol
     old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     take old_stripwells, interactive: true
 
+    #### Begin - TESTING (This should be removed in the future) ###
+    # Stripwell consolidation test cases
+    well_counts_test = [[7, 8, 3, 2],
+                        [6, 3, 2, 8, 10],
+                        [6, 8, 10],
+                        [12, 4, 5, 9],
+                        [3, 2, 4, 4, 10, 2],
+                        [8, 3, 6, 10, 7],
+                        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        [5, 6, 3, 4, 10, 2],
+                        [1, 3, 2, 3, 1, 3, 2, 4, 2],
+                        [2]]
+    well_counts_test = [] if true # Turn testing on and off (hack)
+
+    # Generate test cases
+    num_gen_cases = 0
+    for i in well_counts_test.length...(well_counts_test.length + num_gen_cases)
+      num_elem = rand(10)
+      well_counts_test.push(Array.new)
+      for j in 0..num_elem
+        well_counts_test[i].push(rand(12) + 1)
+      end
+    end
+
+    # Create array with new stripwells corresponding to num_samples in well_counts_test
+    stripwells_test = []
+    well_counts_test.each_with_index { |row, i|
+      stripwells_test.push(Array.new)
+      row.each { |well|
+        new_stripwell = produce new_collection "Stripwell", 1, 12
+        new_stripwell.matrix = [Array.new(well) { 1 } + Array.new(12 - well) { -1 }]
+        stripwells_test[i].push(new_stripwell)
+      }
+    }
+
+    # Run test cases
+    new_test_stripwells = []
+    stripwells_test.each { |test_case|
+      extend StripwellArrayOrganization
+      # Create the analyzer_wells_array from the given stripwells
+      analyzer_wells_array = create_analyzer_wells_array test_case
+      # Find stripwell cuts
+      stripwell_cuts = find_cuts analyzer_wells_array
+      # Create new stripwells based on new configuration
+      new_test_stripwells += stripwells_from_table test_case, analyzer_wells_array
+      # Create new_labels, a list of Labels for each of the stripwell pieces
+      new_labels = create_labels analyzer_wells_array
+      # Create analyzer_well_table, a table formatted for Aquarium with 'A', 'B', 'C', etc. labels instead of stripwell ids and "EB buffer"
+      analyzer_well_table = format_table analyzer_wells_array
+
+      show {
+        extend StripwellArrayOrganization
+        title "Relabel stripwells for stripwell rack arrangement"
+        note "To wipe off old labels, use ethanol on a Kimwipe."
+        warning "Please follow each step carefully."
+        (create_relabel_instructions new_labels, stripwell_cuts).each { |instruction|
+          check instruction
+        }
+      }
+
+      eb_labels = new_labels.select{ |x| x.stripwell == nil }
+      show {
+        title "Prepare EB buffer stripwells"
+        eb_labels.each { |label|
+          check "Make a stripwell of #{label.num_wells} wells, pipette 10 µL of EB buffer into each of its wells."
+          check "Label it \"#{label.label}\"."
+        }
+      } if eb_labels.length > 0
+
+      show {
+        title "Remove empty wells"
+        check "Remove all empty wells from the ends of the stripwells. The lengths of the newly-labeled stripwells should be as follows:"
+        new_labels.each { |label|
+          note "Stripwell #{label.label}: #{label.num_wells} wells"
+        }
+      }
+
+      show {
+        title "Stripwell Test Case #{test_case.collect { |stripwell| stripwell.id }}"
+        note "Find a green stripwell rack for this step."
+        warning "Keep the stripwells in order AT ALL COSTS!"
+        note "Place the stripwells in the stripwell rack according to their labels, as in the following table."
+        table analyzer_well_table
+      }
+      new_labels[0].reset # Just for test cases
+    }
+
+    # Release test stripwells and mark for deletion
+    stripwells_test.each { |row|
+      release row
+      row.each { |stripwell|
+        stripwell.mark_as_deleted
+      }
+    }
+
+    release new_test_stripwells
+    new_test_stripwells.each { |stripwell|
+      stripwell.mark_as_deleted
+    }
+    #### End - TESTING (This should be removed in the future) ####
+
     show {
       title "Uncap stripwells and remove bubbles"
       note "Place the stripwells in a green stripwell rack."
