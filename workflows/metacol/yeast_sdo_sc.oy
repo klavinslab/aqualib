@@ -1,5 +1,6 @@
+
 place p1
-	protocol: "aqualib:workflows/media/bacteria_media.rb"
+	protocol: "aqualib:workflows/media/yeast_media_sdo_sc.rb"
 	group: "technicians"
 	argument
 		io_hash: {}

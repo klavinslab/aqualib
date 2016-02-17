@@ -8,7 +8,7 @@ class Protocol
 
     def main
         io_hash = input[:io_hash]
-        tasks = find(:task, { task_prototype: { name: "YPAD" } }).select { |t| %w[waiting ready].include? t.status }
+        tasks = find(:task, { task_prototype: { name: "Yeast YPAD" } }).select { |t| %w[waiting ready].include? t.status }
 
         data = show {
             title "Choose which task to run"
@@ -18,11 +18,14 @@ class Protocol
         task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
         set_task_status(task_to_run, "done")
         media = task_to_run.simple_spec[:media_type]
-        if(media == 11767)
+        media_name = find(:sample, id: media)[0].name
+        
+        if(media_name == "YPAD")
             adenine = find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )[0] 
             dextrose = find(:item, { object_type: { name: "Dextrose" } } )[0] 
             bacto = find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0] 
             tryp = find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]
+            produced_media = produce new_sample "YPAD", of: "Media", as: "800 mL Bottle"
             if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
                 bottle = find(:item, { object_type: { name: "1 L Bottle" } } )[0]
             else
@@ -32,7 +35,10 @@ class Protocol
             raise ArgumentError, "Chosen media is not valid"
         end
         
+        produced_media.location = "Bench"
         take [adenine, dextrose, bacto, tryp, bottle], interactive: true
+        
+        io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
 
         show {
           title "Make YPAD Media"
@@ -66,7 +72,7 @@ class Protocol
         }
 
         release([bottle])
-        release([adenine, dextrose, bacto, tryp], interactive: true
+        release([adenine, dextrose, bacto, tryp, produced_media], interactive: true)
 
         return {io_hash: io_hash}
 

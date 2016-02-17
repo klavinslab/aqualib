@@ -17,15 +17,16 @@ class Protocol
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
 		# show {
-		# 	note task_to_run.name
-		# 	note task_to_run.id
-		# 	note task_to_run.to_json
+		#  	note task_to_run.name
+		#  	note task_to_run.id
+		#  	note task_to_run.to_json
 		# 	note task_to_run.simple_spec[:media_type]
 		# }
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
+		media_name = find(:sample, id: media)[0].name
 		# media = data[:choice]
-		if(media == 11762)
+		if(media_name == "LB")
 			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
 				amount = 20
@@ -38,7 +39,7 @@ class Protocol
 			else
 				raise ArgumentError, "Container specified is not valid"
 			end
-		elsif(media == 11763)
+		elsif(media_name == "TB")
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
 				amount = 20
 				label = "TB Liquid Media"
@@ -48,14 +49,14 @@ class Protocol
 				raise ArgumentError, "Container specified is not valid"
 			end
 		else
-			raise ArgumentError, "User input is not valid"
+			raise ArgumentError, "Chosen media is not valid"
 		end
 
 		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
 		take [ingredient, bottle], interactive: true
 		produced_media.location = "Bench"
 		# bottle.mark_as_deleted
-		io_hash = {media: produced_media}.merge(io_hash)
+		io_hash = {type: "bacteria", media: produced_media.id}.merge(io_hash)
 		show {
 			title "#{label}"
 			note "Description: This prepares a bottle of #{label} for growing bacteria"
@@ -87,7 +88,8 @@ class Protocol
 			title "Label Media"
 			note "Label the bottle with '#{label}', 'Your initials', and 'date'"
 		}
-		release([bottle, ingredient, produced_media], interactive: true)
+		release([bottle])
+		release([ingredient, produced_media], interactive: true)
 		return {io_hash: io_hash}
 	end
 end

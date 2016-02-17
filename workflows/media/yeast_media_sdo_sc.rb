@@ -18,9 +18,9 @@ class Protocol
         media = task_to_run.simple_spec[:media_type]
         set_task_status(task_to_run, "done")
         media_name = find(:sample, id: media)[0].name
-        media_ingredients = media_name.split(" -").pop(0)
+        media_ingredients = media_name.split(" -").drop(1)
         acid_bank = ["His", "Leu", "Ura", "Trp"]
-
+        ingredients = []
         if(media_name == "SC")
             produced_media = produce new_sample "SC", of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank
@@ -32,28 +32,29 @@ class Protocol
         else
             produced_media = produce new_sample media_name, of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank - media_ingredients
-            ingredients = []
-            present_acid.each do |i|
-                if(i == "leu")
-                    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
-                elsif(i == "his")
-                    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
-                elsif(i == "trp")
-                    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
-                else
-                    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
-                end
-            end           
         end
         
-		produced_media.location = "Bench"
-		io_hash = {type: "yeast"}.merge(io_hash)
+	present_acid.each do |i|
+		if(i == "Leu")
+		    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
+		elsif(i == "His")
+		    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
+		elsif(i == "Trp")
+		    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
+		else
+		    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
+		end
+	end     
+        
+	produced_media.location = "Bench"
+	io_hash = {type: "yeast", media: produced_media.id}.merge(io_hash)
 
-        ingredients += [find(:item, object_type: { name: "1 L Bottle"})[0]]
+        bottle = find(:item,{object_type: { name: "1 L Bottle"}})[0]
         ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
-        take ingredients, interactive: true
+        ingredients += [find(:item, {object_type:{name:"Yeast Synthetic Drop-out Medium Supplements"}})[0]]
+        take [bottle] + ingredients, interactive: true
 
         show {
             title media_name
@@ -70,10 +71,12 @@ class Protocol
             note "Weight out 5.36g nitrogen base, 1.12g of DO media, 16g of dextrose, .064g adenine sulfate and add to 1000 mL bottle"
         }
 
-        show {
-            title "Add Amino Acid"
-            note "Add 8 mL of #{present_acid.join(", ")} solutions each to bottle"
-        }
+	if(media_name != "SDO")
+	        show {
+	            title "Add Amino Acid"
+	            note "Add 8 mL of #{present_acid.join(", ")} solutions each to bottle"
+	        }
+	end
 
         show {
             title "Measure Water"
@@ -95,7 +98,7 @@ class Protocol
             title "Label Bottle"
             note "Label the bottle with '#{media_name}', 'Date', 'Your initials'"
         }
-        release([bottle])
+        release ([bottle])
         release(ingredients + [produced_media], interactive: true)
         return {io_hash: io_hash}
     end
