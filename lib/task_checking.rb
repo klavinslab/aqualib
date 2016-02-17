@@ -132,7 +132,7 @@ def sample_check ids, p={}
         when "Forward Primer", "Reverse Primer", "QC Primer1", "QC Primer2"
           pid = property.id
           # require all primers to have T Anneal in the sample field
-          warnings.push sample_check(ids, assert_property: ["T Anneal"])[:errors]
+          warnings.push sample_check(pid, assert_property: ["T Anneal"])[:errors]
           inventory_check_result = inventory_check pid, inventory_types: ["Primer Aliquot", "Primer Stock"]
           inventory_check_result[:errors].collect! do |err|
             "#{sample_field_name} #{err}"
