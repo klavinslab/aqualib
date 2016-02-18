@@ -9,6 +9,11 @@ class Protocol
     def main
         io_hash = input[:io_hash]
         tasks = find(:task, {task_prototype: {name: "Yeast SDO or SC"} }).select { |t| %w[waiting ready].include? t.status }
+	if(tasks.length == 1)
+		finished = "yes"
+	else
+		finished = "no"
+	end
         data = show {
             title "Choose which task to run"
             select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
@@ -24,15 +29,12 @@ class Protocol
         ingredients = []
         label = media_name
         if(media_name == "SC")
-            #produced_media = produce new_sample "SC", of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank
 
         elsif(media_name == "SDO")
-            #produced_media = produce new_sample "SDO", of: "Media", as: "800 mL Bottle"
             present_acid = []
 
         else
-            #produced_media = produce new_sample media_name, of: "Media", as: "800 mL Bottle"
             present_acid = acid_bank - media_ingredients
         end
         
@@ -63,16 +65,19 @@ class Protocol
 		else
 		    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
 		end
-	end     
+	end
 	
+	produced_media_id = Array.new	
 	produced_media = Array.new
 	for i in 0..(quantity - 1)
-		produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
+		output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
+		produced_media.push(output)
 		produced_media[i].location = "Bench"
+		produced_media_id.push(output.id)
 	end
         
-	#produced_media.location = "Bench"
-	io_hash = {type: "yeast"}.merge(io_hash)
+        new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
+        io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         bottle = [find(:item, object_type: { name: "1 L Bottle"})[0]] * quantity
         ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
@@ -125,6 +130,6 @@ class Protocol
         }
         release (bottle)
         release(ingredients + produced_media, interactive: true)
-        return {io_hash: io_hash}
+        return {io_hash: io_hash, done: finished}
     end
 end
