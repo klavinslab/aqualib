@@ -61,7 +61,7 @@ class Protocol
 		for i in 0..(quantity - 1)
 			output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
 			produced_media.push(output)
-			produced_media_id.push(output)
+			produced_media_id.push(output.id)
 			produced_media[i].location = "Bench"
 		end
 		
