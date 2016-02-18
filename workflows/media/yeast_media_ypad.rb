@@ -57,14 +57,17 @@ class Protocol
 		end
         
 		produced_media = Array.new
+		produced_media_id = Array.new
 		for i in 0..(quantity - 1)
-			produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
+			output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
+			produced_media.push(output)
+			produced_media_id.push(output)
 			produced_media[i].location = "Bench"
 		end
 		
         take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
         
-        new_total = io_hash.fetch(:total_media, Array.new) + produced_media
+        new_total = io_hash.fetch(:total_media, Array.new) + produced_media_id
         io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         show {
