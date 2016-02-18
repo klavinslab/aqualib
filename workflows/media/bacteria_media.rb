@@ -26,61 +26,38 @@ class Protocol
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
 		quantity = task_to_run.simple_spec[:quantity]
-		if(media_name == "LB")
+		if(media_name == "LB") 
+			label = "LB Liquid Media"
 			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
-			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
-				multiplier = 1;
-				amount = 20
-				label = "LB Liquid Media"
-				#produced_media = produce new_sample "LB", of: "Media", as: "800 mL Bottle"
-			elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
-				multiplier = 1;
-				amount = 29.6
-				label = "LB Agar"
-				#produced_media = produce new_sample "LB", of: "Media", as: "Agar Plate"
-			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
-				multiplier = 0.5;
-				amount = 20;
-				label = "LB Liquid Media"
-				#produced_media = produce new_sample "LB", of: "Media", as: "400 mL Bottle"
-			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
-				multiplier = 0.25;
-				amount = 20;
-				label = "LB Liquid Media"
-				#produced_media = produce new_sample "LB", of: "Media", as: "200 mL Bottle"			
-			else
-				raise ArgumentError, "Container specified is not valid"
-			end
-		elsif(media_name == "TB")
-			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
-				multiplier = 1;
-				amount = 20
-				label = "TB Liquid Media"
-				ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
-				#produced_media = produce new_sample "TB", of: "Media", as: "800 mL Bottle"
-			elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
-				multiplier = 1;
-				amount = 29.6
-				label = "TB Agar"
-				#produced_media = produce new_sample "TB", of: "Media", as: "Agar Plate"
-			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
-				multiplier = 0.5;
-				amount = 20;
-				label = "TB Liquid Media"
-				#produced_media = produce new_sample "TB", of: "Media", as: "400 mL Bottle"
-			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
-				multiplier = 0.25;
-				amount = 20;
-				label = "TB Liquid Media"
-				#produced_media = produce new_sample "TB", of: "Media", as: "200 mL Bottle"
-			else
-				raise ArgumentError, "Container specified is not valid"
-			end
+			amount = 20;
+		elsif(media_name == "TB") 
+			label = "TB Liquid Media"
+			ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
+			amount = 20;
 		else
 			raise ArgumentError, "Chosen media is not valid"
 		end
+		
+		if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
+			multiplier = 1;
+			water = 800
+		elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
+			multiplier = 1;
+			amount += 9.6
+			label += " for Agar"
+			water = 800
+		elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+			multiplier = 0.5;
+			water = 400
+		elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+			multiplier = 0.25;
+			water = 200
+		else
+			raise ArgumentError, "Container specified is not valid"
+		end
+
 		produced_media = Array.new
-		for i in 0..quantity
+		for i in 0..(quantity - 1)
 			produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
 			produced_media[i].location = "Bench"
 		end
@@ -90,23 +67,23 @@ class Protocol
 		io_hash = {type: "bacteria"}.merge(io_hash)
 		show {
 			title "#{label}"
-			note "Description: This prepares a bottle of #{label} for growing bacteria"
+			note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
 		}
 		
 		show {
 			title "Get Bottle and Stir Bar"
-			note "Retrieve one Glass Liter Bottle from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+			note "Retrieve one Glass #{quantity} Bottle(s) from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
 		}
 		
 		show {
 			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount} grams of '#{ingredient.object_type.name}' powder and pour into the bottle."
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{quantity} - #{amount * multiplier} grams of '#{ingredient.object_type.name}' powder and pour into each bottle."
 			warning "Before and after using the spatula, clean with ethanol"
 		}
 		
 		show {
 			title "Measure Water"
-			note "Take the bottle to the DI water carboy and add water up to the 800 mL mark"
+			note "Take the bottle to the DI water carboy and add water up to the #{water} mL mark"
 		}
 		
 		show {
@@ -117,7 +94,7 @@ class Protocol
 		
 		show {
 			title "Label Media"
-			note "Label the bottle with '#{label}', 'Your initials', and 'date'"
+			note "Label the bottle(s) with '#{label}', 'Your initials', and 'date'"
 		}
 		release(bottle)
 		release([ingredient] + produced_media, interactive: true)
