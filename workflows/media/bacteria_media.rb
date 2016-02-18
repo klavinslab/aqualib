@@ -39,12 +39,12 @@ class Protocol
 				label = "LB Agar"
 				#produced_media = produce new_sample "LB", of: "Media", as: "Agar Plate"
 			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
-				multiplier = .5;
+				multiplier = 0.5;
 				amount = 20;
 				label = "LB Liquid Media"
 				#produced_media = produce new_sample "LB", of: "Media", as: "400 mL Bottle"
 			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
-				multiplier = .25;
+				multiplier = 0.25;
 				amount = 20;
 				label = "LB Liquid Media"
 				#produced_media = produce new_sample "LB", of: "Media", as: "200 mL Bottle"			
@@ -64,12 +64,12 @@ class Protocol
 				label = "TB Agar"
 				#produced_media = produce new_sample "TB", of: "Media", as: "Agar Plate"
 			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
-				multiplier = .5;
+				multiplier = 0.5;
 				amount = 20;
 				label = "TB Liquid Media"
 				#produced_media = produce new_sample "TB", of: "Media", as: "400 mL Bottle"
 			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
-				multiplier = .25;
+				multiplier = 0.25;
 				amount = 20;
 				label = "TB Liquid Media"
 				#produced_media = produce new_sample "TB", of: "Media", as: "200 mL Bottle"
