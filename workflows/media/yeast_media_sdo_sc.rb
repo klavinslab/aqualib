@@ -16,6 +16,7 @@ class Protocol
 
         task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
         media = task_to_run.simple_spec[:media_type]
+        quantity = task_to_run.simple_spec[:quantity]
         set_task_status(task_to_run, "done")
         media_name = find(:sample, id: media)[0].name
         media_ingredients = media_name.split(" -").drop(1)
