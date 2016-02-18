@@ -87,7 +87,7 @@ class Protocol
 		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
 		take [ingredient] + ([bottle] * quantity), interactive: true
 		#produced_media.location = "Bench"
-		io_hash = {type: "bacteria", media: produced_media.id}.merge(io_hash)
+		io_hash = {type: "bacteria"}.merge(io_hash)
 		show {
 			title "#{label}"
 			note "Description: This prepares a bottle of #{label} for growing bacteria"
