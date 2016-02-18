@@ -67,7 +67,7 @@ class Protocol
 		
         take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
         
-        new_total = io_hash.fetch(:total_media, Array.new) + produced_media_id
+        new_total = io_hash.fetch(total_media, Array.new) + produced_media_id
         io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         show {
