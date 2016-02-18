@@ -96,7 +96,7 @@ class Protocol
         release(bottle)
         release([adenine, dextrose, bacto, tryp] + produced_media, interactive: true)
 
-        return {io_hash: io_hash}
+        return {io_hash: io_hash, done: "no"}
 
 
     end
