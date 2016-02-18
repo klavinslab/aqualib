@@ -18,6 +18,7 @@ place p2
 	window: hours(1)
 end
 
+wire p1=>p1
 wire p1 => p2
 
 transition [p1] => [p1] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
