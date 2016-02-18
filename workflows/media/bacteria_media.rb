@@ -84,8 +84,8 @@ class Protocol
 			produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
 			produced_media[i].location = "Bench"
 		end
-		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
-		take [ingredient] + ([bottle] * quantity), interactive: true
+		bottle = [find(:item, object_type: { name: "1 L Bottle"})[0]] * quantity
+		take [ingredient] + bottle, interactive: true
 		#produced_media.location = "Bench"
 		io_hash = {type: "bacteria"}.merge(io_hash)
 		show {
@@ -119,8 +119,8 @@ class Protocol
 			title "Label Media"
 			note "Label the bottle with '#{label}', 'Your initials', and 'date'"
 		}
-		release([bottle])
-		release([ingredient, produced_media], interactive: true)
+		release(bottle)
+		release([ingredient] + produced_media, interactive: true)
 		return {io_hash: io_hash}
 	end
 end
