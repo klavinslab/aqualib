@@ -16,46 +16,77 @@ class Protocol
 		}
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		show {
-		 	note task_to_run.name
-		 	note task_to_run.id
-		 	note task_to_run.to_json
-			note task_to_run.simple_spec[:media_type]
-		}
+		# show {
+		#  	note task_to_run.name
+		#  	note task_to_run.id
+		#  	note task_to_run.to_json
+		# 	note task_to_run.simple_spec[:media_type]
+		# }
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
-		# media = data[:choice]
+		quantity = task_to_run.simple_spec[:quantity]
 		if(media_name == "LB")
 			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
+				multiplier = 1;
 				amount = 20
 				label = "LB Liquid Media"
-				produced_media = produce new_sample "LB", of: "Media", as: "800 mL Bottle"
-			elsif(task_to_run.simple_spec[:media] == "Agar Plate")
+				#produced_media = produce new_sample "LB", of: "Media", as: "800 mL Bottle"
+			elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
+				multiplier = 1;
 				amount = 29.6
 				label = "LB Agar"
-				produced_media = produce new_sample "LB", of: "Media", as: "Agar Plate"
+				#produced_media = produce new_sample "LB", of: "Media", as: "Agar Plate"
+			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+				multiplier = .5;
+				amount = 20;
+				label = "LB Liquid Media"
+				#produced_media = produce new_sample "LB", of: "Media", as: "400 mL Bottle"
+			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+				multiplier = .25;
+				amount = 20;
+				label = "LB Liquid Media"
+				#produced_media = produce new_sample "LB", of: "Media", as: "200 mL Bottle"			
 			else
 				raise ArgumentError, "Container specified is not valid"
 			end
 		elsif(media_name == "TB")
 			if(task_to_run.simple_spec[:media_container] == "800 mL Bottle")
+				multiplier = 1;
 				amount = 20
 				label = "TB Liquid Media"
 				ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
-				produced_media = produce new_sample "TB", of: "Media", as: "800 mL Bottle"
+				#produced_media = produce new_sample "TB", of: "Media", as: "800 mL Bottle"
+			elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
+				multiplier = 1;
+				amount = 29.6
+				label = "TB Agar"
+				#produced_media = produce new_sample "TB", of: "Media", as: "Agar Plate"
+			elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+				multiplier = .5;
+				amount = 20;
+				label = "TB Liquid Media"
+				#produced_media = produce new_sample "TB", of: "Media", as: "400 mL Bottle"
+			elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+				multiplier = .25;
+				amount = 20;
+				label = "TB Liquid Media"
+				#produced_media = produce new_sample "TB", of: "Media", as: "200 mL Bottle"
 			else
 				raise ArgumentError, "Container specified is not valid"
 			end
 		else
 			raise ArgumentError, "Chosen media is not valid"
 		end
-
+		produced_media = Array.new
+		for i in 0..quantity
+			produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
+			produced_media[i].location = "Bench"
+		end
 		bottle = find(:item, object_type: { name: "1 L Bottle"})[0]
-		take [ingredient, bottle], interactive: true
-		produced_media.location = "Bench"
-		# bottle.mark_as_deleted
+		take [ingredient] + ([bottle] * quantity), interactive: true
+		#produced_media.location = "Bench"
 		io_hash = {type: "bacteria", media: produced_media.id}.merge(io_hash)
 		show {
 			title "#{label}"
