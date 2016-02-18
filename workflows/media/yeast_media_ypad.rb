@@ -31,7 +31,6 @@ class Protocol
             dextrose = find(:item, { object_type: { name: "Dextrose" } } )[0] 
             bacto = find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0] 
             tryp = find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]
-            #produced_media = produce new_sample "YPAD", of: "Media", as: "800 mL Bottle"
         else
             raise ArgumentError, "Chosen media is not valid"
         end
@@ -65,7 +64,8 @@ class Protocol
 		
         take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
         
-        io_hash = {type: "yeast"}.merge(io_hash)
+        new_total = io_hash.fetch(:total_media, Array.new) + produced_media
+        io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         show {
           title "Make YPAD Media"
