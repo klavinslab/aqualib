@@ -9,8 +9,11 @@ class Protocol
 	
 	def main
 		io_hash = input[:io_hash]
-		media = find(:item, id: (io_hash[:media]))[0]
-		take [media], interactive: true
+		all_media = Array.new
+		io_hash[:total_media].each do |i|
+			all_media.push(find(:item, id: i)[0])
+		end
+		take all_media, interactive: true
 		if(io_hash[:type] == "bacteria")
 			temp = 121
 		elsif(io_hash[:type] == "yeast")
@@ -26,18 +29,18 @@ class Protocol
 		
 		show {
 			title "Tape Bottle"
-			note "Stick autoclave tape on top of the bottle"
-			warning "Make sure that the tape seals the cap to the bottle so that when you open the bottle you have to break the tape"
+			note "Stick autoclave tape on top of the bottle(s)"
+			warning "Make sure that the tape seals the cap(s) to the bottle(s) so that when you open the bottle(s) you have to break the tape"
 		}
 		
 		show {
 			title "Autoclave"
 			note "Check the water levels in the autoclave"
-			note "Loosen cap and autoclave at #{temp}C for 15 minutes"
+			note "Loosen cap(s) and autoclave at #{temp}C for 15 minutes"
 			note "5 beeps will signify that the autoclave is done"
 		}
 		
-		release([media], interactive: true)
+		release(all_media, interactive: true)
 		return {io_hash: io_hash}
 	end
 end
