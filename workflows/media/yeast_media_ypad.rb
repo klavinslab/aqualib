@@ -8,10 +8,6 @@ class Protocol
 
     def main
         io_hash = input[:io_hash]
-        tester = input[:done]
-        show {
-        	note tester
-        }
         tasks = find(:task, { task_prototype: { name: "Yeast YPAD" } }).select { |t| %w[waiting ready].include? t.status }
 	if(tasks.length == 1)
 		finished = "yes"
