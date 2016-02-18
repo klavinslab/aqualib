@@ -9,19 +9,17 @@ class Protocol
 	def main
 		io_hash = input[:io_hash]
 		tasks = find(:task,{ task_prototype: { name: "Bacteria Media" } }).select { |t| %w[waiting ready].include? t.status }
-
+		if(tasks.length == 1)
+			finished = "yes"
+		else
+			finished = "no"
+		end
 		data = show {
 			title "Choose which task to run"
 			select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
 		}
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		# show {
-		#  	note task_to_run.name
-		#  	note task_to_run.id
-		#  	note task_to_run.to_json
-		# 	note task_to_run.simple_spec[:media_type]
-		# }
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
@@ -56,15 +54,18 @@ class Protocol
 			raise ArgumentError, "Container specified is not valid"
 		end
 
+		produced_media_id = Array.new
 		produced_media = Array.new
 		for i in 0..(quantity - 1)
-			produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
+			output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
+			produced_media.push(output)
 			produced_media[i].location = "Bench"
+			produced_media_id.push(output.id)
 		end
 		bottle = [find(:item, object_type: { name: "1 L Bottle"})[0]] * quantity
 		take [ingredient] + bottle, interactive: true
-		#produced_media.location = "Bench"
-		io_hash = {type: "bacteria"}.merge(io_hash)
+	        new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
+	        io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
 		show {
 			title "#{label}"
 			note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
@@ -98,6 +99,6 @@ class Protocol
 		}
 		release(bottle)
 		release([ingredient] + produced_media, interactive: true)
-		return {io_hash: io_hash}
+		return {io_hash: io_hash, done: finished}
 	end
 end
