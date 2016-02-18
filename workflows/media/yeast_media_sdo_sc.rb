@@ -64,6 +64,8 @@ class Protocol
 		    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
 		end
 	end     
+	
+	produced_media = Array.new
 	for i in 0..(quantity - 1)
 		produced_media.push(produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container])
 		produced_media[i].location = "Bench"
