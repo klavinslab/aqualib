@@ -85,7 +85,7 @@ class Protocol
 
         show {
           title "Cap Bottle"
-          note "Place cap(s) on bottle loosely(s)"
+          note "Place cap(s) on bottle(s) loosely"
         }
 
         show {
