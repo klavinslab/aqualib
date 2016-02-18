@@ -72,7 +72,7 @@ class Protocol
 		
 		show {
 			title "Get Bottle and Stir Bar"
-			note "Retrieve one Glass #{quantity} Bottle(s) from the glassware rack and one Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar in the bottle."
+			note "Retrieve #{quantity} 1L Glass Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
 		}
 		
 		show {
