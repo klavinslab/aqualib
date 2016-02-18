@@ -9,6 +9,11 @@ class Protocol
     def main
         io_hash = input[:io_hash]
         tasks = find(:task, { task_prototype: { name: "Yeast YPAD" } }).select { |t| %w[waiting ready].include? t.status }
+	if(tasks.length == 1)
+		finished = "yes"
+	else
+		finished = "no"
+	end
 
         data = show {
             title "Choose which task to run"
@@ -96,7 +101,7 @@ class Protocol
         release(bottle)
         release([adenine, dextrose, bacto, tryp] + produced_media, interactive: true)
 
-        return {io_hash: io_hash, done: "no"}
+        return {io_hash: io_hash, done: finished}
 
 
     end
