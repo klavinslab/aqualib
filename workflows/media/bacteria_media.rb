@@ -16,12 +16,12 @@ class Protocol
 		}
 
 		task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-		# show {
-		#  	note task_to_run.name
-		#  	note task_to_run.id
-		#  	note task_to_run.to_json
-		# 	note task_to_run.simple_spec[:media_type]
-		# }
+		show {
+		 	note task_to_run.name
+		 	note task_to_run.id
+		 	note task_to_run.to_json
+			note task_to_run.simple_spec[:media_type]
+		}
 		media = task_to_run.simple_spec[:media_type]
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
