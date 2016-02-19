@@ -10,7 +10,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_culture_ids: [15866,45659],
+      yeast_culture_ids: [66959,66960],
       overnight_ids: [34883,34884,34885],
       debug_mode: "Yes"
     }
@@ -60,6 +60,7 @@ class Protocol
     end
     yeast_strain_id_quantity_hash = Hash.new(2)
     # a hash to store how many competent cell you want for each yeast strain
+    errors = []
     yeast_strain_ids.each do |id|
       yeast_strain = find(:sample, id: id)[0]
       begin
@@ -68,12 +69,23 @@ class Protocol
         if parent_strain.description.include?("comp_cell_limit: no")
           yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] = 100
         end
-      rescue
+      rescue Exception => e
+        errors.push e.to_s
       end
     end
+
+    # for each yeast culture presented in this protocol, check if comp_cell_limit: no, if exists, produce unlimited aliquots.
+    cultures.each do |culture|
+      yeast_culture_sample = culture.sample
+      if yeast_culture_sample.description.include?("comp_cell_limit: no")
+        yeast_strain_id_quantity_hash[yeast_culture_sample.id] = 100
+      end
+    end
+
     show {
       note yeast_strain_id_quantity_hash.to_json
     } if io_hash[:debug_mode].downcase == "yes"
+
 
     take cultures, interactive: true
 
@@ -182,7 +194,7 @@ class Protocol
       quantity = [num_of_aliquots[idx], yeast_strain_id_quantity_hash[culture.sample.id]].min # the lessor of num_of_aliquots the tube can make or the required number from Yeast Transformation
       show {
         note "#{quantity} for #{culture} with sample id #{culture.sample.id}"
-      }
+      } if io_hash[:debug_mode].downcase == "yes"
       (1..quantity).each do |i|
         yeast_compcell_aliquot = produce new_sample culture.sample.name, of: "Yeast Strain", as: "Yeast Competent Cell"
         yeast_compcell_aliquots.push yeast_compcell_aliquot
@@ -218,6 +230,7 @@ class Protocol
 
     release yeast_compcell_aliquots, interactive: true, method: "boxes"
     io_hash[:yeast_competent_cell_ids] = yeast_compcell_aliquots.collect {|y| y.id}
+    io_hash[:errors] = errors
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
