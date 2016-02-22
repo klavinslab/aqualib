@@ -35,7 +35,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4291,4275],[4125,3952],[2058,2059]],
+      fragment_ids: [[2059,4275],[4125,3952],[2058,2059]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
