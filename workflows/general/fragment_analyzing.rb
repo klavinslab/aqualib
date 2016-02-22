@@ -83,22 +83,6 @@ class Protocol
 
   end #gel_band_verify
 
-  class Fixnum
-    # Extends class Fixnum to convert 3 to "3rd", 11 to "11th", etc.
-    def ordinalize
-      if (11..13).include?(self % 100)
-        "#{self}th"
-      else
-        case self % 10
-          when 1; "#{self}st"
-          when 2; "#{self}nd"
-          when 3; "#{self}rd"
-          else    "#{self}th"
-        end
-      end
-    end
-  end # Fixnum
-
   module RowNamer
     def int_to_letter i
       (i + 'A'.ord).chr

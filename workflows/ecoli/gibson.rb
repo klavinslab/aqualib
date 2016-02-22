@@ -5,6 +5,12 @@ class Protocol
   include Cloning
   require 'matrix'
 
+  def sort_by_location fragments
+    fragments.sort! { |frag1, frag2|
+      frag1.location <=> frag2.location
+    }
+  end # sort_by_location
+
   def gibson_vector row
     if row == 0
       return 5.0
@@ -29,7 +35,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4291,4275],[4125,3953],[2058,2062]],
+      fragment_ids: [[4291,4275],[4125,3952],[2058,2059]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
@@ -68,6 +74,9 @@ class Protocol
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten.uniq
 
+    # Sort fragment_stocks_flatten by location for ease of protocol use
+    sort_by_location fragment_stocks_flatten
+
     fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
 
     show {
@@ -77,14 +86,13 @@ class Protocol
       note "Proceed until all the fragmment length info entered."
     } if fragment_stocks_need_length_info.length > 0
 
-    predited_time = time_prediction fragment_stocks_flatten.length, "gibson"
+    predicted_time = time_prediction fragment_stocks_flatten.length, "gibson"
 
     # Tell the user what we are doing
     show {
       title "Gibson Assembly Information"
-      note "This protocol will build the following #{io_hash[:plasmid_ids].length} plasmids using Gibson Assembly method:"
-      note io_hash[:plasmid_ids].collect {|p| "#{p}"}
-      note "The predicted time needed is #{predited_time} min."
+      note "In this protocol, you will build #{io_hash[:plasmid_ids].length} plasmids using Gibson Assembly method."
+      note "The predicted time needed is #{predicted_time} min."
     }
 
     # Take fragment stocks
@@ -138,20 +146,25 @@ class Protocol
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots"
-      note "Take #{io_hash[:plasmid_ids].length} Gibson Aliquots from SF2.100, put on an ice block."
+      note "Grab an ice block and an aluminum tube rack."
+      note "Take #{io_hash[:plasmid_ids].length} Gibson Aliquots from M20 freezer."
+      note "Spin down aliquots."
+      note "Put aliquots in aluminum tube rack."
       warning "Keep all gibson aliquots cool on ice."
+      image "gibson_aluminum_rack"
     }
 
     # following loop is to show a table of setting up each Gibson reaction to the user
+    pre_produced_gibsons = io_hash[:plasmid_ids].collect { |pid| produce new_sample find(:sample,{id: pid})[0].name, of: "Plasmid", as: "Gibson Reaction Result"  }
     gibson_results = []
     empty_fragment_stocks = []
     not_done_task_ids = []
     all_replacement_stocks = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
-      gibson_result = produce new_sample plasmid.name, of: "Plasmid", as: "Gibson Reaction Result"
+      gibson_result = pre_produced_gibsons[idx]
 
-      tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
+      tab = []
       fragment_stocks[idx].each_with_index do |f,m|
         tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
         new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[idx][m].round(1)
@@ -159,10 +172,14 @@ class Protocol
         f.save
         empty_fragment_stocks.push f if new_volume < 1
       end
+      tab.sort! { |r1, r2| r2[2][:content] <=> r1[2][:content] }
+      tab.unshift(["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"])
+
       volume_empty = show {
         title "Load Gibson Reaction #{gibson_result}"
         note "Lable an unused gibson aliquot as #{gibson_result}."
         note "Make sure the gibson aliquot is thawed before pipetting."
+        warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
         table tab
         fragment_stocks[idx].each do |f|
           select ["Yes", "No"], var: "c#{f.id}", label: "Does #{f.id} have enough volume for this reaction?", default: "Yes"
@@ -225,7 +242,7 @@ class Protocol
     # Place all reactions in 50 C heat block
     show {
       title "Place on a heat block"
-      check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B3."
+      check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B7."
       check "Set a 1 hr timer on Google to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
