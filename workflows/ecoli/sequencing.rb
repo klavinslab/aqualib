@@ -104,6 +104,7 @@ class Protocol
       primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
     end
     take plasmid_stocks + (primer_aliquots - diluted_primer_aliquots), interactive: true, method: "boxes"
+    ensure_stock_concentration plasmid_stocks
 
     # calculate volumes based on Genewiz guide
     plasmid_volume_list = []
