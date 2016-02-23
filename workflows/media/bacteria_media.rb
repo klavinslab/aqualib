@@ -27,7 +27,7 @@ class Protocol
 		if(media_name == "LB") 
 			if(task_to_run.simple_spec[:media_container].include?("Agar"))
 				label = "LB Agar"
-				ingredient = find(:item, {oebject_type:{name:"LB Agar Miller"}})[0]
+				ingredient = find(:item, {object_type:{name:"LB Agar Miller"}})[0]
 			else 
 				label = "LB Liquid Media"
 				ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
