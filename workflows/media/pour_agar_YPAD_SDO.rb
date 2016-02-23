@@ -37,12 +37,12 @@ class Protocol
 				data = show {
 					title "Record number"
 					note "Record the number of plates poured."
-					get "number", var: "num", label: "Enter a number", default: 0
+					get "number", var: "num", label: "Enter a number", default: -1
 				}
 				res = data[:num]
 			end
 			for j in 1..res
-				output = produce new_sample made_media.sample.name, of: "Media", as: "Agar Plate"
+				output = produce new_sample agar_media[i].sample.name, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
 				output_media.push(output)
 			end
