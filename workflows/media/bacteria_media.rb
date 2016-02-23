@@ -83,7 +83,7 @@ class Protocol
 			produced_media[i].location = "Bench"
 			produced_media_id.push(output.id)
 		end
-		bottle = [find(:item, object_type: { name: "1 L Bottle"})[0]] * quantity
+		bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
 		take [ingredient] + bottle, interactive: true
 	        new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
 	        io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
