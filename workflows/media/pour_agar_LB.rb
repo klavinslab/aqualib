@@ -88,3 +88,4 @@ class Protocol
 		release(output_media, interactive: true)
 		return {io_hash: io_hash}
 	end
+end
