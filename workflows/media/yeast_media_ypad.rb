@@ -20,9 +20,6 @@ class Protocol
             select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
         }
         task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
-	show {
-		note task_to_run.simple_spec[:media_type]
-	}
         set_task_status(task_to_run, "done")
         media = task_to_run.simple_spec[:media_type]
         media_name = find(:sample, id: media)[0].name
