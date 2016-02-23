@@ -56,19 +56,16 @@ class Protocol
 		elsif(task_to_run.simple_spec[:media_container] == "800 mL Agar")
 			multiplier = 1;
 			amount += 9.6
-			label += " for Agar"
 			water = 800
 			bottle = "1 L Bottle"
 		elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 			multiplier = 0.5;
 			amount += 9.6
-			label += " for Agar"
 			water = 400
 			bottle = "500 mL Bottle"
 		elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 			multiplier = 0.25;
 			amount += 9.6
-			label += " for Agar"
 			water = 200
 			bottle = "250 mL Bottle"
 		else
