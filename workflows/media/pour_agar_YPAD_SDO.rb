@@ -32,16 +32,16 @@ class Protocol
 				note "If there is a large number of bubbles in the agar, a small amount of ethanol can be used to pop the bubbles."
 			}
 
-			data = -1
-			while (data < 1 || data > 100) do
+			res = -1
+			while (res < 1 || res > 100) do
 				data = show {
 					title "Record number"
 					note "Record the number of plates poured."
 					get "number", var: "num", label: "Enter a number", default: 0
 				}
+				res = data[:num]
 			end
-
-			for j in 1..data
+			for j in 1..res
 				output = produce new_sample made_media.sample.name, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
 				output_media.push(output)
