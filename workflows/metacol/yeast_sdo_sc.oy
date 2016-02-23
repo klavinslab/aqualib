@@ -11,7 +11,7 @@ place p1
 end
 
 place p2
-	protocol: "aqualib:workflows/media/autoclave.rb"
+	protocol: "aqualib:workflows/media/pour_agar_YPAD_SDO.rb"
 	group: "technicians"
 	marked: false
 	start: now()
