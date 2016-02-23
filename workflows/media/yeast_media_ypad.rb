@@ -38,15 +38,15 @@ class Protocol
         
         label = media_name 
         
-	if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
+	if(task_to_run.simple_spec[:media_container] == "800 mL Liquid") 
 		multiplier = 1;
 		water = 800
 		bottle = "1 L Bottle"
-	elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+	elsif(task_to_run.simple_spec[:media_container] == "400 mL Liquid")
 		multiplier = 0.5;
 		water = 400
 		bottle = "500 mL Bottle"
-	elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+	elsif(task_to_run.simple_spec[:media_container] == "200 mL Liquid")
 		multiplier = 0.25;
 		water = 200
 		bottle = "250 mL Bottle"
