@@ -25,13 +25,18 @@ class Protocol
 		media_name = find(:sample, id: media)[0].name
 		quantity = task_to_run.simple_spec[:quantity]
 		if(media_name == "LB") 
-			label = "LB Liquid Media"
-			ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
-			amount = 20;
+			if(task_to_run.simple_spec[:media_container].include?("Agar"))
+				label = "LB Agar"
+				ingredient = find(:item, {oebject_type:{name:"LB Agar Miller"}})[0]
+			else 
+				label = "LB Liquid Media"
+				ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
+			end
+			amount = 20
 		elsif(media_name == "TB") 
 			label = "TB Liquid Media"
 			ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
-			amount = 20;
+			amount = 20
 		else
 			raise ArgumentError, "Chosen media is not valid"
 		end
@@ -39,17 +44,33 @@ class Protocol
 		if(task_to_run.simple_spec[:media_container] == "800 mL Bottle") 
 			multiplier = 1;
 			water = 800
-		elsif(task_to_run.simple_spec[:media_container] == "Agar Plate")
+			bottle = "1 L Bottle"
+		elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+			multiplier = 0.5;
+			water = 400
+			bottle = "500 mL Bottle"
+		elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+			multiplier = 0.25;
+			water = 200
+			bottle = "250 mL Bottle"
+		elsif(task_to_run.simple_spec[:media_container] == "800 mL Agar")
 			multiplier = 1;
 			amount += 9.6
 			label += " for Agar"
 			water = 800
-		elsif(task_to_run.simple_spec[:media_container] == "400 mL Bottle")
+			bottle = "1 L Bottle"
+		elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 			multiplier = 0.5;
+			amount += 9.6
+			label += " for Agar"
 			water = 400
-		elsif(task_to_run.simple_spec[:media_container] == "200 mL Bottle")
+			bottle = "500 mL Bottle"
+		elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 			multiplier = 0.25;
+			amount += 9.6
+			label += " for Agar"
 			water = 200
+			bottle = "250 mL Bottle"
 		else
 			raise ArgumentError, "Container specified is not valid"
 		end
