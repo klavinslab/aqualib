@@ -60,7 +60,7 @@ class Protocol
 				data = show {
 					title "Record number"
 					note "Record the number of plates poured."
-					get "number", var: "num", label: "Enter a number", default: 0
+					get "number", var: "num", label: "Enter a number", default: -1
 				}
 				res = data[:num]
 			end
