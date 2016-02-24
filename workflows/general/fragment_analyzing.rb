@@ -368,7 +368,7 @@ class Protocol
     }
     show {
       title "Select alignment marker"
-      check "Under \"Marker\", in the \"Reference Marker\" drop-down, select \"250bp_4kb_20ng_uL_012116\". A green dot should appear to the right of the drop-down."
+      check "Under \"Marker\", in the \"Reference Marker\" drop-down, select \"15_bp_5_kb_022216\". A green dot should appear to the right of the drop-down."
       image "frag_an_select_marker"
     }
     show {
