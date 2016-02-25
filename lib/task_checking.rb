@@ -91,6 +91,21 @@ def inventory_check ids, p={}
   }
 end
 
+# a function to check if num_of_overnights_started is less than num_colony for a plate
+def num_of_overnights_checking ids
+  ids = [ids] if ids.is_a? Numeric
+  errors = []
+  ids.each do |id|
+    plate = find(:item, id: id)[0]
+    if plate.datum[:num_colony] && plate.datum[:num_of_overnights_started]
+      if plate.datum[:num_colony] <= plate.datum[:num_of_overnights_started]
+        errors.push "#{item_link plate}'s num_colony needs to be greater than num_of_overnights_started'"
+      end
+    end
+  end
+  return errors
+end
+
 # a function to return all primer sequences currently in the database
 
 # detect if there are already primer with the same sequences in the Aquarium inventory
@@ -278,6 +293,7 @@ def task_status_check t
         when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
           sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
           errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
+          errors.concat num_of_overnights_checking(ids)
         when "num_colonies"
           ids.each do |id|
             errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)

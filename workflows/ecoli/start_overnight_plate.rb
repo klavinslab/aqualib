@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [48087,48086,48082],
+      plate_ids: [55418,63226,63225],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
       glycerol_stock_ids: [8763,8759,8752],
