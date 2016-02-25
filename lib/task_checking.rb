@@ -99,7 +99,7 @@ def num_of_overnights_checking ids
     plate = find(:item, id: id)[0]
     if plate.datum[:num_colony] && plate.datum[:num_of_overnights_started]
       if plate.datum[:num_colony] <= plate.datum[:num_of_overnights_started]
-        errors.push "#{item_link plate}'s num_colony needs to be greater than num_of_overnights_started'"
+        errors.push "#{item_link plate}'s num_colony #{plate.datum[:num_colony]} needs to be greater than num_of_overnights_started #{plate.datum[:num_of_overnights_started]}'"
       end
     end
   end
