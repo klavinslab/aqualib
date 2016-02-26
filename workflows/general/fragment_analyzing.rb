@@ -3,6 +3,7 @@ needs "aqualib/lib/cloning"
 class Protocol
 
   include Cloning
+  require 'matrix'
 
   def arguments
     {
@@ -10,9 +11,9 @@ class Protocol
       gel_band_verify: "Yes",
       stripwell_ids: [51355,15503,37245],
       #stripwell_ids: [10632],
-      #yeast_plate_ids: [57317,57208],
+      yeast_plate_ids: [62825,61775,57979],
       #yeast_plate_ids: [34752],
-      #task_ids: [13967,13966],
+      task_ids: [19139,18662,16234],
       debug_mode: "Yes"
     }
   end
@@ -178,6 +179,7 @@ class Protocol
           new_stripwell = produce new_collection "Stripwell", 1, 12
           new_stripwell.matrix = [all_wells[0...row.length] + Array.new(12 - row.length) { -1 }]
           all_wells.slice!(0...row.length)
+          new_stripwell.save
           new_stripwell
         end
       }
@@ -272,11 +274,13 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [] }.merge io_hash
+    debug_mode = false
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
+      debug_mode = true
     end
 
     show {
@@ -406,12 +410,35 @@ class Protocol
     }
     gel_uploads = {}
     new_stripwells.each_with_index do |stripwell, i|
-      gel_uploads[stripwell.id] = show {
-        title "Upload resulting gel image for stripwell #{stripwell.id}"
-        note "Upload \"stripwell_#{stripwell.id}.JPG\"."
-        upload var: "stripwell_#{stripwell.id}"
-        image "frag_an_gel_image"
-      }
+      gel_uploads[stripwell.id] = {}
+      # repeat this step if no results is uploaded and debug_mode is no
+      repeat_times = 0
+      while !gel_uploads[stripwell.id][:stripwell] &&
+        !debug_mode
+        if repeat_times == 0
+          gel_uploads[stripwell.id] = show {
+            title "Upload resulting gel image for stripwell #{stripwell.id}"
+            note "Upload \"stripwell_#{stripwell.id}.JPG\"."
+            upload var: "stripwell"
+            image "frag_an_gel_image"
+          }
+        elsif repeat_times < 4
+          gel_uploads[stripwell.id] = show {
+            title "Please upload resulting gel image for stripwell #{stripwell.id}"
+            note "Upload \"stripwell_#{stripwell.id}.JPG\"."
+            upload var: "stripwell"
+            image "frag_an_gel_image"
+          }
+        else
+          result = show {
+            title "Hmm, well."
+            note "Well, it seems like you really don't want to upload the gel image. I don't know why but I'll give up here."
+            note "If there is anything wrong with the protocol or the process, please comment after you finish the job. Thanks!"
+          }
+          break
+        end
+        repeat_times += 1
+      end
 
       if io_hash[:gel_band_verify].downcase == "yes"
         stripwell_band_verify stripwell, plate_ids: io_hash[:yeast_plate_ids]
@@ -454,8 +481,11 @@ class Protocol
         end
       end
       notifs = []
+      show {
+        note associated_stripwell_ids.to_json
+      } if debug_mode
       associated_stripwell_ids.each do |id, yeast_ids|
-        begin
+        if !debug_mode
           upload_id = gel_uploads[id][:stripwell][0][:id]
           upload_url = Upload.find(upload_id).url
           associated_gel = collection_from id
@@ -463,8 +493,6 @@ class Protocol
           yeast_ids_link = yeast_ids.collect { |id| item_or_sample_html_link(id, :sample) + " (location: #{Matrix[*gel_matrix].index(id).collect { |i| i + 1}.join(',')})" }.join(", ")
           image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
           notifs.push "#{'Yeast Strain'.pluralize(yeast_ids.length)} #{yeast_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
-        rescue Exception => e
-          errors.push e.to_s
         end
       end
       notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
