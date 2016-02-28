@@ -35,14 +35,56 @@ class Protocol
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[2059,4275],[4125,3952],[2058,2059]],
+      fragment_ids: [[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [5985,5496,5205],
-      debug_mode: "Yes",
+      plasmid_ids: [5985,5496,5205,5986],
+      debug_mode: "No",
     }
   end
+
+  def verify_stock_volumes frag_stocks
+    need_to_measure = false
+    frag_stocks.each do |fs|
+      if fs.datum[:volume_verified] != "Yes"
+        need_to_measure = true
+        break
+      end
+    end
+
+    if need_to_measure
+
+      fragment_volume = show {
+        title "Estimate volume of fragment stock"
+        warning "Pause here, don't click through until you entered estimated volume.".upcase
+        frag_stocks.each do |fs|
+          if fs.datum[:volume_verified] != "Yes"
+            get "number", var: "v#{fs.id}", label: "Estimate volume for tube #{fs.id}, normally a number less than 28", default: 28
+          end
+        end
+      }
+
+      # write into datum the verified volumes
+      frag_stocks.each do |fs|
+        if fragment_volume[:"v#{fs.id}".to_sym]
+          fs.datum = fs.datum.merge({ volume: fragment_volume[:"v#{fs.id}".to_sym], volume_verified: "Yes" })
+          fs.save
+        end
+      end
+
+    end
+  end # verify_stock_volume
+
+  def find_replacement_stock frag_stock, not_enough_volume_stocks
+    i = 1
+    replacement = frag_stock.sample.in("Fragment Stock")[i]
+    while (not_enough_volume_stocks.include? replacement)
+      i += 1
+      replacement = frag_stock.sample.in("Fragment Stock")[i]
+    end
+    replacement
+  end # find_replacement_stock
 
   def main
     io_hash = input[:io_hash]
@@ -100,150 +142,140 @@ class Protocol
 
     ensure_stock_concentration fragment_stocks_flatten
 
-    fragment_volumes = []
-    fragment_stocks.each do |fs|
-      conc_over_length = fs.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
-      num = conc_over_length.length
-      total_vector = Matrix.build(num, 1) {|row, col| gibson_vector row}
-      coefficient_matrix = Matrix.build(num, num) {|row, col| gibson_coefficients row, col, conc_over_length}
-      volume_vector = coefficient_matrix.inv * total_vector
-      volumes = volume_vector.each.to_a
-      volumes.collect! { |x| x < 0.5 ? 0.5 : x }
-      fragment_volumes.push volumes
-    end
-
-    # Measure not verified volumes of fragment stocks
-    need_to_measure = false
-    fragment_stocks_flatten.each do |fs|
-      if fs.datum[:volume_verified] != "Yes"
-        need_to_measure = true
-        break
-      end
-    end
-
-    if need_to_measure
-
-      fragment_volume = show {
-        title "Estimate volume of fragment stock"
-        warning "Pause here, don't click through until you entered estimated volume.".upcase
-        fragment_stocks_flatten.each do |fs|
-          if fs.datum[:volume_verified] != "Yes"
-            get "number", var: "v#{fs.id}", label: "Estimate volume for tube #{fs.id}, normally a number less than 28", default: 28
-          end
-        end
-      }
-
-      # write into datum the verified volumes
-      fragment_stocks_flatten.each do |fs|
-        if fragment_volume[:"v#{fs.id}".to_sym]
-          fs.datum = fs.datum.merge({ volume: fragment_volume[:"v#{fs.id}".to_sym], volume_verified: "Yes" })
-          fs.save
-        end
-      end
-
-    end
+    verify_stock_volumes fragment_stocks_flatten
 
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots"
       note "Grab an ice block and an aluminum tube rack."
-      note "Take #{io_hash[:plasmid_ids].length} Gibson Aliquots from M20 freezer."
+      note "Take #{io_hash[:plasmid_ids].length} Gibson aliquots from M20 freezer."
       note "Spin down aliquots."
       note "Put aliquots in aluminum tube rack."
-      warning "Keep all gibson aliquots cool on ice."
       image "gibson_aluminum_rack"
     }
 
     # following loop is to show a table of setting up each Gibson reaction to the user
     pre_produced_gibsons = io_hash[:plasmid_ids].collect { |pid| produce new_sample find(:sample,{id: pid})[0].name, of: "Plasmid", as: "Gibson Reaction Result"  }
     gibson_results = []
-    empty_fragment_stocks = []
+    unused_aliquots = 0 # This will eventually track gibson aliquot items in Aquarium (for now it's just a count)
+    all_not_enough_volume_stocks = []
     not_done_task_ids = []
     all_replacement_stocks = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = pre_produced_gibsons[idx]
 
-      tab = []
-      fragment_stocks[idx].each_with_index do |f,m|
-        tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
-        new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[idx][m].round(1)
-        f.datum = f.datum.merge({ volume: new_volume.round(1) })
-        f.save
-        empty_fragment_stocks.push f if new_volume < 1
-      end
-      tab.sort! { |r1, r2| r2[2][:content] <=> r1[2][:content] }
-      tab.unshift(["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"])
-
-      volume_empty = show {
-        title "Load Gibson Reaction #{gibson_result}"
-        note "Lable an unused gibson aliquot as #{gibson_result}."
-        note "Make sure the gibson aliquot is thawed before pipetting."
-        warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
-        table tab
-        fragment_stocks[idx].each do |f|
-          select ["Yes", "No"], var: "c#{f.id}", label: "Does #{f.id} have enough volume for this reaction?", default: "Yes"
-        end if io_hash[:debug_mode].downcase != "yes"
-      }
-
-      # deal with not enough volume situation
+      prompted_gibson = false
+      done_pipetting = false
+      
       not_enough_volume_stocks = []
       replacement_stocks = []
+      while !done_pipetting && replacement_stocks.length == not_enough_volume_stocks.length
+        replacement_stocks.clear
+        not_enough_volume_stocks.clear
 
-      fragment_stocks[idx].each_with_index do |f, idy|
-        if volume_empty[:"c#{f.id}".to_sym] == "No"
-          not_enough_volume_stocks.push f
-          if f.sample.in("Fragment Stock")[1]
-            replacement_stocks.push f.sample.in("Fragment Stock")[1]
-            fragment_stocks[idx][idy] = f.sample.in("Fragment Stock")[1]
+        # Find usable fragments--fragment stocks that have not been depleted or act as a replacement for depleted stock
+        usable_fragments = fragment_stocks[idx].collect { |frag|
+          if all_not_enough_volume_stocks.include? frag
+            find_replacement_stock frag, all_not_enough_volume_stocks
+          else
+            frag
+          end
+        }
+        break if usable_fragments.include? nil
+
+        # Calculate fragment stock volumes for equimolar combination
+        verify_stock_volumes usable_fragments
+        fragment_volumes = []
+        conc_over_length = usable_fragments.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
+        num = conc_over_length.length
+        total_vector = Matrix.build(num, 1) {|row, col| gibson_vector row}
+        coefficient_matrix = Matrix.build(num, num) {|row, col| gibson_coefficients row, col, conc_over_length}
+        volume_vector = coefficient_matrix.inv * total_vector
+        volumes = volume_vector.each.to_a
+        volumes.collect! { |x| x < 0.2 ? 0.2 : x }
+        fragment_volumes = volumes
+
+        # Make table for displaying stock volumes to pipette
+        tab = []
+        usable_fragments.each_with_index do |f,m|
+          tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[m].round(1), check: true }])
+          new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[m].round(1)
+          f.datum = f.datum.merge({ volume: new_volume.round(1) })
+          f.save
+          all_not_enough_volume_stocks.push f if new_volume < 1
+        end
+        tab.sort! { |r1, r2| r2[2][:content] <=> r1[2][:content] }
+        tab.unshift(["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"])
+
+        # Prompt user to pipette stocks
+        prompted_gibson = true
+        enough_volume = show {
+          title "Load Gibson reaction #{gibson_result}"
+          note "Label an unused Gibson aliquot as #{gibson_result}."
+          note "Make sure the Gibson aliquot is thawed before pipetting."
+          warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
+          usable_fragments.each do |f|
+            select ["Yes", "No"], var: "#{f.id}", label: "Does #{f} have enough volume for this reaction?", default: "Yes"
+          end if io_hash[:debug_mode].downcase != "yes"
+          warning "Use P2 for volumes of less than 0.5 µL." if tab[1..-1].count { |row| row[2][:content] < 0.5 } > 0
+          table tab
+        }
+
+        # Deal with not enough volume situation
+        usable_fragments.each_with_index do |f, idy|
+          if enough_volume[:"#{f.id}".to_sym] == "No"
+            not_enough_volume_stocks.push f
+            replacement_stock = find_replacement_stock f, (all_not_enough_volume_stocks + [f])
+            if replacement_stock != nil && !(all_replacement_stocks.include? replacement_stock)
+              replacement_stocks.push replacement_stock
+            end
           end
         end
-      end
+        take replacement_stocks, interactive: true if !replacement_stocks.empty? && replacement_stocks.length == not_enough_volume_stocks.length
+        all_replacement_stocks.concat replacement_stocks
+        all_not_enough_volume_stocks.concat not_enough_volume_stocks
 
-      all_replacement_stocks.concat replacement_stocks
-
-      if not_enough_volume_stocks.length > 0
-
-        if replacement_stocks.length == not_enough_volume_stocks.length
-          take replacement_stocks, interactive: true
+        # Check if user pipetted everything successfully
+        if !(enough_volume.has_value? "No")
+          done_pipetting = true
           gibson_results = gibson_results.push gibson_result
-          tab = [["Gibson Reaction ids","Fragment Stock ids","Volume (µL)"]]
-          fragment_stocks[idx].each_with_index do |f,m|
-            tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[idx][m].round(1), check: true }])
-          end
-          gibson_result.datum = gibson_result.datum.merge({ from: fragment_stocks[idx].collect { |f| f.id } })
-          show {
-            title "Load Gibson Reaction #{gibson_result} with new stocks"
-            note "Make sure the gibson aliquot is thawed before pipetting."
-            table tab
-          }
-        else
-          show {
-            title "Throw away the unfinished gibson aliquot"
-            note "Discard #{gibson_result}"
-          }
-          delete gibson_result
-          not_done_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
-
+          gibson_result.datum = gibson_result.datum.merge({ from: usable_fragments.collect { |f| f.id } })
         end
-
-        empty_fragment_stocks.concat not_enough_volume_stocks
-
-      else
-
-        gibson_results = gibson_results.push gibson_result
-        gibson_result.datum = gibson_result.datum.merge({ from: fragment_stocks[idx].collect { |f| f.id } })
-
       end
 
-
+      # Check if Gibson could not be completed
+      if replacement_stocks.length != not_enough_volume_stocks.length || (usable_fragments.include? nil)
+        if prompted_gibson
+          contaminated_gibson_aliquot = show {
+            title "Have you used this Gibson aliquot?"
+            select ["Yes", "No"], var: "selection", label: "Have you pipetted any fragments into the Gibson aliquot #{gibson_result}?", default: "No"
+          }
+          if contaminated_gibson_aliquot[:selection] == "Yes"
+            show {
+              title "Throw away unfinished Gibson aliquot"
+              note "Discard #{gibson_result}"
+            }
+          else
+            show {
+              title "Save Gibson aliquot"
+              note "Set aside this Gibson aliquot to be returned to the M20 freezer later."
+            }
+            unused_aliquots += 1
+          end
+        else
+          unused_aliquots += 1
+        end
+        delete gibson_result
+        not_done_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
+      end
     end
 
     # Place all reactions in 50 C heat block
     show {
       title "Place on a heat block"
       check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B7."
-      check "Set a 1 hr timer on Google to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
+      check "<a href='https://www.google.com/search?q=google+timer&oq=google+timer&aqs=chrome..69i57j0l5.1216j0j7&sourceid=chrome&es_sm=122&ie=UTF-8' target='_blank'>Set a 1 hr timer on Google</a> to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
     move gibson_results, "50 C heat block"
@@ -251,14 +283,22 @@ class Protocol
 
     show {
       title "Discard the following fragment stocks"
-      note empty_fragment_stocks.collect { |f| "#{f}"}
-    } if empty_fragment_stocks.length > 0
+      note all_not_enough_volume_stocks.collect { |f| "#{f}"}
+    } if all_not_enough_volume_stocks.length > 0
+    show {
+      title "Return unused Gibson aliquots"
+      check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? '' : 's'} to the M20 freezer."
+    } if unused_aliquots > 0
+    show {
+      title "Return ice block and aluminum tube rack"
+      check "Return the ice block and aluminum tube rack."
+    }
 
     all_replacement_stocks.uniq!
 
-    fragment_stocks_to_release = fragment_stocks_flatten - empty_fragment_stocks + all_replacement_stocks
+    fragment_stocks_to_release = fragment_stocks_flatten - all_not_enough_volume_stocks + all_replacement_stocks
 
-    delete empty_fragment_stocks
+    delete all_not_enough_volume_stocks
 
     # Release fragment stocks flatten
     release fragment_stocks_to_release, interactive: true,  method: "boxes"
