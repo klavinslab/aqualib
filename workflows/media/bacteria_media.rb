@@ -81,10 +81,10 @@ class Protocol
 			produced_media_id.push(output.id)
 		end
 		bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
-		show {
-			title "#{label}"
-			note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
-		}
+		#show {
+		#	title "#{label}"
+		#	note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
+		#}
 		take [ingredient] + bottle, interactive: true
 	        new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
 	        io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
