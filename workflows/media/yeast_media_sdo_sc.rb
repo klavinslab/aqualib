@@ -133,10 +133,6 @@ class Protocol
             note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
         }
 
-        show {
-            title "Cap Bottle"
-            note "Place cap(s) on bottle(s) loosely"
-        }
 
         show {
             title "Label Bottle"
