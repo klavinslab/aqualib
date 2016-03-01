@@ -118,6 +118,9 @@ class Protocol
 	if(media_name != "SDO")
 	        show {
 	            title "Add Amino Acid(s)"
+	            present_acid.each do |i|
+	            	note i
+	            end
 	            note "Add #{8 * multiplier} mL of #{present_acid.join(", ")} solutions each to each bottle(s)"
 	        }
 	end
