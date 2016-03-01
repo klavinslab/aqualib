@@ -56,7 +56,7 @@ class Protocol
 			}
 
 			res = -1
-			while (res < 1 || res > 100) do
+			while (res < 0 || res > 100) do
 				data = show {
 					title "Record number"
 					note "Record the number of plates poured."
