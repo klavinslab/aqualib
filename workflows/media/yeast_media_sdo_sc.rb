@@ -138,6 +138,7 @@ class Protocol
         		title "Weigh Out Bacto Agar"
         		note "Weigh out #{16 * multiplier}g of bacto agar and add to each bottle"
         	}
+        end
 
 	if(media_name != "SDO")
 	        show {
