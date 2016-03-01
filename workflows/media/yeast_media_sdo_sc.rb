@@ -105,7 +105,7 @@ class Protocol
 
         show {
             title label
-            note "Description: Makes #{quantity} #{water} mL of #{label} media with 2% glucose and adenine supplement"
+            note "Description: Makes #{quantity} #{water} mL of #{label} media"
         }
 
         show {
