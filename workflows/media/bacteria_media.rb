@@ -38,7 +38,8 @@ class Protocol
 			label = "TB Liquid Media"
 			ingredient = [find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]]
 			amount = 38.08
-			ingredient += [find(:item, sample: { object_type: { name: "800 mL Liquid" }, sample: { name: "50% Glycerol" }})[0]]
+			ingredient += [find(:item, {sample: { name: "50% Glycerol" }, object_type: { name: "800 mL Liquid" }})[0]]
+			find(:item, { sample: { name: "pLAB1" }, object_type: { name: "Plasmid Stock" } } )
 		else
 			raise ArgumentError, "Chosen media is not valid"
 		end
@@ -99,7 +100,7 @@ class Protocol
 		
 		show {
 			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount * multiplier} grams of '#{ingredient.object_type.name}' powder and pour into each bottle."
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount * multiplier} grams of '#{ingredient[0].object_type.name}' powder and pour into each bottle."
 			warning "Before and after using the spatula, clean with ethanol"
 		}
 		
