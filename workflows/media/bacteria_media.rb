@@ -90,8 +90,10 @@ class Protocol
 	        io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
 		
 		show {
-			title "Get Bottle and Stir Bar"
-			note "Retrieve #{quantity} 1L Glass Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
+			title "Add Stir Bar"
+			#note "Retrieve #{quantity} 1L Glass Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
+			check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
+			check "Add the stir bar(s) to the bottle(s)."
 		}
 		
 		show {
