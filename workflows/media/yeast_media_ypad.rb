@@ -51,17 +51,17 @@ class Protocol
 		bottle = "250 mL Bottle"
 	elsif(task_to_run.simple_spec[:media_container] == "800 mL Agar")
 		multiplier = 1;
-		label += " for Agar"
+		label += " Agar"
 		water = 800
 		bottle = "1 L Bottle"
 	elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 		multiplier = 0.5;
-		label += " for Agar"
+		label += " Agar"
 		water = 400
 		bottle = "500 mL Bottle"
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
-		label += " for Agar"
+		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
 	else
@@ -79,16 +79,17 @@ class Protocol
 	
 	bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
 		
-        take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
         
         new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
         io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         show {
           title "Make YPAD Media"
-          note "Description: Make #{quantity} #{water}mL of yeast extract-tryptone-dextrose medium + adenine (YPAD)"
+          note "Description: Make #{quantity} #{water}mL of #{label}"
         }
-
+       
+        take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
+        
         show {
           title "Weigh Chemicals"
           note "Weight out #{8 * multiplier}g yeast extract, #{16 * multiplier}g tryptone, #{16 * multiplier}g dextrose, #{0.064 * multiplier}g adenine sulfate and add to 1000 mL bottle(s)"
@@ -103,11 +104,6 @@ class Protocol
           title "Mix solution"
           note "Shake until most of the powder is dissolved."
           note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
-        }
-
-        show {
-          title "Cap Bottle"
-          note "Place cap(s) on bottle(s) loosely"
         }
 
         show {
