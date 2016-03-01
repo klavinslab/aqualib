@@ -24,19 +24,21 @@ class Protocol
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
 		quantity = task_to_run.simple_spec[:quantity]
+		ingredient = []
 		if(media_name == "LB") 
 			if(task_to_run.simple_spec[:media_container].include?("Agar"))
 				label = "LB Agar"
-				ingredient = find(:item, {object_type:{name:"LB Agar Miller"}})[0]
+				ingredient = [find(:item, {object_type:{name:"LB Agar Miller"}})[0]]
 			else 
 				label = "LB Liquid Media"
-				ingredient = find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]
+				ingredient = [find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]]
 			end
 			amount = 20
 		elsif(media_name == "TB") 
 			label = "TB Liquid Media"
-			ingredient = find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]
-			amount = 20
+			ingredient = [find(:item,{object_type:{name:"Terrific Broth, modified"}})[0]]
+			amount = 38.08
+			ingredient += [find(:item, sample: { object_type: { name: "800 mL Liquid" }, sample: { name: "50% Glycerol" }})[0]]
 		else
 			raise ArgumentError, "Chosen media is not valid"
 		end
@@ -85,22 +87,28 @@ class Protocol
 			title "#{label}"
 			note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
 		}
-		take [ingredient] + bottle, interactive: true
+		take ingredient + bottle, interactive: true
 	        new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
 	        io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
 		
 		show {
 			title "Add Stir Bar"
-			#note "Retrieve #{quantity} 1L Glass Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
 			check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
 			check "Add the stir bar(s) to the bottle(s)."
 		}
 		
 		show {
 			title "Weigh Out Powder"
-			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{quantity} - #{amount * multiplier} grams of '#{ingredient.object_type.name}' powder and pour into each bottle."
+			note "Using the gram scale, large weigh boat, and chemical spatula, weigh out #{amount * multiplier} grams of '#{ingredient.object_type.name}' powder and pour into each bottle."
 			warning "Before and after using the spatula, clean with ethanol"
 		}
+		
+		if(label.include?"TB") 
+			show {
+				title "Add Glycerol"
+				note "Using the serological pipette, add #{12.8 * multiplier} mL of 50% glycerol to the bottle."
+			}
+		end
 		
 		show {
 			title "Measure Water"
@@ -118,7 +126,7 @@ class Protocol
 			note "Label the bottle(s) with '#{label}', 'Your initials', and 'date'"
 		}
 		release(bottle)
-		release([ingredient] + produced_media, interactive: true)
+		release(ingredient + produced_media, interactive: true)
 		return {io_hash: io_hash, done: finished}
 	end
 end
