@@ -109,10 +109,11 @@ class Protocol
         
         take bottle + ingredients, interactive: true
         
-        show {
-            title "Get Bottle and Stir Bar"
-            note "Retrieve #{quantity} Glass 1L Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar(s) from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
-        }
+	show {
+		title "Add Stir Bar"
+		check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
+		check "Add the stir bar(s) to the bottle(s)."
+	}
 
         show {
             title "Weigh Nitrogen Base"
