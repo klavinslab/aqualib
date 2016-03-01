@@ -114,9 +114,30 @@ class Protocol
         }
 
         show {
-            title "Weigh Chemicals"
-            note "Weigh out #{5.36 * multiplier}g nitrogen base, #{1.12 * multiplier}g of DO media, #{16 * multiplier}g of dextrose, #{0.064 * multiplier}g adenine sulfate" + ((label.include? "Agar")? (", #{16 * multiplier}g bacto agar"):"")  + " and add to each bottle"
+            title "Weigh Nitrogen Base"
+            note "Weigh out #{5.36 * multiplier}g nitrogen base and add to each bottle"
         }
+        
+        show {
+       		title "Weigh Out DO Media"
+       		note "Weigh out #{1.12 * multiplier}g of DO media and add to each bottle"
+        }
+        
+        show {
+        	title "Weigh Out Dextrose"
+        	note "Weigh out #{16 * multiplier}g of dextrose and add to each bottle"
+        }
+        
+        show {
+        	title "Weigh Out Adenine Sulfate"
+        	note "Weigh out #{0.064 * multiplier}g of adenine sulfate and add to each bottle"
+        }
+        
+        if(label.include? "Agar") 
+        	show {
+        		title "Weigh Out Bacto Agar"
+        		note "Weigh out #{16 * multiplier}g of bacto agar and add to each bottle"
+        	}
 
 	if(media_name != "SDO")
 	        show {
