@@ -101,13 +101,14 @@ class Protocol
         ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
         ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
         ingredients += [find(:item, {object_type:{name:"Yeast Synthetic Drop-out Medium Supplements"}})[0]]
-        take bottle + ingredients, interactive: true
 
         show {
             title label
             note "Description: Makes #{quantity} #{water} mL of #{label} media"
         }
-
+        
+        take bottle + ingredients, interactive: true
+        
         show {
             title "Get Bottle and Stir Bar"
             note "Retrieve #{quantity} Glass 1L Bottle(s) from the glassware rack and #{quantity} Medium Magnetic Stir Bar(s) from the dishwashing station, bring to weigh station. Put the stir bar(s) in the bottle(s)."
