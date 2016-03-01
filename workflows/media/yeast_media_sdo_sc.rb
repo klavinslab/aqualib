@@ -55,16 +55,19 @@ class Protocol
 		label += " Agar"
 		water = 800
 		bottle = "1 L Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 		multiplier = 0.5;
 		label += " Agar"
 		water = 400
 		bottle = "500 mL Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
 		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	else
 		raise ArgumentError, "Container specified is not valid"
 	end
@@ -112,7 +115,7 @@ class Protocol
 
         show {
             title "Weigh Chemicals"
-            note "Weigh out #{5.36 * multiplier}g nitrogen base, #{1.12 * multiplier}g of DO media, #{16 * multiplier}g of dextrose, #{0.064 * multiplier}g adenine sulfate and add to each bottle"
+            note "Weigh out #{5.36 * multiplier}g nitrogen base, #{1.12 * multiplier}g of DO media, #{16 * multiplier}g of dextrose, #{0.064 * multiplier}g adenine sulfate " + ((label.include? "Agar")? (16 * multiplier + "g bacto agar "):"")  + "and add to each bottle"
         }
 
 	if(media_name != "SDO")
