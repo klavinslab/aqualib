@@ -25,11 +25,13 @@ class Protocol
         media_name = find(:sample, id: media)[0].name
         quantity = task_to_run.simple_spec[:quantity]
         
+        ingredients = []
+        
         if(media_name == "YPAD")
-            adenine = find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )[0] 
-            dextrose = find(:item, { object_type: { name: "Dextrose" } } )[0] 
-            bacto = find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0] 
-            tryp = find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]
+            ingredients += [find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )[0]]
+            ingredients += [find(:item, { object_type: { name: "Dextrose" } } )[0]]
+            ingredients = [find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0]]
+            ingredients += [find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]]
         else
             raise ArgumentError, "Chosen media is not valid"
         end
@@ -54,16 +56,19 @@ class Protocol
 		label += " Agar"
 		water = 800
 		bottle = "1 L Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 		multiplier = 0.5;
 		label += " Agar"
 		water = 400
 		bottle = "500 mL Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
 		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
+		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	else
 		raise ArgumentError, "Container specified is not valid"
 	end
@@ -84,16 +89,38 @@ class Protocol
         io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
 
         show {
-          title "Make YPAD Media"
+          title "Make #{label} Media"
           note "Description: Make #{quantity} #{water}mL of #{label}"
         }
        
-        take [adenine, dextrose, bacto, tryp] + bottle, interactive: true
+        take ingredients + bottle, interactive: true
         
         show {
-          title "Weigh Chemicals"
-          note "Weight out #{8 * multiplier}g yeast extract, #{16 * multiplier}g tryptone, #{16 * multiplier}g dextrose, #{0.064 * multiplier}g adenine sulfate and add to 1000 mL bottle(s)"
+          title "Weigh Out Yeast Extract"
+          note "Weight out #{8 * multiplier}g of yeast extract and add to each bottle"
         }
+        
+        show {
+        	title "Weigh Out Tryptone"
+        	note "Weigh out #{16 * multiplier}g of tryptone and add to each bottle"
+        }
+        
+        show {
+        	title "Weigh Out Dextrose"
+        	note "Weigh out #{16 * multiplier}g of dextrose and add to each bottle"
+        }
+        
+        show {
+        	title "Weigh Out Adenine Sulfate"
+        	note "Weigh out #{0.064 * multiplier}g of adenine sulfate and add to each bottle"
+        }
+
+        if(label.include? "Agar") 
+        	show {
+        		title "Weigh Out Bacto Agar"
+        		note "Weigh out #{16 * multiplier}g of bacto agar and add to each bottle"
+        	}
+        end
 
         show {
           title "Measure Water"
@@ -107,12 +134,12 @@ class Protocol
         }
 
         show {
-          title "Label Bottle(s)"
-          note "Label the bottle(s) with 'YPAD', 'Date', Your initials'"
+          title "Label Bottle"
+          note "Label the bottle(s) with label, 'Date', Your initials'"
         }
 
         release(bottle)
-        release([adenine, dextrose, bacto, tryp] + produced_media, interactive: true)
+        release(ingredients + produced_media, interactive: true)
 
         return {io_hash: io_hash, done: finished}
 
