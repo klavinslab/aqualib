@@ -115,7 +115,7 @@ class Protocol
 
         show {
             title "Weigh Chemicals"
-            note "Weigh out #{5.36 * multiplier}g nitrogen base, #{1.12 * multiplier}g of DO media, #{16 * multiplier}g of dextrose, #{0.064 * multiplier}g adenine sulfate " + ((label.include? "Agar")? (16 * multiplier + "g bacto agar "):"")  + "and add to each bottle"
+            note "Weigh out #{5.36 * multiplier}g nitrogen base, #{1.12 * multiplier}g of DO media, #{16 * multiplier}g of dextrose, #{0.064 * multiplier}g adenine sulfate " + ((label.include? "Agar")? ("#{16 * multiplier}g bacto agar "):"")  + "and add to each bottle"
         }
 
 	if(media_name != "SDO")
