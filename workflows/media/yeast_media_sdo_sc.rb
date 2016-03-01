@@ -52,17 +52,17 @@ class Protocol
 		bottle = "250 mL Bottle"
         elsif(task_to_run.simple_spec[:media_container] == "800 mL Agar") 
 		multiplier = 1;
-		label += " for Agar"
+		label += " Agar"
 		water = 800
 		bottle = "1 L Bottle"
 	elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 		multiplier = 0.5;
-		label += " for Agar"
+		label += " Agar"
 		water = 400
 		bottle = "500 mL Bottle"
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
-		label += " for Agar"
+		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
 	else
@@ -136,7 +136,7 @@ class Protocol
 
         show {
             title "Label Bottle"
-            note "Label the bottle(s) with '#{media_name}', 'Date', 'Your initials'"
+            note "Label the bottle(s) with '#{label}', 'Date', 'Your initials'"
         }
         release (bottle)
         release(ingredients + produced_media, interactive: true)
