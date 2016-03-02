@@ -31,5 +31,5 @@ wire p2 => p3
 
 transition [p1] => [p1] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
 transition [p1] => [p2] when !error(0) && completed(0) && (return_value(0,"done") == "yes" && return_value(0,"agar")) end
-transition [p1] => [] when !error(0) && completed(0) && (return_value(0,"done") == "yes" && return_value(0,"agar") == nil) end
+transition [p1] => [] when !error(0) && completed(0) && (return_value(0,"done") == "yes" && (return_value(0,"agar") == nil)) end
 transition [p2] => [] when !error(0) && completed(0) end
