@@ -52,19 +52,21 @@ class Protocol
 				agar_plate_ids.push(output.id)
 			end
 			
-			show {
-				title "Wait for plates to solidify."
-				note "Wait untill all plates have completely solidified. This should take about 10 minutes."
-			}
-			
-			show {
-				title "Stack and label"
-				note "Stack the plates agar side up."
-				note "Put a piece of labeling tape on each stack with:" 
-				for k in 0..(res - 1)
-					note "'#{agar_media[i].sample.name}', '#{output_media[curr_counter + k].id}', 'initials', and 'date'."
-				end
-			}
+			if(res > 0)
+				show {
+					title "Wait for plates to solidify."
+					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
+				}
+				
+				show {
+					title "Stack and label"
+					note "Stack the plates agar side up."
+					note "Put a piece of labeling tape on each stack with:" 
+					for k in 0..(res - 1)
+						note "'#{agar_media[i].sample.name}', '#{output_media[curr_counter + k].id}', 'initials', and 'date'."
+					end
+				}
+			end
 
 			agar_media[i].mark_as_deleted
 
