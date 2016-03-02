@@ -71,7 +71,7 @@ class Protocol
 				output = produce new_sample opt, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
 				output_media.push(output)
-				counter++;
+				counter++
 			end
 			
 			show {
