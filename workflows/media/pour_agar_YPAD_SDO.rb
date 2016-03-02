@@ -18,6 +18,7 @@ class Protocol
 			end
 		end
 		counter = 0
+		agar_plate_ids = Array.new
 		for i in 0..(agar_media.length - 1)
 
 			take [agar_media[i]], interactive: true
@@ -48,6 +49,7 @@ class Protocol
 				output.location = "30 degree incubator"
 				output_media.push(output)
 				counter = counter + 1
+				agar_plate_ids.push(output.id)
 			end
 			
 			show {
@@ -67,7 +69,7 @@ class Protocol
 			agar_media[i].mark_as_deleted
 
 		end
-		
+		io_hash = {agar_plate_ids: agar_plate_ids}.merge(io_hash)
 		release(output_media, interactive: true)
 		return {io_hash: io_hash}
 	end
