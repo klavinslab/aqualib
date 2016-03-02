@@ -66,7 +66,7 @@ class Protocol
 				}
 				res = data[:num]
 			end
-			curr_counter = counter;
+			curr_counter = counter
 			for j in 1..res
 				output = produce new_sample opt, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
