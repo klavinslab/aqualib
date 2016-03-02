@@ -129,6 +129,6 @@ class Protocol
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)
-		return {io_hash: io_hash, done: finished, has_agar: io_hash[:has_agar]}
+		return {io_hash: io_hash, done: finished, has_agar: io_hash.include?(has_agar)? "yes":"no"}
 	end
 end
