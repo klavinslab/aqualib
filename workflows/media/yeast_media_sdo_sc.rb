@@ -74,16 +74,18 @@ class Protocol
 	else
 		raise ArgumentError, "Container specified is not valid"
 	end
+	
+	acid_solutions = Array.new
         
 	present_acid.each do |i|
 		if(i == "Leu")
-		    ingredients += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
+		    acid_solutions += [find(:item,{object_type:{name:"Leucine Solution"}})[0]]
 		elsif(i == "His")
-		    ingredients += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
+		    acid_solutions += [find(:item,{object_type:{name:"Histidine Solution"}})[0]]
 		elsif(i == "Trp")
-		    ingredients += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
+		    acid_solutions += [find(:item,{object_type:{name:"Tryptophan Solution"}})[0]]
 		else
-		    ingredients += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
+		    acid_solutions += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
 		end
 	end
 	
@@ -111,6 +113,7 @@ class Protocol
         }
         
         take bottle + ingredients, interactive: true
+        take acid_solutions, interactive: true
         
 	show {
 		title "Add Stir Bar"
