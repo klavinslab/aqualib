@@ -8,19 +8,26 @@ class Protocol
 
   def main
 	
-	show {
+	io_hash = input[:io_hash]
+	plates = Array.new
+	io_hash[:agar_plate_ids].each do |i|
+		sing_plate = find(:item, id: i)[0]
+		sing_plate.location = "Media Fridge"
+		plates.push(sing_plate)
+	end
 	
+	take plates, interactive: true
+	
+	show {
+		title "Move Plates To Storage Containers"
+		note "Find an empty storage container on top of the media fridge."
+		note "Remove any labeling tape that might be on the container."
+		note "Move one of the labels on the plate stack to the front of the storage container."
+		note "Move plates #{io_hash[:agar_plate_ids].join(", ")} to the storage container."
 	}
-	Step 1: Take:
-- Take all plates of a particular media type 
-
-Step 2: Move plates to storage containers
-- Find an empty storage container on top of the media fridge. Remove any labeling tape that might be on the container.
-- Move one of the labels on the plate stack to the front of the storage container.
-- Move plates (first item number - last item number) to the storage container.
-
-Step 3: Return
-- Return plates (first item number - last item number) to the Media Fridge.
+	
+	release(plates, interactive: true)
+	return {io_hash: io_hash}
 
   end
 end
