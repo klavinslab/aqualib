@@ -144,7 +144,7 @@ class Protocol
 
         show {
           title "Label Bottle"
-          note "Label the bottle(s) with label, 'Date', Your initials'"
+          note "Label the bottle(s) with #{label}, 'Date', Your initials'"
         }
 
         release(bottle)
