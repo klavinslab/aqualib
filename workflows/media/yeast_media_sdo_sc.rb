@@ -55,18 +55,21 @@ class Protocol
 		label += " Agar"
 		water = 800
 		bottle = "1 L Bottle"
+	        io_hash = {has_agar: "yes"}.merge(io_hash)
 		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
 		multiplier = 0.5;
 		label += " Agar"
 		water = 400
 		bottle = "500 mL Bottle"
+	        io_hash = {has_agar: "yes"}.merge(io_hash)
 		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
 		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
+	        io_hash = {has_agar: "yes"}.merge(io_hash)
 		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
 	else
 		raise ArgumentError, "Container specified is not valid"
@@ -171,6 +174,6 @@ class Protocol
         }
         release (bottle)
         release(ingredients + produced_media, interactive: true)
-        return {io_hash: io_hash, done: finished}
+        return {io_hash: io_hash, done: finished, has_agar: io_hash.has_key?(:has_agar)? "yes":"no"}
     end
 end
