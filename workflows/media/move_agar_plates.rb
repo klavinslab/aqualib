@@ -17,9 +17,9 @@ class Protocol
 		if(diff_plates.has_key?(sing_plate.sample.name))
 			array_temp = diff_plates(sing_plate.sample.name)
 			array_temp.push(sing_plate)
-			diff_plates = diff_plates.merge({sing_plate.sample.name: array_temp})
+			diff_plates = diff_plates.merge({sing_plate.sample.name => array_temp})
 		else
-			diff_plates = diff_plates.merge({sing_plate.sample.name: [sing_plate]})
+			diff_plates = diff_plates.merge({sing_plate.sample.name => [sing_plate]})
 		end
 	end
 	
