@@ -18,9 +18,19 @@ place p2
 	window: hours(1)
 end
 
+place p3 
+	protocol: "aqualib:workflows/media/move_agar_plates.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: hours(1)
+end
+
 wire p1=>p1
 wire p1 => p2
+wire p2 => p3
 
 transition [p1] => [p1] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
-transition [p1] => [p2] when !error(0) && completed(0) && (return_value(0,"done") == "yes") end
+transition [p1] => [p2] when !error(0) && completed(0) && (return_value(0,"done") == "yes" && return_value(0,"has_agar") == "yes") end
+transition [p1] => [] when !error(0) && completed(0) && (return_value(0,"done") == "yes" && (return_value(0,"has_agar") == "no")) end
 transition [p2] => [] when !error(0) && completed(0) end
