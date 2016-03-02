@@ -113,7 +113,9 @@ class Protocol
         }
         
         take bottle + ingredients, interactive: true
-        take acid_solutions, interactive: true
+        if(acid_solutions.length > 0)
+        	take acid_solutions, interactive: true
+        end
         
 	show {
 		title "Add Stir Bar"
