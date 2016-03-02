@@ -7,6 +7,7 @@ class Protocol
 	end
 
 	def main
+		
 		io_hash = input[:io_hash]
 		all_media = io_hash[:total_media]
 		agar_media = Array.new
@@ -17,6 +18,7 @@ class Protocol
 				agar_media.push(made_media)
 			end
 		end
+		counter = 0
 		for i in 0..(agar_media.length - 1)
 
 			take [agar_media[i]], interactive: true
@@ -64,11 +66,12 @@ class Protocol
 				}
 				res = data[:num]
 			end
-
+			curr_counter = counter;
 			for j in 1..res
 				output = produce new_sample opt, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
 				output_media.push(output)
+				counter++;
 			end
 			
 			show {
@@ -79,7 +82,10 @@ class Protocol
 			show {
 				title "Stack and label"
 				note "Stack the plates agar side up."
-				note "Put a piece of labeling tape on each stack with '#{agar_media[i].sample.name}', 'initials', and 'date'."
+				note "Put a piece of labeling tape on each stack with:"
+				for k in 0..(res - 1)
+					note "'#{agar_media[i].sample.name}', '#{output_media[curr_counter + k].id}', 'initials', and 'date'."
+				end
 			}
 
 			agar_media[i].mark_as_deleted
