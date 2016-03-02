@@ -17,6 +17,7 @@ class Protocol
 				agar_media.push(made_media)
 			end
 		end
+		counter = 0
 		for i in 0..(agar_media.length - 1)
 
 			take [agar_media[i]], interactive: true
@@ -33,7 +34,7 @@ class Protocol
 			}
 
 			res = -1
-			while (res < 1 || res > 100) do
+			while (res < 0 || res > 100) do
 				data = show {
 					title "Record number"
 					note "Record the number of plates poured."
@@ -41,10 +42,12 @@ class Protocol
 				}
 				res = data[:num]
 			end
+			curr_counter = counter
 			for j in 1..res
 				output = produce new_sample agar_media[i].sample.name, of: "Media", as: "Agar Plate"
 				output.location = "30 degree incubator"
 				output_media.push(output)
+				counter = counter + 1
 			end
 			
 			show {
@@ -55,7 +58,10 @@ class Protocol
 			show {
 				title "Stack and label"
 				note "Stack the plates agar side up."
-				note "Put a piece of labeling tape on each stack with '#{agar_media[i].sample.name}', 'initials', and 'date'."
+				note "Put a piece of labeling tape on each stack with:" 
+				for k in 0..(res - 1)
+					note "'#{agar_media[i].sample.name}', '#{output_media[curr_counter + k].id}', 'initials', and 'date'."
+				end
 			}
 
 			agar_media[i].mark_as_deleted
