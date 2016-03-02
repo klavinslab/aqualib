@@ -12,7 +12,6 @@ class Protocol
 	plates = Array.new
 	io_hash[:agar_plate_ids].each do |i|
 		sing_plate = find(:item, id: i)[0]
-		sing_plate.location = "Media Fridge"
 		plates.push(sing_plate)
 	end
 	
@@ -25,6 +24,10 @@ class Protocol
 		note "Move one of the labels on the plate stack to the front of the storage container."
 		note "Move plates #{io_hash[:agar_plate_ids].join(", ")} to the storage container."
 	}
+	
+	plates.each do |i|
+		i.location = "Media Fridge"
+	end
 	
 	release(plates, interactive: true)
 	return {io_hash: io_hash}
