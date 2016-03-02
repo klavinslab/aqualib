@@ -29,6 +29,7 @@ class Protocol
 			if(task_to_run.simple_spec[:media_container].include?("Agar"))
 				label = "LB Agar"
 				ingredient = [find(:item, {object_type:{name:"LB Agar Miller"}})[0]]
+	        		io_hash = {has_agar: "yes"}.merge(io_hash)
 			else 
 				label = "LB Liquid Media"
 				ingredient = [find(:item,{object_type:{name:"Difco LB Broth, Miller"}})[0]]
@@ -128,6 +129,6 @@ class Protocol
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)
-		return {io_hash: io_hash, done: finished}
+		return {io_hash: io_hash, done: finished, has_agar: io_hash[:has_agar]}
 	end
 end
