@@ -82,13 +82,16 @@ class Protocol
 					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
 				}
 				
+				id_labels = Array.new
+				
 				show {
 					title "Stack and label"
 					note "Stack the plates agar side up."
 					note "Put a piece of labeling tape on each stack with:"
 					for k in 0..(res - 1)
-						note "'#{agar_media[i].sample.name}', '#{output_media[curr_counter + k].id}', 'initials', and 'date'."
+						id_labels.push(output_media[curr_counter + k].id)
 					end
+					note "'#{agar_media[i].sample.name}', '#{id_labels.first} - #{id_labels.last}', 'initials', and 'date'."
 				}
 			end
 
