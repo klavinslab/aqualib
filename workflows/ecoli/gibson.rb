@@ -183,6 +183,7 @@ class Protocol
           end
         }
         break if usable_fragments.include? nil
+        ensure_stock_concentration usable_fragments
 
         # Calculate fragment stock volumes for equimolar combination
         verify_stock_volumes usable_fragments
@@ -283,6 +284,7 @@ class Protocol
 
     show {
       title "Discard the following fragment stocks"
+      all_not_enough_volume_stocks.uniq!
       note all_not_enough_volume_stocks.collect { |f| "#{f}"}
     } if all_not_enough_volume_stocks.length > 0
     show {
