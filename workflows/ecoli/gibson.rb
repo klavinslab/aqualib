@@ -6,9 +6,13 @@ class Protocol
   require 'matrix'
 
   def sort_by_location fragments
-    fragments.sort! { |frag1, frag2|
-      frag1.location <=> frag2.location
-    }
+    location_arrays = fragments.map { |frag| frag.location[4..-1].split(".") }
+    sorted_locations = location_arrays.sort { |row1, row2| 
+                                              comp = row1[0].to_i <=> row2[0].to_i
+                                              comp = comp.zero? ? row1[1].to_i <=> row2[1].to_i : comp
+                                              comp.zero? ? row1[2].to_i <=> row2[2].to_i : comp }
+    location_strings = sorted_locations.map { |row| "M20.#{row[0]}.#{row[1]}.#{row[2]}" }
+    fragments.sort_by! { |frag| location_strings.index(frag.location) }
   end # sort_by_location
 
   def gibson_vector row
@@ -31,15 +35,22 @@ class Protocol
     end
   end
 
+  def ensure_5ul_total volumes
+    max = volumes.max
+    total = volumes.reduce(:+)
+    volumes[volumes.index(max)] = max - (total - 5) if total > 5
+    volumes
+  end
+
   def arguments
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
+      fragment_ids: [[4275,2059,2058,3951],[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [5985,5496,5205,5986],
+      plasmid_ids: [5985,5496,5205,5986,5986],
       debug_mode: "No",
     }
   end
@@ -67,14 +78,22 @@ class Protocol
 
       # write into datum the verified volumes
       frag_stocks.each do |fs|
-        if fragment_volume[:"v#{fs.id}".to_sym]
-          fs.datum = fs.datum.merge({ volume: fragment_volume[:"v#{fs.id}".to_sym], volume_verified: "Yes" })
+        volume = fragment_volume[:"v#{fs.id}".to_sym]
+        if volume
+          fs.datum = fs.datum.merge({ volume: volume, volume_verified: "Yes" })
           fs.save
         end
       end
 
     end
   end # verify_stock_volume
+
+  def remove_zero_volumes frag_stocks, not_enough_volume_stocks, replacement_stocks
+    frag_stocks.each { |frag|
+      if frag.datum[:volume].zero?
+      end
+    }
+  end # remove_zero_volumes
 
   def find_replacement_stock frag_stock, not_enough_volume_stocks
     i = 1
@@ -138,19 +157,23 @@ class Protocol
     }
 
     # Take fragment stocks
+    all_not_enough_volume_stocks = []
+    all_replacement_stocks = []
     take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
     ensure_stock_concentration fragment_stocks_flatten
 
     verify_stock_volumes fragment_stocks_flatten
 
+    #remove_zero_volumes fragment_stocks_flatten, all_not_enough_volume_stocks, all_replacement_stocks
+
     # Take Gibson aliquots and label with Gibson Reaction Result ids
     show {
       title "Take Gibson Aliquots"
-      note "Grab an ice block and an aluminum tube rack."
-      note "Take #{io_hash[:plasmid_ids].length} Gibson aliquots from M20 freezer."
-      note "Spin down aliquots."
-      note "Put aliquots in aluminum tube rack."
+      check "Grab an ice block and an aluminum tube rack."
+      check "Take #{io_hash[:plasmid_ids].length} Gibson aliquots from M20 freezer."
+      check "Spin down aliquots."
+      check "Put aliquots in aluminum tube rack."
       image "gibson_aluminum_rack"
     }
 
@@ -158,9 +181,7 @@ class Protocol
     pre_produced_gibsons = io_hash[:plasmid_ids].collect { |pid| produce new_sample find(:sample,{id: pid})[0].name, of: "Plasmid", as: "Gibson Reaction Result"  }
     gibson_results = []
     unused_aliquots = 0 # This will eventually track gibson aliquot items in Aquarium (for now it's just a count)
-    all_not_enough_volume_stocks = []
     not_done_task_ids = []
-    all_replacement_stocks = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = pre_produced_gibsons[idx]
@@ -183,6 +204,8 @@ class Protocol
           end
         }
         break if usable_fragments.include? nil
+        new_fragment_stocks = usable_fragments - Job.find(jid).touches.map { |t| t.item }
+        take new_fragment_stocks, interactive: true if new_fragment_stocks.any?
         ensure_stock_concentration usable_fragments
 
         # Calculate fragment stock volumes for equimolar combination
@@ -193,15 +216,16 @@ class Protocol
         total_vector = Matrix.build(num, 1) {|row, col| gibson_vector row}
         coefficient_matrix = Matrix.build(num, num) {|row, col| gibson_coefficients row, col, conc_over_length}
         volume_vector = coefficient_matrix.inv * total_vector
-        volumes = volume_vector.each.to_a
-        volumes.collect! { |x| x < 0.2 ? 0.2 : x }
-        fragment_volumes = volumes
+        fragment_volumes = volume_vector.each.to_a
+        fragment_volumes.collect! { |x| x < 0.2 ? 0.2 : x }
+        ensure_5ul_total fragment_volumes
 
         # Make table for displaying stock volumes to pipette
         tab = []
         usable_fragments.each_with_index do |f,m|
-          tab.push(["#{gibson_result}","#{f}",{ content: fragment_volumes[m].round(1), check: true }])
-          new_volume = (f.datum[:volume] || fragment_volume[:"v#{f.id}".to_sym]) - fragment_volumes[m].round(1)
+          cell_color = fragment_volumes[m].round(1) < 0.5 ? "#ffe680" : ""
+          tab.push([{ content: "#{gibson_result}", style: { background: cell_color } },{ content: "#{f}", style: { background: cell_color } },{ content: fragment_volumes[m].round(1), check: true }])
+          new_volume = f.datum[:volume] - fragment_volumes[m].round(1)
           f.datum = f.datum.merge({ volume: new_volume.round(1) })
           f.save
           all_not_enough_volume_stocks.push f if new_volume < 1
@@ -213,10 +237,12 @@ class Protocol
         prompted_gibson = true
         enough_volume = show {
           title "Load Gibson reaction #{gibson_result}"
-          note "Label an unused Gibson aliquot as #{gibson_result}."
+          check "Label an unused Gibson aliquot as #{gibson_result}."
           note "Make sure the Gibson aliquot is thawed before pipetting."
           warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
-          usable_fragments.each do |f|
+          
+          frags_sorted_by_volume = tab[1..-1].map { |r| r[1][:content] }
+          usable_fragments.sort_by { |frag| frags_sorted_by_volume.index("#{frag}") }.each do |f|
             select ["Yes", "No"], var: "#{f.id}", label: "Does #{f} have enough volume for this reaction?", default: "Yes"
           end if io_hash[:debug_mode].downcase != "yes"
           warning "Use P2 for volumes of less than 0.5 µL." if tab[1..-1].count { |row| row[2][:content] < 0.5 } > 0
@@ -233,7 +259,13 @@ class Protocol
             end
           end
         end
-        take replacement_stocks, interactive: true if !replacement_stocks.empty? && replacement_stocks.length == not_enough_volume_stocks.length
+        show {
+          not_enough_volume_stocks.uniq!
+          title "Discard the following fragment stock#{not_enough_volume_stocks.length == 1 ? "" : "s"}"
+          note not_enough_volume_stocks.collect { |f| "#{f}"}
+        } if not_enough_volume_stocks.length > 0
+
+        #take replacement_stocks, interactive: true if !replacement_stocks.empty? && replacement_stocks.length == not_enough_volume_stocks.length
         all_replacement_stocks.concat replacement_stocks
         all_not_enough_volume_stocks.concat not_enough_volume_stocks
 
@@ -276,17 +308,12 @@ class Protocol
     show {
       title "Place on a heat block"
       check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B7."
-      check "<a href='https://www.google.com/search?q=google+timer&oq=google+timer&aqs=chrome..69i57j0l5.1216j0j7&sourceid=chrome&es_sm=122&ie=UTF-8' target='_blank'>Set a 1 hr timer on Google</a> to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
+      check "<a href='https://www.google.com/search?q=1+hr+timer&oq=1+hr+timer&aqs=chrome..69i57j0l5.1684j0j7&sourceid=chrome&es_sm=122&ie=UTF-8#q=1+hour+timer' target='_blank'>Set a 1 hr timer on Google</a> to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
     move gibson_results, "50 C heat block"
     release gibson_results
 
-    show {
-      title "Discard the following fragment stocks"
-      all_not_enough_volume_stocks.uniq!
-      note all_not_enough_volume_stocks.collect { |f| "#{f}"}
-    } if all_not_enough_volume_stocks.length > 0
     show {
       title "Return unused Gibson aliquots"
       check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? '' : 's'} to the M20 freezer."
