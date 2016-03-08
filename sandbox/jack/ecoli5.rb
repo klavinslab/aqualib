@@ -28,11 +28,11 @@ class Protocol
 			note "Measure OD 600 of aliquot"
 			get "number", var: "measurement", label: "Enter the OD value", default: 0
 		}
-		if(data[:measurement] <= 0.04) {
+		if(data[:measurement] <= 0.04) 
 			finished = "no"
-		} else {
+		else 
 			finished = "yes"
-		}
+		end
 		release([tube], interactive: true)
 		return {io_hash: io_hash, done: finished}
 	end
