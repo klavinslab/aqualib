@@ -40,7 +40,7 @@ end
 
 place p5
 	protocol: "aqualib:sandbox/jack/ecoli5.rb"
-	group: "technician"
+	group: "technicians"
 	marked: false
 	start: now()
 	window: minutes(5)
@@ -48,7 +48,7 @@ end
 
 place p6
 	protocol: "aqualib:sandbox/jack/ecoli6.rb"
-	group: "technician"
+	group: "technicians"
 	marked: false
 	start: now()
 	window: minutes(5)
@@ -56,7 +56,7 @@ end
 
 place p7
 	protocol: "aqualib:sandbox/jack/ecoli7.rb"
-	group: "technician"
+	group: "technicians"
 	marked: false
 	start: now()
 	window: minutes(10)
@@ -64,7 +64,7 @@ end
 
 place p8
 	protocol: "aqualib:sandbox/jack/ecoli8.rb"
-	group: "technician"
+	group: "technicians"
 	marked: false
 	start: now()
 	window: minutes(10)
@@ -72,7 +72,7 @@ end
 
 place p9
 	protocol: "aqualib:sandbox/jack/ecoli9.rb"
-	group: "technician"
+	group: "technicians"
 	marked: false
 	start: now()
 	window: minutes(10)
