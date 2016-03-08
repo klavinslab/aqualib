@@ -78,7 +78,7 @@ class Protocol
     sequencing_tab = [["Template Barcode", "Template Name", "Pre-sequence Reactions", "Primer Name", "Primer Barcode", "PCR Reaction Cleanup Required", "Plasmid Extraction Required", "dGTP", "Template Amplification", "Sequencing Reactions Cleanup", "Addtional note"]]
     plasmid_stocks.each_with_index do |p,idx|
       owner_initials = name_initials(p.sample.user.name)
-      sequencing_tab.push ["N/A", "#{p.id}-" + owner_initials, "No", primer_ids[idx], "N/A", "No", "No", "No", "No", "No", "N/A"]
+      sequencing_tab.push ["N/A", "#{p.id}-" + owner_initials + "primer_#{primer_ids[idx]}", "No", "pre-mixed"  , "N/A", "No", "No", "No", "No", "No", "N/A"]
     end
 
     num = primer_ids.length
