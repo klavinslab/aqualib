@@ -9,9 +9,7 @@ class Protocol
 	def main
 		
 		io_hash = input[:io_hash]
-		water = find(:item, id: (io_hash[:water]))[0]
 		glycerol = find(:item, id: (io_hash[:glycerol]))[0]
-		release([water], interactive: true)
 
 		show {
 			title "Decant Supernatant"
