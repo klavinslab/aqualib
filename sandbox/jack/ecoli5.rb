@@ -21,14 +21,14 @@ class Protocol
 
 		release([flask2000], interactive: true)
 
-		res = 0
-		while(res == 0)
+		res = -1
+		while(res < 0)
 			data = show {
 				title "Nanodrop"
 				note "Make sure nanodrop is in cell culture mode, initialize if necessary"
 				note "Blank with LB"
 				note "Measure OD 600 of aliquot"
-				get "number", var: "measurement", label: "Enter the OD value", default: 0
+				get "number", var: "measurement", label: "Enter the OD value", default: -1
 			}
 			res = data[:measurement]
 		end
