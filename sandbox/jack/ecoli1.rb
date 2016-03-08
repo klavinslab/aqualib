@@ -31,8 +31,7 @@ class Protocol
 		glycerol.mark_as_deleted
 		water.mark_as_deleted
 		
-		io_hash = {lb_liquid: lb_liquid_sterile.id, water: water_sterile.id, glycerol: glycerol_sterile.id}
-
+		io_hash = {lb_liquid: lb_liquid_sterile.id, water: water.id, glycerol: glycerol.id}
 		show {
 			title "Prepare Bottles"
 			note "Remove autoclave tape from each bottle"
@@ -49,13 +48,13 @@ class Protocol
 
 		show {
 			title "Prepare 500 mL 10 Percent Glycerol (unsterile)"
-			note "Label 500 mL bottle '500 mL 10% Glycerol', #{glycerol_sterile.id}, initials, and date"
+			note "Label 500 mL bottle '500 mL 10% Glycerol', #{glycerol.id}, initials, and date"
 			note "Using a serological pipette, add 100 mL 50% glycerol to 500 mL bottle"
 		}
 
 		show {
 			title "Prepare 1 L DI Water (unsterile)"
-			note "Label remaining 1 L bottle '1 L DI Water', #{water_sterile.id}, initials, and date"
+			note "Label remaining 1 L bottle '1 L DI Water', #{water.id}, initials, and date"
 		}
 
 		show {
@@ -73,7 +72,7 @@ class Protocol
 			note "Set autoclave to 121 C for 15 minutes, and start"
 		}
 
-		release([glycerol_sterile, water_sterile, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true)
+		release([glycerol, water, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true)
 		return { io_hash: io_hash}
 	end
 end
