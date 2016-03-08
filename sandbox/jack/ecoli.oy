@@ -78,6 +78,14 @@ place p9
 	window: minutes(10)
 end
 
+place p10
+	protocol: "aqualib:sandbox/jack/ecoli10.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(10)
+end
+
 place wait
     marked: false
 end
@@ -90,6 +98,7 @@ wire p5 => p6
 wire p6 => p7
 wire p7 => p8
 wire p8 => p9
+wire p9 => p10
 
 transition [p1] => [p2] when !error(0) && completed(0) end
 transition [p2] => [p3] when !error(0) && completed(0) end
@@ -101,3 +110,4 @@ transition [p5] => [p6] when !error(0) && completed(0) && (return_value(0,"done"
 transition [p6] => [p7] when !error(0) && completed(0) end
 transition [p7] => [p8] when !error(0) && completed(0) end
 transition [p8] => [p9] when !error(0) && completed(0) end
+transition [p9] => [p10] when !error(0) && completed(0) end
