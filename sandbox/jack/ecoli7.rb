@@ -43,7 +43,6 @@ class Protocol
 		}
 
 		water.location = "Dishwashing station"
-		release([water], interactive: true)
 		return {io_hash: io_hash}
 	end
 end
