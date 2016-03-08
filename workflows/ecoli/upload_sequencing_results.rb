@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      genewiz_tracking_no: "10-306533836",
+      tracking_num: "4287340",
       sequencing_verification_task_ids: [4090,4089,4088,4087,4062,4061],
       task_ids: [3947,3948,3949,3950,3951,3952,3953,3954,3955,3956,3957,3958,3960,3963,3969,3972,3973,3969,3972,3973],
       sequencing_task_ids: [],
@@ -21,7 +21,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     # re define the debug function based on the debug_mode input
-    io_hash = { sequencing_verification_task_ids: [], sequencing_task_ids: [], task_ids: [], debug_mode: "No" }.merge io_hash
+    io_hash = { sequencing_verification_task_ids: [], sequencing_task_ids: [], task_ids: [], debug_mode: "No", order_date: "" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -32,12 +32,12 @@ class Protocol
       note "#{io_hash}"
     } if io_hash[:debug_mode].downcase == "yes"
 
-    genewiz_tracking_no = io_hash[:genewiz_tracking_no]
+    tracking_num = io_hash[:tracking_num]
 
     results_info = show {
       title "Check if Sequencing results arrived?"
-      note "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
-      note "In Recent Results table, click Tracking Number #{genewiz_tracking_no}, does the sequencing results show up yet?"
+      check "Go the <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
+      note "Click My Account, In Order History tab, check Order Id #{tracking_num}. The Order Date should be #{io_hash[:order_date]}. Does the sequencing results show up in the Data Files column? "
       select ["Yes", "No"], var: "results_back_or_not", label: "Does the sequencing results show up?"
     }
 
@@ -45,14 +45,14 @@ class Protocol
 
     sequencing_uploads_zip = show {
       title "Upload Genewiz Sequencing Results zip file"
-      note "Click the button 'Download All Selected Trace Files' (Not Download All Sequence Files), which should download a zip file named #{genewiz_tracking_no}_ab1.zip."
-      note "Upload the #{genewiz_tracking_no}_ab1.zip file here."
+      note "Click link in the Data Files column corresponding to the row of  #{tracking_num}, which should download a zip file named #{tracking_num}-some-random-number.zip."
+      note "Upload the zip file here."
       upload var: "sequencing_results"
     }
     sequencing_uploads = show {
       title "Upload individual sequencing results"
-      note "Unzip the downloaded zip file named #{genewiz_tracking_no}_ab1.zip."
-      note "If you are on a Windows machine, right click the #{genewiz_tracking_no}_ab1.zip file, click Extract All, then click Extract."
+      note "Unzip the downloaded zip file named #{tracking_num}_ab1.zip."
+      note "If you are on a Windows machine, right click the #{tracking_num}-some-random-number.zip file, click Extract All, then click Extract."
       note "Upload all the unzipped ab1 file below by navigating to the upzipped folder."
       note "You can click Command + A on Mac or Ctrl + A on Windows to select all files."
       note "Wait until all the uploads finished (a number appears at the end of file name). "
