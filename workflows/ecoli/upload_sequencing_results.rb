@@ -37,7 +37,7 @@ class Protocol
     results_info = show {
       title "Check if Sequencing results arrived?"
       check "Go the <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
-      note "Click My Account, In Order History tab, check Order Id #{tracking_num}. The Order Date should be #{io_hash[:order_date]}. Does the sequencing results show up in the Data Files column? "
+      note "Click My Account, In Order History tab, check Order Id #{tracking_num}. The Order Date should be around #{io_hash[:order_date]}. Does the sequencing results show up in the Data Files column? "
       select ["Yes", "No"], var: "results_back_or_not", label: "Does the sequencing results show up?"
     }
 
