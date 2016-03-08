@@ -37,7 +37,7 @@ class Protocol
 		}
 
 		show {
-			note "Centrifuge Tubes"
+			title "Centrifuge Tubes"
 			note "Set the centrifuge to 2500 rpm for 20 minutes at 4 C."
 			note "Move 225 mL tubes from ice to centrifuge and press start."
 		}
