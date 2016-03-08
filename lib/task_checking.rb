@@ -447,7 +447,7 @@ def create_new_plasmid_verification plate, original_task
       if primer_ids.all? { |i| i != 0 }
         num_colony = plate.datum[:num_colony]
         num_of_overnights_started = plate.datum[:num_of_overnights_started]
-        if num_of_overnights_started
+        if num_of_overnights_started && num_colony
           if num_of_overnights_started < 2 && num_colony >= num_of_overnights_started
             tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
             t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
