@@ -28,8 +28,8 @@ class Protocol
 		#glycerol_sterile.location = "Bench"
 		#water_sterile.location = "Bench"
 		lb_liquid.mark_as_deleted
-		glycerol.mark_as_deleted
-		water.mark_as_deleted
+		#glycerol.mark_as_deleted
+		#water.mark_as_deleted
 		
 		io_hash = {lb_liquid: lb_liquid_sterile.id, water: water.id, glycerol: glycerol.id}
 		show {
