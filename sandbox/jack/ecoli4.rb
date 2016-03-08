@@ -15,7 +15,7 @@ class Protocol
     overnight_flask = find(:item, id: (io_hash[:dh5alpha]))[0]
     
     take [flask2000, lb_liquid, overnight_flask], interactive: true
-    over_night_flask.location = "Dishwashing Station"
+    overnight_flask.location = "Dishwashing Station"
     lb_liquid.location = "Dishwashing Station"
     flask2000.location = "37 degree shaker"
     
