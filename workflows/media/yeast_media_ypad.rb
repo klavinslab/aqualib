@@ -28,9 +28,9 @@ class Protocol
         ingredients = []
         
         if(media_name == "YPAD")
-            ingredients += [find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)" } } )[0]]
+            ingredients += [find(:item, { object_type: { name: "Adenine (Adenine hemisulfate)"}})[0]]
             ingredients += [find(:item, { object_type: { name: "Dextrose" } } )[0]]
-            ingredients = [find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0]]
+            ingredients += [find(:item, { object_type: { name: "Bacto Yeast Extract" } } )[0]]
             ingredients += [find(:item, { object_type: { name: "Bacto Tryptone" } } )[0]]
         else
             raise ArgumentError, "Chosen media is not valid"
