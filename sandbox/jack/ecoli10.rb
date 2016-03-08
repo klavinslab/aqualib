@@ -51,8 +51,10 @@ class Protocol
 
 		if(res > 0.1)
 			vol = (res * 10 * 2.5 * 10**8 * 100 * 1.6) / (2.5 * 10**10) - 1.6
-			title "Add More GYT"
-			note "Add #{vol} mL more of GYT to the cells"
+			show {
+				title "Add More GYT"
+				note "Add #{vol} mL more of GYT to the cells"
+			}
 		end
 
 		show {
