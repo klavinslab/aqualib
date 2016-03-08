@@ -21,14 +21,18 @@ class Protocol
 
 		release([flask2000], interactive: true)
 
-		data = show {
-			title "Nanodrop"
-			note "Make sure nanodrop is in cell culture mode, initialize if necessary"
-			note "Blank with LB"
-			note "Measure OD 600 of aliquot"
-			get "number", var: "measurement", label: "Enter the OD value", default: 0
-		}
-		if(data[:measurement] <= 0.04) 
+		res = 0
+		while(res == 0)
+			data = show {
+				title "Nanodrop"
+				note "Make sure nanodrop is in cell culture mode, initialize if necessary"
+				note "Blank with LB"
+				note "Measure OD 600 of aliquot"
+				get "number", var: "measurement", label: "Enter the OD value", default: 0
+			}
+			res = data[:measurement]
+		end
+		if(res <= 0.04) 
 			finished = "no"
 		else 
 			finished = "yes"
