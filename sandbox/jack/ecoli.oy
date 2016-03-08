@@ -78,6 +78,10 @@ place p9
 	window: minutes(10)
 end
 
+place wait
+    marked: false
+end
+
 wire p1 => p2
 wire p2 => p3
 wire p3 => p4
@@ -89,11 +93,11 @@ wire p8 => p9
 
 transition [p1] => [p2] when !error(0) && completed(0) end
 transition [p2] => [p3] when !error(0) && completed(0) end
-#transition [p3] => [p4] when !error(0) && completed(0) end
-#transition [p4] => [p5] when !error(0) && completed(0) end
-#transition [p5] => [] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
-#transition [] => [p5] when minutes_elapsed(0,5) end
-#transition [p5] => [p6] when !error(0) && completed(0) && (return_value(0,"done") == "yes") end
-#transition [p6] => [p7] when !error(0) && completed(0) end
-#transition [p7] => [p8] when !error(0) && completed(0) end
-#transition [p8] => [p9] when !error(0) && completed(0) end
+transition [p3] => [p4] when !error(0) && completed(0) end
+transition [p4] => [p5] when !error(0) && completed(0) end
+transition [p5] => [wait] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
+transition [wait] => [p5] when minutes_elapsed(0,5) end
+transition [p5] => [p6] when !error(0) && completed(0) && (return_value(0,"done") == "yes") end
+transition [p6] => [p7] when !error(0) && completed(0) end
+transition [p7] => [p8] when !error(0) && completed(0) end
+transition [p8] => [p9] when !error(0) && completed(0) end
