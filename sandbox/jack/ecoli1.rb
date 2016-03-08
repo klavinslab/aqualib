@@ -23,10 +23,10 @@ class Protocol
 		water = produce new_object "1000 mL DI Water (unsterile)"
 		lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
 		#glycerol_sterile = produce new_object "500 mL 10 Percent Glycerol (sterile)"
-		water_sterile = produce new_object "1000 mL DI Water (sterile)"
+		#water_sterile = produce new_object "1000 mL DI Water (sterile)"
 		lb_liquid_sterile.location = "Bench"
-		glycerol_sterile.location = "Bench"
-		water_sterile.location = "Bench"
+		#glycerol_sterile.location = "Bench"
+		#water_sterile.location = "Bench"
 		lb_liquid.mark_as_deleted
 		glycerol.mark_as_deleted
 		water.mark_as_deleted
