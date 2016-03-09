@@ -110,6 +110,9 @@ class Protocol
       check "Save and Upload by clicking upload your Excel template."
       check "Submit Application."
       check "Enter number of vouchers: #{plasmid_stocks.length}"
+      check "Clcik Place Order"
+      check "No Promotion Code. Click Continue."
+      check "Click Checkout"
     }
     
     order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
