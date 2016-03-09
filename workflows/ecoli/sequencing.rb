@@ -187,8 +187,9 @@ class Protocol
     show {
       title "Put all stripwells in the Source Bioscience dropbox"
       note "Cap all of the stripwells."
-      note "Put the stripwells into a zip-lock bag along with the printed order form."
-      note "Ensure that the bag is sealed, and put it into the Source Bioscience dropbox"
+      note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
+      note "Write the confirmation number on the envelope and seal."
+      note "Place the envelope in the Source Bioscience dropbox."
     }
 
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
