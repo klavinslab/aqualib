@@ -109,6 +109,7 @@ class Protocol
       table sequencing_tab
       check "Save and Upload by click upload your Excel template."
       check "Submite Application."
+      check "Enter number of vouchers: #{plasmid_stocks.length}"
     }
     
     order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
