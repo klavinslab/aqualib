@@ -109,7 +109,7 @@ class Protocol
       table sequencing_tab
       check "Save and Upload by clicking upload your Excel template."
       check "Submit Application."
-      check "Enter number of vouchers: #{plasmid_stocks.length}"
+      check "Select number of eVouchers: #{plasmid_stocks.length}"
       check "Clcik Place Order"
       check "No Promotion Code. Click Continue."
       check "Click Checkout"
