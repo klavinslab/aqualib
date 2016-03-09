@@ -84,7 +84,7 @@ class Protocol
     num = primer_ids.length
     show {
       title "Create a Source BioScience order"
-      check "Go the <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
+      check "Go to <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
       check "Hover mouse over LifeSciences -> find Genomic Services -> click on Sanger Sequencing Service"
       check "Click on Start Sample Submission and follow along the following choices:"
       check "Are you re-using previously submitted samples or primers? No"
