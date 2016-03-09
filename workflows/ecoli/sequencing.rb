@@ -185,11 +185,11 @@ class Protocol
       primers_with_volume
       ], stripwells )
     show {
-      title "Put all stripwells in the Source Bioscience dropbox"
+      title "Put all stripwells in the Source BioScience dropbox"
       note "Cap all of the stripwells."
       note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
       note "Write the confirmation number on the envelope and seal."
-      note "Place the envelope in the Source Bioscience dropbox."
+      note "Place the envelope in the Source BioScience dropbox."
     }
 
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
