@@ -105,10 +105,10 @@ class Protocol
     show {
       title "Upload Excel template"
       check "Click Download the Excel template here to download excel file."
-      check "Copy the second row to last of the table below to the Excel template."
+      check "Copy and paste the second row to last of the table below to the Excel template."
       table sequencing_tab
-      check "Save and Upload by click upload your Excel template."
-      check "Submite Application."
+      check "Save and Upload by clicking upload your Excel template."
+      check "Submit Application."
       check "Enter number of vouchers: #{plasmid_stocks.length}"
     }
     
