@@ -83,15 +83,15 @@ class Protocol
 
     num = primer_ids.length
     show {
-      title "Create a Source BioScience order"
-      check "Go to <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
+      title "Create a Source BioScience Order"
+      check "Go to <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (username: klavinslab1, password: 3glauber3)."
       check "Hover mouse over LifeSciences -> find Genomic Services -> click on Sanger Sequencing Service"
       check "Click on Start Sample Submission and follow along the following choices:"
       check "Are you re-using previously submitted samples or primers? No"
       check "Submitting your samples: Collection box. Location: Los Angeles"
       check "Template type: Plasmid DNA"
       check "Please enter the size of the template DNA: Leave blank"
-      check "Click checkbox Declaration - I confirm that I understand and agree to the sample requirements."
+      check "Click checkbox declaration - I confirm that I understand and agree to the sample requirements."
       check "How will you be sending your samples? Individual tubes"
       check "Will you be barcoding your samples? No"
       check "Skip Primer Synthesis (optional), click Continue"
@@ -103,14 +103,14 @@ class Protocol
     }
     
     show {
-      title "Upload Excel template"
+      title "Upload Excel Template"
       check "Click Download the Excel template here to download excel file."
       check "Copy and paste the second row to last of the table below to the Excel template."
       table sequencing_tab
       check "Save and Upload by clicking upload your Excel template."
       check "Submit Application."
       check "Select number of eVouchers: #{plasmid_stocks.length}"
-      check "Clcik Place Order"
+      check "Click Place Order"
       check "No Promotion Code. Click Continue."
       check "Click Checkout"
     }
@@ -118,10 +118,10 @@ class Protocol
     order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
     
     sourcebioscience = show {
-      title "Enter order id"
-      check "Click My account"
+      title "Enter order ID"
+      check "Click My Account"
       check "Find the most recent order, order date should be around #{order_date} enter the order id in the folowing"
-      get "text", var: "tracking_num", label: "Enter Order Id", default: "4000000"
+      get "text", var: "tracking_num", label: "Enter Order ID", default: "4000000"
     }
     
     diluted_primer_aliquots = dilute_samples primers_need_to_dilute(primer_ids)
@@ -168,7 +168,7 @@ class Protocol
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
     show {
-      title "Prepare Stripwells for sequencing reaction"
+      title "Prepare Stripwells for Sequencing Reaction"
       stripwells.each_with_index do |sw,idx|
         if idx < stripwells.length - 1
           check "Grab a stripwell with 12 wells, label the first well with #{idx*12+1} and last well with #{idx*12+12}"
