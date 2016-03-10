@@ -120,7 +120,7 @@ class Protocol
     sourcebioscience = show {
       title "Enter order ID"
       check "Click My Account"
-      check "Find the most recent order, order date should be around #{order_date} enter the order id in the folowing"
+      check "Find the most recent order, order date should be around #{order_date} enter the order ID in the following"
       get "text", var: "tracking_num", label: "Enter Order ID", default: "4000000"
     }
     
