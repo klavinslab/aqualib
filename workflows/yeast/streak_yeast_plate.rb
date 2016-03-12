@@ -85,11 +85,13 @@ class Protocol
       release yeast_glycerol_stocks
 
     end
-
+    
+    # streak plate for yeast overnights if there is yeast_overnight_ids
+    
     if io_hash[:yeast_overnight_ids].length > 0
 
-      #yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
-      #overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
+      yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
+      overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
       show {
         title "Grab yeast plates"
@@ -118,12 +120,12 @@ class Protocol
       }
 
       release yeast_overnights
-      #delete yeast_overnights
+      delete yeast_overnights
 
     end
 
     show {
-      title "Wait until glycerol stock dries"
+      title "Wait untilyeast cells dry"
       note "Wait until the yeast cells are dried on the plate, as in the image below."
       image "streak_yeast_plate_dry"
     }
