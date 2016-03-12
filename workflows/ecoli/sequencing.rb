@@ -83,15 +83,15 @@ class Protocol
 
     num = primer_ids.length
     show {
-      title "Create a Source BioScience order"
-      check "Go the <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
+      title "Create a Source BioScience Order"
+      check "Go to <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (username: klavinslab1, password: 3glauber3)."
       check "Hover mouse over LifeSciences -> find Genomic Services -> click on Sanger Sequencing Service"
       check "Click on Start Sample Submission and follow along the following choices:"
       check "Are you re-using previously submitted samples or primers? No"
       check "Submitting your samples: Collection box. Location: Los Angeles"
       check "Template type: Plasmid DNA"
       check "Please enter the size of the template DNA: Leave blank"
-      check "Click checkbox Declaration - I confirm that I understand and agree to the sample requirements."
+      check "Click checkbox declaration - I confirm that I understand and agree to the sample requirements."
       check "How will you be sending your samples? Individual tubes"
       check "Will you be barcoding your samples? No"
       check "Skip Primer Synthesis (optional), click Continue"
@@ -103,21 +103,25 @@ class Protocol
     }
     
     show {
-      title "Upload Excel template"
+      title "Upload Excel Template"
       check "Click Download the Excel template here to download excel file."
-      check "Copy the second row to last of the table below to the Excel template."
+      check "Copy and paste the second row to last of the table below to the Excel template."
       table sequencing_tab
-      check "Save and Upload by click upload your Excel template."
-      check "Submite Application."
+      check "Save and Upload by clicking upload your Excel template."
+      check "Submit Application."
+      check "Select number of eVouchers: #{plasmid_stocks.length}"
+      check "Click Place Order"
+      check "No Promotion Code. Click Continue."
+      check "Click Checkout"
     }
     
     order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
     
     sourcebioscience = show {
-      title "Enter order id"
-      check "Click My account"
-      check "Find the most recent order, order date should be around #{order_date} enter the order id in the folowing"
-      get "text", var: "tracking_num", label: "Enter Order Id", default: "4000000"
+      title "Enter order ID"
+      check "Click My Account"
+      check "Find the most recent order, order date should be around #{order_date} enter the order ID in the following"
+      get "text", var: "tracking_num", label: "Enter Order ID", default: "4000000"
     }
     
     diluted_primer_aliquots = dilute_samples primers_need_to_dilute(primer_ids)
@@ -164,7 +168,7 @@ class Protocol
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
     show {
-      title "Prepare Stripwells for sequencing reaction"
+      title "Prepare Stripwells for Sequencing Reaction"
       stripwells.each_with_index do |sw,idx|
         if idx < stripwells.length - 1
           check "Grab a stripwell with 12 wells, label the first well with #{idx*12+1} and last well with #{idx*12+12}"
@@ -181,10 +185,11 @@ class Protocol
       primers_with_volume
       ], stripwells )
     show {
-      title "Put all stripwells in the Source Bioscience dropbox"
+      title "Put all stripwells in the Source BioScience dropbox"
       note "Cap all of the stripwells."
-      note "Put the stripwells into a zip-lock bag along with the printed order form."
-      note "Ensure that the bag is sealed, and put it into the Source Bioscience dropbox"
+      note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
+      note "Write the confirmation number on the envelope and seal."
+      note "Place the envelope in the Source BioScience dropbox."
     }
 
     release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
