@@ -138,7 +138,7 @@ class Protocol
       length = p.sample.properties["Length"]
       conc = p.datum[:concentration]
       if p.sample.sample_type.name == "Plasmid"
-        plasmid_volume_list.push ( 1000.0 / conc ).round(1)
+        plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
       elsif p.sample.sample_type.name == "Fragment"
         if length < 500
           plasmid_volume_list.push (10 / conc).round(1)
