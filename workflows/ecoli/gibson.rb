@@ -42,19 +42,6 @@ class Protocol
     volumes
   end
 
-  def arguments
-    {
-      io_hash: {},
-      #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4275,2059,2058,3951],[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
-      #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
-      sample_or_item: "sample",
-      #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [5985,5496,5205,5986,5986],
-      debug_mode: "No",
-    }
-  end
-
   def verify_stock_volumes frag_stocks
     need_to_measure = false
     frag_stocks.each do |fs|
@@ -105,6 +92,37 @@ class Protocol
     replacement
   end # find_replacement_stock
 
+  def fill_array rows, cols, num, val
+    num = 0 if num < 0
+    array = Array.new(rows) { Array.new(cols) { -1 } }
+    (0...num).each { |i|
+      row = (i / cols).floor
+      col = i % cols
+      array[row][col] = val
+    }
+    array
+  end # fill_array
+
+  def update_batch_matrix batch, num_samples
+    rows = batch.matrix.length
+    columns = batch.matrix[0].length
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "Gibson Aliquot")[0].id
+    batch.save
+  end # update_batch_matrix
+
+  def arguments
+    {
+      io_hash: {},
+      #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
+      fragment_ids: [[4275,2059,2058,3951],[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
+      #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
+      sample_or_item: "sample",
+      #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
+      plasmid_ids: [5985,12720,5496,5205,5986],
+      debug_mode: "No",
+    }
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -144,7 +162,7 @@ class Protocol
       title "Inform user to enter fragment length info"
       note "The following fragment stocks need length info to be entered in the fragment sample page"
       note fragment_stocks_need_length_info.collect { |f| "#{f}" }
-      note "Proceed until all the fragmment length info entered."
+      note "Proceed until all the fragment length info entered."
     } if fragment_stocks_need_length_info.length > 0
 
     predicted_time = time_prediction fragment_stocks_flatten.length, "gibson"
@@ -162,20 +180,53 @@ class Protocol
     take fragment_stocks_flatten, interactive: true,  method: "boxes"
 
     ensure_stock_concentration fragment_stocks_flatten
-
     verify_stock_volumes fragment_stocks_flatten
-
     #remove_zero_volumes fragment_stocks_flatten, all_not_enough_volume_stocks, all_replacement_stocks
 
-    # Take Gibson aliquots and label with Gibson Reaction Result ids
-    show {
+    aliquot_batches = find(:item, object_type: { name: "Gibson Aliquot Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
+    test_batches = aliquot_batches.select { |batch| batch.datum[:tested] == "No" } if io_hash[:plasmid_ids].find { |id| find(:sample, id: id)[0].name == "Test_gibson" }
+    test_batch = nil
+    if test_batches
+      if test_batches.length == 1
+        test_batch = collection_from test_batches[0]
+      elsif test_batches.length > 1
+        test_batch_selection = show {
+          title "Select Gibson batch to test"
+          select test_batches.map { |batch| batch.id }, var: "batch", label: "Select which Gibson aliquot batch you want to test.", default: 0
+        }
+        test_batch = collection_from test_batches.find { |batch| batch.id == test_batch_selection[:batch].to_i } if test_batches.any?
+      end
+    end
+
+    aliquot_batch = collection_from aliquot_batches.find { |batch| batch.datum[:tested] == "Yes" }
+    normal_gibsons = io_hash[:plasmid_ids].length - (test_batch != nil ? 1 : 0)
+    enough_aliquots = show {
       title "Take Gibson Aliquots"
       check "Grab an ice block and an aluminum tube rack."
-      check "Take #{io_hash[:plasmid_ids].length} Gibson aliquots from M20 freezer."
+      check "From the M20 freezer, take #{normal_gibsons} Gibson aliquots from the batch labeled #{aliquot_batch} with #{aliquot_batch.datum[:label_color]}."
+      select ["Yes", "No"], var: "selection", label: "Select whether there are enough aliquots in batch #{aliquot_batch} for you to perform the protocol.", default: "Yes"
+      check "From the M20 freezer, take 1 Gibson aliquot from the batch labeled #{test_batch} with #{test_batch.datum[:label_color]}. Set this aliquot in a place such that you will remember that it is the \"test\" aliquot." if test_batch
       check "Spin down aliquots."
       check "Put aliquots in aluminum tube rack."
       image "gibson_aluminum_rack"
     }
+    take [aliquot_batch]
+    take [test_batch] if test_batch
+
+    old_aliquot_batch = nil
+    if enough_aliquots[:selection] == "No"
+      new_aliquot_batch = collection_from aliquot_batches.select { |batch| batch.datum[:tested] == "Yes" }[1]
+      extra_aliquots_needed = show {
+        title "Take more Gibson aliquots"
+        check "From the M20 freezer, take as many more aliquots as you need from the batch labeled #{new_aliquot_batch} to have a total of #{normal_gibsons} aliquots."
+        get "number", var: "number", label: "Record how many more aliquots you needed from batch #{new_aliquot_batch}.", default: 1
+      }
+      update_batch_matrix aliquot_batch, (normal_gibsons - extra_aliquots_needed[:number])
+      old_aliquot_batch = aliquot_batch
+      aliquot_batch = new_aliquot_batch
+      take [aliquot_batch]
+    end
+
 
     # following loop is to show a table of setting up each Gibson reaction to the user
     pre_produced_gibsons = io_hash[:plasmid_ids].collect { |pid| produce new_sample find(:sample,{id: pid})[0].name, of: "Plasmid", as: "Gibson Reaction Result"  }
@@ -236,14 +287,16 @@ class Protocol
         # Prompt user to pipette stocks
         prompted_gibson = true
         enough_volume = show {
-          title "Load Gibson reaction #{gibson_result}"
-          check "Label an unused Gibson aliquot as #{gibson_result}."
+          is_test_gibson = (test_batch && plasmid.name == "Test_gibson") ? true : false
+          title "Load #{is_test_gibson ? "Test" : ""} Gibson reaction #{gibson_result}"
+          warning "This is a test Gibson. Please make sure to use the right Gibson aliquot." if is_test_gibson
+          check "Label a #{is_test_gibson ? test_batch.datum[:label_color] : aliquot_batch.datum[:label_color]} unused Gibson aliquot as #{gibson_result}."
           note "Make sure the Gibson aliquot is thawed before pipetting."
           warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
           
           frags_sorted_by_volume = tab[1..-1].map { |r| r[1][:content] }
-          usable_fragments.sort_by { |frag| frags_sorted_by_volume.index("#{frag}") }.each do |f|
-            select ["Yes", "No"], var: "#{f.id}", label: "Does #{f} have enough volume for this reaction?", default: "Yes"
+          usable_fragments.sort_by { |frag| frags_sorted_by_volume.index("#{frag}") }.each_with_index do |f, i|
+            select ["Yes", "No"], var: "#{f.id}", label: "Does #{f} have at least #{tab[i + 1][2][:content]} µL?", default: "Yes"
           end if io_hash[:debug_mode].downcase != "yes"
           warning "Use P2 for volumes of less than 0.5 µL." if tab[1..-1].count { |row| row[2][:content] < 0.5 } > 0
           table tab
@@ -301,6 +354,20 @@ class Protocol
         end
         delete gibson_result
         not_done_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
+      elsif test_batch && plasmid.name == "Test_gibson" # Test Gibson completed
+        update_batch_matrix test_batch, (test_batch.num_samples - 1)
+        test_batch.datum = test_batch.datum.merge({ tested: "Yes" })
+        test_batch.save
+      else # Normal Gibson completed
+        if old_aliquot_batch && old_aliquot_batch.num_samples > 0
+          update_batch_matrix old_aliquot_batch, (old_aliquot_batch.num_samples - 1)
+          if old_aliquot_batch.num_samples == 0
+            old_aliquot_batch.mark_as_deleted
+            old_aliquot_batch.save
+          end
+        else
+          update_batch_matrix aliquot_batch, (aliquot_batch.num_samples - 1)
+        end
       end
     end
 
@@ -316,8 +383,13 @@ class Protocol
 
     show {
       title "Return unused Gibson aliquots"
-      check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? '' : 's'} to the M20 freezer."
+      check "Remove the label from each unused Gibson aliquot."
+      check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? "" : "s"} to the M20 freezer according to #{unused_aliquots == 1 ? "its" : "their"} color."
     } if unused_aliquots > 0
+    release [aliquot_batch]
+    release [old_aliquot_batch] if old_aliquot_batch
+    release [test_batch] if test_batch
+
     show {
       title "Return ice block and aluminum tube rack"
       check "Return the ice block and aluminum tube rack."
