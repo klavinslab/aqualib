@@ -240,9 +240,14 @@ class Protocol
 
     aliquot_batch = produce new_collection "Gibson Aliquot Batch", 10, 10
 
+    used_batch_colors = find(:item, object_type: { name: "Gibson Aliquot Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
+                                                                                  .select { |batch| batch.datum[:label_color] != "" }
+                                                                                  .map { |batch| batch.datum[:label_color] }
+                                                                                  .compact
     batch_data = show {
       title "Finish preparing the Gibson aliquot batch"
       get "number", var: "num_aliquots", label: "Enter the number of aliquots you were able to prepare.", default: 80
+      note "Of the existing Gibson aliquot batches, the following colors have already been used: #{used_batch_colors.join(", ")}." if used_batch_colors.any?
       get "text", var: "color", label: "Enter the color with which you have chosen to label this batch.", default: ""
       check "Grab a freezer box with a 10x10 divider."
       check "Label the box with #{aliquot_batch}, color, your initials, and today's date."
