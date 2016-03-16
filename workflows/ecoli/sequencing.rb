@@ -52,7 +52,7 @@ class Protocol
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
-        if stock.datum[:concentration] &&  stock.datum[:concentration]!= 0 && ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
+        if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
           primer_ids.concat pids
           (1..pids.length).each do
             plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
@@ -62,7 +62,6 @@ class Protocol
       # show {
       #   note "#{ready_task.spec}"
       # }
-      io_hash[:task_ids].push tid
     end
     if plasmid_stock_ids.length == 0
       show {
@@ -73,6 +72,8 @@ class Protocol
     end
 
     plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
+    # pop up nanodrop page for stocks without concentration entered
+    ensure_stock_concentration plasmid_stocks
     # create order table for sequencing
     sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
     sequencing_tab = [["Template Barcode", "Template Name", "Pre-sequence Reactions", "Primer Name", "Primer Barcode", "PCR Reaction Cleanup Required", "Plasmid Extraction Required", "dGTP", "Template Amplification", "Sequencing Reactions Cleanup", "Addtional note"]]
