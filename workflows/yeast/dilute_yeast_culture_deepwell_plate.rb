@@ -9,6 +9,13 @@ class Protocol
   def inducer_volume_item conc_inducer, master_volume
     conc_inducer_arr = conc_inducer.split(" ").map(&:strip)
     conc = conc_inducer_arr[0].to_f
+    
+    if conc == 0
+      return {
+        volume: 0
+      }
+    end
+    
     unit = conc_inducer_arr[1]
     inducer_name = conc_inducer_arr[2].downcase
 
@@ -56,9 +63,13 @@ class Protocol
       else
         conc_inducers = inducer_addition.split("and").map(&:strip)
         conc_inducers.each do |conc_inducer|
-          result = inducer_volume_item conc_inducer, master_volume
-          instruction.push "#{result[:volume]} µL of #{result[:inducer].id}"
-          inducers.push result[:inducer]
+          if !(["0", "None", 0, "none", "N/A"].include? conc_inducer)
+            result = inducer_volume_item conc_inducer, master_volume
+            if result[:volume] > 0
+              instruction.push "#{result[:volume]} µL of #{result[:inducer].id}"
+              inducers.push result[:inducer]
+            end
+          end
         end
       end
       instructions.push instruction.join(" and ")
