@@ -42,8 +42,11 @@ class Protocol
     elsif conc < 1000
       volume = conc/100
       inducer = inducer_sample.in("100 #{unit_map[unit]} stock")[0]
+    elsif conc < 10000
+      volume = conc/1000
+      inducer = inducer_sample.in("1 #{unit_map[unit_map[unit]]} stock")[0]
     else
-      raise "conc greater than 1000 is not allowed."
+      raise "conc greater than 10000 is not allowed."
     end
 
     volume = volume*master_volume/1000
