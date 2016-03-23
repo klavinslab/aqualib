@@ -28,8 +28,11 @@ class Protocol
 
     inducer_sample = find(:sample, name: inducer_name)[0]
 
-    if conc < 0
-      raise "conc less than zero is not allowed."
+    if conc < 0.1
+      raise "conc less than 0.1 is not allowed."
+    elsif conc < 1
+      volume = conc * 10
+      inducer = inducer_sample.in("100 #{unit} stock")[0]
     elsif conc < 10
       volume = conc
       inducer = inducer_sample.in("1 #{unit_map[unit]} stock")[0]
