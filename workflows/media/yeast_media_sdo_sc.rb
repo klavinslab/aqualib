@@ -116,12 +116,12 @@ class Protocol
         if(acid_solutions.length > 0)
         	take acid_solutions, interactive: true
         end
-        
-	show {
-		title "Add Stir Bar"
-		check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
-		check "Add the stir bar(s) to the bottle(s)."
-	}
+        # comment out the stir bar step since it's not needed.
+	# show {
+	# 	title "Add Stir Bar"
+	# 	check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
+	# 	check "Add the stir bar(s) to the bottle(s)."
+	# }
 
         show {
             title "Weigh Nitrogen Base"
