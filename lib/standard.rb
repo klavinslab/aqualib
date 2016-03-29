@@ -116,7 +116,7 @@ module Standard
 					title "Choose #{params[:quantity]} #{object_name.pluralize}"
 				end
   		  if quantity >= 0
-			  	note "Try again. You chose the wrong number of items"
+			  	note "Try again. You chose the wrong number of items. Use SHIFT to choose multiple items."
 			  end
 	      raw user_shows
 			  select choices, var: "x", label: "Choose #{object_name}" , multiple: params[:multiple]
