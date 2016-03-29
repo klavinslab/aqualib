@@ -119,7 +119,7 @@ module Standard
 			  	note "Try again. You chose the wrong number of items. Use SHIFT to choose multiple items."
 			  end
 	      raw user_shows
-			  select choices, var: "x", label: "Choose #{object_name}" , multiple: params[:multiple]
+			  select choices, var: "x", label: "Choose #{params[:quantity]} #{object_name}" , multiple: params[:multiple]
 			}
 
 			if ! user_input[:x]
