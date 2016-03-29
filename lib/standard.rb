@@ -50,7 +50,7 @@ module Standard
 			  	note "Try again. You chose the wrong number of items"
 			  end
 			  raw user_shows
-			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple], default: (0..params[:multiple]-1).to_a
+			  select choices, var: "x", label: "Choose #{sample_name}", multiple: params[:multiple], default: (0..params[:quantity]-1).to_a
 			}
 
 			if ! user_input[:x]
