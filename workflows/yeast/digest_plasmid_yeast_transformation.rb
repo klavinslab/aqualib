@@ -104,6 +104,10 @@ class Protocol
       h[:plasmid_stock_ids] = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
       h
     end
+    
+    show {
+      note io_hash[:task_hash]
+    }
 
     if io_hash[:plasmid_stock_ids].length == 0
       show {
