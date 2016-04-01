@@ -102,8 +102,7 @@ class Protocol
     
     io_hash[:task_hash].collect do |h|
       plasmid_stock_id = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
-      h.merge({ plasmid_stock_ids: plasmid_stock_id })
-      h
+      new_hash = h.merge({ plasmid_stock_ids: plasmid_stock_id })
     end
     
     show {
