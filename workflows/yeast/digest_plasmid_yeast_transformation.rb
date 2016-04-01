@@ -100,7 +100,7 @@ class Protocol
 
     io_hash[:plasmid_stock_ids] = io_hash[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
     
-    io_hash[:task_hash].collect do |h|
+    io_hash[:task_hash] = io_hash[:task_hash].collect do |h|
       plasmid_stock_id = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
       new_hash = h.merge({ plasmid_stock_ids: plasmid_stock_id })
     end
