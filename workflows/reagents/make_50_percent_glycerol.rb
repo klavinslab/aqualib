@@ -1,5 +1,4 @@
 Class Protocol
-
 	def main
 
 		media_type = "50% Glycerol"
