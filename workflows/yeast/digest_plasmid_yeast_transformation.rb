@@ -104,10 +104,6 @@ class Protocol
       plasmid_stock_id = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
       new_hash = h.merge({ plasmid_stock_ids: plasmid_stock_id })
     end
-    
-    show {
-      note io_hash[:task_hash].to_json
-    }
 
     if io_hash[:plasmid_stock_ids].length == 0
       show {
