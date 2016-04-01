@@ -29,15 +29,19 @@ class Protocol
     # ClonNat, NatMX, 25 µL, G418, KanMX, 300 µL, Hygromycin, HygMX, 200 µL, Zeocin, BleoMX, 50 µL.
     
     plasmid_marker_hash = Hash.new {|h,k| h[k] = 0 }
-
-    io_hash[:plasmid_stock_ids].each do |pid|
-      marker = find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3].to_sym
-      plasmid_marker_hash.store(marker, plasmid_marker_hash[marker] + 1)
-    end
-
     markers = [ :nat, :kan, :hyg, :ble ]
     antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygromycin", ble: "BleoMX" }
     volume_hash = { nat: 25, kan: 300, hyg: 200, ble: 50 }
+    
+    io_hash[:plasmid_stock_ids].each do |pid|
+      marker = find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3].to_sym
+      if markers.include? marker
+        task_id = io_hash[:task_hash].select { |h| h[:plasmid_stock_ids] == pid }[0][:task_id]
+        set_task_status(find(:task, id: task_id)[0],"plate made")
+      end
+      plasmid_marker_hash.store(marker, plasmid_marker_hash[marker] + 1)
+    end
+
     make_plate = false  # a variable to indicate whether the user need to make plates
 
     plasmid_marker_hash.each do |marker, num|

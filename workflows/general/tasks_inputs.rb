@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Discard Item",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end
@@ -149,8 +149,11 @@ class Protocol
 
     when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction", "Yeast Transformation"
       # a general task processing script only works for those tasks with one variable_name
+      io_hash[:task_hash] = []
       io_hash[:task_ids].each_with_index do |tid, idx|
         task = find(:task, id: tid)[0]
+        # store task_id and variable corresponding
+        task_hash = {}
         task.simple_spec.each do |variable_name, ids|
           variable_name = :fragment_ids if variable_name == :fragments
           io_hash[variable_name] = [] if idx == 0
@@ -161,7 +164,10 @@ class Protocol
             end
             io_hash[:size] = io_hash[variable_name].length
           end
+          task_hash[variable_name] = ids[0]
         end
+        task_hash[:task_id] = tid
+        io_hash[:task_hash].push task_hash
       end
       # additional io_hash key: values
       io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"

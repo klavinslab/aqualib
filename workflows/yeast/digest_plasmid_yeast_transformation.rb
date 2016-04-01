@@ -66,7 +66,7 @@ class Protocol
         true
       end
     end
-
+    
     scan_result = yeast_strain_transformation_scan io_hash[:yeast_transformed_strain_ids]
     io_hash[:yeast_transformed_strain_ids] = scan_result[:ready_ids]
     if scan_result[:not_ready_ids].any?
@@ -99,6 +99,11 @@ class Protocol
 
 
     io_hash[:plasmid_stock_ids] = io_hash[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
+    
+    io_hash[:task_hash].collect do |h|
+      h[:plasmid_stock_ids] = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
+      h
+    end
 
     if io_hash[:plasmid_stock_ids].length == 0
       show {
