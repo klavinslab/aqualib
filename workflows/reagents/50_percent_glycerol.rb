@@ -35,10 +35,8 @@ Class Protocol
 
 		media.location = "To be autoclaved area"
 
-
 		release [glycerol, media], interactive: true
-
+		
 		release [bottle]
-
 	end
 end
