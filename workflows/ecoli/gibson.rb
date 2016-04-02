@@ -204,7 +204,7 @@ class Protocol
       title "Take Gibson Aliquots"
       check "Grab an ice block and an aluminum tube rack."
       check "From the M20 freezer, take #{normal_gibsons} Gibson aliquots from the batch labeled #{aliquot_batch} with #{aliquot_batch.datum[:label_color]}."
-      select ["Yes", "No"], var: "selection", label: "Select whether there are enough aliquots in batch #{aliquot_batch} for you to perform the protocol.", default: "Yes"
+      select ["Yes", "No"], var: "selection", label: "Select whether there are enough aliquots in batch #{aliquot_batch} for you to perform the protocol.", default: 0
       check "From the M20 freezer, take 1 Gibson aliquot from the batch labeled #{test_batch} with #{test_batch.datum[:label_color]}. Set this aliquot in a place such that you will remember that it is the \"test\" aliquot." if test_batch
       check "Spin down aliquots."
       check "Put aliquots in aluminum tube rack."
