@@ -121,11 +121,8 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { yeast_deepwell_plate_ids: [], yeast_ubottom_plate_ids: [], range_to_read: { from: [[1,1],[]], to: [[],[]] }, debug_mode: "No", read_volume: 100 }.merge io_hash
     debug_mode = false
-    if io_hash[:debug_mode].downcase == "yes"
-      debug_mode = true
-      def debug
-        true
-      end
+    def debug
+      false
     end
 
     yeast_deepwell_plates = io_hash[:yeast_deepwell_plate_ids].collect { |i| collection_from i }
