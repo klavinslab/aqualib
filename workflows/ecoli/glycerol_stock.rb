@@ -84,7 +84,8 @@ class Protocol
             specification: { "item_ids Item" => [p.id] }.to_json,
             task_prototype_id: tp.id,
             status: "waiting",
-            user_id: p.sample.user.id)
+            user_id: p.sample.user.id,
+            budget_id: 1)
         t.save
         t.notify "Automatically created after glycerol stock made.", job_id: jid
       end

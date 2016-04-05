@@ -450,7 +450,7 @@ def create_new_plasmid_verification plate, original_task
         if num_of_overnights_started && num_colony
           if num_of_overnights_started < 2 && num_colony >= num_of_overnights_started
             tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-            t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+            t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: original_task.budget_id)
             t.save
             t.notify "Automatically created from wrong sequencing verifcation.", job_id: jid
             task_id = t.id
