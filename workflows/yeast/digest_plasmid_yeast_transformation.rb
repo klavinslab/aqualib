@@ -83,7 +83,7 @@ class Protocol
             task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
             task.save
           else
-            notifs = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)[:notifs]
+            notifs = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id, budget_id: task.budget_id)[:notifs]
             notifs.each { |notif| task.notify "[Notif] #{notif}", job_id: jid }
           end
         end
