@@ -364,7 +364,7 @@ class Protocol
         else
           update_batch_matrix aliquot_batch, (aliquot_batch.num_samples - 1)
         end
-        if old_aliquot_batch.num_samples == 0 && old_aliquot_batch.location != "deleted"
+        if old_aliquot_batch && old_aliquot_batch.num_samples == 0 && old_aliquot_batch.location != "deleted"
           old_aliquot_batch.mark_as_deleted
           old_aliquot_batch.save
         end
