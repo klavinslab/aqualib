@@ -64,14 +64,12 @@ class Protocol
 		water = 400
 		bottle = "500 mL Bottle"
 		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
-	        io_hash = {has_agar: "yes"}.merge(io_hash)
 	elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
 		multiplier = 0.25;
 		label += " Agar"
 		water = 200
 		bottle = "250 mL Bottle"
 		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
-	       	io_hash = {has_agar: "yes"}.merge(io_hash)
 	else
 		raise ArgumentError, "Container specified is not valid"
 	end
