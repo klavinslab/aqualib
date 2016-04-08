@@ -7,13 +7,13 @@ class Protocol
   include Cloning
 
   def arguments
-  	{
+    {
       io_hash: {},
-  		yeast_plate_ids: [32170,32171],
-  		num_colonies: [3,3],
-  		debug_mode: "No",
+      yeast_plate_ids: [32170,32171],
+      num_colonies: [3,3],
+      debug_mode: "No",
       group: "cloning"
-  	}
+    }
   end
 
   def main
@@ -33,35 +33,35 @@ class Protocol
 
     yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
 
-  	show {
-  		title "Protocol information"
-  		note "This protocol makes yeast lysates in stripwell tubes for the following plates:"
+    show {
+      title "Protocol information"
+      note "This protocol makes yeast lysates in stripwell tubes for the following plates:"
       note yeast_items.join(", ")
-  	}
+    }
 
-  	take yeast_items, interactive: true
+    take yeast_items, interactive: true
 
-  	yeast_samples = []
-  	yeast_colonies = []
-  	yeast_items.each_with_index do |y,idx|
+    yeast_samples = []
+    yeast_colonies = []
+    yeast_items.each_with_index do |y,idx|
       start_colony = (y.datum[:QC_result] || []).length
-  		(1..io_hash[:num_colonies][idx]).each do |x|
-  			yeast_samples.push y.sample
-  			yeast_colonies.push "#{y.id}.c#{start_colony+x}"
-  		end
-  	end
+      (1..io_hash[:num_colonies][idx]).each do |x|
+        yeast_samples.push y.sample
+        yeast_colonies.push "#{y.id}.c#{start_colony+x}"
+      end
+    end
 
-  	sds = yeast_samples.length * 3 * 1.1
-  	water = yeast_samples.length * 27 * 1.1
+    sds = yeast_samples.length * 3 * 1.1
+    water = yeast_samples.length * 27 * 1.1
 
-  	show {
-  		title "Prepare 0.2 percent SDS"
-  		check "Grab a 2 percent SDS stock."
-  		check "Grab an empty 1.5 mL tube, label as 0.2 percent SDS."
-  		check "Pipette #{sds.round(1)} µL of 2 percent SDS stock into the 1.5 mL tube."
-  		check "Pipette #{water.round(1)} µL of molecular grade water into the 1.5 mL tube."
-  		check "Mix with vortexer."
-  	}
+    show {
+      title "Prepare 0.2 percent SDS"
+      check "Grab a 2 percent SDS stock."
+      check "Grab an empty 1.5 mL tube, label as 0.2 percent SDS."
+      check "Pipette #{sds.round(1)} µL of 2 percent SDS stock into the 1.5 mL tube."
+      check "Pipette #{water.round(1)} µL of molecular grade water into the 1.5 mL tube."
+      check "Mix with vortexer."
+    }
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
@@ -137,26 +137,26 @@ class Protocol
     release yeast_items, interactive: true
 
     show {
-    	title "Wait for 5 minutes"
-    	timer initial: { hours: 0, minutes: 5, seconds: 0}
+      title "Wait for 5 minutes"
+      timer initial: { hours: 0, minutes: 5, seconds: 0}
     }
 
     take stripwells, interactive: true
 
     show {
-    	title "Spin down and dilute"
-    	check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
+      title "Spin down and dilute"
+      check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
         stripwells.each do |sw|
           if sw.num_samples <= 6
             check "Grab a new stripwell with 6 wells and label with the id #{sw}."
           else
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
-	        note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
-	        check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
+          note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
+          check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
           check "Keep the new stripwell on the bench for the next protocol to use."
-	        check "Dispose the spundown stripwell with id #{sw}."
-	        separator
+          check "Dispose the spundown stripwell with id #{sw}."
+          separator
         end
     }
 
@@ -175,7 +175,10 @@ class Protocol
 
     io_hash[:lysate_stripwell_ids] = stripwells.collect { |sw| sw.id }
 
-    return { io_hash: io_hash }
+    # To let metacol know whether to fire "move cartridge" protocol
+    cartridge_in_analyzer = find(:item, object_type: { name: "QX DNA Screening Cartridge" }).select { |c| c.location == "Fragment analyzer" }.any?
+    
+    return { io_hash: io_hash, cartridge_in_analyzer: cartridge_in_analyzer }
   end
 
 end

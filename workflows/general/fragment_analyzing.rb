@@ -5,19 +5,6 @@ class Protocol
   include Cloning
   require 'matrix'
 
-  def arguments
-    {
-      io_hash: {},
-      gel_band_verify: "Yes",
-      stripwell_ids: [51355,15503,37245],
-      #stripwell_ids: [10632],
-      yeast_plate_ids: [62825,61775,57979],
-      #yeast_plate_ids: [34752],
-      task_ids: [19139,18662,16234],
-      debug_mode: "Yes"
-    }
-  end
-
   def stripwell_band_verify col, options = {}
     m = col.matrix
     routes = []
@@ -270,6 +257,19 @@ class Protocol
     end # create_relabel_instructions
   end # StripwellArrayOrganization
 
+  def arguments
+    {
+      io_hash: {},
+      gel_band_verify: "Yes",
+      stripwell_ids: [51355,15503,37245],
+      #stripwell_ids: [10632],
+      #yeast_plate_ids: [62825,61775,57979],
+      yeast_plate_ids: [],
+      #task_ids: [19139,18662,16234],
+      debug_mode: "Yes"
+    }
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -288,16 +288,41 @@ class Protocol
       note "In this protocol, you will gather stripwells of fragments, organize them in the fragment analyzer machine, and upload the analysis results to Aquarium."
     }
 
+    cartridge = find(:item, object_type: { name: "QX DNA Screening Cartridge" }).find { |c| c.location == "Fragment analyzer" }
+    if cartridge
+      take [cartridge]
+    else
+      cartridge = find(:item, object_type: { name: "QX DNA Screening Cartridge" })[0]
+      show {
+        title "Prepare to insert QX DNA Screening Cartridge into the machine"
+        warning "Please keep the cartridge vertical at all times!".upcase
+        check "Take the cartridge from #{cartridge.location} and bring to fragment analyzer."
+        check "Remove the cartridge from its packaging and CAREFULLY wipe off any soft tissue debris from the capillary tips using a soft tissue."
+        check "Remove the purge cap seal from the back of the cartridge."
+        image "frag_an_cartridge_seal_off"
+        warning "Do not set down the cartridge when you proceed to the next step."
+      }
+      show {
+        title "Insert QX DNA Screening Cartridge into the machine"
+        check "Use a soft tissue to wipe off any gel that may have leaked from the purge port."
+        check "Open the cartridge compartment by gently pressing on the door."
+        check "Carefully place the cartridge into the fragment analyzer; cartridge description label should face the front and the purge port should face the back of the fragment analyzer."
+        check "Insert the smart key into the smart key socket; key can be inserted in either direction."
+        image "frag_an_cartridge_and_key"
+        check "Close the cartridge compartment door."
+        check "Open the ScreenGel software and latch the cartridge by clicking on the \"Latch\" icon."
+      }
+      show {
+        title "Wait 30 minutes for the cartridge to equilibrate"
+        check "Start a <a href='https://www.google.com/search?q=30+minute+timer&oq=30+minute+timer&aqs=chrome..69i57j69i60.2120j0j7&sourceid=chrome&ie=UTF-8' target='_blank'>30-minute timer on Google</a>, and do not run the fragment analyzer until it finishes."
+      }
+      take [cartridge]
+      cartridge.location = "Fragment analyzer"
+      cartridge.save
+    end
+
     old_stripwells = io_hash[:stripwell_ids].collect { |i| collection_from i }
     take old_stripwells, interactive: true
-
-    show {
-      title "Uncap stripwells and remove bubbles"
-      note "Place the stripwells in a green stripwell rack."
-      check "Uncap the stripwells."
-      check "Make sure there are no air bubbles in the samples."
-      image "frag_an_no_bubbles"
-    }
 
     extend StripwellArrayOrganization
     # Create the analyzer_wells_array from the given stripwells
@@ -314,12 +339,20 @@ class Protocol
     show {
       extend StripwellArrayOrganization
       title "Relabel stripwells for stripwell rack arrangement"
+      note "Place the stripwells in a green stripwell rack."
       note "To wipe off old labels, use ethanol on a Kimwipe."
       warning "Please follow each step carefully."
       (create_relabel_instructions new_labels, stripwell_cuts).each { |instruction|
         check instruction
       }
       image "frag_an_relabel"
+    }
+
+    show {
+      title "Uncap stripwells and remove bubbles"
+      check "Uncap the stripwells."
+      check "Make sure there are no air bubbles in the samples."
+      image "frag_an_no_bubbles"
     }
 
     eb_labels = new_labels.select{ |x| x.stripwell == nil }
@@ -395,6 +428,8 @@ class Protocol
       note "Estimated time is given on the bottom of the screen."
       image "frag_an_run"
     }
+    cartridge.datum = cartridge.datum.merge({ runs: (cartridge.datum[:runs] ? cartridge.datum[:runs] : 0) + new_stripwells.length })
+    cartridge.save
     job_id = jid # jid not accessible within the scope of show block
     show {
       extend RowNamer
@@ -541,9 +576,21 @@ class Protocol
       image "frag_an_parked"
     }
     show {
-      title "Have a good weekend!"
-      note "This will eventually prompt the user to move the cartridge into the fridge"
-    } if Time.now.friday?
+      title "Move QX DNA Screening Cartridge to the fridge for the weekend"
+      check "Open ScreenGel software and unlatch the cartridge by clicking on the ‘Unlatch’ icon."
+      #image "frag_an_unlatch"
+      check "Open the cartridge compartment on the fragment analyzer by gently pressing on the door."
+      check "Remove the smart key."
+      warning "Keep the cartridge vertical at all times!".upcase
+      check "Close the purge port with the purge port seal."
+      image "frag_an_cartridge_seal_on"
+      check "Return the cartridge to the blister package by CAREFULLY inserting the capillary tips into the soft gel."
+      check "Close the cartridge compartment door."
+      check "Store the cartridge upright in the door of R2 (B13.120)."
+      cartridge.location = "R2 (B13.120)"
+      cartridge.save
+    } #if Time.now.friday?
+    release [cartridge]
 
     (old_stripwells + new_stripwells).each do |stripwell|
       stripwell.mark_as_deleted
