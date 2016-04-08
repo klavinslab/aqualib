@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "item_ids Yeast Plates" => [11529,8121,4318,4538,5016,44055,21463,21461,44149,1898,44147,44148],
-      task_ids: [2310, 2309],
+      "item_ids Yeast Plates" => [62211, 55615, 59943],
+      task_ids: [],
       debug_mode: "Yes"
     }
   end
@@ -26,7 +26,18 @@ class Protocol
   	items = io_hash[:item_ids].collect { |id| find(:item, id: id)[0] }
     items = items.compact
     items = items.sort_by { |i| i.location }
-  	take items, interactive: true, method: "boxes"
+    r = Regexp.new ( '(M20|M80|SF[0-9]*)\.[0-9]+\.[0-9]+\.[0-9]+' )
+    items_for_box = items.select { |i| r.match(i.location) }
+  	take items_for_box, interactive: true, method: "boxes"
+    items_for_table = items - items_for_box
+    items_table = [["Item id", "Container Type", "Location"]]
+    items_for_table.each do |i|
+      items_table.push ["#{i}", "#{i.object_type.name}", { content: "#{i.location}", check: true }]
+    end
+    show {
+      title "Gather the following item(s)"
+      table items_table
+    }
   	show {
   		title "Dispose or recycle depending on the items"
   		check "For glassware contained items, 50 mL Falcon tubes, 96 deepwell plates, take to the dishwashing station. For other items, discard properly to the bioharzard box."
@@ -34,7 +45,7 @@ class Protocol
   	items.each do |x|
   		x.mark_as_deleted
   		x.save
-  	end
+  	end unless io_hash[:debug_mode].downcase == "yes"
   	release items
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|

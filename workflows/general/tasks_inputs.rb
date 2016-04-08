@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       debug_mode: "Yes",
-      task_name: "Discard Item",
+      task_name: "Yeast Transformation",
       group: "technicians"
     }
   end
@@ -48,13 +48,13 @@ class Protocol
         sample_id = p.datum[:matrix].flatten().select { |i| i!=-1 }[0]
         sample = find(:sample, id: sample_id)[0]
         if sample
-          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: sample.user.id)[:new_task_ids]
+          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: sample.user.id, budget_id: 1)[:new_task_ids]
         else
-          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: 5)[:new_task_ids]
+          new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: 5, budget_id: 1)[:new_task_ids]
         end
       end
       yeast_plates_to_delete.each do |p|
-        new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: p.sample.user.id)[:new_task_ids]
+        new_discard_item_task_ids.concat create_new_tasks(p.id, task_name: "Discard Item", user_id: p.sample.user.id, budget_id: 1)[:new_task_ids]
       end
       show_tasks_table new_discard_item_task_ids
     end
@@ -149,8 +149,11 @@ class Protocol
 
     when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction", "Yeast Transformation"
       # a general task processing script only works for those tasks with one variable_name
+      io_hash[:task_hash] = []
       io_hash[:task_ids].each_with_index do |tid, idx|
         task = find(:task, id: tid)[0]
+        # store task_id and variable corresponding
+        task_hash = {}
         task.simple_spec.each do |variable_name, ids|
           variable_name = :fragment_ids if variable_name == :fragments
           io_hash[variable_name] = [] if idx == 0
@@ -161,7 +164,10 @@ class Protocol
             end
             io_hash[:size] = io_hash[variable_name].length
           end
+          task_hash[variable_name] = ids[0]
         end
+        task_hash[:task_id] = tid
+        io_hash[:task_hash].push task_hash
       end
       # additional io_hash key: values
       io_hash[:volume] = 2 if io_hash[:task_name] == "Yeast Competent Cell"

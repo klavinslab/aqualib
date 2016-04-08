@@ -274,7 +274,8 @@ class Protocol
                 specification: { "plasmid Plasmid" => test_gibson_plasmid.id, "fragments Fragment" => test_gibson_fragments.map { |frag| frag.id } }.to_json, 
                 task_prototype_id: tp.id, 
                 status: "waiting", 
-                user_id: Job.find(jid).user_id)
+                user_id: Job.find(jid).user_id,
+                budget_id: 1)
     t.save
     t.notify "Automatically created from Make Gibson Aliquots.", job_id: jid
     io_hash[:test_gibson_task_id] = t.id

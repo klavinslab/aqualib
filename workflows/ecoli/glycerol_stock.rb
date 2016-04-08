@@ -84,14 +84,15 @@ class Protocol
             specification: { "item_ids Item" => [p.id] }.to_json,
             task_prototype_id: tp.id,
             status: "waiting",
-            user_id: p.sample.user.id)
+            user_id: p.sample.user.id,
+            budget_id: 1)
         t.save
         t.notify "Automatically created after glycerol stock made.", job_id: jid
       end
     end
     glycerol_stocks.each do |glycerol_stock|
       if glycerol_stock.object_type.name == "Yeast Glycerol Stock"
-        new_tasks = create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id)
+        new_tasks = create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id, budget_id: 1)
         new_tasks[:new_task_ids].each do |tid|
           t = find(:task, id: tid)[0]
           t.notify "Automatically created after glycerol stock made.", job_id: jid

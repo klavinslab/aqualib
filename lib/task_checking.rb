@@ -333,7 +333,7 @@ def task_status_check t
           new_tasks["Streak Plate"] = ids_to_make
         end # case
         new_tasks.each do |task_type_name, ids|
-          created_tasks = create_new_tasks(ids, task_name: task_type_name, user_id: t.user.id)
+          created_tasks = create_new_tasks(ids, task_name: task_type_name, user_id: t.user.id, budget_id: t.budget_id)
           new_task_ids.concat created_tasks[:new_task_ids]
           notifs.concat created_tasks[:notifs]
         end
@@ -375,7 +375,7 @@ end
 
 # create new tasks for fragment construction, primer order, yeast competent cell
 def create_new_tasks ids, p={}
-  params = ({ task_name: "", user_id: nil }).merge p
+  params = ({ task_name: "", user_id: nil, budget_id: nil }).merge p
   ids = [ids] unless ids.is_a? Array
   new_task_ids = []
   notifs = [] # to store all notifications
@@ -424,7 +424,7 @@ def create_new_tasks ids, p={}
         notifs.push "#{auto_create_task_name_link} (status: #{task.status}) is in the #{task_prototype_name_link} Tasks to produce #{task_type_argument_hash[task_prototype_name][:output]}."
       end
     else
-      t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name][:spec] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id)
+      t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name][:spec] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id, budget_id: params[:budget_id])
       t.save
       task_status_check t
       auto_create_task_name_link = task_html_link t
@@ -450,7 +450,7 @@ def create_new_plasmid_verification plate, original_task
         if num_of_overnights_started && num_colony
           if num_of_overnights_started < 2 && num_colony >= num_of_overnights_started
             tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-            t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id)
+            t = Task.new(name: "#{plate.sample.name}_plate_#{plate.id}_retry", specification: { "plate_ids E coli Plate of Plasmid" => [plate.id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: original_task.budget_id)
             t.save
             t.notify "Automatically created from wrong sequencing verifcation.", job_id: jid
             task_id = t.id
@@ -501,8 +501,8 @@ def sequencing_verification_task_processing t
     end
 
     # create new tasks
-    new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item", user_id: t.user.id)
-    new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock", user_id: t.user.id)
+    new_discard_tasks = create_new_tasks(discard_item_ids, task_name: "Discard Item", user_id: t.user.id, budget_id: t.budget_id)
+    new_stock_tasks = create_new_tasks(stock_item_ids, task_name: "Glycerol Stock", user_id: t.user.id, budget_id: t.budget_id)
     notifs = new_discard_tasks[:notifs] + new_stock_tasks[:notifs]
     new_task_ids.concat new_discard_tasks[:new_task_ids] + new_stock_tasks[:new_task_ids]
     t.status = "done"

@@ -66,7 +66,7 @@ class Protocol
         true
       end
     end
-
+    
     scan_result = yeast_strain_transformation_scan io_hash[:yeast_transformed_strain_ids]
     io_hash[:yeast_transformed_strain_ids] = scan_result[:ready_ids]
     if scan_result[:not_ready_ids].any?
@@ -83,7 +83,7 @@ class Protocol
             task.notify "Pushed back to waiting due to not enough competent cells.", job_id: jid
             task.save
           else
-            notifs = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id)[:notifs]
+            notifs = create_new_tasks(not_transformed_ids, task_name: "Yeast Transformation", user_id: task.user.id, budget_id: task.budget_id)[:notifs]
             notifs.each { |notif| task.notify "[Notif] #{notif}", job_id: jid }
           end
         end
@@ -99,6 +99,11 @@ class Protocol
 
 
     io_hash[:plasmid_stock_ids] = io_hash[:yeast_transformed_strain_ids].collect { |yid| choose_stock(find(:sample, id: yid)[0].properties["Integrant"]) }
+    
+    io_hash[:task_hash] = io_hash[:task_hash].collect do |h|
+      plasmid_stock_id = io_hash[:plasmid_stock_ids][io_hash[:yeast_transformed_strain_ids].index(h[:yeast_transformed_strain_ids])]
+      new_hash = h.merge({ plasmid_stock_ids: plasmid_stock_id })
+    end
 
     if io_hash[:plasmid_stock_ids].length == 0
       show {

@@ -9,6 +9,13 @@ class Protocol
   def inducer_volume_item conc_inducer, master_volume
     conc_inducer_arr = conc_inducer.split(" ").map(&:strip)
     conc = conc_inducer_arr[0].to_f
+    
+    if conc == 0
+      return {
+        volume: 0
+      }
+    end
+    
     unit = conc_inducer_arr[1]
     inducer_name = conc_inducer_arr[2].downcase
 
@@ -21,8 +28,11 @@ class Protocol
 
     inducer_sample = find(:sample, name: inducer_name)[0]
 
-    if conc < 0
-      raise "conc less than zero is not allowed."
+    if conc < 0.1
+      raise "conc less than 0.1 is not allowed."
+    elsif conc < 1
+      volume = conc * 10
+      inducer = inducer_sample.in("100 #{unit} stock")[0]
     elsif conc < 10
       volume = conc
       inducer = inducer_sample.in("1 #{unit_map[unit]} stock")[0]
@@ -32,8 +42,11 @@ class Protocol
     elsif conc < 1000
       volume = conc/100
       inducer = inducer_sample.in("100 #{unit_map[unit]} stock")[0]
+    elsif conc < 10000
+      volume = conc/1000
+      inducer = inducer_sample.in("1 #{unit_map[unit_map[unit]]} stock")[0]
     else
-      raise "conc greater than 1000 is not allowed."
+      raise "conc greater than 10000 is not allowed."
     end
 
     volume = volume*master_volume/1000
@@ -56,9 +69,13 @@ class Protocol
       else
         conc_inducers = inducer_addition.split("and").map(&:strip)
         conc_inducers.each do |conc_inducer|
-          result = inducer_volume_item conc_inducer, master_volume
-          instruction.push "#{result[:volume]} µL of #{result[:inducer].id}"
-          inducers.push result[:inducer]
+          if !(["0", "None", 0, "none", "N/A"].include? conc_inducer)
+            result = inducer_volume_item conc_inducer, master_volume
+            if result[:volume] > 0
+              instruction.push "#{result[:volume]} µL of #{result[:inducer].id}"
+              inducers.push result[:inducer]
+            end
+          end
         end
       end
       instructions.push instruction.join(" and ")
