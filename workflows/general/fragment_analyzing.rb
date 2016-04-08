@@ -590,7 +590,7 @@ class Protocol
       check "Store the cartridge upright in the door of R2 (B13.120)."
       cartridge.location = "R2 (B13.120)"
       cartridge.save
-    } #if Time.now.friday?
+    } if Time.now.friday?
     release [cartridge]
 
     (old_stripwells + new_stripwells).each do |stripwell|
