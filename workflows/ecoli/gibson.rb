@@ -361,12 +361,12 @@ class Protocol
       else # Normal Gibson completed
         if old_aliquot_batch && old_aliquot_batch.num_samples > 0
           update_batch_matrix old_aliquot_batch, (old_aliquot_batch.num_samples - 1)
-          if old_aliquot_batch.num_samples == 0
-            old_aliquot_batch.mark_as_deleted
-            old_aliquot_batch.save
-          end
         else
           update_batch_matrix aliquot_batch, (aliquot_batch.num_samples - 1)
+        end
+        if old_aliquot_batch.num_samples == 0 && old_aliquot_batch.location != "deleted"
+          old_aliquot_batch.mark_as_deleted
+          old_aliquot_batch.save
         end
       end
     end
