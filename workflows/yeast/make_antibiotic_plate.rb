@@ -35,7 +35,7 @@ class Protocol
     
     io_hash[:plasmid_stock_ids].each do |pid|
       marker = find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3].to_sym
-      if markers.include? marker
+      if markers.include? marker && io_hash[:task_hash]
         task_id = io_hash[:task_hash].select { |h| h[:plasmid_stock_ids] == pid }[0][:task_id]
         set_task_status(find(:task, id: task_id)[0],"plate made")
       end
