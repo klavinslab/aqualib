@@ -73,9 +73,9 @@ class Protocol
     # take the primers and templates
     take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks, interactive: true,  method: "boxes"
 
-    # get phusion enzyme
-    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
-    take [phusion_stock_item], interactive: true, method: "boxes"
+    # get kapa enzyme
+    kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [kapa_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
@@ -154,12 +154,12 @@ class Protocol
         }
     end
 
-    # add phusion enzyme
+    # add kapa enzyme
     show {
       title "Add Master Mix"
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
       stripwells.each do |sw|
-        check "Pipette 25 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
+        check "Pipette 25 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
     }
@@ -186,8 +186,8 @@ class Protocol
     # set the location of the stripwells to be the name of the thermocycler, release silently
     release stripwells
 
-    # release phusion enzyme
-    release [ phusion_stock_item ], interactive: true, method: "boxes"
+    # release kapa enzyme
+    release [ kapa_stock_item ], interactive: true, method: "boxes"
 
     # release the templates, primers
     release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes"
