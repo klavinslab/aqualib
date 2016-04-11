@@ -89,7 +89,7 @@ class Protocol
     case io_hash[:task_name]
 
     when "Glycerol Stock"
-      io_hash = { overnight_ids: [], item_ids: [] }.merge io_hash
+      io_hash = { overnight_ids: [], item_ids: [], yeast_plate_task_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         task.simple_spec[:item_ids].each do |id|
@@ -97,6 +97,7 @@ class Protocol
             io_hash[:overnight_ids].push id
           elsif find(:item, id: id)[0].object_type.name.downcase.include? "plate"
             io_hash[:item_ids].push id
+            io_hash[:yeast_plate_task_ids].push tid
           end
         end
       end
