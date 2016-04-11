@@ -167,7 +167,7 @@ class Protocol
                   # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
                   # num_colony = num_colony > 2 ? 2 : num_colony
                   tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: 1)
+                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
                   t.save
                   t.notify "Automatically created from Gibson Assembly.", job_id: jid
                 end
@@ -193,7 +193,7 @@ class Protocol
               num_colony = p.datum[:num_colony]
               num_colony = num_colony > 2 ? 2 : num_colony
               tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
-              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id, budget_id: 1)
+              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id, budget_id: task.budget_id)
               t.save
               t.notify "Automatically created from Yeast Transformation.", job_id: jid
             end
