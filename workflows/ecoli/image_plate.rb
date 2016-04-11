@@ -195,7 +195,7 @@ class Protocol
               tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
               t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id, budget_id: task.budget_id)
               t.save
-              t.notify "Automatically created from Yeast Transformation.", job_id: jid
+              t.notify "Automatically created from #{task_html_link task}.", job_id: jid
             end
             set_task_status(task,"imaged and stored in fridge")
           else
