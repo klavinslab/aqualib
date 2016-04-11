@@ -73,7 +73,7 @@ class Protocol
     # take the primers and templates
     take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks, interactive: true,  method: "boxes"
 
-    # get kapa enzyme
+    # get kapa master mix
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     take [kapa_stock_item], interactive: true, method: "boxes"
 
@@ -154,7 +154,7 @@ class Protocol
         }
     end
 
-    # add kapa enzyme
+    # add kapa master mix
     show {
       title "Add Master Mix"
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
@@ -186,7 +186,7 @@ class Protocol
     # set the location of the stripwells to be the name of the thermocycler, release silently
     release stripwells
 
-    # release kapa enzyme
+    # release kapa master mix
     release [ kapa_stock_item ], interactive: true, method: "boxes"
 
     # release the templates, primers
