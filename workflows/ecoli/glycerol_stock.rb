@@ -89,19 +89,19 @@ class Protocol
         t.save
         t.notify "Automatically created after glycerol stock made.", job_id: jid
       end
-    end
-    glycerol_stocks.each_with_index do |glycerol_stock, idx|
-      if glycerol_stock.object_type.name == "Yeast Glycerol Stock"
-        if io_hash[:yeast_plate_task_ids].length > 0
-          yeast_plate_task_id = io_hash[:yeast_plate_task_ids][idx]
-          budget_id = find(:task, id: yeast_plate_task_id)[0].budget_id
-        else
-          budget_id = 1
-        end
-        new_tasks = create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id, budget_id: budget_id)
-        new_tasks[:new_task_ids].each do |tid|
-          t = find(:task, id: tid)[0]
-          t.notify "Automatically created after glycerol stock made.", job_id: jid
+      glycerol_stocks.each_with_index do |glycerol_stock, idx|
+        if glycerol_stock.object_type.name == "Yeast Glycerol Stock"
+          if io_hash[:yeast_plate_task_ids].length > 0
+            yeast_plate_task_id = io_hash[:yeast_plate_task_ids][idx]
+            budget_id = find(:task, id: yeast_plate_task_id)[0].budget_id
+          else
+            budget_id = 1
+          end
+          new_tasks = create_new_tasks(glycerol_stock.id, task_name: "Streak Plate", user_id: glycerol_stock.sample.user.id, budget_id: budget_id)
+          new_tasks[:new_task_ids].each do |tid|
+            t = find(:task, id: tid)[0]
+            t.notify "Automatically created after glycerol stock made.", job_id: jid
+          end
         end
       end
     end
