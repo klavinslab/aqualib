@@ -309,6 +309,7 @@ def task_status_check t
           errors.concat integrant_check_result[:errors]
           new_tasks["Fragment Construction"] = integrant_check_result[:ids_to_make]
         when "yeast_plate_ids"
+          errors.push "New rule: #{variable_name} only accepts 1 item for easier status tracking." if ids.length > 1
           sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
           sample_check_result = sample_check(sample_ids, assert_property: ["QC Primer1", "QC Primer2"])
           errors.concat sample_check_result[:errors]
