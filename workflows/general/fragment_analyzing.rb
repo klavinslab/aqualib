@@ -328,7 +328,7 @@ class Protocol
     marker_in_analyzer = find(:item, object_type: { name: "Stripwell" })
                             .find { |s| s.datum[:matrix][0][0] == alignment_marker.sample.id &&
                                         s.location == "Fragment analyzer" }
-    marker_needs_replacing = marker_in_analyzer.datum[:begin_date] ? Date.today - (Date.parse marker_in_analyzer.datum[:begin_date]) >= 5 : true
+    marker_needs_replacing = marker_in_analyzer.datum[:begin_date] ? Date.today - (Date.parse marker_in_analyzer.datum[:begin_date]) >= 7 : true
     alignment_marker_stripwell = find(:item, object_type: { name: "Stripwell" })
                                   .find { |s| s.datum[:matrix][0][0] == alignment_marker.sample.id &&
                                               s != marker_in_analyzer }
@@ -339,6 +339,7 @@ class Protocol
         note "Open ScreenGel software."
         check "Click on the \"Load Position\" icon."
         check "Open the sample door and retrieve the buffer tray."
+        warning "Be VERY careful while handling the buffer tray! Buffers can spill."
         check "Discard the current alignment marker stripwell (labeled #{marker_in_analyzer})."
         check "Place the alignment marker stripwell labeled #{alignment_marker_stripwell} in the MARKER 1 position of the buffer array."
         image "make_marker_placement"
