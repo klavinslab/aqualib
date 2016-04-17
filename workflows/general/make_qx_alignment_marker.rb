@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       num_markers: 1,
-      debug_mode: "Yes"
+      debug_mode: "No"
     }
   end
 
