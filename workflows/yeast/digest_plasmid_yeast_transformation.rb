@@ -61,10 +61,8 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
     io_hash = { stripwell_ids: [], plasmid_stock_ids: [], item_choice_mode: "No", yeast_transformed_strain_ids: [] }.merge io_hash
 
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
+    def debug
+      false
     end
 
     scan_result = yeast_strain_transformation_scan io_hash[:yeast_transformed_strain_ids]

@@ -167,9 +167,10 @@ class Protocol
                   # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
                   # num_colony = num_colony > 2 ? 2 : num_colony
                   tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: 1)
+                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
                   t.save
-                  t.notify "Automatically created from Gibson Assembly.", job_id: jid
+                  task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
+                  t.notify "Automatically created from #{task_prototype_html_link 'Gibson Assembly'} #{task_html_link task}.", job_id: jid
                 end
               end
             elsif colony_number[:"c#{plate_id}".to_sym] == 0
@@ -193,9 +194,10 @@ class Protocol
               num_colony = p.datum[:num_colony]
               num_colony = num_colony > 2 ? 2 : num_colony
               tp = TaskPrototype.where("name = 'Yeast Strain QC'")[0]
-              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id, budget_id: 1)
+              t = Task.new(name: "#{p.sample.name}_plate_#{p.id}", specification: { "yeast_plate_ids Yeast Plate" => [p.id], "num_colonies" => [num_colony] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: p.sample.user.id, budget_id: task.budget_id)
               t.save
-              t.notify "Automatically created from Yeast Transformation.", job_id: jid
+              task.notify "Automatically created a #{task_prototype_html_link 'Yeast Strain QC'} #{task_html_link t}.", job_id: jid
+              t.notify "Automatically created from #{task_prototype_html_link 'Yeast Transformation'} #{task_html_link task}.", job_id: jid
             end
             set_task_status(task,"imaged and stored in fridge")
           else

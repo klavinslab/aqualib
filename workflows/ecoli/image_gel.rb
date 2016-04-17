@@ -78,7 +78,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [] }.merge io_hash
   	gels = io_hash[:gel_ids].collect { |i| collection_from i }
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -108,25 +108,26 @@ class Protocol
         if p.datum[:correct_colony]
           if p.datum[:correct_colony].length > 0
             tp = TaskPrototype.where("name = 'Glycerol Stock'")[0]
+            task_id = io_hash[:task_ids][io_hash[:yeast_plate_ids].index(p.id)]
+            task = find(:task, id: task_id)[0]
             t = Task.new(
                 name: "#{p.sample.name}_plate_#{p.id}",
                 specification: { "item_ids Yeast Plate|Yeast Overnight Suspension|TB Overnight of Plasmid|Overnight suspension" => [p.id] }.to_json,
                 task_prototype_id: tp.id,
                 status: "waiting",
                 user_id: p.sample.user.id,
-                budget_id: 1)
+                budget_id: task.budget_id)
             t.save
-            t.notify "Automatically created from Yeast Strain QC.", job_id: jid
+            task.notify "Automatically created a #{task_prototype_html_link 'Glycerol Stock'} #{task_html_link t}.", job_id: jid
+            t.notify "Automatically created from #{task_prototype_html_link 'Yeast Strain QC'} #{task_html_link task}.", job_id: jid
           end
         end
       end
     end
 
-    if io_hash[:task_ids]
-      io_hash[:task_ids].each do |tid|
-        task = find(:task, id:tid)[0]
-        set_task_status(task,"gel imaged")
-      end
+    io_hash[:task_ids].each do |tid|
+      task = find(:task, id:tid)[0]
+      set_task_status(task,"gel imaged")
     end
 
     gels.each do |gel|
