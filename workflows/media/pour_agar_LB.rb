@@ -91,7 +91,7 @@ class Protocol
 					for k in 0..(res - 1)
 						id_labels.push(output_media[curr_counter + k].id)
 					end
-					note "'#{agar_media[i].sample.name}', '#{id_labels.first} - #{id_labels.last}', 'initials', and 'date'."
+					note "'#{agar_media[i].sample.name}', '#{id_labels.first} - #{id_labels.last}', '#{opt}', 'initials', and 'date'."
 				}
 			end
 
