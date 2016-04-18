@@ -96,11 +96,13 @@ class Protocol
        
         take ingredients + bottle, interactive: true
 
-	show {
-		title "Add Stir Bar"
-		check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
-		check "Add the stir bar(s) to the bottle(s)."
-	}
+	if(task_to_run.simple_spec[:media_container].include?("800 mL"))
+		show {
+			title "Add Stir Bar"
+			check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
+			check "Add the stir bar(s) to the bottle(s)."
+		}
+	end
 	
         show {
           title "Weigh Out Yeast Extract"
