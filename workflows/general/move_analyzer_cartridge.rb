@@ -30,7 +30,7 @@ class Protocol
       title "Prepare to insert QX DNA Screening Cartridge into the machine"
       warning "Please keep the cartridge vertical at all times!".upcase
       check "Take the cartridge labeled #{cartridge} from #{cartridge.location} and bring to fragment analyzer."
-      check "Remove the cartridge from its packaging and CAREFULLY wipe off any soft tissue debris from the capillary tips using a soft tissue."
+      check "Remove the cartridge from its packaging and CAREFULLY wipe off any debris from the capillary tips using a soft tissue."
       check "Remove the purge cap seal from the back of the cartridge."
       image "frag_an_cartridge_seal_off"
       warning "Do not set down the cartridge when you proceed to the next step."
