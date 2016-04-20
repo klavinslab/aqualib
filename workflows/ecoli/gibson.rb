@@ -1,8 +1,10 @@
 needs "aqualib/lib/cloning"
+needs "aqualib/lib/standard"
 
 class Protocol
 
   include Cloning
+  include Standard
   require 'matrix'
 
   def sort_by_location fragments
@@ -110,15 +112,34 @@ class Protocol
     batch.save
   end # update_batch_matrix
 
+  def update_gibson_batches batch, old_batch, test_batch, used_aliquots
+    # used_aliquots functionality to add or subtract aliquots as the users used them
+    if test_batch && test_batch.datum[:tested] == "Yes"
+      update_batch_matrix test_batch, (test_batch.num_samples - 1)
+      used_aliquots -= 1
+    end
+    if old_batch && old_batch.num_samples > used_aliquots
+      update_batch_matrix old_batch, (old_batch.num_samples - used_aliquots)
+    else
+      if old_batch
+        used_aliquots -= old_batch.num_samples
+        update_batch_matrix old_batch, 0
+        old_batch.mark_as_deleted
+        old_batch.save
+      end
+      update_batch_matrix batch, (batch.num_samples - used_aliquots)
+    end
+  end
+
   def arguments
     {
       io_hash: {},
       #Enter the fragment sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
-      fragment_ids: [[4275,2059,2058,3951],[4275,2059],[2058,2059],[2059,4275],[3951,3952]],
+      fragment_ids: [[4275,2059,2058,3951],[4275,2059],[663,27,28,284],[2059,4275],[3951,3952]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "sample",
       #Enter correspoding plasmid id or fragment id for each fragment to be Gibsoned in.
-      plasmid_ids: [5985,12720,5496,5205,5986],
+      plasmid_ids: [5985,12648,12980,5205,5986],
       debug_mode: "No",
     }
   end
@@ -196,6 +217,11 @@ class Protocol
         }
         test_batch = collection_from test_batches.find { |batch| batch.id == test_batch_selection[:batch].to_i } if test_batches.any?
       end
+      # Send test plasmid and fragment ids to end of list
+      test_plasmid_i = io_hash[:plasmid_ids].find_index { |pi| find(:sample, id: pi)[0].name == "Test_gibson" }
+      io_hash[:plasmid_ids][test_plasmid_i], io_hash[:plasmid_ids][-1] = io_hash[:plasmid_ids][-1], io_hash[:plasmid_ids][test_plasmid_i]
+      io_hash[:fragment_ids][test_plasmid_i], io_hash[:fragment_ids][-1] = io_hash[:fragment_ids][-1], io_hash[:fragment_ids][test_plasmid_i]
+      fragment_stocks[test_plasmid_i], fragment_stocks[-1] = fragment_stocks[-1], fragment_stocks[test_plasmid_i]
     end
 
     aliquot_batch = collection_from aliquot_batches.find { |batch| batch.datum[:tested] == "Yes" }
@@ -227,18 +253,19 @@ class Protocol
       take [aliquot_batch]
     end
 
-
     # following loop is to show a table of setting up each Gibson reaction to the user
     pre_produced_gibsons = io_hash[:plasmid_ids].collect { |pid| produce new_sample find(:sample,{id: pid})[0].name, of: "Plasmid", as: "Gibson Reaction Result"  }
     gibson_results = []
-    unused_aliquots = 0 # This will eventually track gibson aliquot items in Aquarium (for now it's just a count)
+    unused_aliquots = 0
     not_done_task_ids = []
+    no_transformation_task_ids = []
     io_hash[:plasmid_ids].each_with_index do |pid,idx|
       plasmid = find(:sample,{id: pid})[0]
       gibson_result = pre_produced_gibsons[idx]
 
       prompted_gibson = false
       done_pipetting = false
+      using_old_batch = (old_aliquot_batch && gibson_results.length < old_aliquot_batch.num_samples) ? true : false
       
       not_enough_volume_stocks = []
       replacement_stocks = []
@@ -290,7 +317,8 @@ class Protocol
           is_test_gibson = (test_batch && plasmid.name == "Test_gibson") ? true : false
           title "Load #{is_test_gibson ? "Test" : ""} Gibson reaction #{gibson_result}"
           warning "This is a test Gibson. Please make sure to use the right Gibson aliquot." if is_test_gibson
-          check "Label a #{is_test_gibson ? test_batch.datum[:label_color] : aliquot_batch.datum[:label_color]} unused Gibson aliquot as #{gibson_result}."
+          aliquot_color = using_old_batch ? old_aliquot_batch.datum[:label_color] : is_test_gibson ? test_batch.datum[:label_color] : aliquot_batch.datum[:label_color]
+          check "Label a #{aliquot_color} unused Gibson aliquot as #{gibson_result}."
           note "Make sure the Gibson aliquot is thawed before pipetting."
           warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
           
@@ -352,40 +380,34 @@ class Protocol
         else
           unused_aliquots += 1
         end
-        delete gibson_result
+        delete [gibson_result]
         not_done_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
-      elsif test_batch && plasmid.name == "Test_gibson" # Test Gibson completed
-        update_batch_matrix test_batch, (test_batch.num_samples - 1)
+      elsif test_batch && plasmid.name == "Test_gibson"
         test_batch.datum = test_batch.datum.merge({ tested: "Yes" })
         test_batch.save
-      else # Normal Gibson completed
-        if old_aliquot_batch && old_aliquot_batch.num_samples > 0
-          update_batch_matrix old_aliquot_batch, (old_aliquot_batch.num_samples - 1)
-        else
-          update_batch_matrix aliquot_batch, (aliquot_batch.num_samples - 1)
-        end
-        if old_aliquot_batch && old_aliquot_batch.num_samples == 0 && old_aliquot_batch.location != "deleted"
-          old_aliquot_batch.mark_as_deleted
-          old_aliquot_batch.save
-        end
+      elsif plasmid.properties["Bacterial Marker"].downcase == "n/a"
+        #no_transformation_task_ids.push io_hash[:task_ids][idx] if io_hash[:task_ids]
       end
     end
 
     # Place all reactions in 50 C heat block
     show {
       title "Place on a heat block"
-      check "Put all Gibson Reaction tubes on the 50 C heat block located in the back of bay B7."
+      check "Put all #{gibson_results.length} Gibson Reaction tubes on the 50 C heat block located in the back of bay B7."
       check "<a href='https://www.google.com/search?q=1+hr+timer&oq=1+hr+timer&aqs=chrome..69i57j0l5.1684j0j7&sourceid=chrome&es_sm=122&ie=UTF-8#q=1+hour+timer' target='_blank'>Set a 1 hr timer on Google</a> to remind start the ecoli_transformation protocol to retrieve the Gibson Reaction tubes."
     }
 
     move gibson_results, "50 C heat block"
     release gibson_results
 
-    show {
-      title "Return unused Gibson aliquots"
+    unused_aliquots_data = show {
+      title "Return unused Gibson aliquots #{unused_aliquots.zero? ? "if you have any" : ""}"
       check "Remove the label from each unused Gibson aliquot."
       check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? "" : "s"} to the M20 freezer according to #{unused_aliquots == 1 ? "its" : "their"} color."
-    } if unused_aliquots > 0
+      get "number", var: "unused_num", label: "Please enter the actual number of unused Gibson aliquots you are returning. Use a negative number if you ended up using more than the protocol asked for.", default: unused_aliquots
+    }
+    unused_aliquots_data[:unused_num] = 0 if unused_aliquots_data[:unused_num].nil?
+    update_gibson_batches aliquot_batch, old_aliquot_batch, test_batch, gibson_results.length + unused_aliquots - unused_aliquots_data[:unused_num]
     release [aliquot_batch]
     release [old_aliquot_batch] if old_aliquot_batch
     release [test_batch] if test_batch
@@ -410,8 +432,13 @@ class Protocol
       task.notify "Pushed back to waiting, not enought volume for fragment stocks, new fragment stocks will be made during next fragment construction batch.", job_id: jid
     end
 
+    no_transformation_task_ids.each do |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"no colonies")
+    end
+
     if io_hash[:task_ids]
-      io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids
+      io_hash[:task_ids] = io_hash[:task_ids] - not_done_task_ids - no_transformation_task_ids
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"gibson")
