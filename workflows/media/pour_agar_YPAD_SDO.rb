@@ -1,24 +1,36 @@
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 class Protocol
-
+	include Cloning
+	include Standard
 	def arguments
 	    {
 	    	io_hash: {}
 	    }
 	end
 
+	def fill_array rows, cols, num, val
+    	num = 0 if num < 0
+    	array = Array.new(rows) { Array.new(cols) { -1 } }
+    	(0...num).each { |i|
+      		row = (i / cols).floor
+      		col = i % cols
+      		array[row][col] = val
+    	}
+    array
+  	end # fill_array
+
 	def main
 		io_hash = input[:io_hash]
 		all_media = io_hash[:total_media]
 		agar_media = Array.new
-		output_media = Array.new
 		all_media.each do |x|
 			made_media = find(:item, id: x)[0]
 			if(made_media.object_type.name.include?("Agar"))
 				agar_media.push(made_media)
 			end
 		end
-		counter = 0
-		agar_plate_ids = Array.new
+
 		for i in 0..(agar_media.length - 1)
 
 			take [agar_media[i]], interactive: true
@@ -34,6 +46,8 @@ class Protocol
 				note "If there is a large number of bubbles in the agar, a small amount of ethanol can be used to pop the bubbles."
 			}
 
+			plate_batch = produce new_collection "Agar Plate Batch", 10, 10
+
 			res = -1
 			while (res < 0 || res > 100) do
 				data = show {
@@ -43,14 +57,7 @@ class Protocol
 				}
 				res = data[:num]
 			end
-			curr_counter = counter
-			for j in 1..res
-				output = produce new_sample agar_media[i].sample.name, of: "Media", as: "Agar Plate"
-				output.location = "30 degree incubator"
-				output_media.push(output)
-				counter = counter + 1
-				agar_plate_ids.push(output.id)
-			end
+
 			
 			if(res > 0)
 				show {
@@ -58,24 +65,23 @@ class Protocol
 					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
 				}
 				
-				id_labels = Array.new
-				
+			batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i].sample.name)[0].id
+			plate_batch.matrix = batch_matrix
+			plate_batch.location = "Media Bay"
+			plate_batch.save
+			
 				show {
 					title "Stack and label"
 					note "Stack the plates agar side up."
 					note "Put a piece of labeling tape on each stack with:" 
-					for k in 0..(res - 1)
-						id_labels.push(output_media[curr_counter + k].id)
-					end
-					note "'#{agar_media[i].sample.name}', '#{id_labels.first} - #{id_labels.last}', 'initials', and 'date'."
+					note "'#{plate_batch}, 'initials', and 'date'."
 				}
 			end
 
-			agar_media[i].mark_as_deleted
-
+			delete agar_media[i]
 		end
-		io_hash = {agar_plate_ids: agar_plate_ids}.merge(io_hash)
-		release(output_media, interactive: true)
+		io_hash = {plate_batch: plate_batch}.merge(io_hash)
+		release [plate_batch], interactive: true
 		return {io_hash: io_hash}
 	end
 end
