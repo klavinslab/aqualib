@@ -176,7 +176,7 @@ class Protocol
     io_hash[:lysate_stripwell_ids] = stripwells.collect { |sw| sw.id }
 
     # To let metacol know whether to fire "move cartridge" protocol
-    cartridge_in_analyzer = find(:item, object_type: { name: "QX DNA Screening Cartridge" }).select { |c| c.location == "Fragment analyzer" }.any?
+    cartridge_in_analyzer = find(:item, object_type: { name: "QX DNA Screening Cartridge" }).select { |c| c.location.downcase == "fragment analyzer" }.any?
     
     return { io_hash: io_hash, cartridge_in_analyzer: cartridge_in_analyzer }
   end

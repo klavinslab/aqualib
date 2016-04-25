@@ -24,36 +24,61 @@ class Protocol
       debug_mode = true
     end
 
-    # Move cartridge
-    cartridge = find(:item, object_type: { name: "QX DNA Screening Cartridge" })[0]
-    show {
-      title "Prepare to insert QX DNA Screening Cartridge into the machine"
-      warning "Please keep the cartridge vertical at all times!".upcase
-      check "Take the cartridge labeled #{cartridge} from #{cartridge.location} and bring to fragment analyzer."
-      check "Remove the cartridge from its packaging and CAREFULLY wipe off any debris from the capillary tips using a soft tissue."
-      check "Remove the purge cap seal from the back of the cartridge."
-      image "frag_an_cartridge_seal_off"
-      warning "Do not set down the cartridge when you proceed to the next step."
-    }
-    show {
-      title "Insert QX DNA Screening Cartridge into the machine"
-      check "Use a soft tissue to wipe off any gel that may have leaked from the purge port."
-      check "Open the cartridge compartment by gently pressing on the door."
-      check "Carefully place the cartridge into the fragment analyzer; cartridge description label should face the front and the purge port should face the back of the fragment analyzer."
-      check "Insert the smart key into the smart key socket; key can be inserted in either direction."
-      image "frag_an_cartridge_and_key"
-      check "Close the cartridge compartment door."
-      check "Open the ScreenGel software and latch the cartridge by clicking on the \"Latch\" icon."
-      check "Grab the purge port seal bag from the bottom drawer beneath the machine, put the seal back on its backing, and return it in the bag to the drawer."
-    }
-    show {
-      title "Wait 30 minutes for the cartridge to equilibrate"
-      check "Start a <a href='https://www.google.com/search?q=30+minute+timer&oq=30+minute+timer&aqs=chrome..69i57j69i60.2120j0j7&sourceid=chrome&ie=UTF-8' target='_blank'>30-minute timer on Google</a>, and do not run the fragment analyzer until it finishes."
-    }
-    take [cartridge]
-    cartridge.location = "Fragment analyzer"
-    cartridge.save
-    release [cartridge]
+    # Move cartridge to analyzer if not in analyzer, to fridge if in analyzer
+    cartridge_in_analyzer = find(:item, object_type: { name: "QX DNA Screening Cartridge" }).find { |c| c.location.downcase == "fragment analyzer" }
+    if cartridge_in_analyzer
+      cartridge = cartridge_in_analyzer
+      take [cartridge]
+      show {
+        title "Move QX DNA Screening Cartridge to the fridge for the weekend"
+        check "Go to R2, and retrieve the blister package labeled #{cartridge}."
+        check "Grab the purge port seal from the bottom drawer beneath the fragment analyzer."
+        check "Open ScreenGel software and unlatch the cartridge by clicking on the ‘Unlatch’ icon."
+        #image "frag_an_unlatch"
+        check "Open the cartridge compartment on the fragment analyzer by gently pressing on the door."
+        check "Remove the smart key."
+        warning "Keep the cartridge vertical at all times!".upcase
+        check "Close the purge port with the purge port seal."
+        image "frag_an_cartridge_seal_on"
+        check "Return the cartridge to the blister package by CAREFULLY inserting the capillary tips into the soft gel."
+        check "Close the cartridge compartment door."
+        check "Return the purge port seal backing to its plastic bag and place it back in the drawer."
+        check "Store the cartridge upright in the door of R2 (B13.120)."
+      }
+      cartridge.location = "R2 (B13.120)"
+      cartridge.save
+      release [cartridge]
+    else
+      cartridge = find(:item, object_type: { name: "QX DNA Screening Cartridge" })[0]
+      take [cartridge]
+      show {
+        title "Prepare to insert QX DNA Screening Cartridge into the machine"
+        warning "Please keep the cartridge vertical at all times!".upcase
+        check "Take the cartridge labeled #{cartridge} from #{cartridge.location} and bring to fragment analyzer."
+        check "Remove the cartridge from its packaging and CAREFULLY wipe off any debris from the capillary tips using a soft tissue."
+        check "Remove the purge cap seal from the back of the cartridge."
+        image "frag_an_cartridge_seal_off"
+        warning "Do not set down the cartridge when you proceed to the next step."
+      }
+      show {
+        title "Insert QX DNA Screening Cartridge into the machine"
+        check "Use a soft tissue to wipe off any gel that may have leaked from the purge port."
+        check "Open the cartridge compartment by gently pressing on the door."
+        check "Carefully place the cartridge into the fragment analyzer; cartridge description label should face the front and the purge port should face the back of the fragment analyzer."
+        check "Insert the smart key into the smart key socket; key can be inserted in either direction."
+        image "frag_an_cartridge_and_key"
+        check "Close the cartridge compartment door."
+        check "Open the ScreenGel software and latch the cartridge by clicking on the \"Latch\" icon."
+        check "Grab the purge port seal bag from the bottom drawer beneath the machine, put the seal back on its backing, and return it in the bag to the drawer."
+      }
+      show {
+        title "Wait 30 minutes for the cartridge to equilibrate"
+        check "Start a <a href='https://www.google.com/search?q=30+minute+timer&oq=30+minute+timer&aqs=chrome..69i57j69i60.2120j0j7&sourceid=chrome&ie=UTF-8' target='_blank'>30-minute timer on Google</a>, and do not run the fragment analyzer until it finishes."
+      }
+      cartridge.location = "Fragment analyzer"
+      cartridge.save
+      release [cartridge]
+    end
 
     # Replace alignment marker if necessary
     alignment_marker = find(:item, sample: { name: "QX Alignment Marker (15bp/5kb)" })[0]
