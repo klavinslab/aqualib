@@ -11,7 +11,7 @@ class Protocol
 		io_hash = input[:io_hash]
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
 		lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)"})[0]
-		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "E coli Glycerol Stock" }})[0]
+		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "Agar Plate" }})[0]
 		
 		take [flask, lb_liquid], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "Overnight Suspension"
