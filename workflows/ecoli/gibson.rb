@@ -229,9 +229,9 @@ class Protocol
     enough_aliquots = show {
       title "Take Gibson Aliquots"
       check "Grab an ice block and an aluminum tube rack."
-      check "From the M20 freezer, take #{normal_gibsons} Gibson aliquots from the batch labeled #{aliquot_batch} with #{aliquot_batch.datum[:label_color]}."
+      check "From the M20 freezer, take #{normal_gibsons} Gibson aliquots from the batch labeled #{aliquot_batch}."
       select ["Yes", "No"], var: "selection", label: "Select whether there are enough aliquots in batch #{aliquot_batch} for you to perform the protocol.", default: 0
-      check "From the M20 freezer, take 1 Gibson aliquot from the batch labeled #{test_batch} with #{test_batch.datum[:label_color]}. Set this aliquot in a place such that you will remember that it is the \"test\" aliquot." if test_batch
+      check "From the M20 freezer, take 1 Gibson aliquot from the batch labeled #{test_batch}. Set this aliquot in a place such that you will remember that it is the \"test\" aliquot." if test_batch
       check "Spin down aliquots."
       check "Put aliquots in aluminum tube rack."
       image "gibson_aluminum_rack"
@@ -317,8 +317,8 @@ class Protocol
           is_test_gibson = (test_batch && plasmid.name == "Test_gibson") ? true : false
           title "Load #{is_test_gibson ? "Test" : ""} Gibson reaction #{gibson_result}"
           warning "This is a test Gibson. Please make sure to use the right Gibson aliquot." if is_test_gibson
-          aliquot_color = using_old_batch ? old_aliquot_batch.datum[:label_color] : is_test_gibson ? test_batch.datum[:label_color] : aliquot_batch.datum[:label_color]
-          check "Label a #{aliquot_color} unused Gibson aliquot as #{gibson_result}."
+          using_batch = using_old_batch ? old_aliquot_batch : is_test_gibson ? test_batch : aliquot_batch
+          check "Relabel an unused Gibson aliquot labeled #{using_batch} as #{gibson_result}."
           note "Make sure the Gibson aliquot is thawed before pipetting."
           warning "Please ensure there is enough volume in each fragment stock to pipette before pipetting."
           
@@ -403,7 +403,7 @@ class Protocol
     unused_aliquots_data = show {
       title "Return unused Gibson aliquots #{unused_aliquots.zero? ? "if you have any" : ""}"
       check "Remove the label from each unused Gibson aliquot."
-      check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? "" : "s"} to the M20 freezer according to #{unused_aliquots == 1 ? "its" : "their"} color."
+      check "Return the #{unused_aliquots} unused Gibson aliquot#{unused_aliquots == 1 ? "" : "s"} to the M20 freezer according to #{unused_aliquots == 1 ? "its" : "their"} label numbers."
       get "number", var: "unused_num", label: "Please enter the actual number of unused Gibson aliquots you are returning. Use a negative number if you ended up using more than the protocol asked for.", default: unused_aliquots
     }
     unused_aliquots_data[:unused_num] = 0 if unused_aliquots_data[:unused_num].nil?

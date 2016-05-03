@@ -69,7 +69,7 @@ class Protocol
 
   def arguments
     {
-      debug_mode: "no"
+      debug_mode: "No"
     }
   end
 
@@ -232,29 +232,38 @@ class Protocol
       release stocks, interactive: true,  method: "boxes"
     }
 
-    show {
+    batch_data = show {
       title "Pipette out aliquots"
       check "Grab the pre-prepared tubes back out of the small freezer."
-      check "Aliquot 15 µL of the Eppendorf tube contents into each of the 80 small sample tubes."
+      check "Take Eppendorf Pipette Repeater and 500 µL Combtip."
+      check "Insert tip and set dispensing volume to 15 µL by rotating volume selection dial to second dot position (between 1 and 2)."
+      check "Aspirate 500 µL of master mix, perform reverse stroke, and aliquot 33 times."
+      check "Refill tip with 500 µL of master mix, perform reverse stroke, and aliquot 33 more times for 66 total aliquots."
+      check "Refill tip with remaining master mix volume. Stop aspirating when all remaining master mix is in the tip."
+      check "Perform 3 reverse strokes, and aliquot out remaining master mix."
+      get "number", var: "num_aliquots", label: "Enter the number of aliquots you were able to prepare.", default: 80
     }
 
     aliquot_batch = produce new_collection "Gibson Aliquot Batch", 10, 10
-
-    used_batch_colors = find(:item, object_type: { name: "Gibson Aliquot Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
-                                                                                  .select { |batch| batch.datum[:label_color] != "" }
-                                                                                  .map { |batch| batch.datum[:label_color] }
-                                                                                  .compact
-    batch_data = show {
-      title "Finish preparing the Gibson aliquot batch"
-      get "number", var: "num_aliquots", label: "Enter the number of aliquots you were able to prepare.", default: 80
-      note "Of the existing Gibson aliquot batches, the following colors have already been used: #{used_batch_colors.join(", ")}." if used_batch_colors.any?
-      get "text", var: "color", label: "Enter the color with which you have chosen to label this batch.", default: ""
+    show {
+      title "Label the Gibson aliquot batch"
+      check "Open the LabelMark 6 software at bench 4 of B7."
+      check "Select \"Open\" --> \"Template\""
+      check "Open the folder titled \"Gibson Aliquots.\""
+      check "Change the five digit number on the label graphic to be #{aliquot_batch}."
+      check "Change the number in the lower left corner to be #{batch_data[:num_aliquots]}."
+      check "Select \"File\" --> \"Print\" and choose printer name BBP33."
+      check "After the labels have printed, put one on each gibson aliquot."
+    }
+    show {
+      title "Place the Gibson aliquots in a freezer box"
       check "Grab a freezer box with a 10x10 divider."
-      check "Label the box with #{aliquot_batch}, color, your initials, and today's date."
+      warning "Make sure you're using a 10x10 divider, not a 9x9 one!"
+      check "Label the box with #{aliquot_batch}, your initials, and today's date."
     }
     batch_matrix = fill_array 10, 10, batch_data[:num_aliquots], find(:sample, name: "Gibson Aliquot")[0].id
     aliquot_batch.matrix = batch_matrix
-    aliquot_batch.datum = aliquot_batch.datum.merge({ from: enzyme_stocks.collect { |s| s.id }, label_color: batch_data[:color], tested: "No" })
+    aliquot_batch.datum = aliquot_batch.datum.merge({ from: enzyme_stocks.collect { |s| s.id }, tested: "No" })
     aliquot_batch.location = "M20 freezer"
     aliquot_batch.save
 

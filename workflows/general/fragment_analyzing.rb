@@ -454,15 +454,24 @@ class Protocol
       check "Alignment marker is loaded (changed every few weeks)."
       image "frag_an_run_check"
     }
-    show {
+    run_data = show {
       title "Run analysis"
       note "If you can't click \"run\", and there is an error that reads, \"The pressure is too low. Replace the nitrogen cylinder or check the external nitrogen source,\" close the software, and reopen it. Then repeat steps 9-13."
       check "Otherwise, click \"run\""
       note "Estimated time is given on the bottom of the screen."
+      get "number", var: "runs_left", label: "Enter the number of \"Remaining Runs\" left in this cartridge.", default: 0
       image "frag_an_run"
     }
-    cartridge.datum = cartridge.datum.merge({ runs: (cartridge.datum[:runs] ? cartridge.datum[:runs] : 0) + new_stripwells.length })
+    cartridge.datum = cartridge.datum.merge({ runs: (cartridge.datum[:runs] ? cartridge.datum[:runs] : 0) + new_stripwells.length, runs_left: run_data[:runs_left] })
     cartridge.save
+    show {
+      title "This cartridge is running low"
+      warning "Please notify Michelle or Ernesto that there are fewer than fifty runs left in the current cartridge."
+      note "Thanks! :)"
+      cartridge.datum = cartridge.datum.merge({ running_low_notif: true })
+      cartridge.save
+    } if cartridge.datum[:runs_left] < 50 && !cartridge.datum[:running_low_notif]
+
     job_id = jid # jid not accessible within the scope of show block
     show {
       extend RowNamer
