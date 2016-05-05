@@ -579,36 +579,38 @@ class Protocol
       notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
     end
 
-    show {
-      title "Prepare to upload resulting analyzer data"
-      check "Under \"Analysis\". \"Gel Image\" tab, click \"Select All\"."
-      check "Under the \"View\" tab, check \"Show Analysis Parameters\"."
-      image "frag_an_select_all"
-    }
-    show {
-      title "Save resulting analyzer data"
-      check "Under the \"Report\" tab, click \"Start Report/Export\"."
-      note "Wait while the files are generated."
-      check "Under \"File\"->\"Open Data Directory\", click \"Export\"."
-      check "Copy the following files with today's date, and paste into \"Documents/Raw Data\":"
-      note "_Rw"
-      note "_Rw.csv"
-      note "_Go_150dpi_1"
-      note "_Ex_PeakCalling.csv"
-      image "frag_an_files_to_upload"
-    }
-    show {
-      title "Upload resulting analyzer data"
-      note "Upload the files ending in the following sequences:"
-      note "_Rw"
-      upload var: "Raw XML"
-      note "_Rw.csv"
-      upload var: "Raw CSV"
-      note "_Go_150dpi_1"
-      upload var: "Gel Image"
-      note "_Ex_PeakCalling.csv"
-      upload var: "Peak Calling CSV"
-    }
+    # Upload raw data
+    #show {
+    #  title "Prepare to upload resulting analyzer data"
+    #  check "Under \"Analysis\". \"Gel Image\" tab, click \"Select All\"."
+    #  check "Under the \"View\" tab, check \"Show Analysis Parameters\"."
+    #  image "frag_an_select_all"
+    #}
+    #show {
+    #  title "Save resulting analyzer data"
+    #  check "Under the \"Report\" tab, click \"Start Report/Export\"."
+    #  note "Wait while the files are generated."
+    #  check "Under \"File\"->\"Open Data Directory\", click \"Export\"."
+    #  check "Copy the following files with today's date, and paste into \"Documents/Raw Data\":"
+    #  note "_Rw"
+    #  note "_Rw.csv"
+    #  note "_Go_150dpi_1"
+    #  note "_Ex_PeakCalling.csv"
+    #  image "frag_an_files_to_upload"
+    #}
+    #show {
+    #  title "Upload resulting analyzer data"
+    #  note "Upload the files ending in the following sequences:"
+    #  note "_Rw"
+    #  upload var: "Raw XML"
+    #  note "_Rw.csv"
+    #  upload var: "Raw CSV"
+    # note "_Go_150dpi_1"
+    #  upload var: "Gel Image"
+    #  note "_Ex_PeakCalling.csv"
+    #  upload var: "Peak Calling CSV"
+    #}
+    
     show {
       title "Discard stripwells"
       note "Discard the following stripwells:"
