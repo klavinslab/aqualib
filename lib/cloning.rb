@@ -347,6 +347,7 @@ module Cloning
     heading = [ [ "#{collections[0].object_type.name}", "Location" ] + headings ]
     i = 0
 
+    cols = []
     tabs = []
     collections.each do |col|
 
@@ -366,27 +367,28 @@ module Cloning
           i += 1
         end
       end
-
-      if !params[:show_together]
-        show {
-          title "Load #{col.object_type.name} #{col.id}"
-          table heading + tab
-          raw user_shows
-        }
-      else
-        tabs.push tab
-      end
+      
+      cols.push col
+      tabs.push tab
     end
 
     if params[:show_together]
       show {
         ids = tabs.map { |t| t[1][0] }
         title "Load #{col.object_type.name.pluralize(tab.length)} #{ids.join(", ")}"
-        tabs.each { |t|
+        tabs.each do |t|
           table heading + t
-        }
+        end
         raw user_shows
       }
+    else
+      collections.each_with_index do |col, idx|
+        show {
+          title "Load #{col.object_type.name} #{col.id}"
+          table heading + tabs[idx]
+          raw user_shows
+        }
+      end
     end
 
   end
