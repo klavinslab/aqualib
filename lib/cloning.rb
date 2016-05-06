@@ -387,6 +387,7 @@ module Cloning
         }
         raw user_shows
       }
+    end
 
   end
 
