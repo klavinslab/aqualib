@@ -333,7 +333,8 @@ module Cloning
 
   end # # # # # # #
 
-  def load_samples_variable_vol headings, ingredients, collections # ingredients must be a string or number
+  def load_samples_variable_vol headings, ingredients, collections, p={} # ingredients must be a string or number
+    params = ({ show_together: false }).merge p
 
     if block_given?
       user_shows = ShowBlock.new.run(&Proc.new)
@@ -346,6 +347,7 @@ module Cloning
     heading = [ [ "#{collections[0].object_type.name}", "Location" ] + headings ]
     i = 0
 
+    tabs = []
     collections.each do |col|
 
       tab = []
@@ -365,12 +367,26 @@ module Cloning
         end
       end
 
-      show {
+      if !params[:show_together]
+        show {
           title "Load #{col.object_type.name} #{col.id}"
           table heading + tab
           raw user_shows
         }
+      else
+        tabs.push tab
+      end
     end
+
+    if params[:show_together]
+      show {
+        ids = tabs.map { |t| t[1][0] }
+        title "Load #{col.object_type.name.pluralize(tab.length)} #{ids.join(", ")}"
+        tabs.each { |t|
+          table heading + t
+        }
+        raw user_shows
+      }
 
   end
 
