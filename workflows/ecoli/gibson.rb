@@ -220,6 +220,7 @@ class Protocol
       # Send test plasmid and fragment ids to end of list
       test_plasmid_i = io_hash[:plasmid_ids].find_index { |pi| find(:sample, id: pi)[0].name == "Test_gibson" }
       io_hash[:plasmid_ids][test_plasmid_i], io_hash[:plasmid_ids][-1] = io_hash[:plasmid_ids][-1], io_hash[:plasmid_ids][test_plasmid_i]
+      io_hash[:task_ids][test_plasmid_i], io_hash[:task_ids][-1] = io_hash[:task_ids][-1], io_hash[:task_ids][test_plasmid_i] if io_hash[:task_ids]
       io_hash[:fragment_ids][test_plasmid_i], io_hash[:fragment_ids][-1] = io_hash[:fragment_ids][-1], io_hash[:fragment_ids][test_plasmid_i]
       fragment_stocks[test_plasmid_i], fragment_stocks[-1] = fragment_stocks[-1], fragment_stocks[test_plasmid_i]
     end
