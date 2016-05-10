@@ -462,6 +462,13 @@ class Protocol
       get "number", var: "runs_left", label: "Enter the number of \"Remaining Runs\" left in this cartridge.", default: 0
       image "frag_an_run"
     }
+    while run_data[:runs_left].nil?
+      run_data = show {
+        title "Enter remaining runs in cartridge"
+        warning "Please record how many runs are left in this cartridge."
+        get "number", var: "runs_left", label: "Enter the number of \"Remaining Runs\" left in this cartridge.", default: 0
+      }
+    end
     cartridge.datum = cartridge.datum.merge({ runs: (cartridge.datum[:runs] ? cartridge.datum[:runs] : 0) + new_stripwells.length, runs_left: run_data[:runs_left] })
     cartridge.save
     show {

@@ -32,21 +32,24 @@ class Protocol
     take [alignment_marker, mineral_oil], interactive: true
     alignment_marker_stripwells = Array.new(io_hash[:num_markers]) { produce spread(Array.new(12) { alignment_marker.sample }, "Stripwell", 1, 12)[0] }
 
+    marker_in_analyzer = find(:item, object_type: { name: "Stripwell" })
+                            .find { |s| s.datum[:matrix][0][0] == alignment_marker.sample.id &&
+                                        s.location == "Fragment analyzer" }
+    marker_needs_replacing = marker_in_analyzer.datum[:begin_date] ? Date.today - (Date.parse marker_in_analyzer.datum[:begin_date]) >= 7 : true
     stripwell_data = show {
       title "Prepare stripwell(s)"
       check "Grab #{io_hash[:num_markers]} 12-well stripwell(s)."
-      check "Label stripwell(s) with alignment marker size (i.e. 15 bp-5 kb) and the following ids:"
+      check "Label stripwell(s) with the following ids:"
       note alignment_marker_stripwells.map { |s| "#{s}" }.join(", ")
       check "Load 15 µL of QX Alignment Marker into each tube."
       check "Add 5 µL of QX Mineral Oil to each tube."
       note "Make sure to pipette against the wall of the tubes."
       note "The oil layer should rest on top of the alignment marker layer."
+      warning "The current alignment marker has been in the fragment analyzer for over a week!" if marker_needs_replacing
+      select ["Yes", "No"], var: "using_today", label: "Are you using a new alignment marker today?", default: 1
     }
-
-    marker_in_analyzer = find(:item, object_type: { name: "Stripwell" })
-                            .find { |s| s.datum[:matrix][0][0] == alignment_marker.sample.id &&
-                                        s.location == "Fragment analyzer" }
-    marker_needs_replacing = marker_in_analyzer.datum[:begin_date] ? Date.today - (Date.parse marker_in_analyzer.datum[:begin_date]) >= 7 : true
+    marker_needs_replacing = stripwell_data[:using_today] == "Yes"
+    
     if marker_needs_replacing
       show {
         title "Place stripwell #{alignment_marker_stripwells[0]} in buffer array"
