@@ -57,7 +57,8 @@ class Protocol
       image "initialize_electroporator"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
       check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
-      check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
+      check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."      
+      check "Grab a Bench LB liquid aliquot (sterile) and loosen the cap."
     }
 
     show {
@@ -88,7 +89,6 @@ class Protocol
 
     show {
       title "Electroporation and Rescue"
-      check "Grab a 50 mL LB liquid aliquot (sterile) and loosen the cap."
       note "Repeat for every Gibson aliquot"
       check "Transfer e-comp cells to electrocuvette with P1000"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 350 uL of LB"
