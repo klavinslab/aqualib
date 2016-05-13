@@ -334,7 +334,7 @@ module Cloning
   end # # # # # # #
 
   def load_samples_variable_vol headings, ingredients, collections, p={} # ingredients must be a string or number
-    params = ({ show_together: false }).merge p
+    params = ({ show_together: false, title_appended_text: "" }).merge p
 
     if block_given?
       user_shows = ShowBlock.new.run(&Proc.new)
@@ -375,7 +375,7 @@ module Cloning
     if params[:show_together]
       show {
         ids = tabs.map { |t| t[1][0] }
-        title "Load #{cols[0].object_type.name.pluralize(tabs.length)} #{ids.join(", ")}"
+        title "Load #{cols[0].object_type.name.pluralize(tabs.length)} #{ids.join(", ")} #{params[:title_appended_text]}"
         tabs.each do |t|
           table heading + t
         end
