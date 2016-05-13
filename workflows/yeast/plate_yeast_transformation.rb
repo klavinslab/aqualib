@@ -64,7 +64,7 @@ class Protocol
         yeast_plates_markers[yeast_markers[idx]].push y
       end
 
-      antibiotic_hash = { "nat" => "+ClonNat", "kan" => "+G418", "hyg" => "+Hygromycin", "ble" => "+BleoMX", "his" => "-HIS", "5fo" => "5-FOA" }
+      antibiotic_hash = { "nat" => "+ClonNat", "kan" => "+G418", "hyg" => "+Hygromycin", "ble" => "+BleoMX", "5fo" => "5-FOA" }
 
       tab_plate = [["Plate Type","Quantity","Id to label"]]
       yeast_plates_markers.each do |marker, plates|

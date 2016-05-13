@@ -30,11 +30,11 @@ class Protocol
     
     plasmid_marker_hash = Hash.new {|h,k| h[k] = 0 }
     markers = [ :nat, :kan, :hyg, :ble ]
-    antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygromycin", ble: "BleoMX" }
-    volume_hash = { nat: 25, kan: 300, hyg: 200, ble: 50 }
+    antibiotic_hash = { "nat" => "+ClonNat", "kan" => "+G418", "hyg" => "+Hygromycin", "ble" => "+BleoMX", "his" => "-HIS", "5fo" => "5-FOA" }
+    volume_hash = { "nat" => 25, "kan" => 300, "hyg" => 200, "ble" => 50, "5fo" => 50 }
     
     io_hash[:plasmid_stock_ids].each do |pid|
-      marker = find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3].to_sym
+      marker = find(:item, id: pid)[0].sample.properties["Yeast Marker"].downcase[0,3]
       if markers.include? marker && io_hash[:task_hash]
         task_id = io_hash[:task_hash].select { |h| h[:plasmid_stock_ids] == pid }[0][:task_id]
         set_task_status(find(:task, id: task_id)[0],"plate made")

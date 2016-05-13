@@ -201,12 +201,24 @@ class Protocol
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
-      plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])[0]
-      tp = TaskPrototype.where("name = 'Sequencing Verification'")[0]
-      t = Task.new(name: "#{plasmid_stock.sample.name}_plasmid_stock_#{plasmid_stock.id}", specification: { "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ], "overnight_ids TB Overnight of Plasmid" => [ overnight.id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: overnight.sample.user.id, budget_id: 1)
-      t.save
-      t.notify "Automatically created from Plasmid Verification.", job_id: jid
-      io_hash[:sequencing_verification_task_ids].push t.id
+      plate_id = overnight.datum[:from].to_i
+      parent_task = nil;
+      if io_hash[:task_ids]
+        io_hash[:task_ids].each do |tid|
+          task = find(:task, id: tid)[0]
+          if task.simple_spec[:plate_ids].include? plate_id
+            parent_task = task
+          end
+        end
+      end
+      if parent_task
+        plasmid_stock = find(:item, id: io_hash[:plasmid_stock_ids][idx])[0]
+        tp = TaskPrototype.where("name = 'Sequencing Verification'")[0]
+        t = Task.new(name: "#{plasmid_stock.sample.name}_plasmid_stock_#{plasmid_stock.id}", specification: { "plasmid_stock_ids Plasmid Stock" => [ plasmid_stock.id ], "overnight_ids TB Overnight of Plasmid" => [ overnight.id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: overnight.sample.user.id, budget_id: parent_task.budget_id)
+        t.save
+        t.notify "Automatically created from Plasmid Verification.", job_id: jid
+        io_hash[:sequencing_verification_task_ids].push t.id
+      end
     end
 
     # Set tasks in the io_hash to be "send to sequencing"

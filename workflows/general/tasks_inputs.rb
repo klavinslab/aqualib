@@ -129,13 +129,18 @@ class Protocol
       io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Plasmid Verification"
-      io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [] }.merge io_hash
+      io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [], task_hash: [] }.merge io_hash
 
       io_hash[:task_ids].each do |tid|
+        task_hash = {}
+        task_hash[:task_id] = tid
         task = find(:task, id: tid)[0]
         io_hash[:plate_ids].concat task.simple_spec[:plate_ids]
         io_hash[:num_colonies].concat task.simple_spec[:num_colonies]
         io_hash[:primer_ids].concat task.simple_spec[:primer_ids]
+        task_hash[:plate_ids] = task.simple_spec[:plate_ids]
+        task_hash[:num_colonies] = task.simple_spec[:num_colonies]
+        task_hash[:primer_ids] = task.simple_spec[:primer_ids]
       end
       # Add plasmid extraction tasks here to do overnight and miniprep in one batch
       plasmid_extraction_tasks = find_tasks task_prototype_name: "Plasmid Extraction", group: io_hash[:group]
