@@ -206,7 +206,7 @@ class Protocol
       if io_hash[:task_ids]
         io_hash[:task_ids].each do |tid|
           task = find(:task, id: tid)[0]
-          if task.simple_spec[:plate_ids].include? plate_id
+          if task.simple_spec[:plate_ids] && task.simple_spec[:plate_ids].include? plate_id
             parent_task = task
           end
         end
