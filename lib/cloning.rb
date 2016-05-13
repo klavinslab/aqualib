@@ -384,7 +384,7 @@ module Cloning
     else
       collections.each_with_index do |col, idx|
         show {
-          title "Load #{col.object_type.name} #{col.id}"
+          title "Load #{col.object_type.name} #{col.id} #{params[:title_appended_text]}"
           table heading + tabs[idx]
           raw user_shows
         }
