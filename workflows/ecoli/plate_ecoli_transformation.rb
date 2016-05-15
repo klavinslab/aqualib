@@ -1,4 +1,4 @@
-needs "aqualib/lib/standard"
+ needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
 
 class Protocol
@@ -6,11 +6,28 @@ class Protocol
   include Standard
   include Cloning
 
+  def fill_array rows, cols, num, val
+    num = 0 if num < 0
+    array = Array.new(rows) { Array.new(cols) { -1 } }
+    (0...num).each { |i|
+      row = (i / cols).floor
+      col = i % cols
+      array[row][col] = val
+    }
+    array
+  end # fill_array
+
+  def update_batch_matrix batch, num_samples, plate_type
+    rows = batch.matrix.length
+    columns = batch.matrix[0].length
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "#{plate_type}")[0].id
+    batch.save
+  end # update_batch_matrix
+
   def arguments
     {
       io_hash: {},
-      transformed_aliquots_ids: [9191,9190,8418],
-      debug_mode: "No",
+      transformed_aliquots_ids: [],
     }
   end
 
@@ -37,20 +54,22 @@ class Protocol
 
     all_plates = all_transformed_aliquots.collect { |t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid" }
     all_plates.each_with_index do |all_plate,idx|
-      all_plate.datum = all_plate.datum.merge({ from: all_transformed_aliquots[idx].id })
+    all_plate.datum = all_plate.datum.merge({ from: all_transformed_aliquots[idx].id })
     end
 
     plates_marker_hash = Hash.new { |h,k| h[k] = [] }
     all_plates.each do |p|
       marker_key = "LB"
       p.sample.properties["Bacterial Marker"].split(',').each do |marker|
-        marker_key = marker_key + "+" + formalize_marker_name(marker)
+        marker_key = marker_key + " + " + formalize_marker_name(marker)
       end
       plates_marker_hash[marker_key].push p
     end
 
     deleted_plates = []
+    num = 0 
 
+    plate_type = "" 
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
       unless marker == "LB"
@@ -80,11 +99,14 @@ class Protocol
         deleted_plates.concat plates
       end
     end
-
     actual_plates = all_plates - deleted_plates
+    aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+    batch = find(:sample, id: 11764)[0]
+    
+    plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
 
     delete all_transformed_aliquots
-    delete deleted_plates
+    update_batch_matrix plate_batch, plate_batch.num_samples - num, plate_type
 
     if actual_plates.length > 0
       show {

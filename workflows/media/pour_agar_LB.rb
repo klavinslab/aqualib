@@ -92,8 +92,6 @@ class Protocol
 					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
 				}
 				
-				id_labels = Array.new
-				
 				show {
 					title "Stack and label"
 					note "Stack the plates agar side up."
@@ -104,7 +102,7 @@ class Protocol
 
 			delete agar_media[i]
 		end
-		io_hash = {plate_batch: plate_batch}.merge(io_hash)
+		io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
 		release [plate_batch], interactive: true
 		return {io_hash: io_hash}
 	end
