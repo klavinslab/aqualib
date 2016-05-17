@@ -9,8 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_stock_ids: [15417,15418],
-      primer_ids: [[2575,2054],[2054]],
+      primer_ids: [[2575,2054],[2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054]],
       debug_mode: "Yes",
       group: "yang"
     }
@@ -74,12 +73,88 @@ class Protocol
     plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
     # pop up nanodrop page for stocks without concentration entered
     ensure_stock_concentration plasmid_stocks
+    
+    diluted_primer_aliquots = dilute_samples primers_need_to_dilute(primer_ids)
+    primer_aliquots = (primer_ids).collect{ |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
+    if io_hash[:item_choice_mode].downcase == "yes"
+      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
+    end
+    take plasmid_stocks + (primer_aliquots - diluted_primer_aliquots), interactive: true, method: "boxes"
+    ensure_stock_concentration plasmid_stocks
+
+    # calculate volumes based on Genewiz guide
+    plasmid_volume_list = []
+    plasmid_stocks.each_with_index do |p, idx|
+      length = p.sample.properties["Length"]
+      conc = p.datum[:concentration]
+      if p.sample.sample_type.name == "Plasmid"
+        plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
+      elsif p.sample.sample_type.name == "Fragment"
+        if length < 500
+          plasmid_volume_list.push (10 / conc).round(1)
+        elsif length < 1000
+          plasmid_volume_list.push (20 / conc).round(1)
+        elsif length < 2000
+          plasmid_volume_list.push (40 / conc).round(1)
+        elsif length < 4000
+          plasmid_volume_list.push (60 / conc).round(1)
+        end
+      end
+    end
+
+    # set minimal volume to be 0.5 µL
+    plasmid_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
+    # set maximal volume to be 12.5 µL
+    plasmid_volume_list.collect! { |x| x > 6.8 ? 6.8 : x }
+
+    water_volume_list = plasmid_volume_list.collect{ |v| (((6.8-v)/0.2).floor*0.2).to_s + " µL" }
+    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| ((plasmid_volume_list[i]/0.2).ceil*0.2).round(5).to_s + " µL of " + pid.to_s }
+    primers_with_volume = primer_aliquots.collect{ |p| "3.2 µL of " + p.id.to_s }
+
+    # show {
+    # 	note (water_volume_list.collect {|p| "#{p}"})
+    # 	note (plasmid_volume_list.collect {|p| "#{p}"})
+    # }
+
+    stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
+    show {
+      title "Prepare Stripwells for Sequencing Reaction"
+      stripwells.each_with_index do |sw,idx|
+        if idx < stripwells.length - 1
+          check "Grab a stripwell with 12 wells, label the first well with #{idx*12+1} and last well with #{idx*12+12}"
+        else
+          number_of_wells = plasmid_stocks.length - idx * 12
+          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{idx*12+1} and last well with #{plasmid_stocks.length}"
+        end
+      end
+    }
+
+    load_samples_variable_vol( ["Molecular Grade Water"], [
+      water_volume_list,
+      ], stripwells,
+      { show_together: true, title_appended_text: "with Molecular Grade Water" } )
+    load_samples_variable_vol( ["Plasmid"], [
+      plasmids_with_volume,
+      ], stripwells,
+      { show_together: true, title_appended_text: "with Plasmid" } )
+    load_samples_variable_vol( ["Primer"], [
+      primers_with_volume
+      ], stripwells,
+      { show_together: true, title_appended_text: "with Primer" } )
+
+    release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
+    stripwells.each do |sw|
+      sw.mark_as_deleted
+      sw.save
+    end
+
     # create order table for sequencing
     sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
     sequencing_tab = [["Template Barcode", "Template Name", "Pre-sequence Reactions", "Primer Name", "Primer Barcode", "PCR Reaction Cleanup Required", "Plasmid Extraction Required", "dGTP", "Template Amplification", "Sequencing Reactions Cleanup", "Addtional note"]]
     plasmid_stocks.each_with_index do |p,idx|
       owner_initials = name_initials(p.sample.user.name)
-      sequencing_tab.push ["N/A", "#{p.id}" + owner_initials + "#{primer_ids[idx]}", "No", "premixed"  , "N/A", "No", "No", "No", "No", "No", "N/A"]
+      additional_note = p.object_type.name == "Fragment Stock" ? "DNA Source: purified PCR" : "N/A"
+      sequencing_tab.push ["N/A", "#{p.id}" + owner_initials + "#{primer_ids[idx]}", "No", "premixed"  , "N/A", "No", "No", "No", "No", "No", additional_note]
     end
 
     num = primer_ids.length
@@ -124,80 +199,15 @@ class Protocol
       check "Find the most recent order, order date should be around #{order_date} enter the order ID in the following"
       get "text", var: "tracking_num", label: "Enter Order ID", default: "4000000"
     }
-    
-    diluted_primer_aliquots = dilute_samples primers_need_to_dilute(primer_ids)
-    primer_aliquots = (primer_ids).collect{ |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
-    if io_hash[:item_choice_mode].downcase == "yes"
-      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
-    end
-    take plasmid_stocks + (primer_aliquots - diluted_primer_aliquots), interactive: true, method: "boxes"
-    ensure_stock_concentration plasmid_stocks
 
-    # calculate volumes based on Genewiz guide
-    plasmid_volume_list = []
-    plasmid_stocks.each_with_index do |p, idx|
-      length = p.sample.properties["Length"]
-      conc = p.datum[:concentration]
-      if p.sample.sample_type.name == "Plasmid"
-        plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
-      elsif p.sample.sample_type.name == "Fragment"
-        if length < 500
-          plasmid_volume_list.push (10 / conc).round(1)
-        elsif length < 1000
-          plasmid_volume_list.push (20 / conc).round(1)
-        elsif length < 2000
-          plasmid_volume_list.push (40 / conc).round(1)
-        elsif length < 4000
-          plasmid_volume_list.push (60 / conc).round(1)
-        end
-      end
-    end
-
-    # set minimal volume to be 0.5 µL
-    plasmid_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
-    # set maximal volume to be 12.5 µL
-    plasmid_volume_list.collect! { |x| x > 6.8 ? 6.8 : x }
-
-    water_volume_list = plasmid_volume_list.collect{ |v| (6.8-v).round(1).to_s + " µL" }
-    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
-    primers_with_volume = primer_aliquots.collect{ |p| "3.2 µL of " + p.id.to_s }
-
-    # show {
-    # 	note (water_volume_list.collect {|p| "#{p}"})
-    # 	note (plasmid_volume_list.collect {|p| "#{p}"})
-    # }
-
-    stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
-    show {
-      title "Prepare Stripwells for Sequencing Reaction"
-      stripwells.each_with_index do |sw,idx|
-        if idx < stripwells.length - 1
-          check "Grab a stripwell with 12 wells, label the first well with #{idx*12+1} and last well with #{idx*12+12}"
-        else
-          number_of_wells = plasmid_stocks.length - idx * 12
-          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{idx*12+1} and last well with #{plasmid_stocks.length}"
-        end
-      end
-    }
-
-    load_samples_variable_vol( ["Molecular Grade Water", "Plasmid", "Primer"], [
-      water_volume_list,
-      plasmids_with_volume,
-      primers_with_volume
-      ], stripwells )
     show {
       title "Put all stripwells in the Source BioScience dropbox"
       note "Cap all of the stripwells."
+      note "Wrap the stripwells in parafilm."
       note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
-      note "Write the confirmation number on the envelope and seal."
+      note "Write the confirmation number (#{sourcebioscience[:tracking_num]}) on the envelope and seal."
       note "Place the envelope in the Source BioScience dropbox."
     }
-
-    release plasmid_stocks + primer_aliquots, interactive: true, method: "boxes"
-    stripwells.each do |sw|
-      sw.mark_as_deleted
-      sw.save
-    end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
