@@ -76,6 +76,7 @@ class Protocol
       table [
         [ "Row", "Column", "New Gel Slice id", "Length" ]
         ].concat( new_routes.collect { |r| [ r[:lane][0]+1, r[:lane][1]+1, { content: r[:slice_id], check: true }, r[:length] ] } )
+      image "cut_gel_video"
     }
     return items, verify_data
   end #gel_band_verify_cut
