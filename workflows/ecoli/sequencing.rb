@@ -9,6 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
+      plasmid_stock_ids: [15417,70713,15417,15418,15417,15418,15417,15418],
       primer_ids: [[2575,2054],[2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054]],
       debug_mode: "Yes",
       group: "yang"
