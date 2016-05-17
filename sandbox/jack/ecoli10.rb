@@ -6,6 +6,17 @@ class Protocol
     		}
 	 end
 	
+	
+	def fill_array rows, cols, num, val
+	        num = 0 if num < 0
+	        array = Array.new(rows) { Array.new(cols) { -1 } }
+	        (0...num).each { |i|
+	         	row = (i / cols).floor
+	          	col = i % cols
+	          	array[row][col] = val
+	        }
+	        array
+	end # fill_array
 	def main
 		
 		io_hash = input[:io_hash]
@@ -56,14 +67,24 @@ class Protocol
 				note "Add #{vol} mL more of GYT to the cells"
 			}
 		end
-
-		show {
-			title "Aliquot"
-			note "Take ice block, aluminum tube rack, and arranged 0.6 mL tubes out of the freezer."
-			note "Aliquot 40 uL of cells into each 0.6 mL tube until the 225 mL tube is empty."
-			note "Vortex the 225 mL tube and change tips periodically, adding more 0.6 mL tubes to the aluminum tube rack if required."
-		}
-
+		res = -1
+		while(res < 0)
+			show {
+				title "Aliquot"
+				note "Take ice block, aluminum tube rack, and arranged 0.6 mL tubes out of the freezer."
+				note "Aliquot 40 uL of cells into each 0.6 mL tube until the 225 mL tube is empty."
+				note "Vortex the 225 mL tube and change tips periodically, adding more 0.6 mL tubes to the aluminum tube rack if required."
+				get "number", var: "amount", label: "Enter how many aliquots made", default: -1
+			} 
+			res = data[:amount]
+		end
+		
+		aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
+		batch_matrix = fill_array 10, 10, res, find(:sample, name: "SSJ128")[0].id
+		aliquot_batch.matrix = batch_matrix
+		aliquot_batch.datum = aliquot_batch.datum.merge({tested: "No"})
+		aliquot_batch.location = "-80 freezer"
+		aliquot_batch.save
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
 			note "Take an empty freezer box, and label it with “DH5alpha”, the date, your initials, and the ID number of the electrocompetent batch."
