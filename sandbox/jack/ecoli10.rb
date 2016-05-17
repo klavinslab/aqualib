@@ -80,7 +80,7 @@ class Protocol
 		end
 		
 		aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
-		batch_matrix = fill_array 10, 10, res, find(:sample, name: "SSJ128")[0].id
+		batch_matrix = fill_array 10, 10, res, 7
 		aliquot_batch.matrix = batch_matrix
 		aliquot_batch.datum = aliquot_batch.datum.merge({tested: "No"})
 		aliquot_batch.location = "-80 freezer"
