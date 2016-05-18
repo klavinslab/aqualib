@@ -3,15 +3,3 @@
 [#]*[#]
 .\#*
 .DS_Store
-
-sandbox/.DS_Store
-workflows/ecoli/glycerol_stock.rb
-*.rb
-*.rb
-workflows/ecoli/glycerol_stock.rb
-*.rb
-workflows/general/move_analyzer_cartridge.rb
-workflows/ecoli/gibson.rb
-workflows/media/yeast_media_ypad.rb
-workflows/general/move_analyzer_cartridge.rb
-workflows/ecoli/glycerol_stock.rb
