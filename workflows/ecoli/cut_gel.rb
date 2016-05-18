@@ -1,5 +1,6 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
+require 'matrix'
 
 class Protocol
 
