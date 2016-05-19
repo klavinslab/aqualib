@@ -1,7 +1,7 @@
 class Protocol
 	def main
 		media_type = "0.2% SDS"
-		sds = find(:item, { object_type: { name: "10% SDS" } })[0]
+		sds = find(:item, { object_type: { name: "10% SDS" }})[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
 		show {
 			title "About this protocol"
