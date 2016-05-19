@@ -245,7 +245,7 @@ module Standard
     return matched_collections
   end
 
-	  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
+	# a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
 	def collection_type_contain_has_colony id, object_type
 		matched_collections = []
 		find_collections = Collection.containing Sample.find(id)
@@ -260,5 +260,29 @@ module Standard
 		end
 		return matched_collections
 	end
+
+  # fills an array for a collection matrix with a certain number of a certain value (used mostly for batching)
+  def fill_array rows, cols, num, val
+    num = 0 if num < 0
+    array = Array.new(rows) { Array.new(cols) { -1 } }
+    (0...num).each { |i|
+      row = (i / cols).floor
+      col = i % cols
+      array[row][col] = val
+    }
+    array
+  end # fill_array
+
+  # sorts a list of items by hotel, box, and slot
+  def sort_by_location items
+    location_prefix = items[0].location.split(".")[0]
+    location_arrays = items.map { |item| item.location[4..-1].split(".") }
+    sorted_locations = location_arrays.sort { |row1, row2| 
+                                              comp = row1[0].to_i <=> row2[0].to_i
+                                              comp = comp.zero? ? row1[1].to_i <=> row2[1].to_i : comp
+                                              comp.zero? ? row1[2].to_i <=> row2[2].to_i : comp }
+    location_strings = sorted_locations.map { |row| "#{location_prefix}.#{row[0]}.#{row[1]}.#{row[2]}" }
+    items.sort_by! { |item| location_strings.index(item.location) }
+  end # sort_by_location
 
 end
