@@ -65,7 +65,8 @@ class Protocol
         }
         show {
           title "Plating"
-          check "Use sterile beads to plate 200 µL from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
+          check "Use sterile beads to plate THE ENTIRE VOLUME (300 uL) from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
+          warning "Note the change in plating volume!"
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "#{plate_type} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
