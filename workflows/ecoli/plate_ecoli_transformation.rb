@@ -6,17 +6,6 @@ class Protocol
   include Standard
   include Cloning
 
-  def fill_array rows, cols, num, val
-    num = 0 if num < 0
-    array = Array.new(rows) { Array.new(cols) { -1 } }
-    (0...num).each { |i|
-      row = (i / cols).floor
-      col = i % cols
-      array[row][col] = val
-    }
-    array
-  end # fill_array
-
   def update_batch_matrix batch, num_samples, plate_type
     rows = batch.matrix.length
     columns = batch.matrix[0].length
