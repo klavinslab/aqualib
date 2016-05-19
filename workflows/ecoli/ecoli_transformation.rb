@@ -18,7 +18,6 @@ class Protocol
     }
   end #arguments
 
-
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -70,19 +69,6 @@ class Protocol
       note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
       image "arrange_cold_block"
     }
-
-    temp = num
-    while(temp > 0)
-      ecomp = find(:item, object_type: { name: "E. coli Comp Cell Batch"})[0]
-      take ecomp, interactive: true
-      temp = temp - ecomp.num_samples
-      if(temp > 0)
-        ecomp.mark_as_deleted
-      else
-        
-      
-      
-    
 
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"
