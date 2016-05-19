@@ -41,7 +41,7 @@ class Protocol
 				title "Prepare plates"
 				note "Lay out ~40 plates on the bench."
 			}
-			
+
 			show {
 				title "Pour plates"
 				note "Carefully pour ~25 mL into each plate. For each plate, pour until the agar completely covers the bottom of the plate."
@@ -60,22 +60,22 @@ class Protocol
 				res = data[:num]
 			end
 
-			
+
 			if(res > 0)
 				show {
 					title "Wait for plates to solidify."
 					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
 				}
-				
+
 			batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i].sample.name)[0].id
 			plate_batch.matrix = batch_matrix
 			plate_batch.location = "Media Bay"
 			plate_batch.save
-			
+
 				show {
 					title "Stack and label"
 					note "Stack the plates agar side up."
-					note "Put a piece of labeling tape on each stack with:" 
+					note "Put a piece of labeling tape on each stack with:"
 					note "'#{plate_batch}, 'initials', and 'date'."
 				}
 			end

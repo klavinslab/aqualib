@@ -19,9 +19,9 @@ class Protocol
 			note "Move one of the labels on the plate stack to the front of the storage container."
 			note "Move plates #{plate_batch} to the storage container."
 		}
-		
+
 		plate_batch.location = "Media Fridge"
-		
+
 		release [plate_batch], interactive: true
 		return {io_hash: io_hash}
 

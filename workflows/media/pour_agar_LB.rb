@@ -21,7 +21,7 @@ class Protocol
   	end # fill_array
 
 	def main
-		
+
 		io_hash = input[:io_hash]
 		all_media = io_hash[:total_media]
 		agar_media = Array.new
@@ -41,7 +41,7 @@ class Protocol
 			}
 
 			opt = type[:opt]
-			
+
 			show {
 				title "Take out antibiotics"
 				note opt.include?("Amp")? "Take 8 Amp aliquots from the media fridge." : "Take 4 Kan aliquots from the media fridge."
@@ -85,13 +85,13 @@ class Protocol
 			plate_batch.matrix = batch_matrix
 			plate_batch.location = "Media Bay"
 			plate_batch.save
-			
-			if(res > 0) 
+
+			if(res > 0)
 				show {
 					title "Wait for plates to solidify."
 					note "Wait untill all plates have completely solidified. This should take about 10 minutes."
 				}
-				
+
 				show {
 					title "Stack and label"
 					note "Stack the plates agar side up."

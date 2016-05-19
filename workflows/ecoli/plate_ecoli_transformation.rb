@@ -67,9 +67,9 @@ class Protocol
     end
 
     deleted_plates = []
-    num = 0 
+    num = 0
 
-    plate_type = "" 
+    plate_type = ""
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
       unless marker == "LB"
@@ -102,7 +102,7 @@ class Protocol
     actual_plates = all_plates - deleted_plates
     aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
     batch = find(:sample, id: 11764)[0]
-    
+
     plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
 
     delete all_transformed_aliquots
