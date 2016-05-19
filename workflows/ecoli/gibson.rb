@@ -7,16 +7,6 @@ class Protocol
   include Standard
   require 'matrix'
 
-  def sort_by_location fragments
-    location_arrays = fragments.map { |frag| frag.location[4..-1].split(".") }
-    sorted_locations = location_arrays.sort { |row1, row2| 
-                                              comp = row1[0].to_i <=> row2[0].to_i
-                                              comp = comp.zero? ? row1[1].to_i <=> row2[1].to_i : comp
-                                              comp.zero? ? row1[2].to_i <=> row2[2].to_i : comp }
-    location_strings = sorted_locations.map { |row| "M20.#{row[0]}.#{row[1]}.#{row[2]}" }
-    fragments.sort_by! { |frag| location_strings.index(frag.location) }
-  end # sort_by_location
-
   def gibson_vector row
     if row == 0
       return 5.0
@@ -93,17 +83,6 @@ class Protocol
     end
     replacement
   end # find_replacement_stock
-
-  def fill_array rows, cols, num, val
-    num = 0 if num < 0
-    array = Array.new(rows) { Array.new(cols) { -1 } }
-    (0...num).each { |i|
-      row = (i / cols).floor
-      col = i % cols
-      array[row][col] = val
-    }
-    array
-  end # fill_array
 
   def update_batch_matrix batch, num_samples
     rows = batch.matrix.length
