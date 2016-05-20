@@ -5,12 +5,6 @@ class Protocol
   include Cloning
   require 'matrix'
 
-  def sort_by_location fragments
-    fragments.sort! { |frag1, frag2|
-      frag1.location <=> frag2.location
-    }
-  end # sort_by_location
-
   def arguments
     {
       io_hash: {},
