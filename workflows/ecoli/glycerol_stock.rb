@@ -33,7 +33,7 @@ class Protocol
       overnights = io_hash[:overnight_ids].collect {|id| find(:item, id: id )[0]}
       take overnights, interactive: true
       name_glycerol_hash = { "Plasmid" => "Plasmid Glycerol Stock", "Yeast Strain" => "Yeast Glycerol Stock", "E coli strain" => "E coli Glycerol Stock" }
-      glycerol = find(:item, { object_type: { name: "50 percent Glycerol (sterile)" } }, location: "Bench")[0]
+      glycerol = find(:item, { object_type: { name: "50 percent Glycerol (sterile)" }, location: "Bench"})[0]
       take [glycerol], interactive: true
 
       # produce glycerol_stocks and set up datum to track which overnights it made from
