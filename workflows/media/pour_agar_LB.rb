@@ -5,7 +5,8 @@ class Protocol
 	include Standard
 	def arguments
 	    {
-	    	io_hash: {}
+	    	io_hash: {},
+	    	total_media: 70767
 	    }
 	end
 
@@ -23,7 +24,8 @@ class Protocol
 	def main
 
 		io_hash = input[:io_hash]
-		all_media = io_hash[:total_media]
+		io_hash = input if input[:io_hash].empty?
+		all_media = [io_hash[:total_media]]
 		agar_media = Array.new
 		all_media.each do |x|
 			made_media = find(:item, id: x)[0]
