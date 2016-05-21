@@ -16,7 +16,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      transformed_aliquots_ids: [],
+      transformed_aliquots_ids: [9191,9190,8418],
     }
   end
 
