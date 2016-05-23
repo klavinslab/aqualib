@@ -28,7 +28,7 @@ class Protocol
       note "Basics: tubes, tip boxes, ..."
       note "Samples: media, ..."
       note "Batched: Gibson Aliquots, plates, ..."
-      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 0
+      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 1
     end
 
     case result[:choice]
@@ -36,7 +36,7 @@ class Protocol
       when "Basics"
 
         result = show do
-          title "Chose Item"
+          title "Chose Object"
           select basics.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
         end
 
@@ -59,9 +59,27 @@ class Protocol
         
       when "Samples"
 
-        show do
-          title "Chose Item"
+        result = show do
+          title "Chose Object"
           select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
+        end
+        
+        ot = basics.find { |b| b.name == result[:choice] }
+        
+        result = show do
+          title "Chose Sample"
+          select ot.data_object[:samples] { |s| s.name }, var: "choice", label: "Choose sample", default: 0
+        end
+        
+        s = Sample.find_by_name(result[:choice])
+        items = Sample.items.reject { |i| i.deleted? }
+        
+        result = show do 
+          title "Choose item"
+          items.each do |i|
+            item i
+          end
+          select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
         end
 
       when "Batched"
