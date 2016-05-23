@@ -82,7 +82,7 @@ class Protocol
           select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
         end
         
-      when "Batched
+      when "Batched"
 
         show do
           title "Chose Batch Item"
