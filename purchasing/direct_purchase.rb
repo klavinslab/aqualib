@@ -84,9 +84,9 @@ class Protocol
         end
         
         item = Item.find(result[:choice])
-        m = ot.data_object[:samples][:s.name.to_sym][:materials]
-        l = ot.data_object[:samples][:s.name.to_sym][:labor]
-        del = ot.data_object[:samples][:s.name.to_sym][:delete]
+        m = ot.data_object[:samples][s.name.to_sym][:materials]
+        l = ot.data_object[:samples][s.name.to_sym][:labor]
+        del = ot.data_object[:samples][s.name.to_sym][:delete]
         
         mc = currency(m)
         lc = currency(l)
