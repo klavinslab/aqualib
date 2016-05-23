@@ -105,6 +105,9 @@ class Protocol
           show do
             title "Created task number #{task.id}"
           end
+          if del
+            item.delete
+          end
         end
         
       when "Batched"###############################################################################################
