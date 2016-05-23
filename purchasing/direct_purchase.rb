@@ -72,7 +72,7 @@ class Protocol
         end
         
         s = Sample.find_by_name(result[:choice])
-        items = Sample.items.reject { |i| i.deleted? }
+        items = s.items.reject { |i| i.deleted? }
         
         result = show do 
           title "Choose item"
