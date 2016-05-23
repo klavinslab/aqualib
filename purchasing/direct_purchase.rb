@@ -107,6 +107,9 @@ class Protocol
           end
           if del
             item.delete
+            show do
+              title "Deleted item #{item.id}"
+            end            
           end
         end
         
