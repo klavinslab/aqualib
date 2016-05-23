@@ -72,8 +72,8 @@ class Protocol
           select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
         end
         
-        sample_name = result[:choice]
-        s = Sample.find_by_name(sample_name)
+        descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+        s = Sample.find_by_name(descriptor.name)
         items = s.items.reject { |i| i.deleted? }
         
         result = show do 
@@ -85,9 +85,9 @@ class Protocol
         end
         
         item = Item.find(result[:choice])
-        m = ot.data_object[:samples][sample_name][:materials]
-        l = ot.data_object[:samples][sample_name][:labor]
-        del = ot.data_object[:samples][sample_name][:delete]
+        m = ot.data_object[:samples][s.name][:materials]
+        l = ot.data_object[:samples][s.name][:labor]
+        del = ot.data_object[:samples][s.name][:delete]
         
         mc = currency(m)
         lc = currency(l)
