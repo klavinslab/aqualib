@@ -18,7 +18,6 @@ class Protocol
     }
   end #arguments
 
-
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
@@ -61,7 +60,8 @@ class Protocol
     show {
       title "Prepare #{num} 1.5 mL tubes and pipettors"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-      check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
+      check "Set your 3 pipettors to be 2 µL, 42 µL, and 300 µL."
+      warning "Note the new volume for the 1000 uL pipette!"
       check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."
     }
 
@@ -70,19 +70,6 @@ class Protocol
       note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
       image "arrange_cold_block"
     }
-
-    temp = num
-    while(temp > 0)
-      ecomp = find(:item, object_type: { name: "E. coli Comp Cell Batch"})[0]
-      take ecomp, interactive: true
-      temp = temp - ecomp.num_samples
-      if(temp > 0)
-        ecomp.mark_as_deleted
-      else
-        
-      
-      
-    
 
     show {
       title "Retrieve cuvettes and electrocompetent aliquots"

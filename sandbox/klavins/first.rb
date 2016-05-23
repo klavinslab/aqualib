@@ -15,7 +15,7 @@ class Protocol
     x = show {
       title msg
       image "gel_in_solution"
-      note "Thanks for using aquarium"
+      note "Thanks for using aquarium :-)"
       warning "Careful!"
       check "Check me"
       select [ "A", "B", "C" ], var: "x", label: "Choose something", default: 1

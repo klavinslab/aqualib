@@ -90,7 +90,7 @@ module Tasking
       note "There is a total of #{sizes[-1]} #{task_prototype_name} in the queue. How many do you want to run?"
       select sizes, var: "limit", label: "Enter the number of #{task_prototype_name} you want to run", default: sizes[-1]
     }
-    limit_input[:limit] ||= sizes[-1]
+    limit_input[:limit] ||= sizes[-1] # a||a = b
     limit_num = limit_input[:limit].to_i
     limit_idx = sizes.index(limit_num)
     # show {
@@ -110,7 +110,7 @@ module Tasking
       num_of_user = user_task_hash.keys.length
       ave_limit = (limit_num/num_of_user).to_i
       task_ids_to_return = []
-      remaining_capacity = 0
+      remaining_capacity = limit_num # the initial remaining_capacity should be all
       while ave_limit > 0
         user_task_hash.each do |user, ids|
           task_ids_to_return.concat user_task_hash[user].take(ave_limit)
