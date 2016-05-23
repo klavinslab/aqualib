@@ -64,7 +64,7 @@ class Protocol
           select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
         end
         
-        ot = basics.find { |b| b.name == result[:choice] }
+        ot = samples.find { |b| b.name == result[:choice] }
         
         result = show do
           title "Chose Sample"
