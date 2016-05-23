@@ -11,7 +11,7 @@ class Protocol
       j = f i
 
       data = show {
-        title "Step #{i}" 
+        title "This is step #{i}" 
         note "#{i} squared is #{j}"
         get "number", var: "z#{i}", label: "Enter a number"
         select [ "A", "B" ], var: "x", label: "Choose something"
