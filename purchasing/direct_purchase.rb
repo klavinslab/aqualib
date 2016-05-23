@@ -106,7 +106,7 @@ class Protocol
             title "Created task number #{task.id}"
           end
           if del
-            item.delete
+            item.mark_as_deleted
             show do
               title "Deleted item #{item.id}"
             end            
