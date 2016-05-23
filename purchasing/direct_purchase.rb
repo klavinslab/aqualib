@@ -53,6 +53,10 @@ class Protocol
             
         task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
         
+        show do
+          title "Created task number #{task.id}"
+        end
+        
       when "Samples"
 
         show do
