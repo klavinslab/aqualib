@@ -68,7 +68,7 @@ class Protocol
         
         result = show do
           title "Chose Sample"
-          select ot.data_object[:samples].collect { |s| s.name }, var: "choice", label: "Choose sample", default: 0
+          select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
         end
         
         s = Sample.find_by_name(result[:choice])
