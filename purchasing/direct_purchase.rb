@@ -1,7 +1,7 @@
 # Title: Inventory Purchase Protocol
 # Author: Eric Klavins
 # Date: May 20, 2016 
-
+ 
 class Protocol
 
   def main
