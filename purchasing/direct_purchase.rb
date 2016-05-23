@@ -33,7 +33,7 @@ class Protocol
 
     case result[:choice]
 
-      when "Basics"
+      when "Basics" #########################################################################################
 
         result = show do
           title "Chose Object"
@@ -50,14 +50,15 @@ class Protocol
           note "Labor: #{l}"
           select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
         end
-            
-        task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
         
-        show do
-          title "Created task number #{task.id}"
+        if result[:choice] == "Ok"    
+          task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
+          show do
+            title "Created task number #{task.id}"
+          end
         end
         
-      when "Samples"
+      when "Samples" ###########################################################################################
 
         result = show do
           title "Chose Object"
@@ -82,7 +83,30 @@ class Protocol
           select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
         end
         
-      when "Batched"
+        item = Item.find(result[:choice])
+        m = ot.data_object[:samples][:s.name.to_sym][:materials]
+        l = ot.data_object[:samples][:s.name.to_sym][:labor]
+        del = ot.data_object[:samples][:s.name.to_sym][:delete]
+        
+        mc = currency(m)
+        lc = currency(l)
+        
+        result = show do
+          title "#{ot.name} / #{s.name} Costs"
+          note "Item: #{item.id}"
+          note "Material: #{mc}"
+          note "Labor: #{lc}"
+          select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+        end        
+        
+        if result[:choice] == "Ok"    
+          task = make_purchase "#{ot.name}/#{s.name}:#{item.id}", m, l
+          show do
+            title "Created task number #{task.id}"
+          end
+        end
+        
+      when "Batched"###############################################################################################
 
         show do
           title "Chose Batch Item"
