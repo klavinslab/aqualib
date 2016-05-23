@@ -50,6 +50,8 @@ class Protocol
           note "Labor: #{l}"
           select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
         end
+            
+        task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
         
       when "Samples"
 
@@ -98,6 +100,7 @@ class Protocol
         end
       end
       set_task_status(task,"purchased")
+      task
     end
   end
   
