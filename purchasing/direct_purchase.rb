@@ -101,7 +101,7 @@ class Protocol
         end        
         
         if result[:choice] == "Ok"    
-          task = make_purchase "#{ot.name}/#{s.name}:#{item.id}", m, l
+          task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
           show do
             title "Created task number #{task.id}"
           end
