@@ -42,7 +42,6 @@ class Protocol
           set_task_status(find(:task, id: task_id)[0],"plate made")
         end
       end
-      
     end
 
 
