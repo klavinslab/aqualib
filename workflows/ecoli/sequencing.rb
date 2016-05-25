@@ -88,19 +88,8 @@ class Protocol
     plasmid_stocks.each_with_index do |p, idx|
       length = p.sample.properties["Length"]
       conc = p.datum[:concentration]
-      if p.sample.sample_type.name == "Plasmid"
-        plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
-      elsif p.sample.sample_type.name == "Fragment"
-        if length < 500
-          plasmid_volume_list.push (10 / conc).round(1)
-        elsif length < 1000
-          plasmid_volume_list.push (20 / conc).round(1)
-        elsif length < 2000
-          plasmid_volume_list.push (40 / conc).round(1)
-        elsif length < 4000
-          plasmid_volume_list.push (60 / conc).round(1)
-        end
-      end
+      # source BioScience formula 1ng/uL per 100 bp in 10 uL reaction
+      plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
     end
 
     # set minimal volume to be 0.5 µL
