@@ -85,6 +85,7 @@ class Protocol
         y.description = "A diploid strain automatically generated from yeast mating."
         y.project = y0.project
         y.set_property "Mating Type", "diploid"
+        y.set_property "Parent", y0
         y.save
       end
       yeast_mated_strains.push y
