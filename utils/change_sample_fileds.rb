@@ -31,6 +31,12 @@ class Protocol
           if yeast_strain.errors.empty?
             changes.push "#{yeast_strain.id} Comp_cell_limit changed"
           end
+        else
+          yeast_strain.set_property "Comp_cell_limit", "Yes"
+          yeast_strain.save
+          if yeast_strain.errors.empty?
+            changes.push "#{yeast_strain.id} Comp_cell_limit changed"
+          end
         end
       end
     end
