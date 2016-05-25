@@ -66,7 +66,7 @@ class Protocol
       begin
         yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] += 1
         parent_strain = yeast_strain.properties["Parent"]
-        if parent_strain.description.include?("comp_cell_limit: no")
+        if parent_strain.properties["Comp_cell_limit"] == "No"
           yeast_strain_id_quantity_hash[yeast_strain.properties["Parent"].id] = 100
         end
       rescue Exception => e
@@ -77,7 +77,7 @@ class Protocol
     # for each yeast culture presented in this protocol, check if comp_cell_limit: no, if exists, produce unlimited aliquots.
     cultures.each do |culture|
       yeast_culture_sample = culture.sample
-      if yeast_culture_sample.description && yeast_culture_sample.description.include?("comp_cell_limit: no")
+      if yeast_culture_sample.properties["Comp_cell_limit"] == "No"
         yeast_strain_id_quantity_hash[yeast_culture_sample.id] = 100
       end
     end

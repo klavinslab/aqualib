@@ -15,14 +15,9 @@ class Protocol
       (0..m[i].length-1).each do |j|
         if m[i][j] > 0 && ! ( opts[:except].include? [i,j] )
           s = find(:sample,{ id: m[i][j] })[0]
-          length = 0
-          if s.description
-            description = s.description
-            description = " " if description.empty?
-            length = description.split('QC_length')[-1].split(':')[-1].to_i
-          end
-          length = 'N/A' if length == 0
-          routes.push lane: [i,j], length: length
+          qc_length = s.properties['QC_length']
+          qc_length = 'N/A' if qc_length == nil || qc_length == 0 || qc_length == ""
+          routes.push lane: [i,j], length: qc_length
         end
       end
     end
