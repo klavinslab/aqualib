@@ -16,7 +16,7 @@ class Protocol
     changes = []
     while changes.length < 10
       plasmids.each do |plasmid|
-        primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
+        primer_ids_str = plasmid.properties["Sequencing_primer_ids"]
         primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
         if primer_ids.all? { |i| i != 0 }
           primers = primer_ids.collect { |id| find(:sample, id: id)[0] }
