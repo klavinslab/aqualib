@@ -107,7 +107,7 @@ class Protocol
       end
     end
 
-    io_hash[:task_hash] = io_hash[:task_hash].compact!
+    io_hash[:task_hash].compact!
 
     if io_hash[:plasmid_stock_ids].length == 0
       show {
