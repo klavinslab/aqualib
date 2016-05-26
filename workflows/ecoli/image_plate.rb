@@ -160,18 +160,16 @@ class Protocol
               plate = find(:item, id: plate_id)[0]
               task.notify "[Data] #{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
               # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
-              primer_ids_str = plate.sample.properties["Sequencing_primer_ids"]
-              if primer_ids_str
-                primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
-                if primer_ids.all? { |i| i != 0 }
-                  # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
-                  # num_colony = num_colony > 2 ? 2 : num_colony
-                  tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-                  t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
-                  t.save
-                  task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
-                  t.notify "Automatically created from #{task_prototype_html_link 'Gibson Assembly'} #{task_html_link task}.", job_id: jid
-                end
+              primers = plate.sample.properties["Sequencing Primers"]
+              if primers && primers.length > 0
+                primer_ids = primers.collect { |p| p.id }
+                # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
+                # num_colony = num_colony > 2 ? 2 : num_colony
+                tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
+                t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
+                t.save
+                task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
+                t.notify "Automatically created from #{task_prototype_html_link 'Gibson Assembly'} #{task_html_link task}.", job_id: jid
               end
             elsif colony_number[:"c#{plate_id}".to_sym] == 0
               set_task_status(task,"no colonies")
