@@ -24,7 +24,7 @@ class Protocol
       note "Basics: tubes, tip boxes, ..."
       note "Samples: media, ..."
       note "Batched: Gibson Aliquots, plates, ..."
-      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 1
+      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
     end
 
     case result[:choice]
@@ -141,7 +141,20 @@ class Protocol
     show do
       title "Choose sample type" 
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
-      
+      select [ "Yes", "No" ], var: "batch", label: "Take an entire batch", default: 1
+      get "number", var: "n", label: "How Many (if not the entire batch)?", default: 1
+    end
+    
+    descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    s = Sample.find_by_name(descriptor[:name])
+    items = s.items.reject { |i| i.deleted? }    
+
+    result = show do 
+      title "Choose collection"
+      items.each do |i|
+        item i
+      end
+      select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
 
   end
