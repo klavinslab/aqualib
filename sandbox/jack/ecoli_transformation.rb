@@ -107,6 +107,7 @@ class Protocol
         amp++
       elsif item.sample.properties["Bacterial Marker"] == "Kan"
         kan++
+      end
     end
 
     show {
