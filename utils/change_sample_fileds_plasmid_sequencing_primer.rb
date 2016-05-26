@@ -22,7 +22,7 @@ class Protocol
         plasmid.properties["Sequencing Primers"] = primers
         plasmid.save
         if plasmid.errors.empty?
-          changes.push "plasmid sequencing primers changed to new format"
+          changes.push "plasmid sequencing primers changed to new format with #{primers.collect { |primer| primer.id}}"
         end
       end
     end
