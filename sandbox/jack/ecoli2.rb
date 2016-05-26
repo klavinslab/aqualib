@@ -27,34 +27,18 @@ class Protocol
 			title "Add LB Liquid"
 			note "Using the serological pipette, add 25 mL LB liquid to the baffled flask"
 		}
-
-		show {
-			title "Go to -80 freezer"
-			note "Bring Eppendorf tube rack, P100 pipette, and P100 pipette tips"  
-		}
 		
 		take [stock], interactive: true
 
 		show {
-			title "Glycerol stock scrape, and add to media: QUICKLY"
-			note "Put glycerol stock in tube rack, loosen cap"
-			note "Take lid off flask"
-			note "Put tip on pipette"
-			note "Leaving glycerol stock in rack, take off cryotube lid, scrape a large chunk from glycerol stock, and replace cryotube lid"
-			note "Carefully scrape glycerol into flask of LB by tipping flask and swirling tip into media"
-			note "Discard tip"
-			note "Put the lid back on the flask"
-		}
-		
-		release([stock], interactive: true)
-		
-		show {
-			title "Clean up"
-			note "Take pipette, tips back to bench"
+			title "Inoculate From Agar Plate"
+			note "Select and isolate colony on plate, circle and label with today's date"
+			note "Using a pipette tip, carefully scrape the selected colony"
+			note "Maintaining a good sterile technique, carefully tilt the flask of LB and swirl pipette tips with cells into the media"
 		}
 		
 		release([flask])
-		release([dh5alpha, lb_liquid], interactive: true)
+		release([stock, dh5alpha, lb_liquid], interactive: true)
 		
 		return { io_hash: io_hash }
 		
