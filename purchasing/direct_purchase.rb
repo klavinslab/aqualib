@@ -57,6 +57,7 @@ class Protocol
     basics.find { |b| b.name == result[:choice] }
   end
   
+  ###############################################################################################################
   def basic_chooser 
       
     basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
@@ -81,7 +82,7 @@ class Protocol
       
   end
   
-  
+  ###############################################################################################################
   def sample_chooser 
       
     samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
@@ -135,7 +136,7 @@ class Protocol
               
   end
   
-  
+  ###############################################################################################################
   def batch_chooser 
       
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
