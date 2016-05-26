@@ -50,7 +50,7 @@ class Protocol
       title "Chose Object"
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
     end
-    basics.find { |b| b.name == result[:choice] }
+    objects.find { |b| b.name == result[:choice] }
   end
   
   ###############################################################################################################
