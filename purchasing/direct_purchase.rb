@@ -33,14 +33,15 @@ class Protocol
 
     case result[:choice]
 
-      when "Basics" #########################################################################################
+      when "Basics"
+        basic_chooser
 
+      when "Samples"
+        sample_chooser
 
-      when "Samples" ###########################################################################################
-
-
-      when "Batched"###############################################################################################
-
+      when "Batched"
+        batched_chooser
+        
     end
 
     return {
