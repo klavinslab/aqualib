@@ -17,12 +17,8 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
-
-    object_types = ObjectType.all
-    basics = object_types.select { |ot| purchase_info(ot) == "basic" }
-    samples = object_types.select { |ot| purchase_info(ot) == "sample" }
-    collections = object_types.select { |ot| purchase_info(ot) == "collection" }
-
+    @object_types = ObjectType.all
+    
     result = show do
       title "Select Category"
       note "Basics: tubes, tip boxes, ..."
@@ -37,7 +33,7 @@ class Protocol
         basic_chooser
 
       when "Samples"
-        sample_chooser
+        sample_chooser 
 
       when "Batched"
         batched_chooser
@@ -53,7 +49,9 @@ class Protocol
 
   end
   
-  def basic_chooser
+  def basic_chooser basics
+      
+    basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
       
     result = show do
       title "Chose Object"
@@ -81,7 +79,9 @@ class Protocol
   end
   
   
-  def sample_chooser
+  def sample_chooser samples
+      
+    samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
       
     result = show do
       title "Chose Object"
@@ -139,7 +139,9 @@ class Protocol
   end
   
   
-  def batch_chooser
+  def batch_chooser collections
+      
+    collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
 
     show do
       title "Chose Batch Item"
