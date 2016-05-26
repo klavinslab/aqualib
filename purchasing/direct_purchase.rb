@@ -138,7 +138,7 @@ class Protocol
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
     ot = choose_object_from collections
     
-    show do
+    result = show do
       title "Choose sample type" 
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
       select [ "Yes", "No" ], var: "batch", label: "Take an entire batch", default: 1
