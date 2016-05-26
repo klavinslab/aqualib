@@ -28,16 +28,12 @@ class Protocol
     end
 
     case result[:choice]
-
       when "Basics"
         basic_chooser
-
       when "Samples"
         sample_chooser 
-
       when "Batched"
         batched_chooser
-        
     end
 
     return {
@@ -141,6 +137,12 @@ class Protocol
  
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
     ot = choose_object_from collections
+    
+    show do
+      title "Choose sample type" 
+      select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
+      
+    end
 
   end
   
