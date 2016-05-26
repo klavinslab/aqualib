@@ -99,12 +99,22 @@ class Protocol
       #check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then, using the set 1000uL pipette, transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       #table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
     }
+    
+    amp = 0
+    kan = 0
+    items_to_transform do |item|
+      if item.sample.properties["Bacterial Marker"] == "Amp"
+        amp++
+      elsif item.sample.properties["Bacterial Marker"] == "Kan"
+        kan++
+    end
 
     show {
       title "Incubate tubes"
       check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
       note "Retrieve all the tubes 30 minutes later by doing the following plate_ecoli_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
+      note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
       image "put_green_tube_holder_to_incubator"
     }
 
