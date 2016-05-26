@@ -85,14 +85,8 @@ class Protocol
   def sample_chooser 
       
     samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
-      
-    result = show do
-      title "Chose Object"
-      select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
-    end
-    
-    ot = samples.find { |b| b.name == result[:choice] }
-    
+    ot = choose_object_from samples
+
     result = show do
       title "Chose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
