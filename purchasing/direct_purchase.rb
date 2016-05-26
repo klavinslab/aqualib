@@ -35,29 +35,7 @@ class Protocol
 
       when "Basics" #########################################################################################
 
-        result = show do
-          title "Chose Object"
-          select basics.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
-        end
 
-        ot = basics.find { |b| b.name == result[:choice] }
-        m = currency(ot.data_object[:materials])
-        l = currency(ot.data_object[:labor])
-        
-        result = show do
-          title "#{result[:choice]} Costs"
-          note "Material: #{m}"
-          note "Labor: #{l}"
-          select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
-        end
-        
-        if result[:choice] == "Ok"    
-          task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
-          show do
-            title "Created task number #{task.id}"
-          end
-        end
-        
       when "Samples" ###########################################################################################
 
         result = show do
@@ -129,6 +107,33 @@ class Protocol
 
     }
 
+  end
+  
+  def basic_chooser
+      
+    result = show do
+      title "Chose Object"
+      select basics.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+    end
+
+    ot = basics.find { |b| b.name == result[:choice] }
+    m = currency(ot.data_object[:materials])
+    l = currency(ot.data_object[:labor])
+    
+    result = show do
+      title "#{result[:choice]} Costs"
+      note "Material: #{m}"
+      note "Labor: #{l}"
+      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+    end
+    
+    if result[:choice] == "Ok"    
+      task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
+      show do
+        title "Created task number #{task.id}"
+      end
+    end      
+      
   end
   
   def make_purchase description, mat, lab
