@@ -133,7 +133,7 @@ class Protocol
   end
   
   ###############################################################################################################
-  def batch_chooser 
+  def batched_chooser 
  
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
     ot = choose_object_from collections
