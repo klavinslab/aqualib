@@ -9,11 +9,13 @@ class Protocol
 	def main
 		
 		io_hash = input[:io_hash]
-		#tube = find(:item, object_type: {name: "1.5mL tube"})[0]
 		flask2000 = find(:item, id: (io_hash[:dh5alpha_new]))[0]
-		#take [flask2000, tube], interactive: true
 		take [flask2000], interactive: true
-		#tube.location = "Bench"
+		
+		show {
+			title "Take 1.5 mL tube"
+			note "Get a 1.5 mL tube and bring it to the workbench"
+		}
 
 		show {
 			title "Make aliquot"
@@ -38,7 +40,11 @@ class Protocol
 		else 
 			finished = "yes"
 		end
-		#release([tube], interactive: true)
+		
+		show {
+			title "Return tube"
+			show "Return the 1.5 mL tube to the dishwashing station"
+		}
 		return {io_hash: io_hash, done: finished}
 	end
 end
