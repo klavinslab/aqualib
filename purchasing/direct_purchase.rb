@@ -138,14 +138,10 @@ class Protocol
   
   ###############################################################################################################
   def batch_chooser 
-      
+ 
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
+    ot = choose_object_from collections
 
-    show do
-      title "Chose Batch Item"
-      select collections.collect { |ot| ot.name }, var: "choice", label: "Choose batch item", default: 0
-    end    
-    
   end
   
   
