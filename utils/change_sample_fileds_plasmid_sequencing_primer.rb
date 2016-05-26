@@ -20,7 +20,7 @@ class Protocol
         primer_ids = primer_ids_str.split(",").map { |s| s.to_i }
         if primer_ids.all? { |i| i != 0 }
           primers = primer_ids.collect { |id| find(:sample, id: id)[0] }
-          plasmid.properties["Sequencing Primers"] = primers
+          plasmid.set_property "Sequencing Primers", primers
           plasmid.save
           if plasmid.errors.empty?
             changes.push "plasmid sequencing primers changed to new format with #{primers.collect { |primer| primer.id}}"
