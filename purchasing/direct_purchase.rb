@@ -44,17 +44,19 @@ class Protocol
 
   end
   
+  def choose_object_from objects
+    result = show do
+      title "Chose Object"
+      select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+    end
+    basics.find { |b| b.name == result[:choice] }
+  end
+  
   #######################################################################################################################
   def basic_chooser 
       
     basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
-      
-    result = show do
-      title "Chose Object"
-      select basics.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
-    end
-
-    ot = basics.find { |b| b.name == result[:choice] }
+    ot = choose_object_from basics      
     m = currency(ot.data_object[:materials])
     l = currency(ot.data_object[:labor])
     
@@ -78,14 +80,8 @@ class Protocol
   def sample_chooser 
       
     samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
-      
-    result = show do
-      title "Chose Object"
-      select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
-    end
-    
-    ot = samples.find { |b| b.name == result[:choice] }
-    
+    ot = choose_object_from basics      
+  
     result = show do
       title "Chose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
@@ -121,14 +117,8 @@ class Protocol
     
     if result[:choice] == "Ok"    
       task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
-      show do
-        title "Created task number #{task.id}"
-      end
       if del
         item.mark_as_deleted
-        show do
-          title "Deleted item #{item.id}"
-        end            
       end
     end
               
