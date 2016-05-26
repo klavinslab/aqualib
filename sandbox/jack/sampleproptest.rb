@@ -13,7 +13,7 @@ class Protocol
     			}
 		end
 		show {
-			note test_samp.datum
+			note test_samp.sample.properties["Bacterial Marker".to_sym]
 		}
 	end
 end
