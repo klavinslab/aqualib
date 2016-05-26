@@ -38,59 +38,7 @@ class Protocol
 
       when "Samples" ###########################################################################################
 
-        result = show do
-          title "Chose Object"
-          select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
-        end
-        
-        ot = samples.find { |b| b.name == result[:choice] }
-        
-        result = show do
-          title "Chose Sample"
-          select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
-        end
-        
-        descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
-        s = Sample.find_by_name(descriptor[:name])
-        items = s.items.reject { |i| i.deleted? }
-        
-        result = show do 
-          title "Choose item"
-          items.each do |i|
-            item i
-          end
-          select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
-        end
-        
-        item = Item.find(result[:choice])
-        m = descriptor[:materials]
-        l = descriptor[:labor]
-        del = descriptor[:delete]
-        
-        mc = currency(m)
-        lc = currency(l)
-        
-        result = show do
-          title "#{ot.name} / #{s.name} Costs"
-          note "Item: #{item.id}"
-          note "Material: #{mc}"
-          note "Labor: #{lc}"
-          select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
-        end        
-        
-        if result[:choice] == "Ok"    
-          task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
-          show do
-            title "Created task number #{task.id}"
-          end
-          if del
-            item.mark_as_deleted
-            show do
-              title "Deleted item #{item.id}"
-            end            
-          end
-        end
-        
+
       when "Batched"###############################################################################################
 
         show do
@@ -135,6 +83,70 @@ class Protocol
     end      
       
   end
+  
+  
+  def sample_chooser
+      
+    result = show do
+      title "Chose Object"
+      select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
+    end
+    
+    ot = samples.find { |b| b.name == result[:choice] }
+    
+    result = show do
+      title "Chose Sample"
+      select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
+    end
+    
+    descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    s = Sample.find_by_name(descriptor[:name])
+    items = s.items.reject { |i| i.deleted? }
+    
+    result = show do 
+      title "Choose item"
+      items.each do |i|
+        item i
+      end
+      select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
+    end
+    
+    item = Item.find(result[:choice])
+    m = descriptor[:materials]
+    l = descriptor[:labor]
+    del = descriptor[:delete]
+    
+    mc = currency(m)
+    lc = currency(l)
+    
+    result = show do
+      title "#{ot.name} / #{s.name} Costs"
+      note "Item: #{item.id}"
+      note "Material: #{mc}"
+      note "Labor: #{lc}"
+      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+    end        
+    
+    if result[:choice] == "Ok"    
+      task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
+      show do
+        title "Created task number #{task.id}"
+      end
+      if del
+        item.mark_as_deleted
+        show do
+          title "Deleted item #{item.id}"
+        end            
+      end
+    end
+              
+  end
+  
+  
+  def batch_chooser
+      
+  end
+  
   
   def make_purchase description, mat, lab
     tp = TaskPrototype.find_by_name("Direct Purchase")
