@@ -461,7 +461,6 @@ def create_new_plasmid_verification plate, original_task
           original_task.notify "Not enough colonies on the original plate to submit another Plasmid Verification task."
         end
       end
-    
     end
   end
   return task_id
