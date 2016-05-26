@@ -40,7 +40,12 @@ class Protocol
         
     end
 
-    return {}
+    return {
+
+      user: @user.login,
+      job: @job.id
+
+    }
 
   end
   
@@ -52,11 +57,11 @@ class Protocol
     basics.find { |b| b.name == result[:choice] }
   end
   
-  #######################################################################################################################
   def basic_chooser 
       
     basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
-    ot = choose_object_from basics      
+
+    ot = choose_object_from basics
     m = currency(ot.data_object[:materials])
     l = currency(ot.data_object[:labor])
     
@@ -76,12 +81,18 @@ class Protocol
       
   end
   
-  #######################################################################################################################
+  
   def sample_chooser 
       
     samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
-    ot = choose_object_from basics      
-  
+      
+    result = show do
+      title "Chose Object"
+      select samples.collect { |ot| ot.name }, var: "choice", label: "Choose sample", default: 0
+    end
+    
+    ot = samples.find { |b| b.name == result[:choice] }
+    
     result = show do
       title "Chose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
@@ -117,14 +128,20 @@ class Protocol
     
     if result[:choice] == "Ok"    
       task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
+      show do
+        title "Created task number #{task.id}"
+      end
       if del
         item.mark_as_deleted
+        show do
+          title "Deleted item #{item.id}"
+        end            
       end
     end
               
   end
   
-  #######################################################################################################################
+  
   def batch_chooser 
       
     collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
