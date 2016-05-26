@@ -104,9 +104,9 @@ class Protocol
     kan = 0
     items_to_transform.each do |item|
       if item.sample.properties["Bacterial Marker"] == "Amp"
-        amp++
+        amp += 1
       elsif item.sample.properties["Bacterial Marker"] == "Kan"
-        kan++
+        kan += 1
       end
     end
 
