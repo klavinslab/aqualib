@@ -162,11 +162,9 @@ class Protocol
               # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
               primers = plate.sample.properties["Sequencing Primers"]
               if primers && primers.length > 0
-                show {
-                  note primers.length
-                  note "#{primers[0]}"
-                }
-                primer_ids = primers.collect { |p| p.id }
+                # if primer is nil, don't return
+                primer_ids = primers.collect { |p| p.id if p }
+                primer_ids.compact!
                 # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
                 # num_colony = num_colony > 2 ? 2 : num_colony
                 tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
