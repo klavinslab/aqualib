@@ -79,12 +79,12 @@ class Protocol
 			res = data[:amount]
 		end
 		
-		aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
-		batch_matrix = fill_array 10, 10, res, 7
-		aliquot_batch.matrix = batch_matrix
-		aliquot_batch.datum = aliquot_batch.datum.merge({tested: "No"})
-		aliquot_batch.location = "-80 freezer"
-		aliquot_batch.save
+		# aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
+		# batch_matrix = fill_array 10, 10, res, 7
+		# aliquot_batch.matrix = batch_matrix
+		# aliquot_batch.datum = aliquot_batch.datum.merge({tested: "No"})
+		# aliquot_batch.location = "-80 freezer"
+		# aliquot_batch.save
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
 			note "Take an empty freezer box, and label it with “DH5alpha”, the date, your initials, and the ID number of the electrocompetent batch."
