@@ -18,6 +18,17 @@ class Protocol
     }
   end #arguments
 
+
+  def find_batch(plasmid_items)
+    ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch"})
+    ecoli_batch.each do |item|
+    if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.datum["tested"] == "No"
+    	return item
+    elsif plasmid_items.length != 1 and item.datum["tested"] == "Yes"
+    	return item
+    end
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
