@@ -11,7 +11,7 @@ class Protocol
   
     io_hash = input[:io_hash]
     flask2000 = find(:item, object_type: { name: "2000 mL Flask"})[0]
-    lb_liquid = find(:item, id: (io_hash[:new_lb_liquid]))[0]
+    lb_liquid = find(:item, id: (io_hash[:lb_liquid]))[0]
     overnight_flask = find(:item, id: (io_hash[:dh5alpha]))[0]
     
     take [flask2000, lb_liquid, overnight_flask], interactive: true
