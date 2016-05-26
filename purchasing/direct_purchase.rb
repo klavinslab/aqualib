@@ -41,11 +41,6 @@ class Protocol
 
       when "Batched"###############################################################################################
 
-        show do
-          title "Chose Batch Item"
-          select collections.collect { |ot| ot.name }, var: "choice", label: "Choose batch item", default: 0
-        end
-
     end
 
     return {
@@ -144,7 +139,12 @@ class Protocol
   
   
   def batch_chooser
-      
+
+    show do
+      title "Chose Batch Item"
+      select collections.collect { |ot| ot.name }, var: "choice", label: "Choose batch item", default: 0
+    end    
+    
   end
   
   
