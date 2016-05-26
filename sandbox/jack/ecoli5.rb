@@ -43,7 +43,7 @@ class Protocol
 		
 		show {
 			title "Return tube"
-			show "Return the 1.5 mL tube to the dishwashing station"
+			note "Return the 1.5 mL tube to the dishwashing station"
 		}
 		return {io_hash: io_hash, done: finished}
 	end
