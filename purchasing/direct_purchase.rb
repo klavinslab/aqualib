@@ -152,7 +152,7 @@ class Protocol
     result = show do 
       title "Choose collection"
       items.collect do |i|
-        [ i.id, i.location ]
+        table [ i.id, i.location ]
       end
       select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
