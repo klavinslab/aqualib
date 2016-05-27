@@ -159,7 +159,6 @@ class Protocol
 
   end
   
-  
   def make_purchase description, mat, lab
     tp = TaskPrototype.find_by_name("Direct Purchase")
     if tp
