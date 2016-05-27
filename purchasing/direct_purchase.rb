@@ -28,12 +28,9 @@ class Protocol
     end
 
     case result[:choice]
-      when "Basics"
-        basic_chooser
-      when "Samples"
-        sample_chooser 
-      when "Batched"
-        batched_chooser
+      when "Basics"then basic_chooser
+      when "Samples" then sample_chooser 
+      when "Batched" then batched_chooser
     end
 
     return {
