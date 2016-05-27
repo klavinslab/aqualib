@@ -139,7 +139,7 @@ class Protocol
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     s = Sample.find_by_name(descriptor[:name])
-    collections = ot.collections.reject { |i| i.deleted? }    
+    collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
 
     result = show do 
       title "Choose collection"
