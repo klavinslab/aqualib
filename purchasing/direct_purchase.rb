@@ -33,12 +33,7 @@ class Protocol
       when "Batched" then batched_chooser
     end
 
-    return {
-
-      user: @user.login,
-      job: @job.id
-
-    }
+    return {}
 
   end
   
