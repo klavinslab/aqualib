@@ -154,7 +154,7 @@ class Protocol
       items.each do |i|
         item i
       end
-      #select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
+      select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
 
   end
