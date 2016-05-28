@@ -94,7 +94,7 @@ class Protocol
     
     result = show do 
       title "Choose item"
-      note "cost each"
+      note "#{cost} each"
       items.each do |i|
         item i
       end
