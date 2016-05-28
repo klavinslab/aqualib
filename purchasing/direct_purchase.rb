@@ -145,6 +145,22 @@ class Protocol
       select collections.collect { |i| i.id }, var: "choice", label: "Choose collection", default: 0
       get "number", var: "n", label: "How many samples?", default: 1
     end
+    
+    collection = collections.find { |c| c.id == result[:id] }
+    
+    n = [ collection.num_samples, [ 1, result[:n]].max ] ].min
+    m = descriptor[:materials]
+    l = descriptor[:labor]
+    
+    mc = currency(n*m)
+    lc = currency(n*l)
+    
+    show do 
+      title "Purchase #{n} samples from collection #{collection.id}" 
+      note "Material: #{mc}"
+      note "Labor: #{lc}"
+      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+    end
 
   end
   
