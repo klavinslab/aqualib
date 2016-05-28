@@ -194,6 +194,7 @@ class Protocol
         if m[i][j] != -1 && x < n
           m[i][j] = -1
           x += 1
+          puts "#{i}, #{j} => -1"
         end
       end
     end
