@@ -148,7 +148,7 @@ class Protocol
     
     collection = collections.find { |c| c.id == result[:id] }
     
-    n = [ collection.num_samples, [ 1, result[:n]].max ] ].min
+    n = [ collection.num_samples, [ 1, result[:n]].max ].min
     m = descriptor[:materials]
     l = descriptor[:labor]
     
