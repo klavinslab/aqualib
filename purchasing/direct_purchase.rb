@@ -142,7 +142,7 @@ class Protocol
     result = show do 
       title "Choose collection"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
-      select collections.collect { |c| c.id }, var: "choice", label: "Choose collection", default: 0
+      select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
       get "number", var: "n", label: "How many samples?", default: 1
     end
     
