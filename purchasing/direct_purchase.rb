@@ -58,7 +58,7 @@ class Protocol
       title "#{result[:choice]} Costs"
       note "Material: #{m}"
       note "Labor: #{l}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
     
     if result[:choice] == "Ok"    
@@ -107,7 +107,7 @@ class Protocol
       note "Item: #{item.id}"
       note "Material: #{mc}"
       note "Labor: #{lc}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end        
     
     if result[:choice] == "Ok"    
@@ -162,7 +162,7 @@ class Protocol
       title "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}" 
       note "Material: #{mc}"
       note "Labor: #{lc}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Choose item", default: 0
+      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
 
   end
