@@ -161,7 +161,7 @@ class Protocol
     lc = currency(n*l)
     message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
     
-    show do 
+    result = show do 
       title message
       note "Material: #{mc}"
       note "Labor: #{lc}"
