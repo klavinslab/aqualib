@@ -189,6 +189,8 @@ class Protocol
     m = collection.matrix
     x = 0
     
+    puts "#{m}"
+    
     (0..m.length-1).each do |i|
       (0..m[i].length-1).each do |j|
         if m[i][j] != -1 && x < n
