@@ -133,8 +133,6 @@ class Protocol
     result = show do
       title "Choose sample type" 
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
-      select [ "Yes", "No" ], var: "batch", label: "Take an entire batch", default: 1
-      get "number", var: "n", label: "How Many (if not the entire batch)?", default: 1
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
@@ -145,6 +143,7 @@ class Protocol
       title "Choose collection"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |i| i.id }, var: "choice", label: "Choose collection", default: 0
+      get "number", var: "n", label: "How many samples?", default: 1
     end
 
   end
