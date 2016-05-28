@@ -169,6 +169,7 @@ class Protocol
     end
     
     if result[:choice] == "Ok"
+      puts "Ok"
       take_samples collection, n
       task = make_purchase message, n*m, n*l
       show do
