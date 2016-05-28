@@ -24,7 +24,7 @@ class Protocol
       note "Basics: tubes, tip boxes, ..."
       note "Samples: media, ..."
       note "Batched: Gibson Aliquots, plates, ..."
-      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
+      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 1
     end
 
     case result[:choice]
@@ -82,11 +82,19 @@ class Protocol
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    m = descriptor[:materials]
+    l = descriptor[:labor]
+    del = descriptor[:delete]
+    mc = currency(m)
+    lc = currency(l)
+    cost = currency(m+l)
+    
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
     
     result = show do 
       title "Choose item"
+      note "cost each"
       items.each do |i|
         item i
       end
@@ -94,12 +102,7 @@ class Protocol
     end
     
     item = Item.find(result[:choice])
-    m = descriptor[:materials]
-    l = descriptor[:labor]
-    del = descriptor[:delete]
-    
-    mc = currency(m)
-    lc = currency(l)
+
     
     result = show do
       title "#{ot.name} / #{s.name} Costs"
