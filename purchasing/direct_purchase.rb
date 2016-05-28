@@ -136,6 +136,10 @@ class Protocol
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    m = descriptor[:materials]
+    l = descriptor[:labor]
+    cost = currency(m+l)
+    
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
 
@@ -143,15 +147,13 @@ class Protocol
       title "Choose collection"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
-      get "number", var: "n", label: "How many samples?", default: 14
+      get "number", var: "n", label: "How many samples (#{cost} each)?", default: 14
     end
     
     collection = collections.find { |c| c.id == result[:id].to_i }
     
     n = [ collection.num_samples, [ 1, result[:n]].max ].min
-    m = descriptor[:materials]
-    l = descriptor[:labor]
-    
+
     mc = currency(n*m)
     lc = currency(n*l)
     
