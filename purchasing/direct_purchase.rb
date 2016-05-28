@@ -169,7 +169,6 @@ class Protocol
     end
     
     if result[:choice] == "Ok"
-      puts "Ok"
       take_samples collection, n
       task = make_purchase message, n*m, n*l
       show do
@@ -190,14 +189,14 @@ class Protocol
     m = collection.matrix
     x = 0
     
-    puts "#{m}"
+    show { note "#{m}" }
     
     (0..m.length-1).each do |i|
       (0..m[i].length-1).each do |j|
         if m[i][j] != -1 && x < n
           m[i][j] = -1
           x += 1
-          puts "#{i}, #{j} => -1"
+          show { note "#{i}, #{j} => -1" }
         end
       end
     end
