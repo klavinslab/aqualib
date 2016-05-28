@@ -24,7 +24,7 @@ class Protocol
       note "Basics: tubes, tip boxes, ..."
       note "Samples: media, ..."
       note "Batched: Gibson Aliquots, plates, ..."
-      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 1
+      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
     end
 
     case result[:choice]
@@ -146,7 +146,7 @@ class Protocol
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
 
     result = show do 
-      title "Choose collection"
+      title "Choose #{ot.name}, #{s.name}"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
       get "number", var: "n", label: "How many samples (#{cost} each)?", default: 14
