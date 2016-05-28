@@ -6,6 +6,7 @@ class Protocol
 
   def main
 
+    @object_types = ObjectType.all
     @job = Job.find(jid)
     @user = User.find(@job.user_id)
     user = @user # Can't put @user in show, becuase it would refer to the rwong object
@@ -17,7 +18,6 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
-    @object_types = ObjectType.all
     
     result = show do
       title "Select Category"
