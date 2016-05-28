@@ -150,7 +150,7 @@ class Protocol
       title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
-      get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 4
+      get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 44
     end
     
     collection = collections.find { |c| c.id == result[:id].to_i }
