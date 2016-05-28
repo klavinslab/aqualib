@@ -93,8 +93,7 @@ class Protocol
     items = s.items.reject { |i| i.deleted? }
     
     result = show do 
-      title "Choose item"
-      note "#{cost} each"
+      title "Choose #{ot.name} of #{s.name} (#{cost} each)"
       items.each do |i|
         item i
       end
