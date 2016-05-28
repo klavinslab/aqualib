@@ -102,8 +102,10 @@ class Protocol
     
     item = Item.find(result[:choice])
     
+    message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
+    
     result = show do
-      title "#{ot.name} / #{s.name} Costs"
+      title message
       note "Item: #{item.id}"
       note "Material: #{mc}"
       note "Labor: #{lc}"
@@ -111,7 +113,7 @@ class Protocol
     end        
     
     if result[:choice] == "Ok"    
-      task = make_purchase "#{ot.name}/#{s.name}/#{item.id}", m, l
+      task = make_purchase message, m, l
       show do
         title "Created task number #{task.id}"
       end
@@ -157,9 +159,10 @@ class Protocol
 
     mc = currency(n*m)
     lc = currency(n*l)
+    message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
     
     show do 
-      title "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}" 
+      title message
       note "Material: #{mc}"
       note "Labor: #{lc}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
