@@ -93,7 +93,7 @@ class Protocol
     items = s.items.reject { |i| i.deleted? }
     
     result = show do 
-      title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
+      title "Choose #{ot.name} of #{s.name} (#{cost} each)"
       items.each do |i|
         item i
       end
@@ -101,7 +101,6 @@ class Protocol
     end
     
     item = Item.find(result[:choice])
-
     
     result = show do
       title "#{ot.name} / #{s.name} Costs"
@@ -146,10 +145,10 @@ class Protocol
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
 
     result = show do 
-      title "Choose #{ot.name}, #{s.name}"
+      title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
-      get "number", var: "n", label: "How many samples (#{cost} each)?", default: 14
+      get "number", var: "n", label: "How many samples?", default: 14
     end
     
     collection = collections.find { |c| c.id == result[:id].to_i }
