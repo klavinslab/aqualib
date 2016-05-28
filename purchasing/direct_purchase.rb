@@ -167,7 +167,40 @@ class Protocol
       note "Labor: #{lc}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
+    
+    if result[:choice] == "Ok"
+      take_samples collection, n
+      task = make_purchase message, n*m, n*l
+      show do
+        title "Created task number #{task.id}"
+      end
+      if collection.num_samples == 0
+        collection.mark_as_deleted
+        show do
+          title "Deleted collection #{collection.id}"
+        end            
+      end
+    end    
 
+  end
+  
+  def take_samples collection, n
+     
+    m = collection.matrix
+    x = 0
+    
+    (0..m.length-1).each do |i|
+      (0..m[i].length-1).each do |j|
+        if m[i][j] != -1 && x < n
+          m[i][j] = -1
+          x += 1
+        end
+      end
+    end
+    
+    collection.matrix = m
+    collection.save
+      
   end
   
   def make_purchase description, mat, lab
