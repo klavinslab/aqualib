@@ -143,7 +143,7 @@ class Protocol
       title "Choose collection"
       table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
       select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
-      get "number", var: "n", label: "How many samples?", default: 1
+      get "number", var: "n", label: "How many samples?", default: 14
     end
     
     collection = collections.find { |c| c.id == result[:id].to_i }
