@@ -107,16 +107,20 @@ class Protocol
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
-    item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
-    message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
     
-    if confirm message, cost
-      take [item]
-      task = make_purchase message, m, l
-      release [item]
-      if del
-        item.mark_as_deleted
+    if items.length > 0
+      item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
+      message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
+      if confirm message, cost
+        take [item]
+        task = make_purchase message, m, l
+        release [item]
+        if del
+          item.mark_as_deleted
+        end
       end
+    else
+      error "There are no items of #{ot.name}/#{s.name} in stock"
     end
               
   end
@@ -167,10 +171,7 @@ class Protocol
         
     else
         
-      show do
-        title "No #{ot.name} in stock"
-        note "Please contact the lab manager if you need this inventory item to be made."
-      end
+      error "There are no #{ot.name} in stock"
         
     end
 
@@ -194,6 +195,13 @@ class Protocol
     collection.save
     take [collection]
       
+  end
+  
+  def error msg
+    show do 
+      title msg
+      note "Please notify the lab manager of this problem"
+    end      
   end
   
   def confirm message, cost
