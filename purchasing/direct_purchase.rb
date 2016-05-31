@@ -48,11 +48,8 @@ class Protocol
       
       result = show do
         title  "Summary"
-        if tab.length > 1 
-          table tab
-        else
-          note "No purchases made"
-        end
+        table tab if tab.length > 1 
+        note "No purchases made" unless tab.length > 1
         select [ "No", "Yes" ], var: "again", label: "Would you like to make another purchase?", default: 0
       end
       
