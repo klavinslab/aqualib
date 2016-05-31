@@ -85,15 +85,7 @@ class Protocol
         
     if items.length > 0  
         
-      result = show do 
-        title "Choose #{ot.name} (#{cost} each)"
-        items.each do |i|
-          item i
-        end
-        select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
-      end
-      
-      item = Item.find(result[:choice])    
+      item = choose_item items, "Choose #{ot.name} (#{cost} each)"
       message = "Purchase item #{ot.name}, item no. #{result[:choice]}"
     
       if confirm(message,cost) == "Ok"   
@@ -132,16 +124,7 @@ class Protocol
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
-    
-    result = show do 
-      title "Choose #{ot.name} of #{s.name} (#{cost} each)"
-      items.each do |i|
-        item i
-      end
-      select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
-    end
-    
-    item = Item.find(result[:choice])
+    item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
     message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
     
     if confirm(message,cost) == "Ok"  
@@ -236,6 +219,17 @@ class Protocol
       note "Cost: #{total_cost}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
+  end
+  
+  def choose_item items, message
+    result = show do 
+      title message
+      items.each do |i|
+        item i
+      end
+      select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
+    end
+    Item.find(result[:choice])          
   end
   
   def make_purchase description, mat, lab
