@@ -134,11 +134,9 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
+    cost = currency(m+l)    
     del = descriptor[:delete]
-    mc = currency(m)
-    lc = currency(l)
-    cost = currency(m+l)
-    
+
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
     
@@ -156,9 +154,7 @@ class Protocol
     
     result = show do
       title message
-      note "Item: #{item.id}"
-      note "Material: #{mc}"
-      note "Labor: #{lc}"
+      note "Cost: #{cost}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end        
     
@@ -205,15 +201,13 @@ class Protocol
       collection = collections.find { |c| c.id == result[:id].to_i }
         
       n = [ collection.num_samples, [ 1, result[:n]].max ].min
-    
-      mc = currency(n*m)
-      lc = currency(n*l)
+      total_cost = currency(n*m+n*l)
+      
       message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
         
       result = show do 
         title message
-        note "Material: #{mc}"
-        note "Labor: #{lc}"
+        note "Cost: #{total_cost}"
         select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
       end
         
