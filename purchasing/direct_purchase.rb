@@ -41,7 +41,7 @@ class Protocol
       transactions = @tasks.collect { |t| t.accounts }.flatten
       result = show do
         title  "Summary"
-        table [ [ "Description", "Amount" ] ] + transactions.collect { |t| [ t.description, t.total ] }
+        table [ [ "Description", "Amount" ] ] + transactions.collect { |t| [ t.description, (1+t.markup_date)*t.amount ] }
         select [ "No", "Yes" ], var: "again", label: "Would you like to make another purchase?", default: 0
       end
       again = ( result[:again] == "Yes" )
