@@ -246,7 +246,6 @@ class Protocol
   end
   
   def valid_sample_descriptor s
-    puts s
     val = s[:name]      && s[:name].class == String &&
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
           s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum )    
@@ -255,20 +254,17 @@ class Protocol
   end
   
   def basic? ot
-    ot.handler != "sample_container"  &&
-    ot.handler != "collection"  &&
+    ot.handler != "sample_container" && ot.handler != "collection"  &&
     ot.data_object[:materials] && ot.data_object[:labor]      
   end
   
   def sample? ot
-    ot.handler == "sample_container" && 
-    ot.data_object[:samples] && 
+    ot.handler == "sample_container" && ot.data_object[:samples] && 
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
   
   def batched? ot
-    ot.handler == "collection" && 
-    ot.data_object[:samples] && 
+    ot.handler == "collection" && ot.data_object[:samples] && 
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
 
