@@ -75,7 +75,7 @@ class Protocol
   ###############################################################################################################
   def basic_chooser 
       
-    basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
+    basics = @object_types.select { |ot| basic? ot }      
 
     ot = choose_object_from basics
     m = ot.data_object[:materials]
@@ -91,7 +91,7 @@ class Protocol
   ###############################################################################################################
   def sample_chooser 
       
-    samples = @object_types.select { |ot| purchase_info(ot) == "sample" }      
+    samples = @object_types.select { |ot| sample? ot }      
     ot = choose_object_from samples
 
     result = show do
@@ -128,7 +128,7 @@ class Protocol
   ###############################################################################################################
   def batched_chooser 
  
-    collections = @object_types.select { |ot| purchase_info(ot) == "collection" }      
+    collections = @object_types.select { |ot| batched? ot }
     ot = choose_object_from collections
     
     result = show do
@@ -259,19 +259,17 @@ class Protocol
     val
   end
   
-  def purchase_info ot
-    if ot.data_object[:materials] && ot.data_object[:labor]
-      "basic"
-    elsif ot.handler == "sample_container" && ot.data_object[:samples]
-      ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
-      "sample"
-    elsif ot.handler == "collection" && ot.data_object[:samples]
-      ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }    
-      "collection"
-    else
-      nil
-    end
-  end 
+  def basic?
+    ot.data_object[:materials] && ot.data_object[:labor]      
+  end
+  
+  def sample?
+    ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
+  end
+  
+  def batched?
+    ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
+  end
 
   def currency num
     ActionController::Base.helpers.number_to_currency num
