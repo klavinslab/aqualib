@@ -97,8 +97,10 @@ class Protocol
         select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
       end
     
-      if result[:choice] == "Ok"    
+      if result[:choice] == "Ok"   
+        take [item]
         task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
+        release [item]
       end        
       
     else
@@ -154,8 +156,10 @@ class Protocol
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end        
     
-    if result[:choice] == "Ok"    
+    if result[:choice] == "Ok"  
+      take [item]
       task = make_purchase message, m, l
+      release [item]
       if del
         item.mark_as_deleted
       end
@@ -210,6 +214,7 @@ class Protocol
       if result[:choice] == "Ok"
         take_samples collection, n
         task = make_purchase message, n*m, n*l
+        release [collection]
         if collection.num_samples == 0
           collection.mark_as_deleted
         end
@@ -242,6 +247,7 @@ class Protocol
     
     collection.matrix = m
     collection.save
+    take [collection]
       
   end
   
