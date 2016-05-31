@@ -158,42 +158,54 @@ class Protocol
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
-
-    result = show do 
-      title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
-      table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
-      select collections.collect { |c| c.id }, var: "id", label: "Choose collection", default: 0
-      get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 2
-    end
+    cids = collections.collect { |c| c.id }
     
-    collection = collections.find { |c| c.id == result[:id].to_i }
+    if cids.length > 0
     
-    n = [ collection.num_samples, [ 1, result[:n]].max ].min
-
-    mc = currency(n*m)
-    lc = currency(n*l)
-    message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
-    
-    result = show do 
-      title message
-      note "Material: #{mc}"
-      note "Labor: #{lc}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
-    end
-    
-    if result[:choice] == "Ok"
-      take_samples collection, n
-      task = make_purchase message, n*m, n*l
-      show do
-        title "Created task number #{task.id}"
+      result = show do 
+        title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
+        table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
+        select cids, var: "id", label: "Choose collection", default: 0
+        get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 2
       end
-      if collection.num_samples == 0
-        collection.mark_as_deleted
+        
+      collection = collections.find { |c| c.id == result[:id].to_i }
+        
+      n = [ collection.num_samples, [ 1, result[:n]].max ].min
+    
+      mc = currency(n*m)
+      lc = currency(n*l)
+      message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
+        
+      result = show do 
+        title message
+        note "Material: #{mc}"
+        note "Labor: #{lc}"
+        select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
+      end
+        
+      if result[:choice] == "Ok"
+        take_samples collection, n
+        task = make_purchase message, n*m, n*l
         show do
-          title "Deleted collection #{collection.id}"
-        end            
+          title "Created task number #{task.id}"
+        end
+        if collection.num_samples == 0
+          collection.mark_as_deleted
+          show do
+            title "Deleted collection #{collection.id}"
+          end            
+        end
+      end    
+        
+    else
+        
+      show do
+        title "No #{ot.name} in stock"
+        note "Please contact the lab manager if you need this inventory item to be made."
       end
-    end    
+        
+    end
 
   end
   
