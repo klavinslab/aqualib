@@ -251,6 +251,7 @@ class Protocol
   end
   
   def valid_sample_descriptor s
+    puts s
     val = s[:name]      && s[:name].class == String &&
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
           s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum )    
