@@ -198,7 +198,7 @@ class Protocol
       note "Cost: #{cost}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
-    result[:choice] == "Ok"
+    return (result[:choice] == "Ok")
   end
   
   def choose_item items, message
