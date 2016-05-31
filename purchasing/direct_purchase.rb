@@ -77,11 +77,8 @@ class Protocol
     ot = choose_object_from basics
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
-    cost = currency(m+l)
-        
-    message = "Purchase item #{ot.name}"
     
-    if confirm(message,cost) == "Ok"   
+    if confirm("Purchase item #{ot.name}",currency(m+l)) == "Ok"   
       task = make_purchase message, m, l
     end        
       
