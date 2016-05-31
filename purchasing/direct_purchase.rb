@@ -78,8 +78,9 @@ class Protocol
     basics = @object_types.select { |ot| purchase_info(ot) == "basic" }      
 
     ot = choose_object_from basics
-    m = currency(ot.data_object[:materials])
-    l = currency(ot.data_object[:labor])
+    m = ot.data_object[:materials]
+    l = ot.data_object[:labor]
+    cost = currency(m+l)
     items = ot.items.reject { |i| i.deleted? }
         
     if items.length > 0  
@@ -98,14 +99,13 @@ class Protocol
     
       result = show do
         title message
-        note "Material: #{m}"
-        note "Labor: #{l}"
+        note "Cost: #{cost}"
         select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
       end
     
       if result[:choice] == "Ok"   
         take [item]
-        task = make_purchase message, ot.data_object[:materials], ot.data_object[:labor]
+        task = make_purchase message, m, l
         release [item]
       end        
       
