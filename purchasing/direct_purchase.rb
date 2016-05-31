@@ -213,7 +213,7 @@ class Protocol
   def confirm message, cost
     result = show do 
       title message
-      note "Cost: #{total_cost}"
+      note "Cost: #{cost}"
       select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
     end
   end
