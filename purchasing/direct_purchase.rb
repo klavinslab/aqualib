@@ -20,21 +20,18 @@ class Protocol
     @budget = Budget.find_by_name(result[:choice])
     @tasks = []
     
-    i = 0
     again = true
     
-    while again || i < 3
+    while again 
     
       result = show do
         title "Select Category"
         note "Basics: tubes, tip boxes, ..."
         note "Samples: media, ..."
         note "Batched: Gibson Aliquots, plates, ..."
-        select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: i
+        select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 0
       end
       
-      i += 1
-    
       case result[:choice]
         when "Basics"then basic_chooser
         when "Samples" then sample_chooser 
