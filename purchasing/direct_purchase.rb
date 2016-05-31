@@ -266,6 +266,7 @@ class Protocol
   end
   
   def sample? ot
+    false &&
     ot.handler == "sample_container" && 
     ot.data_object[:samples] && 
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
