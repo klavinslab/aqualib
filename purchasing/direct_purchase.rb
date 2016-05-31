@@ -94,8 +94,10 @@ class Protocol
       
       item = Item.find(result[:choice])    
     
+      message = "Purchase item #{ot.name}, item no. #{result[:choice]}"
+    
       result = show do
-        title "#{result[:choice]} Costs"
+        title message
         note "Material: #{m}"
         note "Labor: #{l}"
         select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
@@ -103,7 +105,7 @@ class Protocol
     
       if result[:choice] == "Ok"   
         take [item]
-        task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
+        task = make_purchase message, ot.data_object[:materials], ot.data_object[:labor]
         release [item]
       end        
       
