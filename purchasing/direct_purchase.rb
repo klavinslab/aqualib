@@ -201,7 +201,7 @@ class Protocol
     show do 
       title msg
       note details if details
-      note "Please notify a lab manager concerning this problem"
+      note "Please report this problem to a BIOFAB lab manager."
     end      
   end
   
