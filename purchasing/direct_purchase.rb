@@ -29,7 +29,7 @@ class Protocol
         note "Basics: tubes, tip boxes, ..."
         note "Samples: media, ..."
         note "Batched: Gibson Aliquots, plates, ..."
-        select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 1
+        select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
       end
     
       case result[:choice]
