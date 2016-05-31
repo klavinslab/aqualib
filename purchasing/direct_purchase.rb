@@ -231,13 +231,14 @@ class Protocol
          }.to_json
       })
       task.save
-      unless task.errors.empty?
+      if task.errors.empty?
+        set_task_status(task,"purchased")          
+      else
         show do
           title "Errors"
           note task.errors.full_messages.join(', ')
         end
       end
-      set_task_status(task,"purchased")
       task
     end
   end
