@@ -40,7 +40,7 @@ class Protocol
       
       transactions = @tasks.collect { |t| t.accounts }.flatten
       tab = [ [ "Description", "Amount" ] ] + transactions.collect { |t|
-        [ t.description, currency((1+t.markup_rate)*t.amount) ] 
+        [ t.description.split(":")[0], currency((1+t.markup_rate)*t.amount) ] 
       }
       result = show do
         title  "Summary"
@@ -223,7 +223,7 @@ class Protocol
     if tp
       task = tp.tasks.create({
         user_id: @user.id, 
-        name: "#{DateTime.now.to_i}: #{description}",
+        name: "#{DateTime.now.to_i} - #{description}",
         status: "purchased",
         budget_id: @budget.id,
         specification: {
