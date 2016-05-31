@@ -39,7 +39,7 @@ class Protocol
       
       result = show do
         title "Would you like to make another purchase?"
-        select [ "No", "Yes" ], var: "again", label: "Another?", default 0
+        select [ "No", "Yes" ], var: "again", label: "Another?", default: 0
       end
       
       again = result[:again]
