@@ -44,7 +44,7 @@ class Protocol
       }
       result = show do
         title  "Summary"
-        table 
+        table tab
         select [ "No", "Yes" ], var: "again", label: "Would you like to make another purchase?", default: 0
       end
       again = ( result[:again] == "Yes" )
