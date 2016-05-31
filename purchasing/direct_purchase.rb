@@ -42,7 +42,7 @@ class Protocol
         select [ "No", "Yes" ], var: "again", label: "Another?", default: 0
       end
       
-      again = result[:again]
+      again = ( result[:again] == "Yes" )
         
     end
 
