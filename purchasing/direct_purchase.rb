@@ -260,15 +260,17 @@ class Protocol
   end
   
   def basic? ot
+    ot.handler != "sample_container"  &&
+    ot.handler != "collection"  &&
     ot.data_object[:materials] && ot.data_object[:labor]      
   end
   
   def sample? ot
-    ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
+    ot.handler == "sample_container" && ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
   
   def batched? ot
-    ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
+    ot.handler == "collection" && ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
 
   def currency num
