@@ -40,7 +40,10 @@ class Protocol
       
       transactions = @tasks.collect { |t| t.accounts }.flatten
       tab = [ [ "Description", "Amount" ] ] + transactions.collect { |t|
-        [ t.description.split(":")[0], currency((1+t.markup_rate)*t.amount) ] 
+        [ 
+         t.description.split(":")[0].split(" - ")[1], 
+          currency((1+t.markup_rate)*t.amount) 
+        ] 
       }
       result = show do
         title  "Summary"
