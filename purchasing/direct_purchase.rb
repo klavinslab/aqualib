@@ -78,7 +78,7 @@ class Protocol
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
     
-    if confirm("Purchase item #{ot.name}",currency(m+l)) == "Ok"   
+    if confirm "Purchase item #{ot.name}", currency(m+l) 
       task = make_purchase message, m, l
     end        
       
@@ -106,7 +106,7 @@ class Protocol
     item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
     message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
     
-    if confirm(message,cost) == "Ok"  
+    if confirm message, cost
       take [item]
       task = make_purchase message, m, l
       release [item]
@@ -152,7 +152,7 @@ class Protocol
       total_cost = currency(n*m+n*l)
       message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
         
-      if confirm(message,total_cost) == "Ok"
+      if confirm message, total_cost 
         take_samples collection, n
         task = make_purchase message, n*m, n*l
         release [collection]
