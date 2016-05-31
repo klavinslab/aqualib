@@ -201,7 +201,7 @@ class Protocol
     show do 
       title msg
       note details if details
-      note "Please notify the lab manager of this problem"
+      note "Please notify a lab manager concerning this problem"
     end      
   end
   
@@ -254,7 +254,7 @@ class Protocol
     val = s[:name]      && s[:name].class == "String" &&
           s[:materials] && ( s[:materials].class == "Float" || s[:materials].class == "Fixnum" ) &&
           s[:labor]     && ( s[:labor].class == "Float"     || s[:labor].class == "Fixnum" )    
-    error "Bad descriptor", "#{val.to_s}" unless val
+    error("Bad descriptor", val.to_s) unless val
     val
   end
   
