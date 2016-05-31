@@ -78,27 +78,12 @@ class Protocol
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
     cost = currency(m+l)
-    items = ot.items.reject { |i| i.deleted? }
         
-    if items.length > 0  
-        
-      item = choose_item items, "Choose #{ot.name} (#{cost} each)"
-      message = "Purchase item #{ot.name}, item no. #{item.id}"
+    message = "Purchase item #{ot.name}"
     
-      if confirm(message,cost) == "Ok"   
-        take [item]
-        task = make_purchase message, m, l
-        release [item]
-      end        
-      
-    else
-        
-      show do
-        title "No #{ot.name.pluralize} in stock"
-        note "Please contact the lab manager to request this item be made."
-      end
-      
-    end
+    if confirm(message,cost) == "Ok"   
+      task = make_purchase message, m, l
+    end        
       
   end
   
