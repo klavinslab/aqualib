@@ -19,18 +19,31 @@ class Protocol
     
     @budget = Budget.find_by_name(result[:choice])
     
-    result = show do
-      title "Select Category"
-      note "Basics: tubes, tip boxes, ..."
-      note "Samples: media, ..."
-      note "Batched: Gibson Aliquots, plates, ..."
-      select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
-    end
-
-    case result[:choice]
-      when "Basics"then basic_chooser
-      when "Samples" then sample_chooser 
-      when "Batched" then batched_chooser
+    again = true
+    
+    while again
+    
+      result = show do
+        title "Select Category"
+        note "Basics: tubes, tip boxes, ..."
+        note "Samples: media, ..."
+        note "Batched: Gibson Aliquots, plates, ..."
+        select [ "Basics", "Samples", "Batched" ], var: "choice", label: "Choose something", default: 2
+      end
+    
+      case result[:choice]
+        when "Basics"then basic_chooser
+        when "Samples" then sample_chooser 
+        when "Batched" then batched_chooser
+      end
+      
+      result = show do
+        title "Would you like to make another purchase?"
+        select [ "No", "Yes" ], var: "again", label: "Another?", default 0
+      end
+      
+      again = result[:again]
+        
     end
 
     return {}
