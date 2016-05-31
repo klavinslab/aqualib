@@ -76,7 +76,6 @@ class Protocol
   def basic_chooser 
       
     basics = @object_types.select { |ot| basic? ot }      
-
     ot = choose_object_from basics
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
@@ -103,7 +102,6 @@ class Protocol
     m = descriptor[:materials]
     l = descriptor[:labor]
     cost = currency(m+l)    
-    del = descriptor[:delete]
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
@@ -115,7 +113,7 @@ class Protocol
         take [item]
         task = make_purchase message, m, l
         release [item]
-        if del
+        if descriptor[:delete]
           item.mark_as_deleted
         end
       end
