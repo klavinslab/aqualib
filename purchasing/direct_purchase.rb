@@ -251,9 +251,9 @@ class Protocol
   end
   
   def valid_sample_descriptor s
-    val = s[:name]      && s[:name].class == "String" &&
-          s[:materials] && ( s[:materials].class == "Float" || s[:materials].class == "Fixnum" ) &&
-          s[:labor]     && ( s[:labor].class == "Float"     || s[:labor].class == "Fixnum" )    
+    val = s[:name]      && s[:name].class == String &&
+          s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
+          s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum )    
     error("Bad descriptor", s.to_s) unless val
     val
   end
