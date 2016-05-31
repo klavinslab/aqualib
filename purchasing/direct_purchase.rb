@@ -260,10 +260,10 @@ class Protocol
     if ot.data_object[:materials] && ot.data_object[:labor]
       "basic"
     elsif ot.handler == "sample_container" && ot.data_object[:samples]
-      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor }
+      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor s }
       "sample"
     elsif ot.handler == "collection" && ot.data_object[:samples]
-      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor }    
+      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor s }    
       "collection"
     else
       nil
