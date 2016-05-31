@@ -94,16 +94,9 @@ class Protocol
       end
       
       item = Item.find(result[:choice])    
-    
       message = "Purchase item #{ot.name}, item no. #{result[:choice]}"
     
-      result = show do
-        title message
-        note "Cost: #{cost}"
-        select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
-      end
-    
-      if result[:choice] == "Ok"   
+      if confirm(message,cost) == "Ok"   
         take [item]
         task = make_purchase message, m, l
         release [item]
@@ -149,16 +142,9 @@ class Protocol
     end
     
     item = Item.find(result[:choice])
-    
     message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
     
-    result = show do
-      title message
-      note "Cost: #{cost}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
-    end        
-    
-    if result[:choice] == "Ok"  
+    if confirm(message,cost) == "Ok"  
       take [item]
       task = make_purchase message, m, l
       release [item]
@@ -202,16 +188,9 @@ class Protocol
         
       n = [ collection.num_samples, [ 1, result[:n]].max ].min
       total_cost = currency(n*m+n*l)
-      
       message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
         
-      result = show do 
-        title message
-        note "Cost: #{total_cost}"
-        select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
-      end
-        
-      if result[:choice] == "Ok"
+      if confirm(message,total_cost) == "Ok"
         take_samples collection, n
         task = make_purchase message, n*m, n*l
         release [collection]
@@ -249,6 +228,14 @@ class Protocol
     collection.save
     take [collection]
       
+  end
+  
+  def confirm message, cost
+    result = show do 
+      title message
+      note "Cost: #{total_cost}"
+      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
+    end
   end
   
   def make_purchase description, mat, lab
