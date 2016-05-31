@@ -197,9 +197,10 @@ class Protocol
       
   end
   
-  def error msg
+  def error msg, details=nil
     show do 
       title msg
+      note details if details
       note "Please notify the lab manager of this problem"
     end      
   end
@@ -242,11 +243,7 @@ class Protocol
       if task.errors.empty?
         set_task_status(task,"purchased")          
       else
-        show do
-          title "Errors"
-          note task.errors.full_messages.join(', ')
-          note "Please contact the lab manager concerning this error."
-        end
+        error "Errors", task.errors.full_messages.join(', ')
       end
       @tasks << task
       task
