@@ -18,6 +18,7 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
+    @tasks = []
     
     again = true
     
@@ -37,11 +38,12 @@ class Protocol
         when "Batched" then batched_chooser
       end
       
+      transactions = @tasks.collect { |t| t.accounts }.flatten
       result = show do
-        title "Would you like to make another purchase?"
-        select [ "No", "Yes" ], var: "again", label: "Another?", default: 0
+        title  "Summary"
+        table [ [ "Description", "Amount" ] ] + transactions.collect { |t| [ t.description, t.total ] }
+        select [ "No", "Yes" ], var: "again", label: "Would you like to make another purchase?", default: 0
       end
-      
       again = ( result[:again] == "Yes" )
         
     end
@@ -76,9 +78,6 @@ class Protocol
     
     if result[:choice] == "Ok"    
       task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
-      show do
-        title "Created task number #{task.id}"
-      end
     end      
       
   end
@@ -127,14 +126,8 @@ class Protocol
     
     if result[:choice] == "Ok"    
       task = make_purchase message, m, l
-      show do
-        title "Created task number #{task.id}"
-      end
       if del
         item.mark_as_deleted
-        show do
-          title "Deleted item #{item.id}"
-        end            
       end
     end
               
@@ -187,14 +180,8 @@ class Protocol
       if result[:choice] == "Ok"
         take_samples collection, n
         task = make_purchase message, n*m, n*l
-        show do
-          title "Created task number #{task.id}"
-        end
         if collection.num_samples == 0
           collection.mark_as_deleted
-          show do
-            title "Deleted collection #{collection.id}"
-          end            
         end
       end    
         
@@ -252,6 +239,7 @@ class Protocol
           note "Please contact the lab manager concerning this error."
         end
       end
+      @tasks << task
       task
     end
   end
