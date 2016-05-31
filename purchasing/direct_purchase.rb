@@ -249,6 +249,7 @@ class Protocol
         show do
           title "Errors"
           note task.errors.full_messages.join(', ')
+          note "Please contact the lab manager concerning this error."
         end
       end
       task
