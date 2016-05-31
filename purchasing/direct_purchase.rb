@@ -9,7 +9,7 @@ class Protocol
     @object_types = ObjectType.all
     @job = Job.find(jid)
     @user = User.find(@job.user_id)
-    user = @user # Can't put @user in show, becuase it would refer to the rwong object
+    user = @user # Can't put @user in show, becuase it would refer to the wrong object
 
     result = show do
       title "Choose a budget"
