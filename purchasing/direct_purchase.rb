@@ -250,12 +250,20 @@ class Protocol
     end
   end
   
+  def valid_sample_descriptor s
+    s[:name]      && s[:name].class == "String" &&
+    s[:materials] && ( s[:materials].class == "Float" || s[:materials].class == "Fixnum" ) &&
+    s[:labor]     && ( s[:labor].class == "Float"     || s[:labor].class == "Fixnum" )    
+  end
+  
   def purchase_info ot
     if ot.data_object[:materials] && ot.data_object[:labor]
       "basic"
     elsif ot.handler == "sample_container" && ot.data_object[:samples]
+      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor }
       "sample"
     elsif ot.handler == "collection" && ot.data_object[:samples]
+      ot.data_object[:samples].each { |s| retun nil unless valid_sample_descriptor }    
       "collection"
     else
       nil
