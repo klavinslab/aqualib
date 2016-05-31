@@ -259,15 +259,15 @@ class Protocol
     val
   end
   
-  def basic?
+  def basic? ot
     ot.data_object[:materials] && ot.data_object[:labor]      
   end
   
-  def sample?
+  def sample? ot
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
   
-  def batched?
+  def batched? ot
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
 
