@@ -165,9 +165,7 @@ class Protocol
       end    
         
     else
-        
       error "There are no #{ot.name} in stock"
-        
     end
 
   end
