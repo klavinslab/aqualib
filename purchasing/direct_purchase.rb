@@ -83,7 +83,7 @@ class Protocol
     if items.length > 0  
         
       item = choose_item items, "Choose #{ot.name} (#{cost} each)"
-      message = "Purchase item #{ot.name}, item no. #{result[:choice]}"
+      message = "Purchase item #{ot.name}, item no. #{item.id}"
     
       if confirm(message,cost) == "Ok"   
         take [item]
