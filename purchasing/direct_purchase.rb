@@ -45,11 +45,13 @@ class Protocol
           currency((1+t.markup_rate)*t.amount) 
         ] 
       }
+      
       result = show do
         title  "Summary"
         table tab
         select [ "No", "Yes" ], var: "again", label: "Would you like to make another purchase?", default: 0
       end
+      
       again = ( result[:again] == "Yes" )
         
     end
@@ -74,17 +76,39 @@ class Protocol
     ot = choose_object_from basics
     m = currency(ot.data_object[:materials])
     l = currency(ot.data_object[:labor])
+    items = ot.items.reject { |i| i.deleted? }
+        
+    if items.length > 0  
+        
+      result = show do 
+        title "Choose #{ot.name} (#{cost} each)"
+        items.each do |i|
+          item i
+        end
+        select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
+      end
+      
+      item = Item.find(result[:choice])    
     
-    result = show do
-      title "#{result[:choice]} Costs"
-      note "Material: #{m}"
-      note "Labor: #{l}"
-      select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
+      result = show do
+        title "#{result[:choice]} Costs"
+        note "Material: #{m}"
+        note "Labor: #{l}"
+        select [ "Ok", "Cancel" ], var: "choice", label: "Ok to purchase?", default: 0
+      end
+    
+      if result[:choice] == "Ok"    
+        task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
+      end        
+      
+    else
+        
+      show do
+        title "No #{ot.name.pluralize} in stock"
+        note "Please contact the lab manager to request this item be made."
+      end
+      
     end
-    
-    if result[:choice] == "Ok"    
-      task = make_purchase ot.name, ot.data_object[:materials], ot.data_object[:labor]
-    end      
       
   end
   
