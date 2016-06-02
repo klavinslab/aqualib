@@ -18,7 +18,7 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
-    @overhead = Parameter.get("markup rate")
+    @overhead = Parameter.get_float("markup rate")
     @tasks = []
     
     again = true
