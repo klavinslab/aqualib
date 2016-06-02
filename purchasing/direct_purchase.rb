@@ -139,7 +139,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(@overhead(m+l))
+    cost = currency(@overhead*(m+l))
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
