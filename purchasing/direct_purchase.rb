@@ -83,7 +83,7 @@ class Protocol
     
     message = "Purchase item #{ot.name}"
 
-    if confirm message, currency(@overhead*n*(m+l)) 
+    if confirm message, currency((1+@overhead)*n*(m+l)) 
       task = make_purchase message, m, l
     end        
       
@@ -103,7 +103,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(@overhead*(m+l))    
+    cost = currency((1+@overhead)*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
@@ -139,7 +139,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(@overhead*(m+l))
+    cost = currency((1+@overhead)*(m+l))
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
@@ -157,7 +157,7 @@ class Protocol
       collection = collections.find { |c| c.id == result[:id].to_i }
         
       n = [ collection.num_samples, [ 1, result[:n]].max ].min
-      total_cost = currency(@overhead*(n*m+n*l))
+      total_cost = currency((1+@overhead)*(n*m+n*l))
       message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
         
       if confirm message, total_cost 
