@@ -157,7 +157,7 @@ class Protocol
       collection = collections.find { |c| c.id == result[:id].to_i }
         
       n = [ collection.num_samples, [ 1, result[:n]].max ].min
-      total_cost = currency(n*m+n*l)
+      total_cost = currency(@overhead*(n*m+n*l))
       message = "Purchase #{n} #{s.name.pluralize} from #{ot.name} #{collection.id}"
         
       if confirm message, total_cost 
