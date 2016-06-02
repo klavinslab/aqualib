@@ -75,14 +75,14 @@ class Protocol
   def basic_chooser 
       
     basics = @object_types.select { |ot| basic? ot }      
-    ot = choose_object_from basics
+    ot, n = choose_object_from basics, true
     
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
     
     message = "Purchase item #{ot.name}"
 
-    if confirm message, currency(m+l) 
+    if confirm message, currency(n*(m+l)) 
       task = make_purchase message, m, l
     end        
       
