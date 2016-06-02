@@ -84,7 +84,7 @@ class Protocol
     message = "Purchase #{n} #{ot.name.pluralize}"
 
     if confirm message, currency((1+@overhead)*n*(m+l)) 
-      task = make_purchase message, m, l
+      task = make_purchase message, n*m, n*l
     end        
       
   end
