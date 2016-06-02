@@ -19,6 +19,7 @@ class Protocol
     
     @budget = Budget.find_by_name(result[:choice])
     @overhead = Parameter.get_float("markup rate")
+    @labor = Parameter.get_float("labor rate")
     @tasks = []
     
     again = true
@@ -79,7 +80,7 @@ class Protocol
     ot, n = choose_object_from basics, true
     
     m = ot.data_object[:materials]
-    l = ot.data_object[:labor]
+    l = ot.data_object[:labor] * @labor
     
     message = "Purchase #{n} #{ot.name.pluralize}"
 
@@ -102,7 +103,7 @@ class Protocol
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor]
+    l = descriptor[:labor] * @labor
     cost = currency((1+@overhead)*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
@@ -138,7 +139,7 @@ class Protocol
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor]
+    l = descriptor[:labor] * @labor
     cost = currency((1+@overhead)*(m+l))
     
     s = Sample.find_by_name(descriptor[:name])
