@@ -18,6 +18,7 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
+    @overhead = Parameter.get("markup rate")
     @tasks = []
     
     again = true
@@ -82,7 +83,7 @@ class Protocol
     
     message = "Purchase item #{ot.name}"
 
-    if confirm message, currency(n*(m+l)) 
+    if confirm message, currency(@overhead*n*(m+l)) 
       task = make_purchase message, m, l
     end        
       
@@ -102,7 +103,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(m+l)    
+    cost = currency(@overhead*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
@@ -138,7 +139,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(m+l)
+    cost = currency(@overhead(m+l))
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
