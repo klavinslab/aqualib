@@ -97,7 +97,7 @@ class Protocol
 
     result = show do
       title "Chose Sample"
-      select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 0
+      select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
