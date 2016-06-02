@@ -61,12 +61,14 @@ class Protocol
 
   end
   
-  def choose_object_from objects
+  def choose_object_from objects, number=false
     result = show do
       title "Chose Object"
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+      get "number", var: "n", label: "How many?", default: 1 if number
     end
-    objects.find { |b| b.name == result[:choice] }
+    objects.find { |b| b.name == result[:choice] } unless number
+    [ objects.find { |b| b.name == result[:choice] }, result[:n] ] if number
   end
   
   ###############################################################################################################
@@ -74,8 +76,10 @@ class Protocol
       
     basics = @object_types.select { |ot| basic? ot }      
     ot = choose_object_from basics
+    
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
+    
     message = "Purchase item #{ot.name}"
 
     if confirm message, currency(m+l) 
