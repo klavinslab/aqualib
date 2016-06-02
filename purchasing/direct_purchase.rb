@@ -1,6 +1,6 @@
 # Title: Inventory Purchase Protocol
 # Author: Eric Klavins
-# Date: May 20, 2016 
+# Date: May 31, 2016 
  
 class Protocol
 
@@ -9,7 +9,7 @@ class Protocol
     @object_types = ObjectType.all
     @job = Job.find(jid)
     @user = User.find(@job.user_id)
-    user = @user # Can't put @user in show, becuase it would refer to the rwong object
+    user = @user # Can't put @user in show, becuase it would refer to the wrong object
 
     result = show do
       title "Choose a budget"
@@ -18,6 +18,7 @@ class Protocol
     end
     
     @budget = Budget.find_by_name(result[:choice])
+    @overhead = Parameter.get("markup rate")
     @tasks = []
     
     again = true
@@ -61,24 +62,28 @@ class Protocol
 
   end
   
-  def choose_object_from objects
+  def choose_object_from objects, number=false
     result = show do
       title "Chose Object"
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+      get "number", var: "n", label: "How many?", default: 5 if number
     end
-    objects.find { |b| b.name == result[:choice] }
+    objects.find { |b| b.name == result[:choice] } unless number
+    [ objects.find { |b| b.name == result[:choice] }, result[:n] ] if number
   end
   
   ###############################################################################################################
   def basic_chooser 
       
     basics = @object_types.select { |ot| basic? ot }      
-    ot = choose_object_from basics
+    ot, n = choose_object_from basics, true
+    
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
+    
     message = "Purchase item #{ot.name}"
 
-    if confirm message, currency(m+l) 
+    if confirm message, currency(@overhead*n*(m+l)) 
       task = make_purchase message, m, l
     end        
       
@@ -98,7 +103,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(m+l)    
+    cost = currency(@overhead*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
@@ -134,7 +139,7 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency(m+l)
+    cost = currency(@overhead*(m+l))
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
@@ -165,9 +170,7 @@ class Protocol
       end    
         
     else
-        
       error "There are no #{ot.name} in stock"
-        
     end
 
   end
@@ -246,7 +249,6 @@ class Protocol
   end
   
   def valid_sample_descriptor s
-    puts s
     val = s[:name]      && s[:name].class == String &&
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
           s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum )    
@@ -255,20 +257,17 @@ class Protocol
   end
   
   def basic? ot
-    ot.handler != "sample_container"  &&
-    ot.handler != "collection"  &&
+    ot.handler != "sample_container" && ot.handler != "collection"  &&
     ot.data_object[:materials] && ot.data_object[:labor]      
   end
   
   def sample? ot
-    ot.handler == "sample_container" && 
-    ot.data_object[:samples] && 
+    ot.handler == "sample_container" && ot.data_object[:samples] && 
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
   
   def batched? ot
-    ot.handler == "collection" && 
-    ot.data_object[:samples] && 
+    ot.handler == "collection" && ot.data_object[:samples] && 
     ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
   end
 
