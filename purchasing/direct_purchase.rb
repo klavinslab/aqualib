@@ -81,7 +81,7 @@ class Protocol
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
     
-    message = "Purchase item #{ot.name}"
+    message = "Purchase #{n} #{ot.name.pluralize}"
 
     if confirm message, currency((1+@overhead)*n*(m+l)) 
       task = make_purchase message, m, l
