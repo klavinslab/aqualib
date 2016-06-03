@@ -374,8 +374,8 @@ module Cloning
 
     if params[:show_together]
       show {
-        #ids = tabs.map { |t| t[1][0] }
-        title "Load #{cols[0].object_type.name.pluralize(tabs.length)} #{params[:title_appended_text]}"
+        ids = tabs.map { |t| t[0][0] }
+        title "Load #{cols[0].object_type.name.pluralize(tabs.length)} #{ids.join(", ")} #{params[:title_appended_text]}"
         tabs.each do |t|
           table heading + t
         end
