@@ -97,6 +97,18 @@ class Protocol
         else
           plasmid_volume_list.push ( 1000.0 / conc ).round(1)
         end
+      elsif p.sample.sample_type.name == "Fragment"
+        if length < 500
+          plasmid_volume_list.push (10 / conc).round(1)
+        elsif length < 1000
+          plasmid_volume_list.push (20 / conc).round(1)
+        elsif length < 2000
+          plasmid_volume_list.push (40 / conc).round(1)
+        elsif length < 4000
+          plasmid_volume_list.push (60 / conc).round(1)
+        else
+          plasmid_volume_list.push (80 / conc).round(1)
+       end
     end
 
     # set minimal volume to be 0.5 µL
