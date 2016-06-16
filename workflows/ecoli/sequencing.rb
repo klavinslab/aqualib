@@ -26,6 +26,7 @@ class Protocol
         true
       end
     end
+    batch_initials = "MP"
 
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
@@ -88,18 +89,24 @@ class Protocol
     plasmid_stocks.each_with_index do |p, idx|
       length = p.sample.properties["Length"]
       conc = p.datum[:concentration]
-      # source BioScience formula 1ng/uL per 100 bp in 10 uL reaction
-      plasmid_volume_list.push ( 10 * (length / 100) / conc ).round(1)
+      if p.sample.sample_type.name == "Plasmid" || length >= 4000
+        if length < 6000
+          plasmid_volume_list.push ( 500.0 / conc ).round(1)
+        elsif length < 10000
+          plasmid_volume_list.push ( 800.0 / conc ).round(1)
+        else
+          plasmid_volume_list.push ( 1000.0 / conc ).round(1)
+        end
     end
 
     # set minimal volume to be 0.5 µL
     plasmid_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
     # set maximal volume to be 12.5 µL
-    plasmid_volume_list.collect! { |x| x > 6.8 ? 6.8 : x }
+    plasmid_volume_list.collect! { |x| x > 12.5 ? 12.5 : x }
 
-    water_volume_list = plasmid_volume_list.collect{ |v| (((6.8-v)/0.2).floor*0.2).to_s + " µL" }
+    water_volume_list = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).to_s + " µL" }
     plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| ((plasmid_volume_list[i]/0.2).ceil*0.2).round(5).to_s + " µL of " + pid.to_s }
-    primers_with_volume = primer_aliquots.collect{ |p| "3.2 µL of " + p.id.to_s }
+    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
 
     # show {
     # 	note (water_volume_list.collect {|p| "#{p}"})
@@ -111,10 +118,10 @@ class Protocol
       title "Prepare Stripwells for Sequencing Reaction"
       stripwells.each_with_index do |sw,idx|
         if idx < stripwells.length - 1
-          check "Grab a stripwell with 12 wells, label the first well with #{idx*12+1} and last well with #{idx*12+12}"
+          check "Grab a stripwell with 12 wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{idx*12+12}"
         else
           number_of_wells = plasmid_stocks.length - idx * 12
-          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{idx*12+1} and last well with #{plasmid_stocks.length}"
+          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{plasmid_stocks.length}"
         end
       end
     }
@@ -140,63 +147,37 @@ class Protocol
 
     # create order table for sequencing
     sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
-    sequencing_tab = [["Template Barcode", "Template Name", "Pre-sequence Reactions", "Primer Name", "Primer Barcode", "PCR Reaction Cleanup Required", "Plasmid Extraction Required", "dGTP", "Template Amplification", "Sequencing Reactions Cleanup", "Addtional note"]]
     plasmid_stocks.each_with_index do |p,idx|
+      if p.sample.sample_type.name == "Plasmid"
+        dna_type = "Plasmid"
+      elsif p.sample.sample_type.name == "Fragment"
+        dna_type = "Purified PCR"
+      end
       owner_initials = name_initials(p.sample.user.name)
-      additional_note = p.object_type.name == "Fragment Stock" ? "DNA Source: purified PCR" : "N/A"
-      sequencing_tab.push ["N/A", "#{p.id}" + owner_initials + "#{primer_ids[idx]}", "No", "premixed"  , "N/A", "No", "No", "No", "No", "No", additional_note]
+      sequencing_tab.push ["#{p.id}-" + owner_initials, dna_type, p.sample.properties["Length"], primer_ids[idx]]
     end
 
     num = primer_ids.length
-    show {
-      title "Create a Source BioScience Order"
-      check "Go to <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (username: klavinslab1, password: 3glauber3)."
-      check "Hover mouse over LifeSciences -> find Genomic Services -> click on Sanger Sequencing Service"
-      check "Click on Start Sample Submission and follow along the following choices:"
-      check "Are you re-using previously submitted samples or primers? No"
-      check "Submitting your samples: Collection box. Location: Los Angeles"
-      check "Template type: Plasmid DNA"
-      check "Please enter the size of the template DNA: Leave blank"
-      check "Click checkbox declaration - I confirm that I understand and agree to the sample requirements."
-      check "How will you be sending your samples? Individual tubes"
-      check "Will you be barcoding your samples? No"
-      check "Skip Primer Synthesis (optional), click Continue"
-      check "Secondary structure resolution, click No for both."
-      check "Analysis settings, click  NEW PeakTrace™ Basecaller, Quantity value limit 10."
-      check "Mixed Base Identification Required? No"
-      check "Quality Clipping Required? No"
-      check "How do you want to receive your data? SpeedREAD email"
-    }
+    genewiz = show {
+      title "Create a Genewiz order"
+      check "Go the <a href='https://clims3.genewiz.com/default.aspx' target='_blank'>GENEWIZ website</a>, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
+      check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
+      check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
     
-    show {
-      title "Upload Excel Template"
-      check "Click Download the Excel template here to download excel file."
-      check "Copy and paste the second row to last of the table below to the Excel template."
       table sequencing_tab
-      check "Save and Upload by clicking upload your Excel template."
-      check "Submit Application."
-      check "Select number of eVouchers: #{plasmid_stocks.length}"
-      check "Click Place Order"
-      check "No Promotion Code. Click Continue."
-      check "Click Checkout"
-    }
-    
-    order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
-    
-    sourcebioscience = show {
-      title "Enter order ID"
-      check "Click My Account"
-      check "Find the most recent order, order date should be around #{order_date} enter the order ID in the following"
-      get "text", var: "tracking_num", label: "Enter Order ID", default: "4000000"
+      check "Click Save & Next, Review the form and click Next Step"
+      check "Enter Quotation Number MS0721101, click Next Step"
+      check "Print out the form and enter the Genewiz tracking number below."
+      get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
 
     show {
-      title "Put all stripwells in the Source BioScience dropbox"
+      title "Put all stripwells in the Genewiz dropbox"
       note "Cap all of the stripwells."
       note "Wrap the stripwells in parafilm."
       note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
-      note "Write the confirmation number (#{sourcebioscience[:tracking_num]}) on the envelope and seal."
-      note "Place the envelope in the Source BioScience dropbox."
+      note "Write the confirmation number (#{genewiz[:tracking_num]}) on the envelope and seal."
+      note "Place the envelope in the Genewiz dropbox."
     }
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
@@ -230,7 +211,7 @@ class Protocol
     end
 
     # Return all info
-    io_hash[:tracking_num] = sourcebioscience[:tracking_num]
+    io_hash[:tracking_num] = genewiz[:tracking_num]
     io_hash[:order_date] = order_date
     return { io_hash: io_hash }
 
