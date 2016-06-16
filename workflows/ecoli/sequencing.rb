@@ -53,7 +53,7 @@ class Protocol
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
-        if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name) do
+        if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
           primer_ids.concat pids
           (1..pids.length).each do
             plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
@@ -176,7 +176,6 @@ class Protocol
       check "Go the <a href='https://clims3.genewiz.com/default.aspx' target='_blank'>GENEWIZ website</a>, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
       check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
-    
       table sequencing_tab
       check "Click Save & Next, Review the form and click Next Step"
       check "Enter Quotation Number MS0721101, click Next Step"
