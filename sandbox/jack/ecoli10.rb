@@ -83,7 +83,7 @@ class Protocol
 		batch_matrix = fill_array 10, 10, res, 7
 		aliquot_batch.matrix = batch_matrix
 		aliquot_batch.location = "-80 freezer"
-		aloquot_batch.associate "tested", "No", upload=nil
+		aliquot_batch.associate "tested", "No", upload=nil
 		aliquot_batch.save
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
