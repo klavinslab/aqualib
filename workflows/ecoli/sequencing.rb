@@ -190,7 +190,7 @@ class Protocol
       check "Cap all of the stripwells."
       check "Wrap the stripwells in parafilm."
       check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
- -    check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
+      check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
     }
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
