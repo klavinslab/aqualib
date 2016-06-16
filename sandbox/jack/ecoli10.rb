@@ -82,8 +82,8 @@ class Protocol
 		aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
 		batch_matrix = fill_array 10, 10, res, 7
 		aliquot_batch.matrix = batch_matrix
-		aliquot_batch.datum = aliquot_batch.datum.merge({tested: "No"})
 		aliquot_batch.location = "-80 freezer"
+		aloquot_batch.associate "tested", "No", upload=nil
 		aliquot_batch.save
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
