@@ -61,6 +61,14 @@ class Protocol
     num = transformed_aliquots.length
     num_arr = *(1..num)
 
+    ecolibatch = find_batch(plasmid_items)
+    if ecolibatch.datum["tested"] == "No"
+      dim = ecolibatch.dimensions
+      show {
+        note "#{dim}"
+      }
+    end
+
     show {
       title "Prepare bench"
       note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
