@@ -53,7 +53,7 @@ class Protocol
       ready_task = find(:task, id: tid)[0]
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
-        if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
+        if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name) do
           primer_ids.concat pids
           (1..pids.length).each do
             plasmid_stock_ids.push ready_task.simple_spec[:plasmid_stock_id][idx]
