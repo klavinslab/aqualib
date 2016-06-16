@@ -2,6 +2,7 @@ argument
   debug_mode: string, "Yes or No, entering Yes will test out all protocols in debug mode"
   group: group, "which group assign this metacol to"
   dna_to_transform: generic, "DNAs to transform into cells"
+  plasmid_id: generic, "Plasmid ids"
   inducer_plate: string, "what kind of inducer plate besides the selection plate you want to plate on"
   cell_type: string, "what electrocompetent cell to transform into"
 end
@@ -14,6 +15,7 @@ place transformation
     gibson_result_ids: dna_to_transform
     inducer_plate: inducer_plate
     cell_type: cell_type
+    plasmid_item_ids: plasmid_id
     io_hash: {}
   end
   marked: true
