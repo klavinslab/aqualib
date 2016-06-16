@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      tracking_num: "4287340",
+      tracking_num: "10-306533836",
       sequencing_verification_task_ids: [4090,4089,4088,4087,4062,4061],
       task_ids: [3947,3948,3949,3950,3951,3952,3953,3954,3955,3956,3957,3958,3960,3963,3969,3972,3973,3969,3972,3973],
       sequencing_task_ids: [],
@@ -36,8 +36,8 @@ class Protocol
 
     results_info = show {
       title "Check if Sequencing results arrived?"
-      check "Go the <a href='http://www.us.sourcebioscience.com/login.aspx?ReturnUrl=%2f' target='_blank'>Source BioScience</a>, log in with lab account (Username: klavinslab1, password: 3glauber3)."
-      note "Click My Account, In Order History tab, check Order Id #{tracking_num}. The Order Date should be around #{io_hash[:order_date]}. Does the sequencing results show up in the Data Files column? "
+      check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
+      note "In Recent Results table, click Tracking Number #{tracking_num}, and check if the sequencing results have shown up yet."
       select ["Yes", "No"], var: "results_back_or_not", label: "Does the sequencing results show up?"
     }
 
@@ -45,8 +45,8 @@ class Protocol
 
     sequencing_uploads_zip = show {
       title "Upload Genewiz Sequencing Results zip file"
-      note "Click link in the Data Files column corresponding to the row of  #{tracking_num}, which should download a zip file named #{tracking_num}-some-random-number.zip."
-      note "Upload the zip file here."
+      note "Click the button 'Download All Selected Trace Files' (Not Download All Sequence Files), which should download a zip file named #{tracking_num}-some-random-number.zip."
+      note "Upload the #{tracking_num}_ab1.zip file here."
       upload var: "sequencing_results"
     }
     sequencing_uploads = show {
