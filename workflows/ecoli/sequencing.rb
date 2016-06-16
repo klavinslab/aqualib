@@ -183,6 +183,8 @@ class Protocol
       get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
     }
 
+    order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
+
     show {
       title "Put all stripwells in the Genewiz dropbox"
       note "Cap all of the stripwells."
