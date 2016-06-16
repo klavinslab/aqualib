@@ -38,7 +38,7 @@ class Protocol
       title "Check if Sequencing results arrived?"
       check "Go the Genewiz website, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
       note "In Recent Results table, click Tracking Number #{tracking_num}, and check if the sequencing results have shown up yet."
-      select ["Yes", "No"], var: "results_back_or_not", label: "Does the sequencing results show up?"
+      select ["Yes", "No"], var: "results_back_or_not", label: "Do the sequencing results show up?"
     }
 
     raise "The sequencing results have not shown up yet." if results_info[:results_back_or_not] == "No"
