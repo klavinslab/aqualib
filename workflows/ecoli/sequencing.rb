@@ -187,11 +187,10 @@ class Protocol
 
     show {
       title "Put all stripwells in the Genewiz dropbox"
-      note "Cap all of the stripwells."
-      note "Wrap the stripwells in parafilm."
-      note "Place the stripwells into a zip-lock bag, and place the zip-lock bag in an envelope."
-      note "Write the confirmation number (#{genewiz[:tracking_num]}) on the envelope and seal."
-      note "Place the envelope in the Genewiz dropbox."
+      check "Cap all of the stripwells."
+      check "Wrap the stripwells in parafilm."
+      check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
+ -    check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
     }
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
