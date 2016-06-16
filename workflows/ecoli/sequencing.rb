@@ -108,7 +108,8 @@ class Protocol
           plasmid_volume_list.push (60 / conc).round(1)
         else
           plasmid_volume_list.push (80 / conc).round(1)
-       end
+        end
+      end
     end
 
     # set minimal volume to be 0.5 µL
