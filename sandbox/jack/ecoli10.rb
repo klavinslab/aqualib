@@ -85,7 +85,7 @@ class Protocol
 		aliquot_batch.location = "-80 freezer"
 		Item.find(aliquot_batch.id).associate "tested", "No", upload=nil
 		aliquot_batch.save
-		release([aliquot_batch], interactive: true)
+		release([aliquot_batch])
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
 			note "Take an empty freezer box, and label it with “DH5alpha”, the date, your initials, and the ID number of the electrocompetent batch."
