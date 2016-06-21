@@ -23,7 +23,7 @@ class Protocol
     end
 
     verify_data = show {
-      title "Stripwell #{col}: verify that each lane matches expected size THIS IS A TEST CHECK OUT THE NEW CODE!"
+      title "Stripwell #{col}: verify that each lane matches expected size THIS IS A TEST CHECK OUT THE NEW COD!"
       note "Look at the gel image, and match bands with the lengths listed on the side of the gel image."
       note "For more accurate values, select each well under \"analyze\" -> \"electropherogram\" to see peaks for fragments found with labeled lengths."
       note "Select No if there is no band or band does not match expected size,
