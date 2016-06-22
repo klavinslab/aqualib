@@ -5,4 +5,4 @@ class Protocol
             note a
         }
     end
-}
+end
