@@ -1,4 +1,4 @@
-class Protocol {
+class Protocol
     def main
         a = input
         show {
