@@ -98,16 +98,18 @@ class Protocol
 			note "Pour remaining ice into sink at dishwashing station."
 			note "Return ice block and aluminum tube rack."
 		}	
-		
 		tp = TaskPrototype.where("name = 'Ecoli Transformation'")[0]
-		t = Task.new(name: "Ecoli_Transformation_#{aliquot_batch.id}", 
-                specification: { "plasmid_item_ids Plasmid Stock|1 ng/µL Plasmid Stock|Gibson Reaction Result" => find(:item, { sample: { name: "SSJ128" } } )[0].id }.to_json, 
-                task_prototype_id: tp.id, 
-                status: "waiting", 
-                user_id: Job.find(jid).user_id,
-                budget_id: 1)
+		p = find(:item, { sample: { name: "SSJ128" } } )[0]
+		t = Task.new(
+			name: "Ecoli_Transformation_#{aliquot_batch.id}", 
+                	specification: { "plasmid_item_ids Plasmid Stock|1 ng/µL Plasmid Stock|Gibson Reaction Result" => [p.id] }.to_json, 
+                	task_prototype_id: tp.id, 
+        		status: "waiting", 
+                	user_id: Job.find(jid).user_id,
+                	budget_id: 1)
 		t.save
 		t.notify "Automatically created from Make E Comp Cells.", job_id: jid
+		
 		return {io_hash: io_hash}
 	end
 end
