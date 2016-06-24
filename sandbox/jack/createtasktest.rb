@@ -13,7 +13,7 @@ class Protocol
                 	specification: { "plasmid_item_ids Plasmid Stock|1 ng/µL Plasmid Stock|Gibson Reaction Result" => [p.id] }.to_json, 
                 	task_prototype_id: tp.id, 
         		status: "waiting", 
-                	user_id: User.find_by_login("parks"),
+                	user_id: Job.find(jid).user_id,
                 	budget_id: 1)
 		t.save
 		t.notify "Automatically created from Make E Comp Cells.", job_id: jid
