@@ -18,20 +18,14 @@ class Protocol
 
 		take [bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true
 
-		lb_liquid = produce new_object "800 mL LB liquid (unsterile)"
-		glycerol = produce new_object "500 mL 10 Percent Glycerol (unsterile)"
-		water = produce new_object "1000 mL DI Water (unsterile)"
-		lb_liquid_sterile = produce new_object "800 mL LB liquid (sterile)"
-		#glycerol_sterile = produce new_object "500 mL 10 Percent Glycerol (sterile)"
-		#water_sterile = produce new_object "1000 mL DI Water (sterile)"
-		lb_liquid_sterile.location = "Bench"
-		#glycerol_sterile.location = "Bench"
-		#water_sterile.location = "Bench"
-		lb_liquid.mark_as_deleted
-		#glycerol.mark_as_deleted
-		#water.mark_as_deleted
+		lb_liquid = produce new_sample "LB", of: "Media", as: "800 mL Liquid"
+		glycerol = produce new_sample "10% Glycerol", of: "Media", as: "500 mL Liquid"
+		water = produce new_sample "DI Water", of: "Media", as: "1 L Liquid"
+		lb_liquid.location = "Bench"
+		glycerol.location = "Bench"
+		water.location = "Bench"
 		
-		io_hash = {lb_liquid: lb_liquid_sterile.id, water: water.id, glycerol: glycerol.id}
+		io_hash = {lb_liquid: lb_liquid.id, water: water.id, glycerol: glycerol.id}
 		show {
 			title "Prepare Bottles"
 			note "Remove autoclave tape from each bottle"
@@ -40,7 +34,7 @@ class Protocol
 
 		show {
 			title "Prepare 800 mL LB liquid"
-			note "Label one 1 L bottle with '800 mL LB Liquid', #{lb_liquid_sterile.id}, initials, and date"
+			note "Label one 1 L bottle with '800 mL LB Liquid', #{lb_liquid.id}, initials, and date"
 			note "Wipe spatula with ethanol and kimwipe"
 			note "Measure out 20 g LB Broth, Miller on scale and add to labeled bottle"
 			note "Wipe spatula with ethanol and kimwipe"
@@ -72,7 +66,7 @@ class Protocol
 			note "Set autoclave to 121 C for 15 minutes, and start"
 		}
 
-		release([glycerol, water, lb_liquid_sterile, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true)
+		release([glycerol, water, lb_liquid, bottle_1L, bottle_1L, bottle_500mL, broth, glycerol_fifty], interactive: true)
 		return { io_hash: io_hash}
 	end
 end
