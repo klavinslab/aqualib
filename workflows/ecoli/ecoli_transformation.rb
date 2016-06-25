@@ -84,11 +84,12 @@ class Protocol
       matrix = Collection.find(ecolibatch).matrix
       num_samp = Collection.find(ecolibatch).num_samples
       row = num_samp / (matrix[0].length)
-      col = (num_samp - 1) % matrix[0].length     
-      show {
-        note row
-        note col
-      }
+      col = (num_samp - 1) % matrix[0].length    
+      # for debugging
+      #show {
+      #  note row
+      #  note col
+      #}
       Collection.find(ecolibatch).set row, col, nil
     end
 
