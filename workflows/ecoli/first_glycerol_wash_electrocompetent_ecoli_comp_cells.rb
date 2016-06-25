@@ -1,3 +1,4 @@
+
 class Protocol
 	
 	def arguments
