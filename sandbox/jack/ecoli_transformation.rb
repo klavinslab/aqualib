@@ -23,7 +23,6 @@ class Protocol
   def find_batch(plasmid_items)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
-  	  item.upgrade
   	  show {
   	    note item.id
   	    note item.get("tested")
@@ -79,8 +78,8 @@ class Protocol
     elsif ecolibatch.get("tested") == "No"
       Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
       show {
-        note ecolibatch.dimensions
-        note ecolibatch.num_samples
+        note collection_from(ecolibatch).dimensions
+        note collection_from(ecolibatch).num_samples
     }
     end
 
