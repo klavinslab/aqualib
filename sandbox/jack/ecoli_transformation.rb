@@ -81,7 +81,7 @@ class Protocol
       Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
       matrix = Collection.find(ecolibatch).matrix
       num_samp = Collection.find(ecolibatch).num_samples
-      row = num_samp / (matrix.[0].length)
+      row = num_samp / (matrix[0].length)
       col = (num_samp - 1) % matrix[0].length     
       show {
         note row
