@@ -78,8 +78,8 @@ class Protocol
     elsif ecolibatch.get("tested") == "No"
       Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
       show {
-        note collection_from(ecolibatch).dimensions
-        note collection_from(ecolibatch).num_samples
+        note ecolibatch.num_samples
+        note ecolibatch.dimensions
     }
     end
 
