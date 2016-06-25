@@ -23,15 +23,15 @@ class Protocol
   def find_batch(plasmid_items)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
-  	  show {
-  	    note item.id
-  	    note item.get("tested")
-  	    note plasmid_items.length
-  	    note plasmid_items[0].sample.name
-  	    note plasmid_items[1].sample.name
-  	    note Collection.find(item.id).num_samples
-  	    note Collection.find(item.id).dimensions
-  	  }
+  	  #show {
+  	  # note item.id
+  	  # note item.get("tested")
+  	  # note plasmid_items.length
+  	  # note plasmid_items[0].sample.name
+  	  # note plasmid_items[1].sample.name
+  	  # note Collection.find(item.id).num_samples
+  	  # note Collection.find(item.id).dimensions
+  	  #}
   	  
   	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
   	  if plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
@@ -79,9 +79,15 @@ class Protocol
       raise "No such E coli batch"
     elsif ecolibatch.get("tested") == "No"
       Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
+      matrix = Collection.find(ecolibatch).matrix
+      num_samp = Collection.find(ecolibatch).num_samples
+      row = num_samp / (matrix.column_count)
+      col = (num_samp - 1) % matrix.column_count       
       show {
-        note ecolibatch.num_samples
-        note ecolibatch.dimensions
+        note row
+        note col
+      }
+      Collection.find(ecolibatch).set row, col, nil
     }
     end
 
