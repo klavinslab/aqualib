@@ -18,8 +18,7 @@ class Protocol
 			note "Set heat bath to 37"
 			note "Once temperature reaches 37, immerse LB in beads"
 		}
-		io_hash = {new_lb_liquid: lb_liquid.id}.merge(io_hash)
-		release([lb_liquid], interactive: true)
+		release([lb_liquid])
 		return { io_hash: io_hash }
 	end
 end
