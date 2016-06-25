@@ -110,10 +110,6 @@ class Protocol
 		t.save
 		t.notify "Automatically created from Make E Comp Cells.", job_id: jid
 		
-		show {
-			note Item.find(aliquot_batch.id).get("tested")
-		}
-		
 		return {io_hash: io_hash}
 	end
 end
