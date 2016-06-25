@@ -29,6 +29,8 @@ class Protocol
   	    note plasmid_items.length
   	    note plasmid_items[0].sample.name
   	    note plasmid_items[1].sample.name
+  	    note item.num_samples
+  	    note item.dimensions
   	  }
   	  
   	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
