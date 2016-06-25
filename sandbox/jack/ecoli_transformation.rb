@@ -28,12 +28,13 @@ class Protocol
   	    note item.id
   	    note item.get("tested")
   	  }
-    #	if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.get("tested") == "No"
-    #		return item
-    #	elsif plasmid_items.length != 1 and item.get("tested") == "Yes"
-    #		return item
-    #	end
+  	  if plasmid_items.length == 1 && plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
+  	    return item
+  	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
+  	    return item
+  	  end
     end
+    return nil
   end
 
   def main
@@ -68,12 +69,16 @@ class Protocol
     num_arr = *(1..num)
 
     ecolibatch = find_batch(plasmid_items)
-    if ecolibatch.get["tested"] == "No"
-      dim = ecolibatch.num_samples
-      show {
-        note "#{dim}"
-      }
+    if ecolibatch.nil?
+      raise "No such E coli batch"
+    elsif ecolibatch.get("tested") == "No"
+      Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
     end
+      
+    show {
+      note ecolibatch.dimensions
+      note ecolibatch.num_samples
+    }
 
     show {
       title "Prepare bench"
