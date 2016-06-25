@@ -31,12 +31,14 @@ class Protocol
   	    note plasmid_items[0].sample.name
   	    note plasmid_items[1].sample.name
   	  }
-  	  if plasmid_items.length == 1 && plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
+  	  
+  	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
+  	  if plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
   	    return item
   	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
   	    return item
   	  end
-      end
+    end
     return nil
   end
 
@@ -76,12 +78,11 @@ class Protocol
       raise "No such E coli batch"
     elsif ecolibatch.get("tested") == "No"
       Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
-    end
-      
-    show {
-      note ecolibatch.dimensions
-      note ecolibatch.num_samples
+      show {
+        note ecolibatch.dimensions
+        note ecolibatch.num_samples
     }
+    end
 
     show {
       title "Prepare bench"
