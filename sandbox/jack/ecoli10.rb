@@ -84,6 +84,12 @@ class Protocol
 		aliquot_batch.matrix = batch_matrix
 		aliquot_batch.location = "-80 freezer"
 		Item.find(aliquot_batch.id).associate "tested", "No", upload=nil
+		
+		show {
+			note aliquot_batch.id
+			note aliquot_batch.num_samples
+			note aliquot_batch.dimensions
+		}
 		aliquot_batch.save
 		release([aliquot_batch])
 		show {
