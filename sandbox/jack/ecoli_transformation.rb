@@ -27,13 +27,15 @@ class Protocol
   	  show {
   	    note item.id
   	    note item.get("tested")
+  	    note plasmid_items.length
+  	    note plasmid_items[0].sample.name
   	  }
   	  if plasmid_items.length == 1 && plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
   	    return item
   	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
   	    return item
   	  end
-    end
+      end
     return nil
   end
 
