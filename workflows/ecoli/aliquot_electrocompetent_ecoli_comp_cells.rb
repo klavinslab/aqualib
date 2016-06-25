@@ -6,6 +6,17 @@ class Protocol
     		}
 	 end
 	
+	
+	def fill_array rows, cols, num, val
+	        num = 0 if num < 0
+	        array = Array.new(rows) { Array.new(cols) { -1 } }
+	        (0...num).each { |i|
+	         	row = (i / cols).floor
+	          	col = i % cols
+	          	array[row][col] = val
+	        }
+	        array
+	end # fill_array
 	def main
 		
 		io_hash = input[:io_hash]
@@ -56,14 +67,25 @@ class Protocol
 				note "Add #{vol} mL more of GYT to the cells"
 			}
 		end
-
-		show {
-			title "Aliquot"
-			note "Take ice block, aluminum tube rack, and arranged 0.6 mL tubes out of the freezer."
-			note "Aliquot 40 uL of cells into each 0.6 mL tube until the 225 mL tube is empty."
-			note "Vortex the 225 mL tube and change tips periodically, adding more 0.6 mL tubes to the aluminum tube rack if required."
-		}
-
+		res = -1
+		while(res < 0)
+			data = show {
+				title "Aliquot"
+				note "Take ice block, aluminum tube rack, and arranged 0.6 mL tubes out of the freezer."
+				note "Aliquot 40 uL of cells into each 0.6 mL tube until the 225 mL tube is empty."
+				note "Vortex the 225 mL tube and change tips periodically, adding more 0.6 mL tubes to the aluminum tube rack if required."
+				get "number", var: "amount", label: "Enter how many aliquots made", default: -1
+			} 
+			res = data[:amount]
+		end
+		
+		aliquot_batch = produce new_collection "E. coli Comp Cell Batch", 10, 10
+		batch_matrix = fill_array 10, 10, res, 7
+		aliquot_batch.matrix = batch_matrix
+		aliquot_batch.location = "-80 freezer"
+		Item.find(aliquot_batch.id).associate "tested", "No", upload=nil
+		aliquot_batch.save
+		release([aliquot_batch])
 		show {
 			title "Move Electrocompetent Aliquots To The -80 Freezer"
 			note "Take an empty freezer box, and label it with “DH5alpha”, the date, your initials, and the ID number of the electrocompetent batch."
@@ -76,6 +98,18 @@ class Protocol
 			note "Pour remaining ice into sink at dishwashing station."
 			note "Return ice block and aluminum tube rack."
 		}	
+		tp = TaskPrototype.where("name = 'Ecoli Transformation'")[0]
+		p = find(:item, { sample: { name: "SSJ128" } } )[0]
+		t = Task.new(
+			name: "Ecoli_Transformation_#{aliquot_batch.id}", 
+                	specification: { "plasmid_item_ids Plasmid Stock|1 ng/µL Plasmid Stock|Gibson Reaction Result" => [p.id] }.to_json, 
+                	task_prototype_id: tp.id, 
+        		status: "waiting", 
+                	user_id: Job.find(jid).user_id,
+                	budget_id: 1)
+		t.save
+		t.notify "Automatically created from Make E Comp Cells.", job_id: jid
+		
 		return {io_hash: io_hash}
 	end
 end
