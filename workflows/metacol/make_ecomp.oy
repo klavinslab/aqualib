@@ -1,0 +1,113 @@
+#argument 
+#	batch: int, "1 or 2"
+#end
+
+
+place p1
+	protocol: "aqualib:workflows/ecoli/make_media_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	argument
+		batch: 1
+	end
+	marked: true
+	start: now()
+	window: hours(1)
+end
+
+place p2
+	protocol: "aqualib:workflows/ecoli/start_overnight_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: hours(1)
+end
+
+place p3
+	protocol: "aqualib:workflows/ecoli/warm_LB_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: hours(1)
+end
+
+place p4
+	protocol: "aqualib:workflows/ecoli/inoculate_electrcompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(30)
+end
+
+place p5
+	protocol: "aqualib:workflows/ecoli/check_OD_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(5)
+end
+
+place p6
+	protocol: "aqualib:workflows/ecoli/chill_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(5)
+end
+
+place p7
+	protocol: "aqualib:workflows/ecoli/first_spin_water_wash_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(10)
+end
+
+place p8
+	protocol: "aqualib:workflows/ecoli/first_glycerol_wash_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(10)
+end
+
+place p9
+	protocol: "aqualib:workflows/ecoli/second_glycerol_wash_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(10)
+end
+
+place p10
+	protocol: "aqualib:workflows/ecoli/aliquot_electrocompetent_ecoli_comp_cells.rb"
+	group: "technicians"
+	marked: false
+	start: now()
+	window: minutes(10)
+end
+
+place wait
+    marked: false
+end
+
+wire p1 => p2
+wire p2 => p3
+wire p3 => p4
+wire p4 => p5
+wire p5 => p6
+wire p6 => p7
+wire p7 => p8
+wire p8 => p9
+wire p9 => p10
+
+transition [p1] => [p2] when !error(0) && completed(0) end
+transition [p2] => [p3] when !error(0) && completed(0) end
+transition [p3] => [p4] when !error(0) && completed(0) end
+transition [p4] => [p5] when !error(0) && completed(0) end
+transition [p5] => [wait] when !error(0) && completed(0) && (return_value(0,"done") == "no") end
+transition [wait] => [p5] when minutes_elapsed(0,5) end
+transition [p5] => [p6] when !error(0) && completed(0) && (return_value(0,"done") == "yes") end
+transition [p6] => [p7] when !error(0) && completed(0) end
+transition [p7] => [p8] when !error(0) && completed(0) end
+transition [p8] => [p9] when !error(0) && completed(0) end
+transition [p9] => [p10] when !error(0) && completed(0) end
