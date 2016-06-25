@@ -10,8 +10,9 @@ class Protocol
 
 		io_hash = input[:io_hash]
 		flask = find(:item, object_type: { name: "125 mL baffled flask"})[0]
-		lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)"})[0]
-		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "E coli Glycerol Stock" }})[0]
+		lb_liquid = find(:item, { sample: { name: "LB"}, object_type: { name: "800 mL Liquid" }})[0]
+		#lb_liquid = find(:item, object_type: { name: "800 mL LB liquid (sterile)"})[0]
+		stock = find(:item, { sample: { name: "DH5alpha"}, object_type: { name: "Agar Plate" }})[0]
 		
 		take [flask, lb_liquid], interactive: true
 		dh5alpha = produce new_sample "DH5alpha", of: "E coli strain", as: "Overnight Suspension"
@@ -27,34 +28,18 @@ class Protocol
 			title "Add LB Liquid"
 			note "Using the serological pipette, add 25 mL LB liquid to the baffled flask"
 		}
-
-		show {
-			title "Go to -80 freezer"
-			note "Bring Eppendorf tube rack, P100 pipette, and P100 pipette tips"  
-		}
 		
 		take [stock], interactive: true
 
 		show {
-			title "Glycerol stock scrape, and add to media: QUICKLY"
-			note "Put glycerol stock in tube rack, loosen cap"
-			note "Take lid off flask"
-			note "Put tip on pipette"
-			note "Leaving glycerol stock in rack, take off cryotube lid, scrape a large chunk from glycerol stock, and replace cryotube lid"
-			note "Carefully scrape glycerol into flask of LB by tipping flask and swirling tip into media"
-			note "Discard tip"
-			note "Put the lid back on the flask"
-		}
-		
-		release([stock], interactive: true)
-		
-		show {
-			title "Clean up"
-			note "Take pipette, tips back to bench"
+			title "Inoculate From Agar Plate"
+			note "Select and isolate colony on plate, circle and label with today's date"
+			note "Using a pipette tip, carefully scrape the selected colony"
+			note "Maintaining a good sterile technique, carefully tilt the flask of LB and swirl pipette tips with cells into the media"
 		}
 		
 		release([flask])
-		release([dh5alpha, lb_liquid], interactive: true)
+		release([stock, dh5alpha, lb_liquid], interactive: true)
 		
 		return { io_hash: io_hash }
 		
