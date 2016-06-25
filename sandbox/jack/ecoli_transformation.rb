@@ -88,7 +88,6 @@ class Protocol
         note col
       }
       Collection.find(ecolibatch).set row, col, nil
-    }
     end
 
     show {
