@@ -23,8 +23,10 @@ class Protocol
   def find_batch(plasmid_items)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
+  	  item.upgrade
   	  show {
   	    note item.id
+  	    note item.get("tested")
   	  }
     #	if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.get("tested") == "No"
     #		return item
