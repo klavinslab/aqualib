@@ -23,9 +23,9 @@ class Protocol
   def find_batch(plasmid_items)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
-    	if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.datum["tested"] == "No"
+    	if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.get("tested") == "No"
     		return item
-    	elsif plasmid_items.length != 1 and item.datum["tested"] == "Yes"
+    	elsif plasmid_items.length != 1 and item.get["tested"] == "Yes"
     		return item
     	end
     end
@@ -63,8 +63,8 @@ class Protocol
     num_arr = *(1..num)
 
     ecolibatch = find_batch(plasmid_items)
-    if ecolibatch.datum["tested"] == "No"
-      dim = ecolibatch.dimensions
+    if ecolibatch.get["tested"] == "No"
+      dim = ecolibatch.num_samples
       show {
         note "#{dim}"
       }
