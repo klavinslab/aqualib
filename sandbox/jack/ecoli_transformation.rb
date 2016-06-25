@@ -29,6 +29,7 @@ class Protocol
   	    note item.get("tested")
   	    note plasmid_items.length
   	    note plasmid_items[0].sample.name
+  	    note plasmid_items[1].sample.name
   	  }
   	  if plasmid_items.length == 1 && plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
   	    return item
