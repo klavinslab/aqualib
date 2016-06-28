@@ -77,22 +77,24 @@ class Protocol
     num_arr = *(1..num)
 
     # TODO: Fix e. coli batching so it doesn't reference plasmid_items[0] when nil
-    # ecolibatch = find_batch(plasmid_items)
-    # if ecolibatch.nil?
-    #   raise "No such E coli batch"
-    # elsif ecolibatch.get("tested") == "No"
-    #   Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
-    #   matrix = Collection.find(ecolibatch).matrix
-    #   num_samp = Collection.find(ecolibatch).num_samples
-    #   row = num_samp / (matrix[0].length)
-    #   col = (num_samp - 1) % matrix[0].length    
-    #   # for debugging
-    #   #show {
-    #   #  note row
-    #   #  note col
-    #   #}
-    #   Collection.find(ecolibatch).set row, col, nil
-    # end
+    if plasmid_items.length != 0
+      ecolibatch = find_batch(plasmid_items)
+      if ecolibatch.nil?
+        raise "No such E coli batch"
+      elsif ecolibatch.get("tested") == "No"
+        Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
+        matrix = Collection.find(ecolibatch).matrix
+        num_samp = Collection.find(ecolibatch).num_samples
+        row = num_samp / (matrix[0].length)
+        col = (num_samp - 1) % matrix[0].length    
+        # for debugging
+        #show {
+        #  note row
+        #  note col
+        #}
+        Collection.find(ecolibatch).set row, col, nil
+      end
+    end
 
     show {
       title "Prepare bench"
