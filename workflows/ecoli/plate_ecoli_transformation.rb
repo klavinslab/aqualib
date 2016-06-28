@@ -96,7 +96,7 @@ class Protocol
     plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
 
     delete all_transformed_aliquots
-    update_batch_matrix plate_batch, plate_batch.num_samples - num, plate_type
+    update_batch_matrix plate_batch, plate_batch.num_samples - num, plate_type if plate_batch
 
     if actual_plates.length > 0
       show {
