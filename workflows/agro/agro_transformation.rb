@@ -9,7 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_item_ids: [14150,14151,14152],
+      gibson_result_ids: [14150,14151,14152],
+      plasmid_item_ids: [],
       debug_mode: "No",
       inducer_plate: "IPTG",
     }
@@ -39,7 +40,7 @@ class Protocol
     num_arr = *(1..num)
 
     show {
-      title "Prepare bench"
+      title "Prepareeeeee bench"
       note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
       note "Set the voltage to 1250V by clicking up and down button."
       note " Click the time constant button to show 0.0."
