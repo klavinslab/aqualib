@@ -13,7 +13,7 @@ place tasks_inputs
     group: group
     item_choice_mode: item_choice_mode
     image_option: image_option
-    task_name: "Agro Assembly"
+    task_name: "Agro Transformation"
   end
   marked: true
   start: now()
