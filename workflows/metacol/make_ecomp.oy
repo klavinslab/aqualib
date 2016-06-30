@@ -4,7 +4,7 @@
 
 
 place p1
-	protocol: "aqualib:sandbox/jack/ecoli1.rb"
+	protocol: "aqualib:workflows/ecoli/make_media_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	argument
 		batch: 1
@@ -15,7 +15,7 @@ place p1
 end
 
 place p2
-	protocol: "aqualib:sandbox/jack/ecoli2.rb"
+	protocol: "aqualib:workflows/ecoli/start_overnight_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -23,7 +23,7 @@ place p2
 end
 
 place p3
-	protocol: "aqualib:sandbox/jack/ecoli3.rb"
+	protocol: "aqualib:workflows/ecoli/warm_LB_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -31,7 +31,7 @@ place p3
 end
 
 place p4
-	protocol: "aqualib:sandbox/jack/ecoli4.rb"
+	protocol: "aqualib:workflows/ecoli/inoculate_electrcompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -39,7 +39,7 @@ place p4
 end
 
 place p5
-	protocol: "aqualib:sandbox/jack/ecoli5.rb"
+	protocol: "aqualib:workflows/ecoli/check_OD_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -47,7 +47,7 @@ place p5
 end
 
 place p6
-	protocol: "aqualib:sandbox/jack/ecoli6.rb"
+	protocol: "aqualib:workflows/ecoli/chill_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -55,7 +55,7 @@ place p6
 end
 
 place p7
-	protocol: "aqualib:sandbox/jack/ecoli7.rb"
+	protocol: "aqualib:workflows/ecoli/first_spin_water_wash_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -63,7 +63,7 @@ place p7
 end
 
 place p8
-	protocol: "aqualib:sandbox/jack/ecoli8.rb"
+	protocol: "aqualib:workflows/ecoli/first_glycerol_wash_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -71,7 +71,7 @@ place p8
 end
 
 place p9
-	protocol: "aqualib:sandbox/jack/ecoli9.rb"
+	protocol: "aqualib:workflows/ecoli/second_glycerol_wash_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()
@@ -79,7 +79,7 @@ place p9
 end
 
 place p10
-	protocol: "aqualib:sandbox/jack/ecoli10.rb"
+	protocol: "aqualib:workflows/ecoli/aliquot_electrocompetent_ecoli_comp_cells.rb"
 	group: "technicians"
 	marked: false
 	start: now()

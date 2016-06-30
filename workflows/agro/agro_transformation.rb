@@ -9,92 +9,34 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #Enter the gibson result ids as a list
-      "gibson_result_ids Gibson Reaction Result" => [2853,2853,2853],
-      plasmid_item_ids: [],
+      plasmid_item_ids: [14150,14151,14152],
       debug_mode: "No",
       inducer_plate: "IPTG",
-      cell_type: "DH5alpha"
     }
   end #arguments
-
-
-
-  def find_batch(plasmid_items)
-  	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
-  	ecoli_batch.each do |item|
-  	  
-  	  # for debugging
-  	  #show {
-  	  # note item.id
-  	  # note item.get("tested")
-  	  # note plasmid_items.length
-  	  # note plasmid_items[0].sample.name
-  	  # note plasmid_items[1].sample.name
-  	  # note Collection.find(item.id).num_samples
-  	  # note Collection.find(item.id).dimensions
-  	  #}
-  	  
-  	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
-  	  if plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
-  	    return item
-  	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
-  	    return item
-  	  end
-    end
-    return nil
-  end
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "Yes", gibson_result_ids: [], plasmid_item_ids: [], task_ids: [], ecoli_transformation_task_ids: [], group: "technicians"}.merge io_hash
+    io_hash = { debug_mode: "Yes", gibson_result_ids: [], plasmid_item_ids: [], task_ids: [], group: "technicians"}.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
-    ecoli_transformation_tasks_list = find_tasks task_prototype_name: "Ecoli Transformation", group: io_hash[:group]
-    ecoli_transformation_tasks = task_status ecoli_transformation_tasks_list
-    io_hash[:ecoli_transformation_task_ids] = task_choose_limit(ecoli_transformation_tasks[:ready_ids], "Ecoli Transformation")
-    io_hash[:ecoli_transformation_task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      io_hash[:plasmid_item_ids].concat task.simple_spec[:plasmid_item_ids]
-    end
+
     gibson_results = io_hash[:gibson_result_ids].collect{ |gid| find(:item,{id: gid})[0] }
     plasmid_items = io_hash[:plasmid_item_ids].collect { |id| find(:item,{ id: id })[0] }
     items_to_transform = gibson_results + plasmid_items
     take items_to_transform, interactive: true, method: "boxes"
 
-    io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
-
-        transformed_aliquots = items_to_transform.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed E. coli Aliquot"}
+    transformed_aliquots = items_to_transform.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed Agro Aliquot"}
     transformed_aliquots.each_with_index do |transformed_aliquot,idx|
       transformed_aliquot.datum = transformed_aliquot.datum.merge({ from: items_to_transform[idx].id })
     end
     ids = transformed_aliquots.collect {|t| t.id}
     num = transformed_aliquots.length
     num_arr = *(1..num)
-
-    # TODO: Fix e. coli batching so it doesn't reference plasmid_items[0] when nil
-    if plasmid_items.length != 0
-      ecolibatch = find_batch(plasmid_items)
-      if ecolibatch.nil?
-        raise "No such E coli batch"
-      elsif ecolibatch.get("tested") == "No"
-        Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
-        matrix = Collection.find(ecolibatch).matrix
-        num_samp = Collection.find(ecolibatch).num_samples
-        row = num_samp / (matrix[0].length)
-        col = (num_samp - 1) % matrix[0].length    
-        # for debugging
-        #show {
-        #  note row
-        #  note col
-        #}
-        Collection.find(ecolibatch).set row, col, nil
-      end
-    end
 
     show {
       title "Prepare bench"
@@ -129,7 +71,6 @@ class Protocol
     show {
       title "Pipette plasmid into electrocompetent aliquot"
       note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
-      #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
       table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
       image "pipette_plasmid_into_electrocompotent_cells"
     }
@@ -140,11 +81,6 @@ class Protocol
       check "Transfer e-comp cells to electrocuvette with P1000"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 350 uL of LB"
       check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P1000"
-      
-      #check "Take a labeled electrocompetent aliquot. Using the set 100uL pipette, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
-      #check "Remove the cuvette from the electroporator and QUICKLY add 350 µL of LB."
-      #check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then, using the set 1000uL pipette, transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
-      #table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
     }
     
     amp = 0
@@ -160,7 +96,7 @@ class Protocol
     show {
       title "Incubate tubes"
       check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
-      note "Retrieve all the tubes 30 minutes later by doing the following plate_ecoli_transformation protocol. You can finish this protocol now by perfoming the next return steps."
+      note "Retrieve all the tubes 30 minutes later by doing the following plate_agro_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
       image "put_green_tube_holder_to_incubator"
@@ -174,7 +110,7 @@ class Protocol
       image "dump_dirty_cuvettes"
     }
 
-    move transformed_aliquots, "37 C incubator"
+    move transformed_aliquots, "30 C incubator"
     release transformed_aliquots
 
     gibson_results.each do |g|
@@ -186,7 +122,6 @@ class Protocol
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
-    io_hash[:task_ids].concat io_hash[:ecoli_transformation_task_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       set_task_status(task,"transformed")

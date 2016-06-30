@@ -23,12 +23,26 @@ class Protocol
   def find_batch(plasmid_items)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
-    	if plasmid_items.length == 1 and plasmid_items[0].sample.name == "SSJ128" and item.datum["tested"] == "No"
-    		return item
-    	elsif plasmid_items.length != 1 and item.datum["tested"] == "Yes"
-    		return item
-    	end
+  	  
+  	  # for debugging
+  	  #show {
+  	  # note item.id
+  	  # note item.get("tested")
+  	  # note plasmid_items.length
+  	  # note plasmid_items[0].sample.name
+  	  # note plasmid_items[1].sample.name
+  	  # note Collection.find(item.id).num_samples
+  	  # note Collection.find(item.id).dimensions
+  	  #}
+  	  
+  	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
+  	  if plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
+  	    return item
+  	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
+  	    return item
+  	  end
     end
+    return nil
   end
 
   def main
@@ -63,11 +77,19 @@ class Protocol
     num_arr = *(1..num)
 
     ecolibatch = find_batch(plasmid_items)
-    if ecolibatch.datum["tested"] == "No"
-      dim = ecolibatch.dimensions
+    if ecolibatch.nil?
+      raise "No such E coli batch"
+    elsif ecolibatch.get("tested") == "No"
+      Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
+      matrix = Collection.find(ecolibatch).matrix
+      num_samp = Collection.find(ecolibatch).num_samples
+      row = num_samp / (matrix[0].length)
+      col = (num_samp - 1) % matrix[0].length     
       show {
-        note "#{dim}"
+        note row
+        note col
       }
+      Collection.find(ecolibatch).set row, col, nil
     end
 
     show {
