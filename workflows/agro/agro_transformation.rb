@@ -26,6 +26,7 @@ class Protocol
       end
     end
 
+    io_hash[:plasmid_item_ids].flatten!
     gibson_results = io_hash[:gibson_result_ids].collect{ |gid| find(:item,{id: gid})[0] }
     plasmid_items = io_hash[:plasmid_item_ids].collect { |id| find(:item,{ id: id })[0] }
     items_to_transform = gibson_results + plasmid_items
