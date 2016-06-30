@@ -40,7 +40,7 @@ class Protocol
     num_arr = *(1..num)
 
     show {
-      title "Prepareeeeee bench"
+      title "Prepare bench"
       note "If the electroporator is off (no numbers displayed), turn it on using the ON/STDBY button."
       note "Set the voltage to 1250V by clicking up and down button."
       note " Click the time constant button to show 0.0."
