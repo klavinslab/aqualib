@@ -6,16 +6,41 @@ class Protocol
   include Standard
   include Cloning
 
-  def total_volumes_by_sample stocks, volumes
+  def total_volumes_by_item stocks, volumes
     vol_hash = {}
     stocks.each_with_index { |s, idx|
-      if vol_hash[s.sample.id].nil?
-        vol_hash[s.sample.id] = volumes[idx]
+      if vol_hash[s.id].nil?
+        vol_hash[s.id] = volumes[idx]
       else
-        vol_hash[s.sample.id] += volumes[idx]
+        vol_hash[s.id] += volumes[idx]
       end
     }
     vol_hash
+  end
+
+  def verify_enough_volumes_each_stock stocks, volumes
+    enough_vol_stocks = []
+    not_enough_vol_stocks = []
+
+    total_vols_per_stock = total_volumes_by_item stocks, volumes
+    verify_data = show {
+      title "Verify enough volume of each plasmid stock exists"
+      total_volumes_per_plasmid.each { |id, v| 
+        select ["Yes", "No"], var: "#{id}", label: "Is there at least #{v} µL of #{id}?", default: 0
+      }
+    }
+
+    enough_vol_stocks = stocks.select { |s| verify_data["#{s.id}"] == "Yes" }
+    not_enough_vol_stocks = stocks - enough_vol_stocks
+
+    show {
+      note "enough"
+      note enough_vol_stocks.map { |s| s.id }
+      note "not enough"
+      note not_enough_vol_stocks.map { |s| s.id }
+    }
+
+    enough_vol_stocks, not_enough_vol_stocks
   end
 
   def arguments
@@ -132,11 +157,7 @@ class Protocol
     plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
     primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
 
-    total_volumes_per_plasmid = total_volumes_by_sample plasmid_stocks, plasmid_volume_list
-    show {
-      title "Verify enough volume of each plasmid stock exists"
-      note total_volumes_per_plasmid.map { |id, v| "#{id}: #{v} uL" }
-    }
+    enough_vol_stocks, not_enough_vol_stocks = verify_enough_volumes_each_stock plasmid_stocks, plasmid_volume_list
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
     show {
