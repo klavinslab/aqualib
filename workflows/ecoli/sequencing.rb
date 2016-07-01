@@ -155,7 +155,9 @@ class Protocol
     primers_with_volume = primer_aliquots.map.with_index { |p, i| primer_volume_list[i].to_s + " µL of " + p.id.to_s }
 
     enough_plasmid_vol_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
-    enough_primer_vol_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list
+    enough_vol_primer_aliquots = primer_aliquots.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
+    enough_vol_primer_vols = primer_volume_list.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
+    enough_primer_vol_bools = determine_enough_volumes_each_item enough_vol_primer_aliquots, enough_vol_primer_vols
 
     show {
       note enough_plasmid_vol_bools
