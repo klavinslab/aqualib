@@ -26,11 +26,11 @@ class Protocol
     verify_data = show {
       title "Verify enough volume of each plasmid stock exists"
       total_vols_per_stock.each { |id, v| 
-        select ["Yes", "No"], var: "#{id}", label: "Is there at least #{v} µL of #{id}?", default: 0
+        select ["Yes", "No"], var: "#{id}", label: "Is there at least #{v.round(1)} µL of #{id}?", default: 0
       }
     }
 
-    enough_vol_stocks = stocks.select { |s| verify_data["#{s.id}"] == "Yes" }
+    enough_vol_stocks = stocks.select { |s| verify_data[:"#{s.id}".to_sym] == "Yes" }
     not_enough_vol_stocks = stocks - enough_vol_stocks
 
     show {
@@ -151,9 +151,9 @@ class Protocol
       end
     end
 
-    plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(3) }
+    plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(1) }
     plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
-    water_volume_list = plasmid_volume_list.collect { |v| (((12.5-v)/0.2).floor*0.2).round(3) }
+    water_volume_list = plasmid_volume_list.collect { |v| (((12.5-v)/0.2).floor*0.2).round(1) }
 
     water_with_volume = water_volume_list.collect { |v| v.to_s + " µL" }
     plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
