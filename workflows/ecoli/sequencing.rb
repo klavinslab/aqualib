@@ -25,7 +25,7 @@ class Protocol
     total_vols_per_stock = total_volumes_by_item stocks, volumes
     verify_data = show {
       title "Verify enough volume of each plasmid stock exists"
-      total_volumes_per_plasmid.each { |id, v| 
+      total_vols_per_stock.each { |id, v| 
         select ["Yes", "No"], var: "#{id}", label: "Is there at least #{v} µL of #{id}?", default: 0
       }
     }
