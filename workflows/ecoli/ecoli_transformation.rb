@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       #Enter the gibson result ids as a list
-      "gibson_result_ids Gibson Reaction Result" => [2853,2853,2853],
+      "gibson_result_ids Gibson Reaction Result" => [2853,3002,3003,3004],
       plasmid_item_ids: [],
       debug_mode: "No",
       inducer_plate: "IPTG",
