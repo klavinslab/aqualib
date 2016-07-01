@@ -135,17 +135,20 @@ class Protocol
     }
 
     show {
-      title "Electroporation and Rescue"
-      note "Repeat for every Gibson aliquot"
+      title "Add plasmid to electrocompetent aliquot, electroporate and rescue "
+      note "Repeat for each row in the table:"
+      check "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
       check "Transfer e-comp cells to electrocuvette with P1000"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 350 uL of LB"
       check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P1000"
-      
+      #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
+      table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
+      image "pipette_plasmid_into_electrocompotent_cells"
       #check "Take a labeled electrocompetent aliquot. Using the set 100uL pipette, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
       #check "Remove the cuvette from the electroporator and QUICKLY add 350 µL of LB."
       #check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then, using the set 1000uL pipette, transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
-      #table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }})
-    }
+      #table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }}) 
+    } 
     
     amp = 0
     kan = 0
