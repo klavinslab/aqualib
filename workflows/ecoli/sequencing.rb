@@ -13,6 +13,7 @@ class Protocol
         vol_hash[s.sample.id] = volumes[idx]
       else
         vol_hash[s.sample.id] += volumes[idx]
+      end
     }
     vol_hash
   end
