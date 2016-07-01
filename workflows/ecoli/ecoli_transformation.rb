@@ -80,7 +80,7 @@ class Protocol
     if plasmid_items.length != 0
       ecolibatch = find_batch(plasmid_items)
       if ecolibatch.nil?
-        raise "No such E coli batch"
+        #raise "No such E coli batch"
       elsif ecolibatch.get("tested") == "No"
         Item.find(ecolibatch.id).associate "tested", "Yes", upload=nil
         matrix = Collection.find(ecolibatch).matrix
