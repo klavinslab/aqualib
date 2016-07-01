@@ -103,7 +103,7 @@ class Protocol
       note " Click the time constant button to show 0.0."
       image "initialize_electroporator"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-      check "Set your 3 pipettors to be 2 µL, 42 µL, and 1000 µL."
+      check "Set your 3 pipettors to be 2 µL, 42 µL, and 300 µL."
       check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."      
       check "Grab a Bench LB liquid aliquot (sterile) and loosen the cap."
     }
