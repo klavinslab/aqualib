@@ -6,9 +6,9 @@ class Protocol
   include Standard
   include Cloning
 
-  def total_volumes_by_item stocks, volumes
+  def total_volumes_by_item items, volumes
     vol_hash = {}
-    stocks.each_with_index { |s, idx|
+    items.each_with_index { |s, idx|
       if vol_hash[s.id].nil?
         vol_hash[s.id] = volumes[idx]
       else
@@ -18,14 +18,11 @@ class Protocol
     vol_hash
   end
 
-  def determine_enough_volumes_each_stock stocks, volumes
-    enough_vol_stocks = []
-    not_enough_vol_stocks = []
-
-    total_vols_per_stock = total_volumes_by_item stocks, volumes
+  def determine_enough_volumes_each_item items, volumes
+    total_vols_per_item = total_volumes_by_item items, volumes
     verify_data = show {
-      title "Verify enough volume of each #{stocks[0].object_type.name} exists"
-      total_vols_per_stock.each { |id, v| 
+      title "Verify enough volume of each #{items[0].object_type.name} exists"
+      total_vols_per_item.each { |id, v| 
         select ["Yes", "No"], var: "#{id}", label: "Is there at least #{(v + 5).round(1)} µL of #{id}?", default: 0
       }
     }
@@ -39,7 +36,7 @@ class Protocol
     #   note not_enough_vol_stocks.map { |s| s.id }
     # }
 
-    stocks.map { |s| verify_data[:"#{s.id}".to_sym] == "Yes" ? true : false }
+    items.map { |s| verify_data[:"#{s.id}".to_sym] == "Yes" ? true : false }
   end
 
   def arguments
@@ -157,12 +154,12 @@ class Protocol
     plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid, i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
     primers_with_volume = primer_aliquots.map.with_index { |p, i| primer_volume_list[i].to_s + " µL of " + p.id.to_s }
 
-    enough_plasmid_vol_bools = determine_enough_volumes_each_stock plasmid_stocks, plasmid_volume_list
-    enough_primer_vol_bools = determine_enough_volumes_each_stock primer_aliquots, primer_volume_list
+    enough_plasmid_vol_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
+    enough_primer_vol_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list
 
     show {
-      note enough_plasmid_vol_bools.length
-      note enough_primer_vol_bools.length
+      note enough_plasmid_vol_bools
+      note enough_primer_vol_bools
     }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
