@@ -6,6 +6,17 @@ class Protocol
   include Standard
   include Cloning
 
+  def total_volumes_by_sample stocks, volumes
+    vol_hash = {}
+    stocks.each_with_index { |s, idx|
+      if vol_hash[s.sample.id].nil?
+        vol_hash[s.sample.id] = volumes[idx]
+      else
+        vol_hash[s.sample.id] += volumes[idx]
+    }
+    vol_hash
+  end
+
   def arguments
     {
       io_hash: {},
@@ -114,15 +125,16 @@ class Protocol
 
     plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(5) }
     plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
-    water_volume_list = plasmid_volume_list.collect{ |v| ((12.5-v)/0.2).floor*0.2 }
+    water_volume_list = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).round(5) }
 
     water_with_volume = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).to_s + " µL" }
     plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
-    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.to_s }
+    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
 
+    total_volumes_per_plasmid = total_volumes_by_sample plasmid_stocks, plasmid_volume_list
     show {
       title "Verify enough volume of each plasmid stock exists"
-
+      note total_volumes_per_plasmid.map { |id, v| "#{id}: #{v} uL" }
     }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
