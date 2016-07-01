@@ -112,19 +112,18 @@ class Protocol
       end
     end
 
-    # set minimal volume to be 0.5 µL
-    plasmid_volume_list.collect! { |x| x < 0.5 ? 0.5 : x }
-    # set maximal volume to be 12.5 µL
-    plasmid_volume_list.collect! { |x| x > 12.5 ? 12.5 : x }
+    plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(5) }
+    plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
+    water_volume_list = plasmid_volume_list.collect{ |v| ((12.5-v)/0.2).floor*0.2 }
 
-    water_volume_list = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).to_s + " µL" }
-    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| ((plasmid_volume_list[i]/0.2).ceil*0.2).round(5).to_s + " µL of " + pid.to_s }
-    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
+    water_with_volume = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).to_s + " µL" }
+    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
+    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.to_s }
 
-    # show {
-    # 	note (water_volume_list.collect {|p| "#{p}"})
-    # 	note (plasmid_volume_list.collect {|p| "#{p}"})
-    # }
+    show {
+      title "Verify enough volume of each plasmid stock exists"
+
+    }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
     show {
@@ -140,7 +139,7 @@ class Protocol
     }
 
     load_samples_variable_vol( ["Molecular Grade Water"], [
-      water_volume_list,
+      water_with_volume,
       ], stripwells,
       { show_together: true, title_appended_text: "with Molecular Grade Water" } )
     load_samples_variable_vol( ["Plasmid"], [
