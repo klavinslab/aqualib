@@ -1,0 +1,21 @@
+argument
+  debug_mode: string, "Yes or No"
+  item_choice_mode: string, "Yes or No"
+  image_option: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    item_choice_mode: item_choice_mode
+    image_option: image_option
+    task_name: "Restriction Digest"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
