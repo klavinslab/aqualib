@@ -18,7 +18,7 @@ class Protocol
     vol_hash
   end
 
-  def verify_enough_volumes_each_stock stocks, volumes
+  def determine_enough_volumes_each_stock stocks, volumes
     enough_vol_stocks = []
     not_enough_vol_stocks = []
 
@@ -158,7 +158,7 @@ class Protocol
     primers_with_volume = primer_aliquots.map.with_index { |p, i| primer_volume_list[i].to_s + " µL of " + p.id.to_s }
 
     enough_plasmid_vol_bools = determine_enough_volumes_each_stock plasmid_stocks, plasmid_volume_list
-    enough_primer_vol_bools = verify_enough_volumes_each_stock primer_aliquots, primer_volume_list
+    enough_primer_vol_bools = determine_enough_volumes_each_stock primer_aliquots, primer_volume_list
 
     show {
       note enough_plasmid_vol_bools.length
