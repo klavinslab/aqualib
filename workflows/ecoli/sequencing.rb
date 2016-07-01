@@ -40,7 +40,7 @@ class Protocol
       note not_enough_vol_stocks.map { |s| s.id }
     }
 
-    enough_vol_stocks, not_enough_vol_stocks
+    [enough_vol_stocks, not_enough_vol_stocks]
   end
 
   def arguments
