@@ -34,6 +34,8 @@ class Protocol
     not_enough_vol_stocks = stocks - enough_vol_stocks
 
     show {
+      note "verify_data"
+      note verify_data.map { |id, sel| "#{id}: #{sel}" }
       note "enough"
       note enough_vol_stocks.map { |s| s.id }
       note "not enough"
@@ -149,13 +151,13 @@ class Protocol
       end
     end
 
-    plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(5) }
+    plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(3) }
     plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
-    water_volume_list = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).round(5) }
+    water_volume_list = plasmid_volume_list.collect { |v| (((12.5-v)/0.2).floor*0.2).round(3) }
 
-    water_with_volume = plasmid_volume_list.collect{ |v| (((12.5-v)/0.2).floor*0.2).to_s + " µL" }
-    plasmids_with_volume = plasmid_stock_ids.map.with_index{ |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
-    primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
+    water_with_volume = water_volume_list.collect { |v| v.to_s + " µL" }
+    plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid,i| plasmid_volume_list[i].to_s + " µL of " + pid.to_s }
+    primers_with_volume = primer_aliquots.collect { |p| "2.5 µL of " + p.id.to_s }
 
     enough_vol_stocks, not_enough_vol_stocks = verify_enough_volumes_each_stock plasmid_stocks, plasmid_volume_list
 
