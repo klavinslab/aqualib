@@ -60,7 +60,7 @@ class Protocol
       show {
         title "Let plate dry"
         check "Place the plates with agar side down in the dark fume hood to dry."
-        note "Noting that placing agar side down is opposite of what you normally do when placing plates in incubator. This will help the antibiotic spread into the agar."
+        note "Note that placing agar side down is opposite of what you normally do when placing plates in incubator. This will help the antibiotic spread into the agar."
       }
     else
       show {
