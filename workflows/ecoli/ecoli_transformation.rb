@@ -64,6 +64,8 @@ class Protocol
     gibson_results = io_hash[:gibson_result_ids].collect{ |gid| find(:item,{id: gid})[0] }
     plasmid_items = io_hash[:plasmid_item_ids].collect { |id| find(:item,{ id: id })[0] }
     items_to_transform = gibson_results + plasmid_items
+    items_to_transform[0].location = "SF2.2.1.19"
+    items_to_transform[2].location = "SF2.2.1.18"
     take items_to_transform, interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
