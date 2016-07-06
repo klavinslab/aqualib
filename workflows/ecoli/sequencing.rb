@@ -183,6 +183,7 @@ class Protocol
     show {
       note not_enough_vol_primer_aliquots.length
       note not_enough_vol_primer_aliquots
+      note not_enough_vol_primer_aliquots.map { |p| p.sample.id }
     }
     additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
 
