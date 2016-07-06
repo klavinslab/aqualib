@@ -8,7 +8,7 @@ class Protocol
 
   def hash_by_sample items
     item_hash = {}
-    items { |i|
+    items.each { |i|
       if item_hash[i.sample.id].nil?
         item_hash[i.sample.id] = [i]
       else
