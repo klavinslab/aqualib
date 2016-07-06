@@ -131,8 +131,8 @@ class Protocol
       note "Repeat for each row in the table:"
       check "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
       check "Transfer e-comp cells to electrocuvette with P1000"
-      check "Slide into electroporator, press PULSE button twice, and QUICKLY add 350 uL of LB"
-      check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P1000"
+      check "Slide into electroporator, press PULSE button twice, and QUICKLY add 300 uL of LB"
+      check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P100"
       #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
       table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
       image "pipette_plasmid_into_electrocompotent_cells"
