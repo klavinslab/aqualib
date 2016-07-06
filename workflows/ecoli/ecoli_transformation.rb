@@ -67,7 +67,7 @@ class Protocol
     items_to_transform[0].location = "SF2.2.2.19"
     items_to_transform[2].location = "SF2.2.1.18"
     show {
-      note "SF2" <=> "M20"
+      note "SF2".to_i <=> "M20".to_i
     }
     take items_to_transform, interactive: true, method: "boxes"
 
