@@ -130,7 +130,7 @@ class Protocol
       title "Add plasmid to electrocompetent aliquot, electroporate and rescue "
       note "Repeat for each row in the table:"
       check "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
-      check "Transfer e-comp cells to electrocuvette with P1000"
+      check "Transfer e-comp cells to electrocuvette with P100"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 300 uL of LB"
       check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P100"
       #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
