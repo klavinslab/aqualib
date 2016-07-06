@@ -164,8 +164,9 @@ class Protocol
     ensure_stock_concentration plasmid_stocks
     plasmid_stocks, not_enough_vol_plasmid_stocks, enough_vol_plasmid_stock_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
 
-    # Release plasmid stocks without enough volume, cancel task, and notify task owner
+    # Release plasmid stocks without enough volume, and queue tasks to be canceled
     release not_enough_vol_plasmid_stocks, interactive: true, method: "boxes"
+    not_enough_plasmid_task_ids = io_hash[:task_ids].select.with_index { |tid, idx| !enough_vol_plasmid_stock_bools[idx] } if io_hash[:task_ids]
 
     # Take primer aliquots corresponding to plasmid stocks, and make new ones if they don't exist for given stock
     primer_ids.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
@@ -204,7 +205,7 @@ class Protocol
     water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
     plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
     primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
-    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" + ") }
+    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
 
     load_samples_variable_vol( ["Molecular Grade Water"], [
       water_with_volume,
@@ -219,7 +220,12 @@ class Protocol
       ], stripwells,
       { show_together: true, title_appended_text: "with Primer" })
 
-    #delete not_enough_vol_primer_aliquots
+    show {
+      title "Discard depleted primer aliquots"
+      note "Discard the following primer aliquots:"
+      note not_enough_vol_primer_aliquots.map { |p| "#{p}" }.join(", ")
+      #delete not_enough_vol_primer_aliquots
+    } if not_enough_vol_primer_aliquots.any?
     release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
     stripwells.each do |sw|
       sw.mark_as_deleted
@@ -260,6 +266,15 @@ class Protocol
       check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
       check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
     }
+
+    if io_hash[:task_ids]
+      not_enough_plasmid_task_ids.each { |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"canceled")
+        task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
+      }
+      io_hash[:task_ids] = io_hash[:task_ids] - not_enough_plasmid_task_ids
+    end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
