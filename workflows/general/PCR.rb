@@ -10,7 +10,6 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
-      # template_stock_ids: [13924,13924,13924,13924,13924,13924,13924],
       debug_mode: "Yes",
     }
   end
@@ -35,7 +34,8 @@ class Protocol
       io_hash[:stripwell_ids] = []
       return { io_hash: io_hash }
     end
-
+    
+    # predict the time needed to finish this protocol based on number of PCRs
     predited_time = time_prediction io_hash[:fragment_ids].length, "PCR"
 
     # tell the user what we are doing
@@ -52,19 +52,20 @@ class Protocol
 
     # collect fragment pcr information
     fragment_info_list = []
-
     io_hash[:fragment_ids].each do |fid|
       pcr = fragment_recipe fid
       fragment_info_list.push pcr
     end
-
+    
+    # error information
     if io_hash[:template_stock_ids].length > 0
       raise "Incorrect inputs, template_stock_ids size does not match fragment_ids size. They need to be one to one correspondence." if io_hash[:fragment_ids].length != io_hash[:template_stock_ids].length
       fragment_info_list.each_with_index do |fi, idx|
         fi[:template] = find(:item, { id: io_hash[:template_stock_ids][idx] })[0]
       end
     end
-
+    
+    # batch fragments, templates, primers
     all_fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
     all_templates       = fragment_info_list.collect { |fi| fi[:template] }
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
@@ -77,7 +78,7 @@ class Protocol
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     take [kapa_stock_item], interactive: true, method: "boxes"
 
-    # build a pcrs hash that group fragment pcr by T Anneal
+    # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
 
     fragment_info_list.each do |fi|
@@ -178,12 +179,13 @@ class Protocol
         check "Press 'Run' and select 50 µL."
         #image "thermal_cycler_select"
       }
+      # set the location of the stripwell
       pcr[:stripwells].each do |sw|
         sw.move thermocycler[:name]
       end
     end
 
-    # set the location of the stripwells to be the name of the thermocycler, release silently
+    # release silently
     release stripwells
 
     # release kapa master mix
@@ -191,16 +193,17 @@ class Protocol
 
     # release the templates, primers
     release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes"
-
+    
+    # change task status
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"pcr")
       end
     end
-
+    
+    # adding stripwell_ids to io_hash and return
     io_hash[:stripwell_ids] = stripwells.collect { |s| s.id }
-
     return { io_hash: io_hash }
 
   end
