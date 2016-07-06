@@ -18,12 +18,15 @@ class Protocol
     vol_hash
   end
 
-  def determine_enough_volumes_each_item items, volumes
+  def determine_enough_volumes_each_item items, volumes, opts={}
+    options = { check_contam: false }.merge opts
+
     total_vols_per_item = total_volumes_by_item items, volumes
     verify_data = show {
-      title "Verify enough volume of each #{items[0].object_type.name} exists"
+      title "Verify enough volume of each #{items[0].object_type.name} exists#{options[:check_contam] ? ", or note if contamination is present" : ""}"
       total_vols_per_item.each { |id, v| 
-        select ["Yes", "No"], var: "#{id}", label: "Is there at least #{(v + 5).round(1)} µL of #{id}?", default: 0
+        choices = options[:check_contam] ? ["Yes", "No", "Contamination is present"] : ["Yes", "No"]
+        select choices, var: "#{id}", label: "Is there at least #{(v + 5).round(1)} µL of #{id}?", default: 0 
       }
     }
 
@@ -157,11 +160,13 @@ class Protocol
     enough_plasmid_vol_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
     enough_vol_primer_aliquots = primer_aliquots.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
     enough_vol_primer_vols = primer_volume_list.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
-    enough_primer_vol_bools = determine_enough_volumes_each_item enough_vol_primer_aliquots, enough_vol_primer_vols
+    enough_primer_vol_bools = determine_enough_volumes_each_item enough_vol_primer_aliquots, enough_vol_primer_vols, check_contam: true
+    primers_to_make = enough_vol_primer_aliquots.select.with_index { |p, idx| !enough_primer_vol_bools }
 
     show {
       note enough_plasmid_vol_bools
       note enough_primer_vol_bools
+      note primers_to_make
     }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
