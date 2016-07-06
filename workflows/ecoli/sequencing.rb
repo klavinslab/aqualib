@@ -6,6 +6,18 @@ class Protocol
   include Standard
   include Cloning
 
+  def hash_by_sample items
+    item_hash = {}
+    items { |i|
+      if item_hash[i.sample.id].nil?
+        item_hash[i.sample.id] = [i]
+      else
+        item_hash[i.sample.id] += i
+      end
+    }
+    item_hash
+  end
+
   def total_volumes_by_item items, volumes
     vol_hash = {}
     items.each_with_index { |s, idx|
@@ -161,11 +173,12 @@ class Protocol
     enough_vol_primer_aliquots = primer_aliquots.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
     enough_vol_primer_vols = primer_volume_list.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
     enough_primer_vol_bools = determine_enough_volumes_each_item enough_vol_primer_aliquots, enough_vol_primer_vols, check_contam: true
-    primers_to_make = total_volumes_by_item enough_vol_primer_aliquots.select.with_index { |p, idx| !enough_primer_vol_bools[idx] }
+    primers_to_make = hash_by_sample enough_vol_primer_aliquots.select.with_index { |p, idx| !enough_primer_vol_bools[idx] }
 
     show {
       note enough_plasmid_vol_bools
       note enough_primer_vol_bools
+      note primers_to_make.keys
       note primers_to_make.values
     }
 
