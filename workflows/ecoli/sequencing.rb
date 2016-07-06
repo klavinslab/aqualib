@@ -204,7 +204,7 @@ class Protocol
     water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
     plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
     primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
-    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + primer_aliquot_hash[p.sample.id].map { |p| p.id.to_s }.join(" + ") }
+    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" + ") }
 
     load_samples_variable_vol( ["Molecular Grade Water"], [
       water_with_volume,
