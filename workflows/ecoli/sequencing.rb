@@ -12,6 +12,10 @@ class Protocol
       if item_hash[i.sample.id].nil?
         item_hash[i.sample.id] = Array.new(1) { i }
       else
+        show {
+          note items.class
+          note item_hash[i.sample.id].class
+        }
         item_hash[i.sample.id] += i
       end
     }
