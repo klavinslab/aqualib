@@ -180,6 +180,10 @@ class Protocol
 
     # Dilute from primer stocks when there isn't enough volume in the existing aliquot
     enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
+    show {
+      note not_enough_vol_primer_aliquots.length
+      note not_enough_vol_primer_aliquots
+    }
     additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
 
     # show {
@@ -223,7 +227,7 @@ class Protocol
     show {
       title "Discard depleted primer aliquots"
       note "Discard the following primer aliquots:"
-      note not_enough_vol_primer_aliquots.map { |p| "#{p}" }.join(", ")
+      note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
       #delete not_enough_vol_primer_aliquots
     } if not_enough_vol_primer_aliquots.any?
     release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
