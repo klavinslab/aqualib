@@ -10,13 +10,13 @@ class Protocol
     item_hash = {}
     items.each { |i|
       if item_hash[i.sample.id].nil?
-        item_hash[i.sample.id] = Array.new(1) { i }
+        item_hash[i.sample.id] = [i]
       else
         show {
           note items.class
           note item_hash[i.sample.id].class
         }
-        item_hash[i.sample.id] += i
+        item_hash[i.sample.id].push(i)
       end
     }
     item_hash
