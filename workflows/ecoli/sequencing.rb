@@ -161,12 +161,12 @@ class Protocol
     enough_vol_primer_aliquots = primer_aliquots.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
     enough_vol_primer_vols = primer_volume_list.select.with_index { |p, idx| enough_plasmid_vol_bools[idx] }
     enough_primer_vol_bools = determine_enough_volumes_each_item enough_vol_primer_aliquots, enough_vol_primer_vols, check_contam: true
-    primers_to_make = enough_vol_primer_aliquots.select.with_index { |p, idx| !enough_primer_vol_bools[idx] }
+    primers_to_make = total_volumes_by_item enough_vol_primer_aliquots.select.with_index { |p, idx| !enough_primer_vol_bools[idx] }
 
     show {
       note enough_plasmid_vol_bools
       note enough_primer_vol_bools
-      note primers_to_make
+      note primers_to_make.values
     }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
