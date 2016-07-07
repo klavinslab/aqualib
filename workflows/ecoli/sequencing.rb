@@ -237,17 +237,15 @@ class Protocol
         ], stripwells,
         { show_together: true, title_appended_text: "with Primer" })
 
-      show {
-        title "Discard depleted primer aliquots"
-        note "Discard the following primer aliquots:"
-        note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+      if not_enough_vol_primer_aliquots.any?
+        show {
+          title "Discard depleted primer aliquots"
+          note "Discard the following primer aliquots:"
+          note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+        }
         delete not_enough_vol_primer_aliquots
-      } if not_enough_vol_primer_aliquots.any?
-      release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
-      stripwells.each do |sw|
-        sw.mark_as_deleted
-        sw.save
       end
+      release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
 
       # create order table for sequencing
       sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
@@ -283,7 +281,7 @@ class Protocol
         check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
         check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
       }
-      release stripwells
+      delete stripwells
     else 
       show {
         title "No sequencing needs to run"
