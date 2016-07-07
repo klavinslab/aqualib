@@ -209,99 +209,101 @@ class Protocol
     not_enough_plasmid_task_ids = []
     not_enough_plasmid_task_ids = select_task_by_plasmid_stock io_hash, not_enough_vol_plasmid_stocks.map { |p| p.id } if io_hash[:task_ids]
     
-    # Take primer aliquots corresponding to plasmid stocks, and make new ones if they don't exist for given stock
-    primer_ids.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
-    primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
-    primer_aliquots_diluted_from_stock = dilute_samples primers_need_to_dilute(primer_ids)
-    primer_aliquots = primer_ids.collect { |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
-    if io_hash[:item_choice_mode].downcase == "yes"
-      primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
-    end
-    take primer_aliquots - primer_aliquots_diluted_from_stock, interactive: true, method: "boxes"
+    if plasmid_stocks.any?
+      # Take primer aliquots corresponding to plasmid stocks, and make new ones if they don't exist for given stock
+      primer_ids.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
+      primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
+      primer_aliquots_diluted_from_stock = dilute_samples primers_need_to_dilute(primer_ids)
+      primer_aliquots = primer_ids.collect { |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
+      if io_hash[:item_choice_mode].downcase == "yes"
+        primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
+      end
+      take primer_aliquots - primer_aliquots_diluted_from_stock, interactive: true, method: "boxes"
 
-    # Dilute from primer stocks when there isn't enough volume in the existing aliquot
-    enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
-    additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
+      # Dilute from primer stocks when there isn't enough volume in the existing aliquot
+      enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
+      additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
 
-    stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
-    show {
-      title "Prepare Stripwells for Sequencing Reaction"
-      stripwells.each_with_index do |sw,idx|
-        if idx < stripwells.length - 1
-          check "Grab a stripwell with 12 wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{idx*12+12}"
-        else
-          number_of_wells = plasmid_stocks.length - idx * 12
-          check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{plasmid_stocks.length}"
+      stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
+      show {
+        title "Prepare Stripwells for Sequencing Reaction"
+        stripwells.each_with_index do |sw,idx|
+          if idx < stripwells.length - 1
+            check "Grab a stripwell with 12 wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{idx*12+12}"
+          else
+            number_of_wells = plasmid_stocks.length - idx * 12
+            check" Grab a stripwell with #{number_of_wells} wells, label the first well with #{batch_initials}#{idx*12+1} and last well with #{batch_initials}#{plasmid_stocks.length}"
+          end
         end
+      }
+
+      water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
+      plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
+      primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
+      primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + 
+                                                              primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
+
+      load_samples_variable_vol( ["Molecular Grade Water"], [
+        water_with_volume,
+        ], stripwells,
+        { show_together: true, title_appended_text: "with Molecular Grade Water" })
+      load_samples_variable_vol( ["Plasmid"], [
+        plasmids_with_volume,
+        ], stripwells,
+        { show_together: true, title_appended_text: "with Plasmid" })
+      load_samples_variable_vol( ["Primer"], [
+        primers_with_volume
+        ], stripwells,
+        { show_together: true, title_appended_text: "with Primer" })
+
+      show {
+        title "Discard depleted primer aliquots"
+        note "Discard the following primer aliquots:"
+        note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+        ####delete not_enough_vol_primer_aliquots
+      } if not_enough_vol_primer_aliquots.any?
+      release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
+      stripwells.each do |sw|
+        sw.mark_as_deleted
+        sw.save
       end
-    }
 
-    water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
-    plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
-    primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
-    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + 
-                                                            primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
-
-    load_samples_variable_vol( ["Molecular Grade Water"], [
-      water_with_volume,
-      ], stripwells,
-      { show_together: true, title_appended_text: "with Molecular Grade Water" })
-    load_samples_variable_vol( ["Plasmid"], [
-      plasmids_with_volume,
-      ], stripwells,
-      { show_together: true, title_appended_text: "with Plasmid" })
-    load_samples_variable_vol( ["Primer"], [
-      primers_with_volume
-      ], stripwells,
-      { show_together: true, title_appended_text: "with Primer" })
-
-    show {
-      title "Discard depleted primer aliquots"
-      note "Discard the following primer aliquots:"
-      note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
-      ####delete not_enough_vol_primer_aliquots
-    } if not_enough_vol_primer_aliquots.any?
-    release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
-    stripwells.each do |sw|
-      sw.mark_as_deleted
-      sw.save
-    end
-
-    # create order table for sequencing
-    sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
-    plasmid_stocks.each_with_index do |p,idx|
-      if p.sample.sample_type.name == "Plasmid"
-        dna_type = "Plasmid"
-      elsif p.sample.sample_type.name == "Fragment"
-        dna_type = "Purified PCR"
+      # create order table for sequencing
+      sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
+      plasmid_stocks.each_with_index do |p,idx|
+        if p.sample.sample_type.name == "Plasmid"
+          dna_type = "Plasmid"
+        elsif p.sample.sample_type.name == "Fragment"
+          dna_type = "Purified PCR"
+        end
+        owner_initials = name_initials(p.sample.user.name)
+        sequencing_tab.push ["#{p.id}-" + owner_initials, dna_type, p.sample.properties["Length"], primer_ids[idx]]
       end
-      owner_initials = name_initials(p.sample.user.name)
-      sequencing_tab.push ["#{p.id}-" + owner_initials, dna_type, p.sample.properties["Length"], primer_ids[idx]]
+
+      num = primer_ids.length
+      genewiz = show {
+        title "Create a Genewiz order"
+        check "Go the <a href='https://clims3.genewiz.com/default.aspx' target='_blank'>GENEWIZ website</a>, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
+        check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
+        check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
+        table sequencing_tab
+        check "Click Save & Next, Review the form and click Next Step"
+        check "Enter Quotation Number MS0721101, click Next Step"
+        check "Print out the form and enter the Genewiz tracking number below."
+        get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
+      }
+
+      order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
+
+      show {
+        title "Put all stripwells in the Genewiz dropbox"
+        check "Cap all of the stripwells."
+        check "Wrap the stripwells in parafilm."
+        check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
+        check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
+      }
+      release stripwells
     end
-
-    num = primer_ids.length
-    genewiz = show {
-      title "Create a Genewiz order"
-      check "Go the <a href='https://clims3.genewiz.com/default.aspx' target='_blank'>GENEWIZ website</a>, log in with lab account (Username: mnparks@uw.edu, password is the lab general password)."
-      check "Click Create Sequencing Order, choose Same Day, Online Form, Pre-Mixed, #{num} samples, then Create New Form"
-      check "Enter DNA Name and My Primer Name according to the following table, choose DNA Type to be Plasmid"
-      table sequencing_tab
-      check "Click Save & Next, Review the form and click Next Step"
-      check "Enter Quotation Number MS0721101, click Next Step"
-      check "Print out the form and enter the Genewiz tracking number below."
-      get "text", var: "tracking_num", label: "Enter the Genewiz tracking number", default: "10-277155539"
-    }
-
-    order_date = Time.now.strftime("%-m/%-d/%y %I:%M:%S %p")
-
-    show {
-      title "Put all stripwells in the Genewiz dropbox"
-      check "Cap all of the stripwells."
-      check "Wrap the stripwells in parafilm."
-      check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
-      check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
-    }
-    release stripwells
 
     if io_hash[:task_ids]
       no_primer_stock_task_ids.each { |tid|
