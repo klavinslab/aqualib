@@ -137,6 +137,12 @@ class Protocol
       title "plasmid_stock_ids_without_primer_stocks"
       note plasmid_stock_ids_without_primer_stocks
     }
+    plasmid_stock_ids.each_with_index { |pid, idx|
+                                        if plasmid_stock_ids_without_primer_stocks.include? pid
+                                          plasmid_stock_ids[idx] = nil
+                                          primer_ids[idx] = nil
+                                      }
+    plasmid_stock_ids.compact!; primer_ids.compact!
     no_primer_stock_task_ids = []
     no_primer_stock_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_stocks if io_hash[:task_ids]
 
