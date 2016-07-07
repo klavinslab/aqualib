@@ -277,6 +277,7 @@ class Protocol
       check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
       check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
     }
+    release stripwells
 
     if io_hash[:task_ids]
       no_primer_stock_task_ids.each { |tid|
