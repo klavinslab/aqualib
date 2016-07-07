@@ -44,6 +44,7 @@ class Protocol
   end
 
   def determine_enough_volumes_each_item items, volumes, opts={}
+    return [[],[],[]] if items.empty? || volumes.empty?
     options = { check_contam: false }.merge opts
 
     total_vols_per_item = total_volumes_by_item items, volumes
@@ -64,8 +65,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_stock_ids: [15417,15418,15417,15418,15417,15418,15417,15418],
-      primer_ids: [[2575,2054],[2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054]],
+      plasmid_stock_ids: [15417,15418,15417,73966,73966,15418,15417,15418,15417,15418],
+      primer_ids: [[2575,2054],[2054],[2575,2054],[2575,14429],[14429],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054]],
       debug_mode: "No",
       group: "yang"
     }
