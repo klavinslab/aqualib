@@ -6,6 +6,19 @@ class Protocol
   include Standard
   include Cloning
 
+  def select_task_by_plasmid_stock io_hash, stock_ids
+      io_hash[:task_ids].select.with_index { |tid, idx| 
+                                              seq_task = find(:task, { task_prototype: { name: "Sequencing" }, id: tid })
+                                              if seq_task.any?
+                                                (stock_ids & task.simple_spec[:plasmid_stock_id]).any?
+                                              else
+                                                plasmid_ids_from_stocks = stock_ids.map { |sid| find(:item, id: sid)[0].sample.id }
+                                                plasmid_ids_from_plates = task.simple_spec[:plate_ids].map { |pid| find(:item, id: pid)[0].sample.id }
+                                                (plasmid_ids_from_stocks & plasmid_ids_from_plates).any?
+                                              end
+                                            }
+  end
+
   def hash_by_sample items
     item_hash = {}
     items.each { |i|
@@ -41,15 +54,6 @@ class Protocol
         select choices, var: "#{id}", label: "Is there at least #{(v + 5).round(1)} µL of #{id}?", default: 0 
       }
     }
-
-    # show {
-    #   note "verify_data"
-    #   note verify_data.map { |id, sel| "#{id}: #{sel}" }
-    #   note "enough"
-    #   note enough_vol_stocks.map { |s| s.id }
-    #   note "not enough"
-    #   note not_enough_vol_stocks.map { |s| s.id }
-    # }
 
     bools = items.map { |i| verify_data[:"#{i.id}".to_sym] == "Yes" ? true : false }
     [items.select.with_index { |i, idx| bools[idx] },
@@ -123,6 +127,19 @@ class Protocol
       return { io_hash: io_hash }
     end
 
+    # Cancel any reactions that don't have a corresponding primer stock
+    plasmid_stock_ids_without_primer_stocks = io_hash[:primer_ids].map.with_index { |pids, idx| 
+                                                                                    if pids.any? { |pid| find(:sample, id: pid)[0].in("Primer Stock").empty? }
+                                                                                      io_hash[:plasmid_stock_ids][idx]
+                                                                                    end
+                                                                                  }.compact
+    show {
+      title "plasmid_stock_ids_without_primer_stocks"
+      note plasmid_stock_ids_without_primer_stocks
+    }
+    no_primer_stock_task_ids = []
+    no_primer_stock_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_stocks if io_hash[:task_ids]
+
     plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
     # pop up nanodrop page for stocks without concentration entered
     ensure_stock_concentration plasmid_stocks
@@ -161,13 +178,13 @@ class Protocol
 
     # Select only the reactions with enough plasmid stock volume
     take plasmid_stocks, interactive: true, method: "boxes"
-    ensure_stock_concentration plasmid_stocks
     plasmid_stocks, not_enough_vol_plasmid_stocks, enough_vol_plasmid_stock_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
 
     # Release plasmid stocks without enough volume, and queue tasks to be canceled
     release not_enough_vol_plasmid_stocks, interactive: true, method: "boxes"
-    not_enough_plasmid_task_ids = io_hash[:task_ids].select.with_index { |tid, idx| !enough_vol_plasmid_stock_bools[idx] } if io_hash[:task_ids]
-
+    not_enough_plasmid_task_ids = []
+    not_enough_plasmid_task_ids = select_task_by_plasmid_stock io_hash, not_enough_vol_plasmid_stocks.map { |p| p.id } if io_hash[:task_ids]
+    
     # Take primer aliquots corresponding to plasmid stocks, and make new ones if they don't exist for given stock
     primer_ids.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
     primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
@@ -180,19 +197,7 @@ class Protocol
 
     # Dilute from primer stocks when there isn't enough volume in the existing aliquot
     enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
-    show {
-      note not_enough_vol_primer_aliquots.length
-      note not_enough_vol_primer_aliquots
-      note not_enough_vol_primer_aliquots.map { |p| p.sample.id }
-    }
     additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
-
-    # show {
-    #   note enough_plasmid_vol_bools
-    #   note enough_primer_vol_bools
-    #   note primer_aliquots_to_make.keys
-    #   note primer_aliquots_to_make.values
-    # }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
     show {
@@ -210,7 +215,8 @@ class Protocol
     water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
     plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
     primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
-    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
+    primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + 
+                                                            primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
 
     load_samples_variable_vol( ["Molecular Grade Water"], [
       water_with_volume,
@@ -229,7 +235,7 @@ class Protocol
       title "Discard depleted primer aliquots"
       note "Discard the following primer aliquots:"
       note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
-      #delete not_enough_vol_primer_aliquots
+      ####delete not_enough_vol_primer_aliquots
     } if not_enough_vol_primer_aliquots.any?
     release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
     stripwells.each do |sw|
@@ -273,12 +279,24 @@ class Protocol
     }
 
     if io_hash[:task_ids]
+      no_primer_stock_task_ids.each { |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"canceled")
+        task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A Primer Order task has been automatically submitted."
+        
+        primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
+        primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
+        tp = TaskPrototype.where("name = 'Primer Order'")[0]
+        t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer " => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
+        t.save
+        t.notify "Automatically created from Plasmid Verification or Sequencing.", job_id: jid
+      }
       not_enough_plasmid_task_ids.each { |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"canceled")
         task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
       }
-      io_hash[:task_ids] = io_hash[:task_ids] - not_enough_plasmid_task_ids
+      io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
     end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
