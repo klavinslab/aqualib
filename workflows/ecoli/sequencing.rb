@@ -284,6 +284,11 @@ class Protocol
         check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
       }
       release stripwells
+    else 
+      show {
+        title "No sequencing needs to run"
+        note "Thank you!"
+      }
     end
 
     if io_hash[:task_ids]
@@ -305,11 +310,6 @@ class Protocol
         task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
       }
       io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
-    else 
-      show {
-        title "No sequencing needs to run"
-        note "Thank you!"
-      }
     end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
