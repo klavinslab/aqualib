@@ -146,6 +146,11 @@ class Protocol
                                       }
     plasmid_stock_ids.compact!
     primer_ids.compact!
+    show {
+      title "plasmid_stock_ids and primer_ids"
+      note plasmid_stock_ids
+      note primer_ids
+    }
     no_primer_stock_task_ids = []
     no_primer_stock_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_stocks if io_hash[:task_ids]
 
