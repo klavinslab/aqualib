@@ -207,9 +207,6 @@ class Protocol
 
       stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
       show {
-        stripwells.each { |sw| note sw.class }
-      }
-      show {
         title "Prepare Stripwells for Sequencing Reaction"
         stripwells.each_with_index do |sw,idx|
           if idx < stripwells.length - 1
@@ -284,10 +281,11 @@ class Protocol
         check "Put the stripwells into a zip-lock bag along with the printed Genewiz order form."
         check "Ensure that the bag is sealed, and put it into the Genewiz dropbox."
       }
-      show {
-        stripwells.each { |sw| note sw.class }
-      }
-      delete stripwells
+      stripwells.each do |sw|
+        sw.mark_as_deleted
+        sw.save
+      end
+      release stripwells
     else 
       show {
         title "No sequencing needs to run"
