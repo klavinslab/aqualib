@@ -241,7 +241,7 @@ class Protocol
         title "Discard depleted primer aliquots"
         note "Discard the following primer aliquots:"
         note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
-        ####delete not_enough_vol_primer_aliquots
+        delete not_enough_vol_primer_aliquots
       } if not_enough_vol_primer_aliquots.any?
       release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
       stripwells.each do |sw|
