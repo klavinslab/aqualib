@@ -138,12 +138,22 @@ class Protocol
       title "plasmid_stock_ids_without_primer_stocks"
       note plasmid_stock_ids_without_primer_stocks
     }
+    show {
+      title "plasmid_stock_ids and primer_ids"
+      note plasmid_stock_ids
+      note primer_ids
+    }
     plasmid_stock_ids.each_with_index { |pid, idx|
                                         if plasmid_stock_ids_without_primer_stocks.include? pid
                                           plasmid_stock_ids[idx] = nil
                                           primer_ids[idx] = nil
                                         end
                                       }
+    show {
+      title "plasmid_stock_ids and primer_ids"
+      note plasmid_stock_ids
+      note primer_ids
+    }
     plasmid_stock_ids.compact!
     primer_ids.compact!
     show {
