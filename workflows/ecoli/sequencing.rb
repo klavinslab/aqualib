@@ -134,33 +134,14 @@ class Protocol
                                                                                       io_hash[:plasmid_stock_ids][idx]
                                                                                     end
                                                                                   }.compact
-    show {
-      title "plasmid_stock_ids_without_primer_stocks"
-      note plasmid_stock_ids_without_primer_stocks
-    }
-    show {
-      title "plasmid_stock_ids and primer_ids"
-      note plasmid_stock_ids
-      note primer_ids
-    }
     plasmid_stock_ids.each_with_index { |pid, idx|
                                         if plasmid_stock_ids_without_primer_stocks.include? pid
                                           plasmid_stock_ids[idx] = nil
                                           primer_ids[idx] = nil
                                         end
                                       }
-    show {
-      title "plasmid_stock_ids and primer_ids"
-      note plasmid_stock_ids
-      note primer_ids
-    }
     plasmid_stock_ids.compact!
     primer_ids.compact!
-    show {
-      title "plasmid_stock_ids and primer_ids"
-      note plasmid_stock_ids
-      note primer_ids
-    }
     no_primer_stock_task_ids = []
     no_primer_stock_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_stocks if io_hash[:task_ids]
 
@@ -324,6 +305,11 @@ class Protocol
         task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
       }
       io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
+    else 
+      show {
+        title "No sequencing needs to run"
+        note "Thank you!"
+      }
     end
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
@@ -357,8 +343,8 @@ class Protocol
     end
 
     # Return all info
-    io_hash[:tracking_num] = genewiz[:tracking_num]
-    io_hash[:order_date] = order_date
+    io_hash[:tracking_num] = genewiz[:tracking_num] if genewiz
+    io_hash[:order_date] = order_date if order_date
     return { io_hash: io_hash }
 
   end # main
