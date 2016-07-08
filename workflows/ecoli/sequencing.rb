@@ -69,7 +69,7 @@ class Protocol
       primer_ids: [[2575,2054],[2054],[2575,2054],[2575,14429],[14429],[2575,2054],[2575,2054],[14369,14368],[2575,2054],[2575,2054],[2575,2054]],
       sequencing_task_ids: [25341],
       debug_mode: "No",
-      group: "yang"
+      group: "technicians"
     }
   end
 
