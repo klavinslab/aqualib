@@ -106,8 +106,18 @@ class Protocol
     sequencing_info = task_status sequencing_tasks_list
     io_hash[:sequencing_task_ids] = task_choose_limit(sequencing_info[:ready_ids], "Sequencing")
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
+    show {
+      title "task_ids"
+      note io_hash[:task_ids]
+      note "sequencing_ids"
+      note io_hash[:sequencing_task_ids]
+    }
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
+      show {
+        title "seq simple spec"
+        note ready_task.simple_spec
+      }
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
         if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
