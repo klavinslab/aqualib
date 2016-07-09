@@ -12,7 +12,7 @@ class Protocol
                                               if seq_task.any?
                                                 (stock_ids & seq_task[0].simple_spec[:plasmid_stock_id]).any?
                                               else
-                                                task = find(:task, id: tid)
+                                                task = find(:task, id: tid)[0]
                                                 plasmid_ids_from_stocks = stock_ids.map { |sid| find(:item, id: sid)[0].sample.id }
                                                 plasmid_ids_from_plates = task.simple_spec[:plate_ids].map { |pid| find(:item, id: pid)[0].sample.id }
                                                 (plasmid_ids_from_stocks & plasmid_ids_from_plates).any?
