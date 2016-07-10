@@ -70,7 +70,7 @@ class Protocol
       #primer_ids: [[2575,2054],[2054],[2575,2054],[2575,14429],[14429],[2575,2054],[2575,2054],[14369,14368],[2575,2054],[2575,2054],[2575,2054]],
       plasmid_stock_ids: [73249, 73437, 74270, 74269],
       primer_ids: [[14287, 14288], [14252], [351, 1405], [351, 1405]],
-      task_ids: [25315, 25343, 25314],
+      task_ids: [25343, 25315, 25314],
       sequencing_task_ids: [25341],
       debug_mode: "No",
       group: "technicians"
@@ -159,7 +159,9 @@ class Protocol
       title "plasmid_stock_ids_without_primer_stocks"
       note plasmid_stock_ids_without_primer_stocks
       note "plasmid_stock_ids"
-      note plasmid_stock_ids
+      note io_hash[:plasmid_stock_ids]
+      note "primer_ids"
+      note io_hash[:primer_ids]
     }
     plasmid_stock_ids.compact!
     primer_ids.compact!
