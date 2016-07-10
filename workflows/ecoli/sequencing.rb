@@ -301,7 +301,8 @@ class Protocol
       primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
       primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
       tp = TaskPrototype.where("name = 'Primer Order'")[0]
-      t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
+      #t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
+      t = Task.new(name: "TEST_primer_order", specification: { "primer_ids Primer" => [14252] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
       t.save
       show {
         title "task #{t.name} stuff"
