@@ -144,9 +144,9 @@ class Protocol
     end
 
     # Cancel any reactions that don't have a corresponding primer stock
-    plasmid_stock_ids_without_primer_stocks = io_hash[:primer_ids].map.with_index { |pids, idx| 
+    plasmid_stock_ids_without_primer_stocks = primer_ids.map.with_index { |pids, idx| 
                                                                                     if pids.any? { |pid| find(:sample, id: pid)[0].in("Primer Stock").empty? }
-                                                                                      io_hash[:plasmid_stock_ids][idx]
+                                                                                      plasmid_stock_ids[idx]
                                                                                     end
                                                                                   }.compact
     plasmid_stock_ids.each_with_index { |pid, idx|
@@ -158,10 +158,14 @@ class Protocol
     show {
       title "plasmid_stock_ids_without_primer_stocks"
       note plasmid_stock_ids_without_primer_stocks
-      note "plasmid_stock_ids"
+      note "io_hash[:plasmid_stock_ids]"
       note io_hash[:plasmid_stock_ids]
-      note "primer_ids"
+      note "io_hash[:primer_ids]"
       note io_hash[:primer_ids]
+      note "length #{io_hash[:primer_ids].length}"
+      note "primer_ids"
+      note primer_ids
+      note "length #{primer_ids.length}"
     }
     plasmid_stock_ids.compact!
     primer_ids.compact!
