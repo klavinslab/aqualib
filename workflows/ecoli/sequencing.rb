@@ -110,18 +110,8 @@ class Protocol
     sequencing_info = task_status sequencing_tasks_list
     io_hash[:sequencing_task_ids] = task_choose_limit(sequencing_info[:ready_ids], "Sequencing")
     io_hash[:task_ids].concat io_hash[:sequencing_task_ids]
-    show {
-      title "task_ids"
-      note io_hash[:task_ids]
-      note "sequencing_ids"
-      note io_hash[:sequencing_task_ids]
-    }
     io_hash[:sequencing_task_ids].each do |tid|
       ready_task = find(:task, id: tid)[0]
-      show {
-        title "seq simple spec"
-        note ready_task.simple_spec.values
-      }
       ready_task.simple_spec[:primer_ids].each_with_index do |pids,idx|
         stock = find(:item, id: ready_task.simple_spec[:plasmid_stock_id][idx])[0]
         if ["Plasmid", "Fragment"].include?(stock.sample.sample_type.name)
@@ -151,18 +141,6 @@ class Protocol
                                           primer_ids[idx] = nil
                                         end
                                       }
-    show {
-      title "plasmid_stock_ids_without_primer_stocks"
-      note plasmid_stock_ids_without_primer_stocks
-      note "io_hash[:plasmid_stock_ids]"
-      note io_hash[:plasmid_stock_ids]
-      note "io_hash[:primer_ids]"
-      note io_hash[:primer_ids]
-      note "length #{io_hash[:primer_ids].length}"
-      note "primer_ids"
-      note primer_ids
-      note "length #{primer_ids.length}"
-    }
     plasmid_stock_ids.compact!
     primer_ids.compact!
     no_primer_stock_task_ids = []
@@ -323,7 +301,7 @@ class Protocol
       primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
       primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
       tp = TaskPrototype.where("name = 'Primer Order'")[0]
-      t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer " => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
+      t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
       t.save
       t.notify "Automatically created from #{task.task_prototype.name} #{task_html_link task}.", job_id: jid
       task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
