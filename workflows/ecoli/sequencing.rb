@@ -310,6 +310,7 @@ class Protocol
         note tp.id
         note primers_to_order[0].user.id
         note task.budget_id
+        note t.id
       }
       t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
       task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
