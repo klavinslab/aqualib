@@ -88,7 +88,7 @@ class Protocol
       end
     end
     batch_initials = "MP"
-    
+
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
@@ -158,6 +158,8 @@ class Protocol
     show {
       title "plasmid_stock_ids_without_primer_stocks"
       note plasmid_stock_ids_without_primer_stocks
+      note "plasmid_stock_ids"
+      note plasmid_stock_ids
     }
     plasmid_stock_ids.compact!
     primer_ids.compact!
