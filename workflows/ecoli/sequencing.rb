@@ -301,9 +301,17 @@ class Protocol
       primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
       primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
       tp = TaskPrototype.where("name = 'Primer Order'")[0]
+      show {
+        title "task #{t.name} stuff"
+        note "#{primers_to_order_names}_primer_order"
+        note { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json
+        note tp.id
+        note primers_to_order[0].user.id
+        note task.budget_id
+      }
       t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
       t.save
-      t.notify "Automatically created from #{task.task_prototype.name} #{task_html_link task}.", job_id: jid
+      t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
       task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
     }
     not_enough_plasmid_task_ids.each { |tid|
