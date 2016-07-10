@@ -72,22 +72,12 @@ class Protocol
       primer_ids: [[14287, 14288], [14252], [351, 1405], [351, 1405]],
       task_ids: [25343, 25315, 25314],
       sequencing_task_ids: [25341],
-      debug_mode: "Yes",
+      debug_mode: "No",
       group: "technicians"
     }
   end
 
   def main
-    # tp = TaskPrototype.where("name = 'Primer Order'")[0]
-    # #t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
-    # t = Task.new(
-    #             name: "TEST_primer_order_differentname", 
-    #             specification: { "primer_ids Primer" => [14252] }.to_json, 
-    #             task_prototype_id: tp.id, 
-    #             status: "waiting", 
-    #             user_id: 17, 
-    #             budget_id: 19)
-    # t.save
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No", sequencing_verification_task_ids: [] }.merge io_hash
@@ -311,18 +301,8 @@ class Protocol
       primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
       primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
       tp = TaskPrototype.where("name = 'Primer Order'")[0]
-      t = Task.new(name: "#{primers_to_order_names}_primer_order_from_#{task_html_link task}", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
-      #t = Task.new(name: "TEST_primer_order", specification: { "primer_ids Primer" => [14252] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: 17, budget_id: 19)
+      t = Task.new(name: "#{primers_to_order_names}_primer_order_from_#{task.name}", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
       t.save
-      show {
-        title "task #{t.name} stuff"
-        note "#{primers_to_order_names}_primer_order"
-        note primers_to_order.map { |p| p.id }
-        note tp.id
-        note primers_to_order[0].user.id
-        note task.budget_id
-        note t.id
-      }
       t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
       task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
     }
