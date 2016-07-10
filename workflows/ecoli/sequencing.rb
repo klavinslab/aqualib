@@ -78,17 +78,6 @@ class Protocol
   end
 
   def main
-    io_hash = input[:io_hash]
-    io_hash = input if input[:io_hash].empty?
-    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No", sequencing_verification_task_ids: [] }.merge io_hash
-    # re define the debug function based on the debug_mode input
-    if io_hash[:debug_mode].downcase == "yes"
-      def debug
-        true
-      end
-    end
-    batch_initials = "MP"
-
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
@@ -155,6 +144,10 @@ class Protocol
                                           primer_ids[idx] = nil
                                         end
                                       }
+    show {
+      title "plasmid_stock_ids_without_primer_stocks"
+      note plasmid_stock_ids_without_primer_stocks
+    }
     plasmid_stock_ids.compact!
     primer_ids.compact!
     no_primer_stock_task_ids = []
@@ -308,26 +301,24 @@ class Protocol
       }
     end
 
-    if io_hash[:task_ids]
-      no_primer_stock_task_ids.each { |tid|
-        task = find(:task, id: tid)[0]
-        set_task_status(task,"canceled")
-        task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A Primer Order task has been automatically submitted."
-        
-        primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
-        primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
-        tp = TaskPrototype.where("name = 'Primer Order'")[0]
-        t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer " => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
-        t.save
-        t.notify "Automatically created from Plasmid Verification or Sequencing.", job_id: jid
-      }
-      not_enough_plasmid_task_ids.each { |tid|
-        task = find(:task, id: tid)[0]
-        set_task_status(task,"canceled")
-        task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
-      }
-      io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
-    end
+    no_primer_stock_task_ids.each { |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"canceled")
+      
+      primers_to_order = task.simple_spec[:primer_ids].flatten.map { |pid| find(:sample, id: pid)[0] }.select { |p| p.in("Primer Stock").empty? }
+      primers_to_order_names = primers_to_order.map { |p| p.name }.join(", ")
+      tp = TaskPrototype.where("name = 'Primer Order'")[0]
+      t = Task.new(name: "#{primers_to_order_names}_primer_order", specification: { "primer_ids Primer " => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
+      t.save
+      t.notify "Automatically created from #{task.task_prototype.name} #{task_html_link task}.", job_id: jid
+      task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
+    }
+    not_enough_plasmid_task_ids.each { |tid|
+      task = find(:task, id: tid)[0]
+      set_task_status(task,"canceled")
+      task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
+    }
+    io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
