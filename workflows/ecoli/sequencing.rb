@@ -144,11 +144,7 @@ class Protocol
     end
 
     # Cancel any reactions that don't have a corresponding primer stock
-    plasmid_stock_ids_without_primer_stocks = primer_ids.map.with_index { |pids, idx| 
-                                                                                    if pids.any? { |pid| find(:sample, id: pid)[0].in("Primer Stock").empty? }
-                                                                                      plasmid_stock_ids[idx]
-                                                                                    end
-                                                                                  }.compact
+    plasmid_stock_ids_without_primer_stocks = plasmid_stock_ids.select.with_index { |pid, idx| find(:sample, id: primer_ids[idx])[0].in("Primer Stock").empty? }.uniq
     plasmid_stock_ids.each_with_index { |pid, idx|
                                         if plasmid_stock_ids_without_primer_stocks.include? pid
                                           plasmid_stock_ids[idx] = nil
