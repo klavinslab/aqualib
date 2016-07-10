@@ -78,6 +78,17 @@ class Protocol
   end
 
   def main
+    io_hash = input[:io_hash]
+    io_hash = input if input[:io_hash].empty?
+    io_hash = { task_ids: [], debug_mode: "No", overnight_ids: [], item_choice_mode: "No", sequencing_verification_task_ids: [] }.merge io_hash
+    # re define the debug function based on the debug_mode input
+    if io_hash[:debug_mode].downcase == "yes"
+      def debug
+        true
+      end
+    end
+    batch_initials = "MP"
+    
     # turn input plasmid_stock_ids and primer_ids into two corresponding arrays
     plasmid_stock_ids = []
     primer_ids = []
