@@ -72,7 +72,7 @@ class Protocol
       primer_ids: [[14287, 14288], [14252], [351, 1405], [351, 1405]],
       task_ids: [25343, 25315, 25314],
       sequencing_task_ids: [25341],
-      debug_mode: "No",
+      debug_mode: "Yes",
       group: "technicians"
     }
   end
