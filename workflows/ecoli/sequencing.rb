@@ -304,7 +304,7 @@ class Protocol
       show {
         title "task #{t.name} stuff"
         note "#{primers_to_order_names}_primer_order"
-        note { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json
+        note primers_to_order.map { |p| p.id }
         note tp.id
         note primers_to_order[0].user.id
         note task.budget_id
