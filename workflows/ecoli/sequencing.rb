@@ -137,11 +137,14 @@ class Protocol
     primer_aliquots = primer_ids.collect { |pid| 
                                           find_result = find(:sample, id: pid).in("Primer Aliquot")
                                           if find_result.any?
-                                            io_hash[:item_choice_mode].downcase == "yes" ?
+                                            if io_hash[:item_choice_mode].downcase == "yes"
                                               choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" :
+                                            else
                                               find_result[0]
+                                            end
                                           else
                                             nil
+                                          end
                                           }
     take plasmid_stocks + primer_aliquots.compact, interactive: true, method: "boxes"
     ensure_stock_concentration plasmid_stocks
