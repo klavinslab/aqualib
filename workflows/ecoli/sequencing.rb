@@ -34,11 +34,11 @@ class Protocol
 
   def total_volumes_by_item items, volumes
     vol_hash = {}
-    items.each_with_index { |s, idx|
-      if vol_hash[s.id].nil?
-        vol_hash[s.id] = volumes[idx]
+    items.compact.each_with_index { |i, idx|
+      if vol_hash[i.id].nil?
+        vol_hash[i.id] = volumes.compact[idx]
       else
-        vol_hash[s.id] += volumes[idx]
+        vol_hash[i.id] += volumes.compact[idx]
       end
     }
     vol_hash
@@ -57,7 +57,7 @@ class Protocol
       }
     }
 
-    bools = items.map { |i| verify_data[:"#{i.id}".to_sym] == "Yes" ? true : false }
+    bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" ? true : false }
     [items.select.with_index { |i, idx| bools[idx] },
     items.select.with_index { |i, idx| !bools[idx] },
     bools]
@@ -121,9 +121,6 @@ class Protocol
           end
         end
       end
-      # show {
-      #   note "#{ready_task.spec}"
-      # }
     end
     if plasmid_stock_ids.length == 0
       show {
@@ -133,21 +130,20 @@ class Protocol
       return { io_hash: io_hash }
     end
 
-    # Cancel any reactions that don't have a corresponding primer stock
-    plasmid_stock_ids_without_primer_stocks = plasmid_stock_ids.select.with_index { |pid, idx| find(:sample, id: primer_ids[idx])[0].in("Primer Stock").empty? }.uniq
-    plasmid_stock_ids.each_with_index { |pid, idx|
-                                        if plasmid_stock_ids_without_primer_stocks.include? pid
-                                          plasmid_stock_ids[idx] = nil
-                                          primer_ids[idx] = nil
-                                        end
-                                      }
-    plasmid_stock_ids.compact!
-    primer_ids.compact!
-    no_primer_stock_task_ids = []
-    no_primer_stock_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_stocks if io_hash[:task_ids]
-
-    plasmid_stocks = plasmid_stock_ids.collect{|pid| find(:item, id: pid )[0]}
-    # pop up nanodrop page for stocks without concentration entered
+    plasmid_stocks = plasmid_stock_ids.collect{ |pid| find(:item, id: pid)[0] }
+      if io_hash[:item_choice_mode].downcase == "yes"
+        primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
+      end
+    primer_aliquots = primer_ids.collect { |pid| 
+                                          find_result = find(:sample, id: pid).in("Primer Aliquot")
+                                          if find_result.any?
+                                            io_hash[:item_choice_mode].downcase == "yes" ?
+                                              choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" :
+                                              find_result[0]
+                                          else
+                                            nil
+                                          }
+    take plasmid_stocks + primer_aliquots.compact, interactive: true, method: "boxes"
     ensure_stock_concentration plasmid_stocks
 
     # calculate volumes based on Genewiz guide
@@ -180,31 +176,38 @@ class Protocol
     plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(1) }
     plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
     water_volume_list = plasmid_volume_list.collect { |v| (((12.5-v)/0.2).floor*0.2).round(1) }
-    primer_volume_list = primer_ids.collect { |p| 2.5 }
+    primer_volume_list = primer_aliquots.collect { |p| p.nil? ? nil : 2.5 }
 
     # Select only the reactions with enough plasmid stock volume
-    take plasmid_stocks, interactive: true, method: "boxes"
     plasmid_stocks, not_enough_vol_plasmid_stocks, enough_vol_plasmid_stock_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
+    plasmid_volume_list.select!.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }
+    not_enough_plasmid_task_ids = select_task_by_plasmid_stock io_hash, not_enough_vol_plasmid_stocks.map { |p| p.id }
 
-    # Release plasmid stocks without enough volume, and queue tasks to be canceled
-    release not_enough_vol_plasmid_stocks, interactive: true, method: "boxes"
-    not_enough_plasmid_task_ids = []
-    not_enough_plasmid_task_ids = select_task_by_plasmid_stock io_hash, not_enough_vol_plasmid_stocks.map { |p| p.id } if io_hash[:task_ids]
+    primer_aliquots_without_plasmid_stock = primer_aliquots.select.with_index { |p, idx| !enough_vol_plasmid_stock_bools[idx] }.compact
+    primer_aliquots.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
+    primer_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }
+    primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
     
-    if plasmid_stocks.any?
-      # Take primer aliquots corresponding to plasmid stocks, and make new ones if they don't exist for given stock
-      primer_ids.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
-      primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
-      primer_aliquots_diluted_from_stock = dilute_samples primers_need_to_dilute(primer_ids)
-      primer_aliquots = primer_ids.collect { |pid| find(:sample, id: pid )[0].in("Primer Aliquot")[0] }
-      if io_hash[:item_choice_mode].downcase == "yes"
-        primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
-      end
-      take primer_aliquots - primer_aliquots_diluted_from_stock, interactive: true, method: "boxes"
-
+    #if plasmid_stocks.any?
       # Dilute from primer stocks when there isn't enough volume in the existing aliquot
-      enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
-      additional_primer_aliquots = dilute_samples not_enough_vol_primer_aliquots.map { |p| p.sample.id }
+      primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
+      primer_ids.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
+      additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))
+
+      # Cancel any reactions that don't have a corresponding primer aliquot
+      plasmid_stock_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
+      plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? }.uniq
+      plasmid_stocks_without_primer_aliquots = plasmid_stocks.select.with_index { |p, idx| !enough_vol_primer_aliquot_bools[idx] }
+      plasmid_stocks.select!.with_index { |p, idx| enough_vol_primer_aliquot_bools[idx] }
+      plasmid_stock_ids.each_with_index { |pid, idx|
+                                          if plasmid_stock_ids_without_primer_aliquots.include? pid
+                                            plasmid_stock_ids[idx] = nil
+                                            primer_ids[idx] = nil
+                                          end
+                                        }
+      plasmid_stock_ids.compact!
+      primer_ids.compact!
+      not_enough_primer_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_aliquots
 
       stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
       show {
@@ -220,10 +223,10 @@ class Protocol
       }
 
       water_with_volume = water_volume_list.select.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }.map { |v| v.to_s + " µL" }
-      plasmids_with_volume = plasmid_stocks.map.with_index { |p, idx| plasmid_volume_list[idx].to_s + " µL of " + p.id.to_s }
-      primer_aliquot_hash = hash_by_sample primer_aliquots + additional_primer_aliquots
-      primers_with_volume = primer_aliquots.map.with_index { |p, idx| primer_volume_list[idx].to_s + " µL of " + 
-                                                              primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
+      plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid, idx| plasmid_volume_list[idx].to_s + " µL of " + pid.to_s }
+      primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots
+      primers_with_volume = primer_ids.map.with_index { |pid, idx| primer_volume_list[idx].to_s + " µL of " + 
+                                                              primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
 
       load_samples_variable_vol( ["Molecular Grade Water"], [
         water_with_volume,
@@ -246,7 +249,7 @@ class Protocol
         }
         delete not_enough_vol_primer_aliquots
       end
-      release plasmid_stocks + enough_vol_primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
+      release plasmid_stocks + not_enough_vol_plasmid_stocks + plasmid_stocks_without_primer_aliquots + primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
 
       # create order table for sequencing
       sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
@@ -287,14 +290,14 @@ class Protocol
         sw.save
       end
       release stripwells
-    else 
+    #else 
       show {
         title "No sequencing needs to run"
         note "Thank you!"
       }
-    end
+    #end
 
-    no_primer_stock_task_ids.each { |tid|
+    not_enough_primer_task_ids.each { |tid|
       task = find(:task, id: tid)[0]
       set_task_status(task,"canceled")
       
@@ -311,7 +314,7 @@ class Protocol
       set_task_status(task,"canceled")
       task.notify "Task canceled. Not enough plasmid stock was present to send to sequencing.", job_id: jid
     }
-    io_hash[:task_ids] = io_hash[:task_ids] - no_primer_stock_task_ids - not_enough_plasmid_task_ids
+    io_hash[:task_ids] = io_hash[:task_ids] - not_enough_primer_task_ids - not_enough_plasmid_task_ids
 
     io_hash[:overnight_ids].each_with_index do |overnight_id, idx|
       overnight = find(:item, id: overnight_id)[0]
