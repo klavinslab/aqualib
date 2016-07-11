@@ -138,7 +138,7 @@ class Protocol
                                           find_result = find(:sample, id: pid).in("Primer Aliquot")
                                           if find_result.any?
                                             if io_hash[:item_choice_mode].downcase == "yes"
-                                              choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" :
+                                              choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot"
                                             else
                                               find_result[0]
                                             end
