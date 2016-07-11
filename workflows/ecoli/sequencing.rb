@@ -253,7 +253,7 @@ class Protocol
         }
         delete not_enough_vol_primer_aliquots
       end
-      release plasmid_stocks + not_enough_vol_plasmid_stocks + plasmid_stocks_without_primer_aliquots + primer_aliquots + additional_primer_aliquots, interactive: true, method: "boxes"
+      release plasmid_stocks + not_enough_vol_plasmid_stocks + plasmid_stocks_without_primer_aliquots + primer_aliquots.compact + additional_primer_aliquots, interactive: true, method: "boxes"
 
       # create order table for sequencing
       sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
