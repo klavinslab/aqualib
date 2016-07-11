@@ -128,6 +128,14 @@ class Protocol
       end
       io_hash[:size] = io_hash[:plasmid_ids].length
 
+    when "Agro Transformation"
+      io_hash = { plasmid_item_ids: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:plasmid_item_ids].push task.simple_spec[:plasmid_item_ids]
+      end
+      io_hash[:size] = io_hash[:plasmid_item_ids].length
+
     when "Plasmid Verification"
       io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [], task_hash: [] }.merge io_hash
 

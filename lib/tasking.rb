@@ -146,6 +146,8 @@ module Tasking
     case task_prototype_name
     when "Gibson Assembly", "Yeast Mating"
       size = 1
+    when "Agro Transformation"
+      size = task.simple_spec[:plasmid_item_ids].length
     when "Fragment Construction", "Mutagenized Fragment Construction"
       size = task.simple_spec[:fragments].length
     when "Sequencing", "Primer Order"

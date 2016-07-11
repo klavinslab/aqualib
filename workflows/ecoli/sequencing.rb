@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      plasmid_stock_ids: [15417,70713,15417,15418,15417,15418,15417,15418],
+      plasmid_stock_ids: [15417,15418,15417,15418,15417,15418,15417,15418],
       primer_ids: [[2575,2054],[2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054],[2575,2054]],
       debug_mode: "Yes",
       group: "yang"
@@ -122,8 +122,8 @@ class Protocol
     primers_with_volume = primer_aliquots.collect{ |p| "2.5 µL of " + p.id.to_s }
 
     # show {
-    # 	note (water_volume_list.collect {|p| "#{p}"})
-    # 	note (plasmid_volume_list.collect {|p| "#{p}"})
+    #   note (water_volume_list.collect {|p| "#{p}"})
+    #   note (plasmid_volume_list.collect {|p| "#{p}"})
     # }
 
     stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
