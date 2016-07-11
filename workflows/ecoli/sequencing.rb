@@ -183,19 +183,26 @@ class Protocol
 
     # Select only the reactions with enough plasmid stock volume
     plasmid_stocks, not_enough_vol_plasmid_stocks, enough_vol_plasmid_stock_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
-    plasmid_volume_list.select!.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }
     not_enough_plasmid_task_ids = select_task_by_plasmid_stock io_hash, not_enough_vol_plasmid_stocks.map { |p| p.id }
 
     primer_aliquots_without_plasmid_stock = primer_aliquots.select.with_index { |p, idx| !enough_vol_plasmid_stock_bools[idx] }.compact
     primer_aliquots.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
     primer_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }
-    primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
+
     
     #if plasmid_stocks.any?
       # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
       primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
       primer_ids.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
       additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))
+
+      # Update volume lists
+      plasmid_volume_list.select!.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }
+      plasmid_volume_list.select!.with_index { |v, idx| enough_vol_primer_aliquot_bools[idx] }
+      primer_volume_list.select!.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }
+      primer_volume_list.select!.with_index { |v, idx| enough_vol_primer_aliquot_bools[idx] }
+      water_volume_list.select!.with_index { |v, idx| enough_vol_plasmid_stock_bools[idx] }
+      water_volume_list.select!.with_index { |v, idx| enough_vol_primer_aliquot_bools[idx] }
 
       # Cancel any reactions that don't have a corresponding primer aliquot
       plasmid_stock_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }
@@ -206,11 +213,19 @@ class Protocol
       plasmid_stock_ids.each_with_index { |pid, idx|
                                           if plasmid_stock_ids_without_primer_aliquots.include? pid
                                             plasmid_stock_ids[idx] = nil
+                                            plasmid_stocks[idx] = nil
                                             primer_ids[idx] = nil
+                                            plasmid_volume_list[idx] = nil
+                                            primer_volume_list[idx] = nil
+                                            water_volume_list[idx] = nil
                                           end
                                         }
       plasmid_stock_ids.compact!
+      plasmid_stocks.compact!
       primer_ids.compact!
+      plasmid_volume_list.compact!
+      primer_volume_list.compact!
+      water_volume_list.compact!
       not_enough_primer_task_ids = select_task_by_plasmid_stock io_hash, plasmid_stock_ids_without_primer_aliquots
 
       stripwells = produce spread plasmid_stocks, "Stripwell", 1, 12
@@ -233,9 +248,10 @@ class Protocol
                                                               primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
 
       show {
-        title "DEBUG: volume lists"
+        title "DEBUG: lists"
         note "primer_volume_list length #{primer_volume_list.length}"
         note "primer_aliquots length #{primer_aliquots.length}"
+        note "plasmid_stocks length #{plasmid_stocks.length}"
       }
 
       load_samples_variable_vol( ["Molecular Grade Water"], [
