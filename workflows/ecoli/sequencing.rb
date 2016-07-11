@@ -179,7 +179,7 @@ class Protocol
     plasmid_volume_list.collect! { |v| ((v/0.2).ceil*0.2).round(1) }
     plasmid_volume_list.collect! { |v| v < 0.5 ? 0.5 : v > 12.5 ? 12.5 : v }
     water_volume_list = plasmid_volume_list.collect { |v| (((12.5-v)/0.2).floor*0.2).round(1) }
-    primer_volume_list = primer_aliquots.collect { |p| p.nil? ? nil : 2.5 }
+    primer_volume_list = primer_aliquots.collect { |p| 2.5 }
 
     # Select only the reactions with enough plasmid stock volume
     plasmid_stocks, not_enough_vol_plasmid_stocks, enough_vol_plasmid_stock_bools = determine_enough_volumes_each_item plasmid_stocks, plasmid_volume_list
@@ -192,7 +192,7 @@ class Protocol
     primer_volume_list.select!.with_index { |p, idx| enough_vol_plasmid_stock_bools[idx] }
     
     #if plasmid_stocks.any?
-      # Dilute from primer stocks when there isn't enough volume in the existing aliquot
+      # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
       primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
       primer_ids.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
       additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))
@@ -231,6 +231,12 @@ class Protocol
       primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots
       primers_with_volume = primer_ids.map.with_index { |pid, idx| primer_volume_list[idx].to_s + " µL of " + 
                                                               primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
+
+      show {
+        title "DEBUG: volume lists"
+        note "primer_volume_list length #{primer_volume_list.length}"
+        note "primer_aliquots length #{primer_aliquots.length}"
+      }
 
       load_samples_variable_vol( ["Molecular Grade Water"], [
         water_with_volume,
