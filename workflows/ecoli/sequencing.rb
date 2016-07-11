@@ -198,7 +198,8 @@ class Protocol
       additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))
 
       # Cancel any reactions that don't have a corresponding primer aliquot
-      plasmid_stock_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
+      plasmid_stock_ids.select!.with_index { |pid, idx| enough_vol_plasmid_stock_bools[idx] }
+      plasmid_stock_ids.select!.with_index { |pid, idx| enough_vol_primer_aliquot_bools[idx] }
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? }.uniq
       plasmid_stocks_without_primer_aliquots = plasmid_stocks.select.with_index { |p, idx| !enough_vol_primer_aliquot_bools[idx] }
       plasmid_stocks.select!.with_index { |p, idx| enough_vol_primer_aliquot_bools[idx] }
