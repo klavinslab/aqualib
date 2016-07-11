@@ -135,7 +135,7 @@ class Protocol
         primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
       end
     primer_aliquots = primer_ids.collect { |pid| 
-                                          find_result = find(:sample, id: pid).in("Primer Aliquot")
+                                          find_result = find(:sample, id: pid)[0].in("Primer Aliquot")
                                           if find_result.any?
                                             if io_hash[:item_choice_mode].downcase == "yes"
                                               choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot"
