@@ -209,7 +209,7 @@ class Protocol
         note contaminated_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
       } if contaminated_primer_aliquots.any?
 
-      additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)) - contaminated_primer_aliquots
+      additional_primer_aliquots = (dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))) - contaminated_primer_aliquots
       delete contaminated_primer_aliquots
 
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_volume_list, primer_volume_list, water_volume_list
