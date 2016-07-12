@@ -66,7 +66,7 @@ class Protocol
     if options[:check_contam]
       [items.select.with_index { |i, idx| bools[idx] },
       items.select.with_index { |i, idx| !bools[idx] },
-      items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" }
+      items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" },
       bools]
     else
       [items.select.with_index { |i, idx| bools[idx] },
