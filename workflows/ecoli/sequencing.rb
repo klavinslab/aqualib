@@ -205,7 +205,10 @@ class Protocol
       # Cancel any reactions that don't have a corresponding primer aliquot
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_stock_ids
       select_by_bools enough_vol_primer_aliquot_bools, plasmid_stock_ids
-      plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? }.uniq
+      plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
+                                                                                        find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
+                                                                                        (not_enough_vol_primer_aliquots.include? primer_ids[idx] && !(additional_primer_aliquots.include? primer_ids[idx]))
+                                                                                      }.uniq
       plasmid_stocks_without_primer_aliquots = plasmid_stocks.select { |p| plasmid_stock_ids_without_primer_aliquots.include? p.id }
       select_by_bools enough_vol_primer_aliquot_bools, plasmid_stocks
       plasmid_stock_ids.each_with_index { |pid, idx|
