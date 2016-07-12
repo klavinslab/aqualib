@@ -67,7 +67,7 @@ class Protocol
         batch = find(:sample, id: 11764)[0]
         plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
         update_batch_matrix plate_batch, plate_batch.num_samples - num, "YPAD"
-        produce new_sample "#{antibiotic_hash[marker]} Plate" , of: "Media", as: "Agar Plate"
+        produce new_sample "YPAD + #{antibiotic_hash[marker]}" , of: "Media", as: "Agar Plate"
       end
 
     end
