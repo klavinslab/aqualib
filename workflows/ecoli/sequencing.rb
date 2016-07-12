@@ -200,7 +200,7 @@ class Protocol
     primer_aliquots_without_plasmid_stock = primer_aliquots.select.with_index { |p, idx| !enough_vol_plasmid_stock_bools[idx] }.compact
     select_by_bools enough_vol_plasmid_stock_bools, primer_aliquots, primer_ids
 
-    #if plasmid_stocks.any?
+    if plasmid_stocks.any?
       # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
       enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, contaminated_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
       if contaminated_primer_aliquots.any?
@@ -218,26 +218,11 @@ class Protocol
 
       # Cancel any reactions that don't have a corresponding primer aliquot
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_stock_ids
-      foolish = plasmid_stock_ids.map.with_index { |pid, idx| 
-                                                find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
-                                                ((not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
-                                              }
-      show {
-        note "not_enough_vol_primer_aliquots"
-        note not_enough_vol_primer_aliquots.map { |p| p.sample.id }
-        note "primer_ids"
-        note primer_ids
-        note "additional_primer_aliquots"
-        note additional_primer_aliquots.map { |p| p.sample.id }
-        note "plasmid_stock_ids_without_primer_aliquots truths"
-        note foolish
-      }
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
                                                                                         find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
                                                                                         (((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
                                                                                       }.uniq
       plasmid_stocks_without_primer_aliquots = plasmid_stocks.select { |p| plasmid_stock_ids_without_primer_aliquots.include? p.id }
-      #select_by_bools enough_vol_primer_aliquot_bools, plasmid_stocks
       plasmid_stock_ids.each_with_index { |pid, idx|
                                           if plasmid_stock_ids_without_primer_aliquots.include? pid
                                             plasmid_stock_ids[idx] = nil
@@ -274,13 +259,6 @@ class Protocol
       primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
       primers_with_volume = primer_ids.map.with_index { |pid, idx| primer_volume_list[idx].to_s + " µL of " + 
                                                               primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
-
-      show {
-        title "DEBUG: lists"
-        note "primer_volume_list length #{primer_volume_list.length}"
-        note "primer_aliquots length #{primer_aliquots.length}"
-        note "plasmid_stocks length #{plasmid_stocks.length}"
-      }
 
       load_samples_variable_vol( ["Molecular Grade Water"], [
         water_with_volume,
@@ -344,12 +322,12 @@ class Protocol
         sw.save
       end
       release stripwells
-    #else 
+    else 
       show {
         title "No sequencing needs to run"
         note "Thank you!"
       }
-    #end
+    end
 
     not_enough_primer_task_ids.each { |tid|
       task = find(:task, id: tid)[0]
