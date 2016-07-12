@@ -65,7 +65,7 @@ class Protocol
     bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" }
     if options[:check_contam]
       [items.select.with_index { |i, idx| bools[idx] },
-      items.select.with_index { |i, idx| !bools[idx] },
+      items.select.with_index { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "No" },
       items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" },
       bools]
     else
@@ -212,7 +212,7 @@ class Protocol
         delete contaminated_primer_aliquots
       end
 
-      additional_primer_aliquots = (dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)))
+      additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)))
 
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_volume_list, primer_volume_list, water_volume_list
 
@@ -234,7 +234,7 @@ class Protocol
       }
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
                                                                                         find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
-                                                                                        ((not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
+                                                                                        (((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
                                                                                       }.uniq
       plasmid_stocks_without_primer_aliquots = plasmid_stocks.select { |p| plasmid_stock_ids_without_primer_aliquots.include? p.id }
       #select_by_bools enough_vol_primer_aliquot_bools, plasmid_stocks
