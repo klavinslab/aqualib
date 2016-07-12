@@ -70,7 +70,7 @@ class Protocol
       yeast_plates_markers.each do |marker, plates|
         ant_marker = antibiotic_hash[marker]
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
-        plate = find(:item, sample: {name: "YPAD + G418"}, object_type: { name: "Agar plate"} )[0]
+        plate = find(:item, {sample: {name: "YPAD + G418"}, object_type: { name: "Agar plate"} })[0]
         delete [plate]
         
       end
