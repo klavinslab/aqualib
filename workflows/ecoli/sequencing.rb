@@ -206,8 +206,11 @@ class Protocol
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_stock_ids
       select_by_bools enough_vol_primer_aliquot_bools, plasmid_stock_ids
       show {
+        note "not_enough_vol_primer_aliquots"
         note not_enough_vol_primer_aliquots.map { |p| p.sample.id }
+        note "primer_ids"
         note primer_ids
+        note "additional_primer_aliquots"
         note additional_primer_aliquots.map { |p| p.sample.id }
       }
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
