@@ -83,7 +83,7 @@ class Protocol
         table tab_plate
         check "Flip the plate and add 4-5 glass beads to it"
         check "Add 200 µL of 1.5 mL tube contents according to the following table"
-        table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| {y.id} })
+        table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| y.id })
       }
 
       show {
