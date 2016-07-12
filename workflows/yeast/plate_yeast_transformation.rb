@@ -71,6 +71,10 @@ class Protocol
         ant_marker = antibiotic_hash[marker]
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
         plate = find(:item, {sample: {name: "YPAD + G418"}, object_type: { name: "Agar plate"} })[0]
+        show{
+            plate
+            
+        }
         
       end
 
