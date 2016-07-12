@@ -53,18 +53,26 @@ class Protocol
     options = { check_contam: false }.merge opts
 
     total_vols_per_item = total_volumes_by_item items, volumes
+    extra_vol = options[:check_contam] ? 0 : 5
     verify_data = show {
       title "Verify enough volume of each #{items[0].object_type.name} exists#{options[:check_contam] ? ", or note if contamination is present" : ""}"
       total_vols_per_item.each { |id, v| 
         choices = options[:check_contam] ? ["Yes", "No", "Contamination is present"] : ["Yes", "No"]
-        select choices, var: "#{id}", label: "Is there at least #{(v + 5).round(1)} µL of #{id}?", default: 0 
+        select choices, var: "#{id}", label: "Is there at least #{(v + extra_vol).round(1)} µL of #{id}?", default: 0 
       }
     }
 
-    bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" ? true : false }
-    [items.select.with_index { |i, idx| bools[idx] },
-    items.select.with_index { |i, idx| !bools[idx] },
-    bools]
+    bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" }
+    if options[:check_contam]
+      [items.select.with_index { |i, idx| bools[idx] },
+      items.select.with_index { |i, idx| !bools[idx] },
+      items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" }
+      bools]
+    else
+      [items.select.with_index { |i, idx| bools[idx] },
+      items.select.with_index { |i, idx| !bools[idx] },
+      bools]
+    end
   end
 
   def arguments
@@ -194,17 +202,22 @@ class Protocol
 
     #if plasmid_stocks.any?
       # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
-      enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
-      #select_by_bools enough_vol_primer_aliquot_bools, primer_ids
-      additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))
+      enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, contaminated_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
+      if contaminated_primer_aliquots.any?
+        show {
+          title "Discard contaminated primer aliquots"
+          note "Discard the following primer aliquots:"
+          note contaminated_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+        }
+        delete contaminated_primer_aliquots
+      end
 
-      # Update volume lists
+      additional_primer_aliquots = dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)) - contaminated_primer_aliquots
+
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_volume_list, primer_volume_list, water_volume_list
-      #select_by_bools enough_vol_primer_aliquot_bools, plasmid_volume_list, primer_volume_list, water_volume_list
 
       # Cancel any reactions that don't have a corresponding primer aliquot
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_stock_ids
-      #select_by_bools enough_vol_primer_aliquot_bools, plasmid_stock_ids
       foolish = plasmid_stock_ids.map.with_index { |pid, idx| 
                                                 find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
                                                 ((not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
