@@ -142,6 +142,9 @@ class Protocol
       return { io_hash: io_hash }
     end
 
+    not_enough_plasmid_task_ids = []
+    not_enough_primer_task_ids = []
+
     plasmid_stocks = plasmid_stock_ids.collect{ |pid| find(:item, id: pid)[0] }
       if io_hash[:item_choice_mode].downcase == "yes"
         primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
