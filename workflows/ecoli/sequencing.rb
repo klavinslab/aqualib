@@ -203,14 +203,16 @@ class Protocol
     #if plasmid_stocks.any?
       # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
       enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, contaminated_primer_aliquots, enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_volume_list, check_contam: true
-      show {
-        title "Discard contaminated primer aliquots"
-        note "Discard the following primer aliquots:"
-        note contaminated_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
-      } if contaminated_primer_aliquots.any?
+      if contaminated_primer_aliquots.any?
+        show {
+          title "Discard contaminated primer aliquots"
+          note "Discard the following primer aliquots:"
+          note contaminated_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+        }
+        delete contaminated_primer_aliquots
+      end
 
-      additional_primer_aliquots = (dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids))) - contaminated_primer_aliquots
-      delete contaminated_primer_aliquots
+      additional_primer_aliquots = (dilute_samples (not_enough_vol_primer_aliquots.map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)))
 
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_volume_list, primer_volume_list, water_volume_list
 
@@ -269,7 +271,7 @@ class Protocol
 
       water_with_volume = water_volume_list.map { |v| v.to_s + " µL" }
       plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid, idx| plasmid_volume_list[idx].to_s + " µL of " + pid.to_s }
-      primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots
+      primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
       primers_with_volume = primer_ids.map.with_index { |pid, idx| primer_volume_list[idx].to_s + " µL of " + 
                                                               primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
 
