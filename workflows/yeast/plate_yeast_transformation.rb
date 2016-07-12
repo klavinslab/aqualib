@@ -54,7 +54,7 @@ class Protocol
         warning "Make sure the pellet is resuspended and there are no cells stuck to the bottom of the tube"
       }
 
-      yeast_markers = yeast_plates.collect { |y| y.sample.properties["Integrant"].properties["Yeast Marker"].downcase[0,3] }
+      yeast_markers = yeast_plates.collect { |y| warning "y.sample" y.sample.properties["Integrant"].properties["Yeast Marker"].downcase[0,3] }
       # change all the G418 marker to Kan internally since some people mistakenly enter G418 as the marker which instead should be KanMx.
       yeast_markers.collect! do |mk|
         (mk == "g41") ? "kan" : mk
@@ -64,11 +64,13 @@ class Protocol
         yeast_plates_markers[yeast_markers[idx]].push y
       end
 
-      antibiotic_hash = { "nat" => "+ClonNat", "kan" => "+G418", "hyg" => "+Hygromycin", "ble" => "+BleoMX", "5fo" => "5-FOA" }
+      antibiotic_hash = { "nat" => "clonNAT", "kan" => "G418", "hyg" => "Hygro", "ble" => "BleoMX", "5fo" => "5-FOA" }
 
       tab_plate = [["Plate Type","Quantity","Id to label"]]
       yeast_plates_markers.each do |marker, plates|
-        tab_plate.push( [ antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
+        tab_plate.push( [ "+" antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
+        plate = find(item: "YPAD + #{antibiotic_hash[marker]}", :id)[0]
+        delete [plate]
       end
 
       tab = [["Yeast Transformation Mixtures id","Plate id"]]
