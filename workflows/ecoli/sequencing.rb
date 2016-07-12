@@ -212,6 +212,11 @@ class Protocol
         note primer_ids
         note "additional_primer_aliquots"
         note additional_primer_aliquots.map { |p| p.sample.id }
+        note "plasmid_stock_ids_without_primer_aliquots truths"
+        note plasmid_stock_ids.map.with_index { |pid, idx| 
+                                                find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
+                                                (not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx] && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
+                                              }
       }
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
                                                                                         find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
