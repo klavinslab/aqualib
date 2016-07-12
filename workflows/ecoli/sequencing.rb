@@ -207,7 +207,7 @@ class Protocol
       #select_by_bools enough_vol_primer_aliquot_bools, plasmid_stock_ids
       foolish = plasmid_stock_ids.map.with_index { |pid, idx| 
                                                 find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
-                                                (not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx] && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
+                                                (not_enough_vol_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx])
                                               }
       show {
         note "not_enough_vol_primer_aliquots"
