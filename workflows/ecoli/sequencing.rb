@@ -342,7 +342,7 @@ class Protocol
       t = Task.new(name: "#{primers_to_order_names}_primer_order_from_#{task.name}_job_#{jid}", specification: { "primer_ids Primer" => primers_to_order.map { |p| p.id } }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: primers_to_order[0].user.id, budget_id: task.budget_id)
       t.save
       t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
-      task.notify "Task canceled. The necessary primer stocks for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
+      task.notify "Task canceled. Primer Stock(s) #{primers_to_order_names} for the reaction were unavailable. A #{task_prototype_html_link 'Primer Order'} task #{task_html_link t} has been automatically submitted.", job_id: jid
     }
     not_enough_plasmid_task_ids.each { |tid|
       task = find(:task, id: tid)[0]
