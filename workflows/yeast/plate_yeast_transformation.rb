@@ -54,7 +54,7 @@ class Protocol
         warning "Make sure the pellet is resuspended and there are no cells stuck to the bottom of the tube"
       }
 
-      yeast_markers = yeast_plates.collect { |y| y.sample.properties["Yeast Marker"].downcase[0,3] }
+      yeast_markers = yeast_plates.collect { |y| y.sample.properties["Yeast Marker"].properties["Integrants"].downcase[0,3] }
       # change all the G418 marker to Kan internally since some people mistakenly enter G418 as the marker which instead should be KanMx.
       yeast_markers.collect! do |mk|
         (mk == "g41") ? "kan" : mk
@@ -68,7 +68,7 @@ class Protocol
 
       tab_plate = [["Plate Type","Quantity","Id to label"]]
       yeast_plates_markers.each do |marker, plates|
-         ant_marker = antibiotic_hash[marker]
+        ant_marker = antibiotic_hash[marker]
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
       end
 
