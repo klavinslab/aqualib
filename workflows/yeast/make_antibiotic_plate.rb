@@ -66,7 +66,7 @@ class Protocol
         aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
         batch = find(:sample, id: 11764)[0]
         plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
-        update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "YPAD"
+        update_batch_matrix plate_batch, plate_batch.num_samples - num, "YPAD"
         produce new_sample "#{antibiotic_hash[marker]} Plate" , of: "Media", as: "Agar Plate"
       end
 
