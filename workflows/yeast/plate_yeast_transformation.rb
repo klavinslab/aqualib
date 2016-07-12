@@ -68,8 +68,9 @@ class Protocol
 
       tab_plate = [["Plate Type","Quantity","Id to label"]]
       yeast_plates_markers.each do |marker, plates|
+         ant_marker = antibiotic_hash[marker]
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
-        plate = find(item: "YPAD + {antibiotic_hash[marker]}"), :id)[0]
+        plate = find(item: "YPAD + #{ant_marker}"), :id)[0]
         delete [plate]
       end
 
