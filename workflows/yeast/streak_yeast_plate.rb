@@ -42,7 +42,12 @@ class Protocol
 
     glycerol_streaked_yeast_plates = []
     overnight_streaked_yeast_plates = []
-
+    
+    overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+    batch = find(:sample, id: 11767)[0]
+    plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            
+    
     if yeast_glycerol_stocks.length > 0
 
       yeast_strains_glycerol = yeast_glycerol_stocks.collect { |y| y.sample }
@@ -59,6 +64,7 @@ class Protocol
           note glycerol_streaked_yeast_plates.collect { |p| "#{p}"} + overnight_streaked_yeast_plates.collect { |p| "#{p}"}
           check "Divide up each plate with #{num_of_section} sections and mark each with circled #{(1..num_of_section).to_a.join(',')}"
           image "divided_yeast_plate"
+            update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "YPAD"
         end
       }
       overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
@@ -108,6 +114,7 @@ class Protocol
         title "Grab yeast plates"
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
           check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+            update_batch_matrix plate_batch, plate_batch.num_samples - 1, "YPAD"
         end
       } if io_hash[:yeast_selective_plate_types].length > 0
 
