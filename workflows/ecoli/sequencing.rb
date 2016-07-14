@@ -13,9 +13,10 @@ class Protocol
   def select_task_by_plasmid_stock io_hash, stock_ids
       io_hash[:task_ids].select.with_index { |tid, idx| 
                                               seq_task = find(:task, { task_prototype: { name: "Sequencing" }, id: tid })
+                                              plas_ver_task = find(:task, { task_prototype: { name: "Plasmid Verification" }, id: tid })
                                               if seq_task.any?
                                                 (stock_ids & seq_task[0].simple_spec[:plasmid_stock_id]).any?
-                                              else
+                                              elsif plas_ver_task.any?
                                                 task = find(:task, id: tid)[0]
                                                 plasmid_ids_from_stocks = stock_ids.map { |sid| find(:item, id: sid)[0].sample.id }
                                                 plasmid_ids_from_plates = task.simple_spec[:plate_ids].map { |pid| find(:item, id: pid)[0].sample.id }
