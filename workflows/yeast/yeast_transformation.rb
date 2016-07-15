@@ -74,7 +74,7 @@ class Protocol
     io_hash[:yeast_transformed_strain_ids].compact!
     io_hash[:plasmid_ids].compact!
 
-    if no_comp_cell_strain_ids.length > 0
+    if no_comp_cell_strain_ids.blank?
       show {
         title "Some transformations can not be done"
         note "Transformation for the following yeast strain can not be performed since there is not enough competent cell."
@@ -82,7 +82,7 @@ class Protocol
       }
     end
 
-    if yeast_competent_cells.length == 0
+    if yeast_competent_cells.blank?
       show {
         title "No yeast transformation required"
         note "No yeast transformation need to be done. Thanks for your effort!"
@@ -244,7 +244,7 @@ class Protocol
       task = find(:task, id: tid)[0]
       yeast_transformed_strain_ids = task.simple_spec[:yeast_transformed_strain_ids]
       not_transformed_ids = yeast_transformed_strain_ids & no_comp_cell_strain_ids
-      if not_transformed_ids.any?
+      if [not_transformed_ids].any?
         not_transformed_ids_link = not_transformed_ids.collect { |id| item_or_sample_html_link id, :sample }.join(", ")
         task.notify "#{'Yeast Strain'.pluralize(not_transformed_ids.length)} #{not_transformed_ids_link} can not be transformed due to not enough competent cells.", job_id: jid
       end
