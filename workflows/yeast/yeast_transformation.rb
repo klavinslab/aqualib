@@ -186,7 +186,7 @@ class Protocol
           else
             grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
             plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}"}
-            update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "SDO -#{key.capitalize}"
+            update_batch_matrix plate_batch, plate_batch.num_samples - yeast_plates_sub.length, "SDO -#{key.capitalize}"
           end
           mixtures.each_with_index do |y,idx|
             plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
