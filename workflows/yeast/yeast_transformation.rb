@@ -17,6 +17,13 @@ class Protocol
     }
   end
 
+  def update_batch_matrix batch, num_samples, plate_type
+    rows = batch.matrix.length
+    columns = batch.matrix[0].length
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "#{plate_type}")[0].id
+    batch.save
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -164,6 +171,8 @@ class Protocol
 
       grab_plate_tab = [["Plate type","Quantity","Id to label"]]
       plating_info_tab = [["1.5 mL tube id","Plate id"]]
+      overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+      
 
       yeast_transformation_mixtures_markers.each do |key, mixtures|
         if ["nat","kan","hyg","ble"].include? key
@@ -176,6 +185,8 @@ class Protocol
             grab_plate_tab.push(["5-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
           else
             grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
+            plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}"}
+            update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "SDO -#{key.capitalize}"
           end
           mixtures.each_with_index do |y,idx|
             plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
