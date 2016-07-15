@@ -60,6 +60,7 @@ class Protocol
             item = s.make_item "Gel Slice"
             items.push item
             new_routes.push lane: [i,j], slice_id: item.id, length: length
+            item.notes = verify_data[:"comment#{i}_#{j}".to_sym]
           end
         end
       end
