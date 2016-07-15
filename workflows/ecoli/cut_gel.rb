@@ -61,6 +61,11 @@ class Protocol
             items.push item
             new_routes.push lane: [i,j], slice_id: item.id, length: length
             item.notes = verify_data[:"comment#{i}_#{j}".to_sym]
+            item.append_notes "this is something of which I am unsure"
+            item.save
+            show {
+              note verify_data[:"comment#{i}_#{j}".to_sym]
+            }
           end
         end
       end
