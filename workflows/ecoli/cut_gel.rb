@@ -60,12 +60,8 @@ class Protocol
             item = s.make_item "Gel Slice"
             items.push item
             new_routes.push lane: [i,j], slice_id: item.id, length: length
-            item.notes = verify_data[:"comment#{i}_#{j}".to_sym]
-            item.append_notes "this is something of which I am unsure"
-            item.save
-            show {
-              note verify_data[:"comment#{i}_#{j}".to_sym]
-            }
+            note = verify_data[:"comment#{i}_#{j}".to_sym]
+            item.notes = note if note != ""
           end
         end
       end
@@ -100,7 +96,7 @@ class Protocol
     end
     predited_time = time_prediction io_hash[:size], "cut_gel"
     show {
-      title "Protocol Information"
+      title "Protocol Information is so cool"
       note "This protocol will take gel pictures and cut gel into gel slices."
       warning "Clean blue light goggles and put them on before beginning this protocol."
       note "The predicted time needed is #{predited_time} min."
