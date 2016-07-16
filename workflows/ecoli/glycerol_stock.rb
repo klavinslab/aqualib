@@ -46,7 +46,7 @@ class Protocol
       end
 
       glycerol_stocks.each do |y|
-        glycerol_stock_table.push([["#{y.id}","#{y.sample.id}" "#{y.sample.name}"]])
+        glycerol_stock_table.push ["#{y.id}","#{y.sample.id}" "#{y.sample.name}"]
       end
 
 
