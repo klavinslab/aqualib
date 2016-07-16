@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "overnight_ids TB Overnight of Plasmid" =>[67889],
-      debug_mode: "No"
+      "overnight_ids TB Overnight of Plasmid" =>[67889, 47558],
+      debug_mode: "yes"
     }
   end
 
@@ -46,7 +46,7 @@ class Protocol
       end
 
       glycerol_stocks.each do |y|
-        glycerol_stock_table.push ["#{y.id}","#{y.sample.id}" "#{y.sample.name}"]
+        glycerol_stock_table.push ["#{y.id}","#{y.sample.id}", "#{y.sample.name}"]
       end
 
 
