@@ -84,7 +84,7 @@ class Protocol
 			produced_media.push(output)
 			produced_media[i].location = "Bench"
 			produced_media_id.push(output.id)
-			output_id = output_id + output.id
+			output_id = output_id + "#{output.id}"
 		end
 		bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
 		show {
