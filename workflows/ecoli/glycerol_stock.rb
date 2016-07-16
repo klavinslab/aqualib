@@ -45,9 +45,25 @@ class Protocol
         x.save
       end
 
+      #adds relevant information to the glycerol stock table 
       glycerol_stocks.each do |y|
         glycerol_stock_table.push ["#{y.id}","#{y.sample.id}", "#{y.sample.name}"]
       end
+
+      #show the user steps for using label printer 
+      show{
+        title "Print out labels"
+        note "On the computer near the label printer, open Excel document titled 'Glycerol stock label template'." 
+        note "Copy and paste the table below to the document and save."
+        table glycerol_stock_table
+        note "Ensure that the correct label type is loaded in the printer: B33-181-492 should show up on the display. 
+          If not, get help from a lab manager to load the correct label type."
+        note "Open the LabelMark 6 software and select 'Open' --> 'File' --> 'Glycerol stocks.l6f'"
+        note "A window should pop up. Under  'Start' enter #{glycerol_stocks[0].id} and set 'Total' to #{overnights.length}. Select 'Finish.'"
+        note "Click on the number in the top row of the horizontal side label and select 'Edit External Data'. A window should pop up. Select 'Finish'."
+        note "Select 'File' --> 'Print' and set the printer to 'BBP33'."
+        note "Collect labels."
+      }
 
 
 
@@ -55,10 +71,9 @@ class Protocol
       show {
         title "Prepare glycerol in cryo tubes."
         check "Take #{overnights.length} Cryo #{"tube".pluralize(overnights.length)}"
-        check "Label each tube with #{(glycerol_stocks.collect {|y| y.id}).join(", ")}"
+        check "Label each tube with the printed out labels"
         check "Pipette 900 µL of 50 percent Glycerol into each tube."
         warning "Make sure not to touch the inner side of the Glycerol bottle with the pipetter."
-        table glycerol_stock_table
       }
 
 
