@@ -129,7 +129,7 @@ class Protocol
 		
 		show {
 			title "Label Media"
-			note "Label the bottle(s) with '#{label}', 'Your initials', #{output_id} and 'date'"
+			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id} and 'date'"
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)
