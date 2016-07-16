@@ -36,12 +36,20 @@ class Protocol
       glycerol = find(:item, { object_type: { name: "50 percent Glycerol (sterile)" }, location: "Bench"})[0]
       take [glycerol], interactive: true
 
+       glycerol_stock_table = [["Item Number", "Strain ID", "Strain Name"]]
+
       # produce glycerol_stocks and set up datum to track which overnights it made from
       glycerol_stocks = overnights.collect { |y| produce new_sample y.sample.name, of: y.sample.sample_type.name, as: name_glycerol_hash[y.sample.sample_type.name] }
       glycerol_stocks.each_with_index do |x,idx|
         x.datum = { from: overnights[idx].id }
         x.save
       end
+
+      glycerol_stocks.each do |y|
+        glycerol_stock_table.push([["#{y.id}","#{y.sample.id}" "#{y.sample.name}"]])
+      end
+
+
 
       # show the user steps to prepare glycerol stocks
       show {
@@ -50,7 +58,9 @@ class Protocol
         check "Label each tube with #{(glycerol_stocks.collect {|y| y.id}).join(", ")}"
         check "Pipette 900 µL of 50 percent Glycerol into each tube."
         warning "Make sure not to touch the inner side of the Glycerol bottle with the pipetter."
+        table glycerol_stock_table
       }
+
 
       # Add overnights to cyro tubes
       show {
