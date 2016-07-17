@@ -76,10 +76,12 @@ class Protocol
 
 	produced_media = Array.new
 	produced_media_id = Array.new
+    output_id = ""
 	for i in 0..(quantity - 1)
 		output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
 		produced_media.push(output)
 		produced_media_id.push(output.id)
+        output_id = output_id + ", #{output.id}"
 		produced_media[i].location = "Bench"
 	end
 	
@@ -106,28 +108,28 @@ class Protocol
 	
         show {
           title "Weigh Out Yeast Extract"
-          note "Weight out #{8 * multiplier}g of yeast extract and add to each bottle"
+          note "Weight out #{8 * multiplier}g of Bacto Yeast Extract and add to each bottle"
         }
         
         show {
         	title "Weigh Out Tryptone"
-        	note "Weigh out #{16 * multiplier}g of tryptone and add to each bottle"
+        	note "Weigh out #{16 * multiplier}g of Bacto Tryptone and add to each bottle"
         }
         
         show {
         	title "Weigh Out Dextrose"
-        	note "Weigh out #{16 * multiplier}g of dextrose and add to each bottle"
+        	note "Weigh out #{16 * multiplier}g of Dextrose and add to each bottle"
         }
         
         show {
         	title "Weigh Out Adenine Sulfate"
-        	note "Weigh out #{0.064 * multiplier}g of adenine sulfate and add to each bottle"
+        	note "Weigh out #{0.064 * multiplier}g of Adenine sulfate and add to each bottle"
         }
 
         if(label.include? "Agar") 
         	show {
         		title "Weigh Out Bacto Agar"
-        		note "Weigh out #{16 * multiplier}g of bacto agar and add to each bottle"
+        		note "Weigh out #{16 * multiplier}g of Bacto agar and add to each bottle"
         	}
         end
 
