@@ -94,7 +94,7 @@ class Protocol
 		output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
 		produced_media.push(output)
 		produced_media[i].location = "Bench"
-        output_id.join(",")
+        output_id = output_id + ", #{output.id}"
 		produced_media_id.push(output.id)
 	end
         
@@ -176,7 +176,7 @@ class Protocol
 
         show {
             title "Label Bottle"
-            note "Label the bottle(s) with '#{label}', #{output_id}, 'Date', 'Your initials'"
+            note "Label the bottle(s) with '#{label}'#{output_id}, 'Date', 'Your initials'"
         }
         release (bottle)
         release(ingredients + produced_media, interactive: true)
