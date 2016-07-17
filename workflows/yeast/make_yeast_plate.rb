@@ -11,7 +11,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_selective_plate_types: ["-HIS,-LEU","-LEU,-TRP","-HIS,-LEU"],
+      yeast_selective_plate_types: [11781,11782,11782],
       debug_mode: "Yes"
     }
   end
@@ -27,11 +27,12 @@ class Protocol
       end
     end
 
-    if io_hash[:yeast_selective_plate_types].length > 0
+    if io_hash[:yeast_selective_plate_types].present?
 
       plate_hash = Hash.new {|h,k| h[k] = 0 }
       io_hash[:yeast_selective_plate_types].each do |plate_type|
-        plate_hash[plate_type] = plate_hash[plate_type] + 1
+        sample_name = plate_type.name
+        plate_hash[sample_name] = plate_hash[sample_name] + 1
       end
 
       plate_tab = [["Plate Type", "Quantity"]]
@@ -41,7 +42,7 @@ class Protocol
 
       show {
         title "Make yeast plates"
-        note "MAKE THE MINIMUM QUALITY OF THE FOLLOWING PLATES"
+        note "Make the minimum quality of the following plates."
         table plate_tab
       }
 
