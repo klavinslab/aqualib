@@ -17,6 +17,13 @@ class Protocol
     }
   end
 
+  def update_batch_matrix batch, num_samples, plate_type
+    rows = batch.matrix.length
+    columns = batch.matrix[0].length
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "#{plate_type}")[0].id
+    batch.save
+  end
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -74,7 +81,7 @@ class Protocol
     io_hash[:yeast_transformed_strain_ids].compact!
     io_hash[:plasmid_ids].compact!
 
-    if no_comp_cell_strain_ids.length > 0
+    if no_comp_cell_strain_ids.blank?
       show {
         title "Some transformations can not be done"
         note "Transformation for the following yeast strain can not be performed since there is not enough competent cell."
@@ -82,7 +89,7 @@ class Protocol
       }
     end
 
-    if yeast_competent_cells.length == 0
+    if yeast_competent_cells.blank?
       show {
         title "No yeast transformation required"
         note "No yeast transformation need to be done. Thanks for your effort!"
@@ -164,6 +171,8 @@ class Protocol
 
       grab_plate_tab = [["Plate type","Quantity","Id to label"]]
       plating_info_tab = [["1.5 mL tube id","Plate id"]]
+      overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+      
 
       yeast_transformation_mixtures_markers.each do |key, mixtures|
         if ["nat","kan","hyg","ble"].include? key
@@ -176,6 +185,8 @@ class Protocol
             grab_plate_tab.push(["5-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
           else
             grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
+            plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}"}
+            update_batch_matrix plate_batch, plate_batch.num_samples - yeast_plates_sub.length, "SDO -#{key.capitalize}"
           end
           mixtures.each_with_index do |y,idx|
             plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
@@ -244,7 +255,7 @@ class Protocol
       task = find(:task, id: tid)[0]
       yeast_transformed_strain_ids = task.simple_spec[:yeast_transformed_strain_ids]
       not_transformed_ids = yeast_transformed_strain_ids & no_comp_cell_strain_ids
-      if not_transformed_ids.any?
+      if [not_transformed_ids].any?
         not_transformed_ids_link = not_transformed_ids.collect { |id| item_or_sample_html_link id, :sample }.join(", ")
         task.notify "#{'Yeast Strain'.pluralize(not_transformed_ids.length)} #{not_transformed_ids_link} can not be transformed due to not enough competent cells.", job_id: jid
       end

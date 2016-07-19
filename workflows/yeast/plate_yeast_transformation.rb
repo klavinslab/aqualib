@@ -54,7 +54,7 @@ class Protocol
         warning "Make sure the pellet is resuspended and there are no cells stuck to the bottom of the tube"
       }
 
-      yeast_markers = yeast_plates.collect { |y| y.sample.properties["Integrant"].properties["Yeast Marker"].downcase[0,3] }
+      yeast_markers = yeast_plates.collect { |y| y.sample.properties["Yeast Marker"].downcase[0,3] }
       # change all the G418 marker to Kan internally since some people mistakenly enter G418 as the marker which instead should be KanMx.
       yeast_markers.collect! do |mk|
         (mk == "g41") ? "kan" : mk
@@ -64,11 +64,17 @@ class Protocol
         yeast_plates_markers[yeast_markers[idx]].push y
       end
 
-      antibiotic_hash = { "nat" => "+ClonNat", "kan" => "+G418", "hyg" => "+Hygromycin", "ble" => "+BleoMX", "5fo" => "5-FOA" }
+      antibiotic_hash = { "nat" => "clonNAT", "kan" => "G418", "hyg" => "Hygro", "ble" => "BleoMX", "5fo" => "5-FOA" }
 
       tab_plate = [["Plate Type","Quantity","Id to label"]]
       yeast_plates_markers.each do |marker, plates|
-        tab_plate.push( [ antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
+        ant_marker = antibiotic_hash[marker]
+        tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
+        for i in 1..plates.length
+            plate = find(:item, {sample: {name: "YPAD + #{ant_marker}"}, object_type: { name: "Agar Plate"} })[0]
+            plate.mark_as_deleted
+            i += 1
+        end
       end
 
       tab = [["Yeast Transformation Mixtures id","Plate id"]]
@@ -82,7 +88,7 @@ class Protocol
         table tab_plate
         check "Flip the plate and add 4-5 glass beads to it"
         check "Add 200 µL of 1.5 mL tube contents according to the following table"
-        table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| { content: y.id, check: true } })
+        table [["1.5 mL tube id","Plate id"]].concat(yeast_transformation_mixtures.collect { |y| y.id }.zip yeast_plates.collect { |y| y.id })
       }
 
       show {
