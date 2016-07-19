@@ -32,11 +32,11 @@ class Protocol
     end
 
     # list of antibiotic plate for yeast selection
-    # ClonNat, NatMX, 25 µL, G418, KanMX, 300 µL, Hygromycin, HygMX, 200 µL, Zeocin, BleoMX, 50 µL.
+    # ClonNat, NatMX, 25 µL, G418, KanMX, 300 µL, Hygromycin, HygMX, 200 µL, Zeocin, Bleo, 50 µL.
 
     plasmid_marker_hash = Hash.new {|h,k| h[k] = 0 }
     markers = [ :nat, :kan, :hyg, :ble ]
-    antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygromycin", ble: "BleoMX" }
+    antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygro", ble: "Bleo" }
     volume_hash = { nat: 25, kan: 300, hyg: 200, ble: 50 }
 
     io_hash[:plasmid_stock_ids].each do |pid|
