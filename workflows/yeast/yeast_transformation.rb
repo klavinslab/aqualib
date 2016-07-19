@@ -221,6 +221,11 @@ class Protocol
           note mixtures_to_plate.collect { |x| "#{x}"}
           check "Incubate all the plates with agar side up shown in the next page."
         }
+        
+        show {
+          title "Move antibiotic plates to the media fridge (if applicable)"
+          warning "If any antibiotic plates were made, move them to the side of the door in the media fridge."
+        }
 
         delete mixtures_to_plate
         move yeast_plates, "30 C incubator"

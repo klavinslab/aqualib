@@ -89,10 +89,12 @@ class Protocol
 	
 	produced_media_id = Array.new	
 	produced_media = Array.new
+    output_id = ""
 	for i in 0..(quantity - 1)
 		output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
 		produced_media.push(output)
 		produced_media[i].location = "Bench"
+        output_id = output_id + ", #{output.id}"
 		produced_media_id.push(output.id)
 	end
         
@@ -124,28 +126,28 @@ class Protocol
 
         show {
             title "Weigh Nitrogen Base"
-            note "Weigh out #{5.36 * multiplier}g nitrogen base and add to each bottle"
+            note "Weigh out #{5.36 * multiplier}g of Yeast Nitrogen Base Without Amino Acids and add to each bottle"
         }
         
         show {
-       		title "Weigh Out DO Media"
-       		note "Weigh out #{1.12 * multiplier}g of DO media and add to each bottle"
+       		title "Weigh Out Yeast Synthetic Drop-out Medium Supplements"
+       		note "Weigh out #{1.12 * multiplier}g of Yeast Synthetic Drop-out Medium Supplements and add to each bottle"
         }
         
         show {
         	title "Weigh Out Dextrose"
-        	note "Weigh out #{16 * multiplier}g of dextrose and add to each bottle"
+        	note "Weigh out #{16 * multiplier}g of Dextrose and add to each bottle"
         }
         
         show {
         	title "Weigh Out Adenine Sulfate"
-        	note "Weigh out #{0.064 * multiplier}g of adenine sulfate and add to each bottle"
+        	note "Weigh out #{0.064 * multiplier}g of Adenine Sulfate and add to each bottle"
         }
         
         if(label.include? "Agar") 
         	show {
         		title "Weigh Out Bacto Agar"
-        		note "Weigh out #{16 * multiplier}g of bacto agar and add to each bottle"
+        		note "Weigh out #{16 * multiplier}g of Bacto Agar and add to each bottle"
         	}
         end
 
@@ -174,7 +176,7 @@ class Protocol
 
         show {
             title "Label Bottle"
-            note "Label the bottle(s) with '#{label}', 'Date', 'Your initials'"
+            note "Label the bottle(s) with '#{label}'#{output_id}, 'Date', 'Your initials'"
         }
         release (bottle)
         release(ingredients + produced_media, interactive: true)
