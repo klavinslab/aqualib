@@ -78,11 +78,13 @@ class Protocol
 
 		produced_media_id = Array.new
 		produced_media = Array.new
+		output_id = ""
 		for i in 0..(quantity - 1)
 			output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
 			produced_media.push(output)
 			produced_media[i].location = "Bench"
 			produced_media_id.push(output.id)
+			output_id = output_id + ", #{output.id}"
 		end
 		bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
 		show {
@@ -127,7 +129,7 @@ class Protocol
 		
 		show {
 			title "Label Media"
-			note "Label the bottle(s) with '#{label}', 'Your initials', and 'date'"
+			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id} and 'date'"
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)

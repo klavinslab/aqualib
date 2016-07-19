@@ -41,7 +41,7 @@ class Protocol
 
       show {
         title "Make yeast plates"
-        note "Make the minimum quantity of following plates"
+        note "MAKE THE MINIMUM QUALITY OF THE FOLLOWING PLATES"
         table plate_tab
       }
 
