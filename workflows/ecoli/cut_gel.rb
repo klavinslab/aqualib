@@ -107,81 +107,90 @@ class Protocol
     gel_uploads = {}
     gels.each do |gel|
       gel_uploads[gel.id] = show {
-       title "Image gel #{gel.id}"
-       check "Clean the transilluminator with ethanol."
-       check "Put the gel #{gel.id} on the transilluminator."
-       check "Turn off the room lights before turning on the transilluminator."
-       check "Put the camera hood on, turn on the transilluminator and take a picture using the camera control interface on computer."
-       check "Check to see if the picture matches the gel before uploading."
-       check "Rename the picture you just took as gel_#{gel.id}. Upload it!"
-       upload var: "my_gel_pic"
-     }
-    s, verify_data = gel_band_verify_cut( gel, except: [ [0,0], [1,0] ] )
-    produce s
-    slices = slices.concat s
-   end
+        title "Image gel #{gel.id}"
+        check "Clean the transilluminator with ethanol."
+        check "Put the gel #{gel.id} on the transilluminator."
+        check "Turn off the room lights before turning on the transilluminator."
+        check "Put the camera hood on, turn on the transilluminator and take a picture using the camera control interface on computer."
+        check "Check to see if the picture matches the gel before uploading."
+        check "Rename the picture you just took as gel_#{gel.id}. Upload it!"
+        upload var: "my_gel_pic"
+      }
+      s, verify_data = gel_band_verify_cut( gel, except: [ [0,0], [1,0] ] )
+      produce s
+      slices = slices.concat s
+    end
 
-  show {
-    title "Clean up!"
-    check "Turn off the transilluminator"
-    check "Dispose of the gel and any gel parts by placing it in the waste container. Spray the surface of the transilluminator with ethanol and wipe until dry using kimwipes or paper towel."
-    check "Remove the blue light goggles, clean them, and put them back where you found them."
-    check "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
-    check "Dispose gloves after leaving the room."
-  }
+    weights = show {
+      title "Weigh each gel slice."
+      check "Zero the scale with an empty 1.5 mL tube."
+      check "Weigh each slice and enter the recorded weights in the following:"
+      gel_slices.each do |gs|
+        get "number", var: "w#{gs.id}", label: "Enter a number for tube #{gs.id}", default: 0.123
+      end
+    }
+    gel_slices.each { |gs| gs.associate "weight", weights[:"w#{gs.id}".to_sym] }
 
-  gels.each do |gel|
-    gel.mark_as_deleted
-  end
+    show {
+      title "Clean up!"
+      check "Turn off the transilluminator"
+      check "Dispose of the gel and any gel parts by placing it in the waste container. Spray the surface of the transilluminator with ethanol and wipe until dry using kimwipes or paper towel."
+      check "Remove the blue light goggles, clean them, and put them back where you found them."
+      check "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
+      check "Dispose gloves after leaving the room."
+    }
 
-  release slices, interactive: true, method: "boxes"
+    gels.each do |gel|
+      gel.mark_as_deleted
+    end
 
-  errors = []
-  if io_hash[:task_ids]
-    io_hash[:task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      set_task_status(task,"gel cut")
-      if task.task_prototype.name == "Fragment Construction"
-        fragment_ids = task.simple_spec[:fragments]
-        associated_gel_ids = {}
-        gels.each do |gel|
-          gel_fragment_ids = gel.matrix
-          gel_fragment_ids.flatten!
-          gel_fragment_ids.delete(-1)
-          if (fragment_ids & gel_fragment_ids).any?
-            associated_gel_ids[gel.id] =  fragment_ids & gel_fragment_ids
+    release slices, interactive: true, method: "boxes"
+
+    errors = []
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task,"gel cut")
+        if task.task_prototype.name == "Fragment Construction"
+          fragment_ids = task.simple_spec[:fragments]
+          associated_gel_ids = {}
+          gels.each do |gel|
+            gel_fragment_ids = gel.matrix
+            gel_fragment_ids.flatten!
+            gel_fragment_ids.delete(-1)
+            if (fragment_ids & gel_fragment_ids).any?
+              associated_gel_ids[gel.id] =  fragment_ids & gel_fragment_ids
+            end
           end
-        end
-        notifs = []
-        associated_gel_ids.each do |id, fragment_ids|
-          begin
-            upload_id = gel_uploads[id][:my_gel_pic][0][:id]
-            upload_url = Upload.find(upload_id).url
-            associated_gel = collection_from id
-            gel_matrix = associated_gel.matrix
-            fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')}; length: #{find(:sample, id: fid)[0].properties["Length"]})" }.join(", ")
-            image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
-            notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
-            #gel_matrix.each_with_index { |r, r_idx|
-            #  r.each_with_index { |c, c_idx|
-            #    comment = verify_data["comment#{r_idx}_#{c_idx}".to_sym]
-            #    if comment != ""
-            #      comment_notifs.push "The following comment was left on gel #{c}: #{comment}"
-            #    end
-            #  }
-            #}
-          rescue Exception => e
-            errors.push e.to_s
+          notifs = []
+          associated_gel_ids.each do |id, fragment_ids|
+            begin
+              upload_id = gel_uploads[id][:my_gel_pic][0][:id]
+              upload_url = Upload.find(upload_id).url
+              associated_gel = collection_from id
+              gel_matrix = associated_gel.matrix
+              fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')}; length: #{find(:sample, id: fid)[0].properties["Length"]})" }.join(", ")
+              image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
+              notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
+              #gel_matrix.each_with_index { |r, r_idx|
+              #  r.each_with_index { |c, c_idx|
+              #    comment = verify_data["comment#{r_idx}_#{c_idx}".to_sym]
+              #    if comment != ""
+              #      comment_notifs.push "The following comment was left on gel #{c}: #{comment}"
+              #    end
+              #  }
+              #}
+            rescue Exception => e
+              errors.push e.to_s
+            end
           end
+          notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
         end
-        notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
       end
     end
+
+    io_hash[:errors] = errors
+    io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
+    return { io_hash: io_hash }
   end
-
-  io_hash[:errors] = errors
-  io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
-  return { io_hash: io_hash }
-end
-
 end

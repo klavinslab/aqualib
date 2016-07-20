@@ -51,20 +51,8 @@ class Protocol
 
       take gel_slices, interactive: true,  method: "boxes"
 
-      weights = show {
-        title "Weigh each gel slice."
-        check "Zero the scale with an empty 1.5 mL tube."
-        check "Weigh each slice and enter the recorded weights in the following:"
-        gel_slices.each do |gs|
-          get "number", var: "w#{gs.id}", label: "Enter a number for tube #{gs.id}", default: 0.123
-        end
-      }
-
-      gel_weights = gel_slices.collect { |gs| weights[:"w#{gs.id}".to_sym] }
-
-      qg_volumes = gel_weights.collect { |g| (g*3000).floor }
-
-      iso_volumes = gel_weights.collect { |g| (g*1000).floor }
+      qg_volumes = gel_slices.collect { |gs| (gs.associations["weight"]*3000).floor }
+      iso_volumes = gel_slices.collect { |gs| (gs.associations["weight"]*1000).floor }
 
       gel_slices.each_with_index do |gs,idx|
          if gs.sample.properties["Length"] >500 && gs.sample.properties["Length"] < 4000
@@ -166,14 +154,14 @@ class Protocol
         produced_fragment_stocks.compact!
         produced_fragment_stocks.each { |fragment_stock| 
                                         notifs.push "This task produces Fragment Stock #{fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}"
-                                        notifs.push "The following comment was left on fragment #{fragment_stock}: #{fragment_stock.notes}" if fragment_stock.notes != ""
+                                        notifs.push "The following comment was left on Fragment Stock #{fragment_stock}: #{fragment_stock.notes}" if fragment_stock.notes != ""
                                       }
         notifs.each { |notif| task.notify notif, job_id: jid }
       end
     end
 
     if gel_slices
-      delete gel_slices
+      #delete gel_slices
       release gel_slices
     end
 
