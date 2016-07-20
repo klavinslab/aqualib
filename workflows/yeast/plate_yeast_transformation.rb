@@ -72,7 +72,7 @@ class Protocol
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
         for i in 1..plates.length
             plate = find(:item, {sample: {name: "YPAD + #{ant_marker}"}, object_type: { name: "Agar Plate"} })[0]
-            plate.mark_as_deleted
+            plate.mark_as_deleted if plate
             i += 1
         end
       end
