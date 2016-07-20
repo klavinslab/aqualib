@@ -101,7 +101,7 @@ class Protocol
 
     # streak plate for yeast overnights if there is yeast_overnight_ids
 
-    if yeast_overnights.blank?
+    if !yeast_overnights.blank?
 
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
