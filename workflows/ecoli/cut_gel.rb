@@ -125,7 +125,7 @@ class Protocol
       title "Weigh each gel slice"
       check "Zero the scale with an empty 1.5 mL tube."
       check "Weigh each slice and enter the recorded weights in the following:"
-      slices.each do |ss|
+      slices.each do |s|
         get "number", var: "w#{s.id}", label: "Enter a number for tube #{s.id}", default: 0.123
       end
     }
