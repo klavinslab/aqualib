@@ -122,29 +122,41 @@ class Protocol
     end
 
     weights = show {
-      title "Weigh each gel slice."
+      title "Weigh each gel slice"
       check "Zero the scale with an empty 1.5 mL tube."
       check "Weigh each slice and enter the recorded weights in the following:"
-      gel_slices.each do |gs|
-        get "number", var: "w#{gs.id}", label: "Enter a number for tube #{gs.id}", default: 0.123
+      slices.each do |ss|
+        get "number", var: "w#{s.id}", label: "Enter a number for tube #{s.id}", default: 0.123
       end
     }
-    gel_slices.each { |gs| gs.associate "weight", weights[:"w#{gs.id}".to_sym] }
+    slices.each { |s| s.associate "weight", weights[:"w#{s.id}".to_sym] }
 
-    show {
-      title "Clean up!"
-      check "Turn off the transilluminator"
-      check "Dispose of the gel and any gel parts by placing it in the waste container. Spray the surface of the transilluminator with ethanol and wipe until dry using kimwipes or paper towel."
-      check "Remove the blue light goggles, clean them, and put them back where you found them."
-      check "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
-      check "Dispose gloves after leaving the room."
+    purify_immediately = show {
+      title "Decide whether to purify gel slices immediately"
+      select ["Yes", "No"], var: "choice", label: "Do you want to purify the gel slices immediately?", default: 0
     }
 
+    if purify_immediately[:choice] == "Yes"
+      show {
+        title "Keep the gel slices on your bench!"
+        note "To be continued..."
+      }
+      release slices
+    else
+      show {
+        title "Clean up!"
+        check "Turn off the transilluminator"
+        check "Dispose of the gel and any gel parts by placing it in the waste container. Spray the surface of the transilluminator with ethanol and wipe until dry using kimwipes or paper towel."
+        check "Remove the blue light goggles, clean them, and put them back where you found them."
+        check "Clean up the gel box and casting tray by rinsing with water. Return them to the gel station."
+        check "Dispose gloves after leaving the room."
+      }
+      release slices, interactive: true, method: "boxes"
+    end
+    
     gels.each do |gel|
       gel.mark_as_deleted
     end
-
-    release slices, interactive: true, method: "boxes"
 
     errors = []
     if io_hash[:task_ids]
@@ -191,6 +203,7 @@ class Protocol
 
     io_hash[:errors] = errors
     io_hash[:gel_slice_ids] = slices.collect {|s| s.id}
+    io_hash[:silent_slice_take] = purify_immediately[:choice] == "Yes"
     return { io_hash: io_hash }
   end
 end

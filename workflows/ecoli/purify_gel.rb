@@ -10,6 +10,7 @@ class Protocol
     {
       io_hash: {},
       gel_slice_ids: [74396, 74397, 74398, 74399, 74400, 74401],
+      silent_slice_take: true,
       task_ids: [25364, 25365],
       debug_mode: "No"
     }
@@ -18,7 +19,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", gel_slice_ids: [] }.merge io_hash # set default value of io_hash
+    io_hash = { debug_mode: "No", gel_slice_ids: [], silent_slice_take: false }.merge io_hash # set default value of io_hash
 
     # redefine the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -49,10 +50,14 @@ class Protocol
         note "The predicted time needed is #{predited_time} min."
       }
 
-      take gel_slices, interactive: true,  method: "boxes"
+      if io_hash[:silent_slice_take]
+        take gel_slices
+      else
+        take gel_slices, interactive: true,  method: "boxes"
+      end
 
-      qg_volumes = gel_slices.collect { |gs| (gs.associations["weight"]*3000).floor }
-      iso_volumes = gel_slices.collect { |gs| (gs.associations["weight"]*1000).floor }
+      qg_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 3000).floor }
+      iso_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 1000).floor }
 
       gel_slices.each_with_index do |gs,idx|
          if gs.sample.properties["Length"] >500 && gs.sample.properties["Length"] < 4000
