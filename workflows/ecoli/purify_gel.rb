@@ -159,7 +159,7 @@ class Protocol
         else
           set_task_status(task,"done")
         end
-        gels_and_frag_ids = gel_slices.select { |g| fragment_ids.include? == g.sample.id }.zip fragment_ids
+        gels_and_frag_ids = gel_slices.select { |g| fragment_ids.include? g.sample.id }.zip fragment_ids
         gels_and_frag_ids.each { |gaf| notifs.push "The following comment was left on fragment #{gaf[1]}: #{gaf[0].notes}" }
         failed_fragment_ids = fragment_ids - produced_fragment_ids
         failed_fragment_ids.each { |id| notifs.push "This task failed to produce a Fragment Stock for #{item_or_sample_html_link id, :sample}" }
