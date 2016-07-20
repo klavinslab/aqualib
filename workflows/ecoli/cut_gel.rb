@@ -96,7 +96,7 @@ class Protocol
     end
     predited_time = time_prediction io_hash[:size], "cut_gel"
     show {
-      title "Protocol Information is so cool"
+      title "Protocol Information"
       note "This protocol will take gel pictures and cut gel into gel slices."
       warning "Clean blue light goggles and put them on before beginning this protocol."
       note "The predicted time needed is #{predited_time} min."
@@ -152,8 +152,7 @@ class Protocol
             associated_gel_ids[gel.id] =  fragment_ids & gel_fragment_ids
           end
         end
-        upload_notifs = []
-        comment_notifs = []
+        notifs = []
         associated_gel_ids.each do |id, fragment_ids|
           begin
             upload_id = gel_uploads[id][:my_gel_pic][0][:id]
@@ -162,7 +161,7 @@ class Protocol
             gel_matrix = associated_gel.matrix
             fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')}; length: #{find(:sample, id: fid)[0].properties["Length"]})" }.join(", ")
             image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
-            upload_notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
+            notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
             #gel_matrix.each_with_index { |r, r_idx|
             #  r.each_with_index { |c, c_idx|
             #    comment = verify_data["comment#{r_idx}_#{c_idx}".to_sym]
@@ -175,8 +174,7 @@ class Protocol
             errors.push e.to_s
           end
         end
-        upload_notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
-        comment_notifs.each { |notif| task.notify "[Notification] #{notif}", job_id: jid }
+        notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
       end
     end
   end
