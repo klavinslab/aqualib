@@ -17,6 +17,13 @@ class Protocol
     }
   end
 
+  def update_batch_matrix batch, num_samples, plate_type
+    rows = batch.matrix.length
+    columns = batch.matrix[0].length
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "YPAD")[0].id
+    batch.save
+  end # update_batch_matrix
+
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
@@ -35,7 +42,12 @@ class Protocol
 
     glycerol_streaked_yeast_plates = []
     overnight_streaked_yeast_plates = []
-
+    
+    overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+    batch = find(:sample, id: 11767)[0]
+    plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            
+    
     if yeast_glycerol_stocks.length > 0
 
       yeast_strains_glycerol = yeast_glycerol_stocks.collect { |y| y.sample }
@@ -43,9 +55,9 @@ class Protocol
 
       glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
-
+        total_num_plates = 0
       show {
-        title "Grab yeast plates"
+        title "Grab Yeast plates"
         if glycerol_streaked_yeast_plates.length > 0 || overnight_streaked_yeast_plates.length > 0
           total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length
           check "Grab #{total_num_plates} of YPAD plates, label with the following ids:"
@@ -54,6 +66,7 @@ class Protocol
           image "divided_yeast_plate"
         end
       }
+      update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "YPAD"
 
       take yeast_glycerol_stocks
       # inoculation_tab = [["Gylcerol Stock id", "Location", "Yeast plate id"]]
@@ -85,10 +98,10 @@ class Protocol
       release yeast_glycerol_stocks
 
     end
-    
+
     # streak plate for yeast overnights if there is yeast_overnight_ids
-    
-    if io_hash[:yeast_overnight_ids].length > 0
+
+    if yeast_overnights.blank?
 
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
@@ -97,8 +110,11 @@ class Protocol
         title "Grab yeast plates"
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
           check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+            
         end
-      } if io_hash[:yeast_selective_plate_types].length > 0
+      } if io_hash[:yeast_selective_plate_types].blank?
+      num_plates = io_hash[:yeast_selective_plate_types].size
+      update_batch_matrix plate_batch, plate_batch.num_samples - num_plates, "YPAD"
 
       take yeast_overnights, interactive: true
 
