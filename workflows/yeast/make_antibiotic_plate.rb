@@ -32,11 +32,11 @@ class Protocol
     end
 
     # list of antibiotic plate for yeast selection
-    # ClonNat, NatMX, 25 µL, G418, KanMX, 300 µL, Hygromycin, HygMX, 200 µL, Zeocin, BleoMX, 50 µL.
+    # ClonNat, NatMX, 25 µL, G418, KanMX, 300 µL, Hygromycin, HygMX, 200 µL, Zeocin, Bleo, 50 µL.
 
     plasmid_marker_hash = Hash.new {|h,k| h[k] = 0 }
     markers = [ :nat, :kan, :hyg, :ble ]
-    antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygromycin", ble: "BleoMX" }
+    antibiotic_hash = { nat: "ClonNat", kan: "G418", hyg: "Hygro", ble: "Bleo" }
     volume_hash = { nat: 25, kan: 300, hyg: 200, ble: 50 }
 
     io_hash[:plasmid_stock_ids].each do |pid|
@@ -63,11 +63,10 @@ class Protocol
         }
         make_plate = true
 
-        aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
-        batch = find(:sample, id: 11764)[0]
-        plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
-        update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "YPAD"
-        produce new_sample "#{antibiotic_hash[marker]} Plate" , of: "Media", as: "Agar Plate"
+        aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
+        plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        update_batch_matrix plate_batch, plate_batch.num_samples - num, "YPAD"
+        produce new_sample "YPAD + #{antibiotic_hash[marker]}" , of: "YPAD + #{antibiotic_hash[marker]}", as: "Agar Plate"
       end
 
     end
