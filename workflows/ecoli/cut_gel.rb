@@ -61,11 +61,7 @@ class Protocol
             items.push item
             new_routes.push lane: [i,j], slice_id: item.id, length: length
             note = verify_data[:"comment#{i}_#{j}".to_sym]
-            show {
-              check note == ""
-              check note.nil?
-            }
-            item.notes = note if note != ""
+            item.notes = note
           end
         end
       end
