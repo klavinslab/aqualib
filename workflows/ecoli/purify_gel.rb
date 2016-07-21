@@ -153,7 +153,7 @@ class Protocol
         check "Pipette the flow through (30 µL) onto the center of the column, spin again at 17.0 xg for one minute. Discard the columns this time."
         check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
         fragment_stocks.each do |fs|
-          get "number", var: "c#{fs.id}", label: "Enter a concentration (ng/µL) for tube #{fs.id}", default: 30.2
+          get "number", var: "c#{fs.id}", label: "Enter a concentration (ng/µL) for tube #{fs}", default: 30.2
           get "text", var: "comment#{fs.id}", label: "Leave comments below."
         end
       }
@@ -161,12 +161,12 @@ class Protocol
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
-        fragment_stocks.select { |fs| concs["c#{fs.id}"] < 10 }.each { |fs|
+        fragment_stocks.select { |fs| concs[:"c#{fs.id}".to_sym] < 10 }.each { |fs|
                                                                   select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
                                                                   }
-      } if fragment_stocks.any? { |fs| concs["c#{fs.id}"] < 10 }
+      } if fragment_stocks.any? { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
 
-      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock["d#{fs.id}"] == "Yes" }
+      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock[:"d#{fs.id}".to_sym] == "Yes" }
       if fragment_stocks_to_discard.any?
         show {
           title "Discard fragment stocks"
