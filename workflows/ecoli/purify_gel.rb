@@ -69,7 +69,7 @@ class Protocol
       show {
         title "Move gel slice(s) to new tube(s)"
         note "Please carefully transfer the gel slices in the following tubes each to a new 2.0 mL tube using a pipette tip:"
-        note gel_slices.select_by.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }
+        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
         note total_volumes
       } if total_volumes.any? { |v| v > 1500 && v < 2000 }
