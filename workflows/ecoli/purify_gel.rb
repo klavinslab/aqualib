@@ -68,7 +68,7 @@ class Protocol
       show {
         title "Move gel slice(s) to new tube(s)"
         note "Please carefully transfer the gel slices in the following tubes each to a new 2.0 mL tube using a pipette tip:"
-        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }
+        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }.map { |gs| "#{gs}" }.join(", ")
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
         note total_volumes
       } if total_volumes.any? { |v| v > 1500 && v < 2000 }
@@ -88,7 +88,7 @@ class Protocol
       show {
         title "Equally distribute melted gel slices between tubes"
         note "Please equally distribute the volume of the following tubes each between two 1.5 mL tubes:"
-        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }
+        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }.map { |gs| "#{gs}" }.join(", ")
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
         note total_volumes
       } if total_volumes.any? { |v| v >= 2000 }
@@ -101,7 +101,7 @@ class Protocol
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
-        title "Check the boxes as you complete each step."
+        title "Prepare the centrifuge"
         check "Grab #{num} of pink Qiagen columns, label with 1 to #{num} on the top."
         check "Add tube contents to LABELED pink Qiagen columns using the following table."
         check "Be sure not to add more than 750 µL to each pink column."
@@ -124,8 +124,22 @@ class Protocol
       fragment_stocks = gel_slices.collect { |gs| gs.sample.make_item "Fragment Stock" }
 
       show {
+        title "Use label printer to label new 1.5 mL tubes"
+        check "Ensure that the B33-143-492 labels are loaded in the printer. This number should be displayed on the printer. If not, check with a lab manager."
+        check "Open the LabelMark 6 software."
+        check 'Select "Open" --> "File" --> "Serialized data top labels"'
+        note 'If an error about the printer appears, press "Okay"'
+        check "Select the first label graphic, and click on the number in the middle of the label graphic."
+        check 'On the toolbar on the left, select "Edit serialized data"'
+        check 'Enter #{fragment_stocks[0].id} for the Start number and #{fragment_stocks.length} for the Total number, and select "Finish"'
+        check 'Select "File" --> "Print" and select "BBP33" as the printer option."'
+        check 'Press "Print" and collect the labels."'
+        image "purify_gel_edit_serialized_data"
+        image "purify_gel_sequential"
+      }
+
+      show {
         title "Transfer to 1.5 mL tube"
-        check "Label #{num} 1.5 mL tube with #{fragment_stocks.collect { |fs| fs.id }}"
         check "Transfer pink columns to the labeled tubes using the following table."
         table [["Qiagen column","1.5 mL tube"]].concat(num_arr.zip fragment_stocks.collect { |fs| { content:fs.id, check: true } })
         check "Add 30 µL molecular grade water or EB elution buffer to center of the column."
@@ -138,13 +152,34 @@ class Protocol
         check "Pipette the flow through (30 µL) onto the center of the column, spin again at 17.0 xg for one minute. Discard the columns this time."
         check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
         fragment_stocks.each do |fs|
-          get "number", var: "c#{fs.id}", label: "Enter a concentration for tube #{fs.id}", default: 30.2
+          get "number", var: "#{fs.id}", label: "Enter a concentration (ng/µL) for tube #{fs.id}", default: 30.2
+          get "text", var: "comment#{fs.id}", label: "Leave comments below."
         end
       }
 
+      discard_stock = show {
+        title "Decide whether to keep dilute stocks"
+        note "Talk to a lab manager to decide whether or not to discard the following stocks."
+        concs.select { |id, c| c < 10 }.each { |id, c|
+                                              select ["Yes", "No"], var: "#{fs.id}", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_i, :item}?"
+                                              }
+      } if concs.any? { |id, c| c < 10 }
+
+      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock.select { |id, choice| choice == "Yes" }.keys.map { |id| id.to_i }.include? fs.id }
+      if fragment_stocks_to_discard.any?
+        show {
+          title "Discard fragment stocks"
+          check "Discard the following fragment stocks:"
+          note fragment_stocks_to_discard
+        }
+        fragment_stocks = fragment_stocks - fragment_stocks_to_discard
+        delete fragment_stocks_to_discard
+      end
+
       fragment_stocks.each_with_index do |fs, idx|
-        fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
+        fs.datum = { concentration: concs[:"#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
         fs.notes = gel_slices[idx].notes
+        fs.append_notes concs[:"comment#{fs.id}".to_sym]
         fs.save
       end
       # Give a touch history in log
