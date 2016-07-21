@@ -68,13 +68,10 @@ class Protocol
 
       show {
         title "Move gel slice(s) to new tube(s)"
-        gel_slices.each_with_index { |gs, idx|
-                                    if total_volumes[idx] > 1500 && total_volumes[idx] < 2000
-                                      note "Please carefully transfer the gel slice in tube #{gs} to a new 2.0 mL tube using a pipette tip."
-                                      note "Discard the old 1.5 mL tube."
-                                      note "Label the new tube #{gs}."
-                                    end
-                                    }
+        note "Please carefully transfer the gel slices in the following tubes each to a new 2.0 mL tube using a pipette tip:"
+        note gel_slices.select_by.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }
+        note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
+        note total_volumes
       } if total_volumes.any? { |v| v > 1500 && v < 2000 }
 
       show {
@@ -91,19 +88,17 @@ class Protocol
 
       show {
         title "Equally distribute melted gel slices between tubes"
-        gel_slices.each_with_index { |gs, idx|
-                                    if total_volumes[idx] >= 2000
-                                      note "Please equally distribute the volume of tube #{gs} between two 1.5 mL tubes."
-                                      note "Label the new tube #{gs}."
-                                    end
-                                    }
+        note "Please equally distribute the volume of the following tubes each between two 1.5 mL tubes:"
+        note gel_slices.select_by.with_index { |gs, idx| total_volumes[idx] >= 2000 }
+        note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
+        note total_volumes
       } if total_volumes.any? { |v| v >= 2000 }
 
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
         warning "Divide the isopropanol volume evenly between two 1.5 mL tubes if you divided one tube's volume into two earlier." if total_volumes.any? { |v| v >= 2000 }
-        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == 0 })
+        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
@@ -144,7 +139,7 @@ class Protocol
         check "Pipette the flow through (30 µL) onto the center of the column, spin again at 17.0 xg for one minute. Discard the columns this time."
         check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
         fragment_stocks.each do |fs|
-          get "number", var: "c#{fs.id}", label: "Enter a concentration (ng/μL) for tube #{fs.id}", default: 30.2
+          get "number", var: "c#{fs.id}", label: "Enter a concentration for tube #{fs.id}", default: 30.2
         end
       }
 
