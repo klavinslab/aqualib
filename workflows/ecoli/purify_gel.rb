@@ -161,10 +161,10 @@ class Protocol
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
-        fragment_stocks.select { |fs| c["c#{fs.id}"] < 10 }.each { |fs|
+        fragment_stocks.select { |fs| concs["c#{fs.id}"] < 10 }.each { |fs|
                                                                   select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
                                                                   }
-      } if fragment_stocks.any? { |fs| c["c#{fs.id}"] < 10 }
+      } if fragment_stocks.any? { |fs| concs["c#{fs.id}"] < 10 }
 
       fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock["d#{fs.id}"] == "Yes" }
       if fragment_stocks_to_discard.any?
