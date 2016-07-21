@@ -40,14 +40,14 @@ class Protocol
       num = gel_slices.length
       num_arr = *(1..num)
 
-      predited_time = time_prediction io_hash[:gel_slice_ids].length, "purify_gel"
+      predicted_time = time_prediction io_hash[:gel_slice_ids].length, "purify_gel"
 
       show {
         title "Protocol Information"
         note "This protocol purfies gel slices into DNA fragment stocks."
         note "The following gel slices are going to be purfied"
         note gel_slices.collect { |gs| "#{gs}" }
-        note "The predicted time needed is #{predited_time} min."
+        note "The predicted time needed is #{predicted_time} min."
       }
 
       if io_hash[:silent_slice_take]
@@ -58,12 +58,24 @@ class Protocol
 
       qg_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 3000).floor }
       iso_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 1000).floor }
+      total_volumes = (0...gel_slices.length).map { |idx| qg_volumes[idx] + iso_volumes[idx] }
 
       gel_slices.each_with_index do |gs,idx|
-         if gs.sample.properties["Length"] >500 && gs.sample.properties["Length"] < 4000
+         if gs.sample.properties["Length"] > 500 && gs.sample.properties["Length"] < 4000
           iso_volumes[idx] = 0
          end
       end
+
+      show {
+        title "Move gel slice(s) to new tube(s)"
+        gel_slices.each_with_index { |gs, idx|
+                                    if total_volumes[idx] > 1500 && total_volumes[idx] < 2000
+                                      note "Please carefully transfer the gel slice in tube #{gs} to a new 2.0 mL tube using a pipette tip."
+                                      note "Discard the old 1.5 mL tube."
+                                      note "Label the new tube #{gs}."
+                                    end
+                                    }
+      } if total_volumes.any? { |v| v > 1500 && v < 2000 }
 
       show {
         title "Add the following volumes of QG buffer to the corresponding tube."
@@ -74,12 +86,23 @@ class Protocol
         title "Place all tubes in 50 degree heat block"
         timer initial: { hours: 0, minutes: 10, seconds: 0}
         note "Vortex every few minutes to speed up the process."
-        note "Retreve after 10 minutues or until the gel slice is competely dissovled."
+        note "Retrieve after 10 minutues or until the gel slice is competely dissovled."
       }
+
+      show {
+        title "Equally distribute melted gel slices between tubes"
+        gel_slices.each_with_index { |gs, idx|
+                                    if total_volumes[idx] >= 2000
+                                      note "Please equally distribute the volume of tube #{gs} between two 1.5 mL tubes."
+                                      note "Label the new tube #{gs}."
+                                    end
+                                    }
+      } if total_volumes.any? { |v| v >= 2000 }
 
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
+        warning "Divide the isopropanol volume evenly between two 1.5 mL tubes if you divided one tube's volume into two earlier." if total_volumes.any? { |v| v >= 2000 }
         table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes.collect { |v| { content: v, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
@@ -87,21 +110,21 @@ class Protocol
         title "Check the boxes as you complete each step."
         check "Grab #{num} of pink Qiagen columns, label with 1 to #{num} on the top."
         check "Add tube contents to LABELED pink Qiagen columns using the following table."
-        check "Be sure not to add more than 750 µL to each pick columns"
+        check "Be sure not to add more than 750 µL to each pink column."
         table [["Gel slices id", "Qiagen column"]].concat(gel_slices.collect {|s| s.id}.zip num_arr)
       }
 
       show {
         title "Centrifuge"
-        check "Spin at top speed (> 17,900 g) for 1 minute to bind DNA to columns"
+        check "Spin at 17.0 xg for 1 minute to bind DNA to columns"
         check "Empty collection columns by pouring waste liquid into waste liquid container."
         check "Add 750 µL PE buffer to columns and wait five minutes"
-        check "Spin at top speed (> 17,900 g) for 30 seconds to wash columns."
+        check "Spin at 17.0 xg for 30 seconds to wash columns."
         check "Empty collection tubes."
         check "Add 500 µL PE buffer to columns and wait five minutes"
-        check "Spin at top speed (> 17,900 g) for 30 seconds to wash columns"
+        check "Spin at 17.0 xg for 30 seconds to wash columns"
         check "Empty collection tubes."
-        check "Spin at top speed (> 17,900 g) for 1 minute to remove all PE buffer from columns"
+        check "Spin at 17.0 xg for 1 minute to remove all PE buffer from columns"
       }
 
       fragment_stocks = gel_slices.collect { |gs| gs.sample.make_item "Fragment Stock" }
@@ -115,18 +138,13 @@ class Protocol
         warning "Be very careful to not pipette on the wall of the tube."
       }
 
-      show {
-        title "Wait one minute"
-        timer initial: { hours: 0, minutes: 1, seconds: 0 }
-      }
-
       concs = show {
         title "Measure DNA Concentration"
-        check "Elute DNA into 1.5 mL tubes by spinning at top speed (> 17,900 xg) for one minute, keep the columns."
-        check "Pipette the flow through (30 µL) onto the center of the column, spin again at top speed (> 17,900 xg) for one minute. Discard the columns this time."
+        check "Elute DNA into 1.5 mL tubes by spinning at 17.0 xg for one minute, keep the columns."
+        check "Pipette the flow through (30 µL) onto the center of the column, spin again at 17.0 xg for one minute. Discard the columns this time."
         check "Go to B9 and nanodrop all of 1.5 mL tubes, enter DNA concentrations for all tubes in the following:"
         fragment_stocks.each do |fs|
-          get "number", var: "c#{fs.id}", label: "Enter a number for tube #{fs.id}", default: 30.2
+          get "number", var: "c#{fs.id}", label: "Enter a concentration (ng/μL) for tube #{fs.id}", default: 30.2
         end
       }
 

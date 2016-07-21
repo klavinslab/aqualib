@@ -123,17 +123,18 @@ class Protocol
 
     weights = show {
       title "Weigh each gel slice"
+      note "Perform this step using the scale inside the gel room."
       check "Zero the scale with an empty 1.5 mL tube."
       check "Weigh each slice and enter the recorded weights in the following:"
       slices.each do |s|
-        get "number", var: "w#{s.id}", label: "Enter a number for tube #{s.id}", default: 0.123
+        get "number", var: "w#{s.id}", label: "Enter a mass (g) for tube #{s.id}", default: 0.123
       end
     }
     slices.each { |s| s.associate "weight", weights[:"w#{s.id}".to_sym] }
 
     purify_immediately = show {
       title "Decide whether to purify gel slices immediately"
-      select ["Yes", "No"], var: "choice", label: "Do you want to purify the gel slices immediately?", default: 0
+      select ["Yes", "No"], var: "choice", label: "Do you want to purify the gel slices immediately after this?", default: 0
     }
 
     if purify_immediately[:choice] == "Yes"
