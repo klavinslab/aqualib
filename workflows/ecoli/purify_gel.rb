@@ -103,7 +103,7 @@ class Protocol
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
         warning "Divide the isopropanol volume evenly between two 1.5 mL tubes if you divided one tube's volume into two earlier." if total_volumes.any? { |v| v >= 2000 }
-        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip iso_volumes.collect { |v| { content: v, check: true } })
+        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == 0 })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
