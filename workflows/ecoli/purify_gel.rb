@@ -70,7 +70,6 @@ class Protocol
         note "Please carefully transfer the gel slices in the following tubes each to a new 2.0 mL tube using a pipette tip:"
         note gel_slices.select.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }.map { |gs| "#{gs}" }.join(", ")
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
-        note total_volumes
       } if total_volumes.any? { |v| v > 1500 && v < 2000 }
 
       show {
@@ -90,7 +89,6 @@ class Protocol
         note "Please equally distribute the volume of the following tubes each between two 1.5 mL tubes:"
         note gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }.map { |gs| "#{gs}" }.join(", ")
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
-        note total_volumes
       } if total_volumes.any? { |v| v >= 2000 }
 
       show {
@@ -160,18 +158,19 @@ class Protocol
 
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
+        note "The below stocks have a concentration of less than 10 ng/µL."
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
         fragment_stocks.select { |fs| concs[:"c#{fs.id}".to_sym] < 10 }.each { |fs|
-                                                                  select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
-                                                                  }
+                                                                              select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
+                                                                              }
       } if fragment_stocks.any? { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
 
       fragment_stocks_to_discard = discard_stock ? fragment_stocks.select { |fs| discard_stock[:"d#{fs.id}".to_sym] == "Yes" } : []
       if fragment_stocks_to_discard.any?
         show {
           title "Discard fragment stocks"
-          check "Discard the following fragment stocks:"
-          note fragment_stocks_to_discard
+          note "Discard the following fragment stocks:"
+          note fragment_stocks_to_discard.map { |fs| "#{fs}" }.join(", ")
         }
         fragment_stocks = fragment_stocks - fragment_stocks_to_discard
         delete fragment_stocks_to_discard
