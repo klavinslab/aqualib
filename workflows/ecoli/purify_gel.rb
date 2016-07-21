@@ -166,7 +166,7 @@ class Protocol
                                                                   }
       } if fragment_stocks.any? { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
 
-      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock[:"d#{fs.id}".to_sym] == "Yes" } ? discard_stock : []
+      fragment_stocks_to_discard = discard_stock ? fragment_stocks.select { |fs| discard_stock[:"d#{fs.id}".to_sym] == "Yes" } : []
       if fragment_stocks_to_discard.any?
         show {
           title "Discard fragment stocks"
