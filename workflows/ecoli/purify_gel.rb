@@ -97,7 +97,7 @@ class Protocol
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
         warning "Divide the isopropanol volume evenly between two 1.5 mL tubes if you divided one tube's volume into two earlier." if total_volumes.any? { |v| v >= 2000 }
-        table [["Gel slice id", "Isopropanol in µL"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
+        table [["Gel slice id", "Isopropanol (µL)"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
@@ -127,13 +127,13 @@ class Protocol
         title "Use label printer to label new 1.5 mL tubes"
         check "Ensure that the B33-143-492 labels are loaded in the printer. This number should be displayed on the printer. If not, check with a lab manager."
         check "Open the LabelMark 6 software."
-        check 'Select "Open" --> "File" --> "Serialized data top labels"'
-        note 'If an error about the printer appears, press "Okay"'
+        check "Select \"Open\" --> \"File\" --> \"Serialized data top labels\""
+        note "If an error about the printer appears, press \"Okay\""
         check "Select the first label graphic, and click on the number in the middle of the label graphic."
-        check 'On the toolbar on the left, select "Edit serialized data"'
-        check 'Enter #{fragment_stocks[0].id} for the Start number and #{fragment_stocks.length} for the Total number, and select "Finish"'
-        check 'Select "File" --> "Print" and select "BBP33" as the printer option."'
-        check 'Press "Print" and collect the labels."'
+        check "On the toolbar on the left, select \"Edit serialized data\""
+        check "Enter #{fragment_stocks[0].id} for the Start number and #{fragment_stocks.length} for the Total number, and select \"Finish\""
+        check "Select \"File\" --> \"Print\" and select \"BBP33\" as the printer option."
+        check "Press \"Print\" and collect the labels."
         image "purify_gel_edit_serialized_data"
         image "purify_gel_sequential"
       }
@@ -160,10 +160,10 @@ class Protocol
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
-        concs.select { |id, c| c < 10 }.each { |id, c|
+        concs.select { |id, c| c.to_i < 10 }.each { |id, c|
                                               select ["Yes", "No"], var: "#{fs.id}", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_i, :item}?"
                                               }
-      } if concs.any? { |id, c| c < 10 }
+      } if concs.any? { |id, c| c.to_i < 10 }
 
       fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock.select { |id, choice| choice == "Yes" }.keys.map { |id| id.to_i }.include? fs.id }
       if fragment_stocks_to_discard.any?
