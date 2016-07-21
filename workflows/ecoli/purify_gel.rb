@@ -58,13 +58,12 @@ class Protocol
 
       qg_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 3000).floor }
       iso_volumes = gel_slices.collect { |gs| (gs.associations["weight"] * 1000).floor }
-      total_volumes = (0...gel_slices.length).map { |idx| qg_volumes[idx] + iso_volumes[idx] }
-
       gel_slices.each_with_index do |gs,idx|
          if gs.sample.properties["Length"] > 500 && gs.sample.properties["Length"] < 4000
           iso_volumes[idx] = 0
          end
       end
+      total_volumes = (0...gel_slices.length).map { |idx| qg_volumes[idx] + iso_volumes[idx] }
 
       show {
         title "Move gel slice(s) to new tube(s)"
@@ -89,7 +88,7 @@ class Protocol
       show {
         title "Equally distribute melted gel slices between tubes"
         note "Please equally distribute the volume of the following tubes each between two 1.5 mL tubes:"
-        note gel_slices.select_by.with_index { |gs, idx| total_volumes[idx] >= 2000 }
+        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
         note total_volumes
       } if total_volumes.any? { |v| v >= 2000 }
