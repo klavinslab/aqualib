@@ -162,11 +162,11 @@ class Protocol
         title "Decide whether to keep dilute stocks"
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
         concs.select { |id, c| c.to_i < 10 }.each { |id, c|
-                                              select ["Yes", "No"], var: "id", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_i, :item}?"
+                                              select ["Yes", "No"], var: "id", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_s.to_i, :item}?"
                                               }
       } if concs.any? { |id, c| c.to_i < 10 }
 
-      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock.select { |id, choice| choice == "Yes" }.keys.map { |id| id.to_i }.include? fs.id }
+      fragment_stocks_to_discard = fragment_stocks.select { |fs| discard_stock.select { |id, choice| choice == "Yes" }.keys.map { |id| id.to_s.to_i }.include? fs.id }
       if fragment_stocks_to_discard.any?
         show {
           title "Discard fragment stocks"
