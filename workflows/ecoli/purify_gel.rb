@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      gel_slice_ids: [74466, 74467, 74468, 74469, 74470, 74471],
+      gel_slice_ids: [74490, 74491, 74492, 74493, 74494, 74495],
       silent_slice_take: true,
       task_ids: [25364, 25365],
       debug_mode: "No"
