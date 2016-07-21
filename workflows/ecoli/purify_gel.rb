@@ -66,7 +66,7 @@ class Protocol
       total_volumes = (0...gel_slices.length).map { |idx| qg_volumes[idx] + iso_volumes[idx] }
 
       show {
-        title "Move gel slice(s) to new tube(s)"
+        title "Move gel slices to new tubes"
         note "Please carefully transfer the gel slices in the following tubes each to a new 2.0 mL tube using a pipette tip:"
         note gel_slices.select.with_index { |gs, idx| total_volumes[idx] > 1500 && total_volumes[idx] < 2000 }.map { |gs| "#{gs}" }.join(", ")
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
@@ -140,6 +140,7 @@ class Protocol
 
       show {
         title "Transfer to 1.5 mL tube"
+        check "Apply the labels to the tubes."
         check "Transfer pink columns to the labeled tubes using the following table."
         table [["Qiagen column","1.5 mL tube"]].concat(num_arr.zip fragment_stocks.collect { |fs| { content:fs.id, check: true } })
         check "Add 30 µL molecular grade water or EB elution buffer to center of the column."
@@ -161,7 +162,7 @@ class Protocol
         title "Decide whether to keep dilute stocks"
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
         concs.select { |id, c| c.to_i < 10 }.each { |id, c|
-                                              select ["Yes", "No"], var: "#{fs.id}", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_i, :item}?"
+                                              select ["Yes", "No"], var: "id", label: "Discard Fragment Stock #{item_or_sample_html_link id.to_i, :item}?"
                                               }
       } if concs.any? { |id, c| c.to_i < 10 }
 
