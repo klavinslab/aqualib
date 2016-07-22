@@ -122,14 +122,14 @@ class Protocol
 		}
 		
 		show {
-			title "Mix solution"
+			title "Mix warts123"
 			note "Shake until most of the powder is dissolved."
 			note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
 		}
 		
 		show {
 			title "Label Media"
-			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id} and 'date'"
+			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id}, and 'date'"
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)
