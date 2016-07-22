@@ -26,7 +26,7 @@ class Protocol
 		quantity = task_to_run.simple_spec[:quantity]
 		ingredient = []
 		if(media_name == "LB") 
-			if(task_to_run.simple_spec[:media_container].include?("800 mL Agar"))
+			if(task_to_run.simple_spec[:media_container].include?("Agar"))
 				label = "LB Agar"
 				ingredient = [find(:item, {object_type:{name:"LB Agar Miller"}})[0]]
 	        		io_hash = {has_agar: "yes"}.merge(io_hash)
@@ -122,14 +122,14 @@ class Protocol
 		}
 		
 		show {
-			title "Mix solution"
+			title "Mix Solution"
 			note "Shake until most of the powder is dissolved."
 			note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
 		}
 		
 		show {
 			title "Label Media"
-			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id} and 'date'"
+			note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id}, and 'date'"
 		}
 		release(bottle)
 		release(ingredient + produced_media, interactive: true)
