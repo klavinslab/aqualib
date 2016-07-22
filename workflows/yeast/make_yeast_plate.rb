@@ -31,7 +31,7 @@ class Protocol
 
       plate_hash = Hash.new {|h,k| h[k] = 0 }
       io_hash[:yeast_selective_plate_types].each do |plate_type|
-        sample_name = find(:sample_type, id: plate_type)[0]
+        sample_name = find(:sample, id: plate_type)[0].name
         plate_hash[sample_name] = plate_hash[sample_name] + 1
       end
 
