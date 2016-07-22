@@ -122,7 +122,7 @@ class Protocol
 		}
 		
 		show {
-			title "Mix warts123"
+			title "Mix Solution"
 			note "Shake until most of the powder is dissolved."
 			note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
 		}
