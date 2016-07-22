@@ -87,7 +87,7 @@ class Protocol
     if io_hash[:task_name] == "Primer Order"
       primers = tasks[:ready_ids].map { |tid|
                                           task = find(:task, id: tid)[0]
-                                          task.simple_spec[:primer_ids].map { |pid| find(:sample, id: pid)[0]
+                                          task.simple_spec[:primer_ids].map { |pid| find(:sample, id: pid)[0] }
                                       }.flatten
       total_cost = primers.map { |p|
                                 length = (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length
