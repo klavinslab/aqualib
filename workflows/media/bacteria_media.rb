@@ -26,7 +26,7 @@ class Protocol
 		quantity = task_to_run.simple_spec[:quantity]
 		ingredient = []
 		if(media_name == "LB") 
-			if(task_to_run.simple_spec[:media_container].include?("800 mL Agar"))
+			if(task_to_run.simple_spec[:media_container].include?("Agar"))
 				label = "LB Agar"
 				ingredient = [find(:item, {object_type:{name:"LB Agar Miller"}})[0]]
 	        		io_hash = {has_agar: "yes"}.merge(io_hash)
