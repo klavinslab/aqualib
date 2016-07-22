@@ -97,6 +97,7 @@ class Protocol
                                   Parameter.get_float("medium primer cost")
                                 else
                                   Parameter.get_float("long primer cost")
+                                end
                                 }.inject(0) { |sum, x| sum + x }
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name], total_cost)
     else
