@@ -64,7 +64,7 @@ class Protocol
             num_left = num - num_plates
             plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
             update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
-            plate_batch_id = plate_batch_id + "#{plate_batch_two.id}" if plate_batch_two.present?
+            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
           end
         end
         show {
