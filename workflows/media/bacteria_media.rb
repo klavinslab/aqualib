@@ -119,7 +119,6 @@ class Protocol
 		show {
 			title "Measure Water"
 			note "Take the bottle to the DI water carboy and add water up to the #{water} mL mark"
-			note "#{task_to_run.simple_spec[:media_container].include?("800 mL Agar")}"
 		}
 		
 		show {

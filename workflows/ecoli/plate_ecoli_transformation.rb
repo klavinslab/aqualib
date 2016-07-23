@@ -57,8 +57,6 @@ class Protocol
 
     deleted_plates = []
     num = 0
-
-    plate_type = ""
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
       unless marker == "LB"
@@ -66,9 +64,11 @@ class Protocol
         plates_with_initials = plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
         num = plates.length
         plate_type = "#{marker}"
+        aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
+        plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
-          check "Grab #{num} #{plate_type} Plate (sterile)"
+          check "Grab #{num} #{plate_type} Plate (sterile) from #{plate_batch.id}"
           check "Label with the following ids #{plates_with_initials}"
         }
         show {
@@ -90,14 +90,9 @@ class Protocol
       end
     end
     actual_plates = all_plates - deleted_plates
-    aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
-    batch = find(:sample, id: 11764)[0]
-
-    plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
 
     delete all_transformed_aliquots
     update_batch_matrix plate_batch, plate_batch.num_samples - num, plate_type if plate_batch
-
     if actual_plates.length > 0
       show {
         title "Incubate"
