@@ -56,8 +56,7 @@ class Protocol
       update_batch_matrix plate_batch, plate_batch.num_samples - num, "YPAD"
       if plate_batch.num_samples < num 
         num_left = num - plate_batch.num_samples
-        plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
-          if plate_batch_two
+        plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} if plate_batch_two
         update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
       end
 
