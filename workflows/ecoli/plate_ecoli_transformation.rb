@@ -65,6 +65,18 @@ class Protocol
         plate_type = "#{marker}"
         overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type}
+        plate_batch_id = "none" 
+        if plate_batch.present?
+            plate_batch_id = "#{plate_batch.id}"
+            num_plates = plate_batch.num_samples
+            update_batch_matrix plate_batch, num_plates - num, plate_type
+            if num_plates < num 
+              num_left = num - num_plates
+              plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == plate_type }
+              update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, plate_type if plate_batch_two.present?
+              plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+            end
+        end
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} #{plate_type} Plate (sterile) from batch #{plate_batch.id}"
