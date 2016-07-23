@@ -57,11 +57,11 @@ class Protocol
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         num_plates = plate_batch.num_samples
         if plate_batch.present?
-          update_batch_matrix plate_batch, num_plates - num, "YPAD"
+          update_batch_matrix plate_batch, num_plates - num, "YPAD" if plate_batch.present?
           if num_plates < num 
             num_left = num - num_plates
-            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} if !plate_batch.blank?
-            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
           end
         end
         show {
