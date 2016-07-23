@@ -54,7 +54,7 @@ class Protocol
 
       if markers.include? marker
         overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
-        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } if plate_batch.present?
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         show{
           note "#{plate_batch.present?}"
 
