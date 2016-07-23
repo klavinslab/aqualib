@@ -51,17 +51,17 @@ class Protocol
     make_plate = false  # a variable to indicate whether the user need to make plates
 
     plasmid_marker_hash.each do |marker, num|
-      overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
-      plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
-      num_plates = plate_batch.num_samples
-      update_batch_matrix plate_batch, num_plates - num, "YPAD"
-      if num_plates < num 
-        num_left = num - num_left
-        plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} 
-        update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
-      end
 
       if markers.include? marker
+        overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        num_plates = plate_batch.num_samples
+        update_batch_matrix plate_batch, num_plates - num, "YPAD"
+        if num_plates < num 
+          num_left = num - num_left
+          plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} 
+          update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
+        end
         show {
           title "Grab YPAD plates and #{antibiotic_hash[marker]} stock"
           check "Grab #{num} YPAD plates from batch #{plate_batch.id}."
