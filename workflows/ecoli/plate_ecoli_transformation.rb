@@ -57,6 +57,7 @@ class Protocol
 
     deleted_plates = []
     num = 0
+    plate_batch = ""
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
       unless marker == "LB"
