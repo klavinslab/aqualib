@@ -54,12 +54,12 @@ class Protocol
 
       if markers.include? marker
         overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
-        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" 
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
         plate_batch_id = "none" 
         if plate_batch.present?
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
-          update_batch_matrix plate_batch, num_plates - num, "YPAD" if plate_batch.present?
+          update_batch_matrix plate_batch, num_plates - num, "YPAD"
           if num_plates < num 
             num_left = num - num_plates
             plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
@@ -78,7 +78,6 @@ class Protocol
         make_plate = true
         produce new_sample "YPAD + #{antibiotic_hash[marker]}" , of: "YPAD + #{antibiotic_hash[marker]}", as: "Agar Plate"
       end
-
     end
 
     if make_plate
