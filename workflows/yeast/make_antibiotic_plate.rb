@@ -55,16 +55,14 @@ class Protocol
       if markers.include? marker
         overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
-        show{
-          note "#{plate_batch.present?}"
-
-        }
         num_plates = plate_batch.num_samples
-        update_batch_matrix plate_batch, num_plates - num, "YPAD"
-        if num_plates < num 
-          num_left = num - num_plates
-          plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} if !plate_batch.blank?
-          update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
+        if plate_batch.present?
+          update_batch_matrix plate_batch, num_plates - num, "YPAD"
+          if num_plates < num 
+            num_left = num - num_plates
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"} if !plate_batch.blank?
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD"
+          end
         end
         show {
           title "Grab YPAD plates and #{antibiotic_hash[marker]} stock"
