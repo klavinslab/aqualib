@@ -43,10 +43,7 @@ class Protocol
     glycerol_streaked_yeast_plates = []
     overnight_streaked_yeast_plates = []
     
-    overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
-    batch = find(:sample, id: 11767)[0]
-    plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
-            
+    overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}            
     
     if yeast_glycerol_stocks.length > 0
 
@@ -56,17 +53,30 @@ class Protocol
       glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
         total_num_plates = 0
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        plate_batch_id = "none" 
+        if plate_batch.present?
+          plate_batch_id = "#{plate_batch.id}"
+          num_plates = plate_batch.num_samples
+          update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
+          if num_plates < total_num_plates 
+            num_left = total_num_plates - num_plates
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
+            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+          end
+        end
       show {
         title "Grab Yeast plates"
         if glycerol_streaked_yeast_plates.length > 0 || overnight_streaked_yeast_plates.length > 0
           total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length
-          check "Grab #{total_num_plates} of YPAD plates, label with the following ids:"
+          check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with the following ids:"
           note glycerol_streaked_yeast_plates.collect { |p| "#{p}"} + overnight_streaked_yeast_plates.collect { |p| "#{p}"}
           check "Divide up each plate with #{num_of_section} sections and mark each with circled #{(1..num_of_section).to_a.join(',')}"
           image "divided_yeast_plate"
         end
       }
-      update_batch_matrix plate_batch, plate_batch.num_samples - total_num_plates, "YPAD"
+
 
       take yeast_glycerol_stocks
       # inoculation_tab = [["Gylcerol Stock id", "Location", "Yeast plate id"]]
