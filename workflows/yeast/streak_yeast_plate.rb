@@ -52,8 +52,8 @@ class Protocol
 
       glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
-        total_num_plates = 0
-        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? || !overnight_streaked_yeast_plates.blank?
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         plate_batch_id = "none" 
         if plate_batch.present?
           plate_batch_id = "#{plate_batch.id}"
@@ -68,13 +68,10 @@ class Protocol
         end
       show {
         title "Grab Yeast plates"
-        if glycerol_streaked_yeast_plates.length > 0 || overnight_streaked_yeast_plates.length > 0
-          total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length
           check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with the following ids:"
           note glycerol_streaked_yeast_plates.collect { |p| "#{p}"} + overnight_streaked_yeast_plates.collect { |p| "#{p}"}
           check "Divide up each plate with #{num_of_section} sections and mark each with circled #{(1..num_of_section).to_a.join(',')}"
           image "divided_yeast_plate"
-        end
       }
 
 
