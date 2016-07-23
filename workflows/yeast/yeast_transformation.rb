@@ -145,8 +145,8 @@ class Protocol
 
       show {
         title "Vortex strongly and heat shock"
-        check "Vortex each tube on highest settings for 45 seconds"
-        check "Place all aliquots on 42 C heat block for 15 minutes"
+        check "Vortex each tube on highest settings until the cells are resuspended."
+        check "Place all aliquots on 42 C heat block for 15 minutes."
       }
 
       show {
@@ -188,6 +188,7 @@ class Protocol
             grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
             plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}" }
             plate_batch_id = "none" 
+            num = yeast_plates_sub.length
             if plate_batch.present?
               plate_batch_id = "#{plate_batch.id}"
               num_plates = plate_batch.num_samples
@@ -232,7 +233,7 @@ class Protocol
         }
         show {
           title "Resuspend in water and plate"
-          check "Add 200 µL of MG water to the following mixtures shown in the table."
+          check "Add 200 µL of MG water to the following mixtures shown in the table and resuspend."
           check "Flip the plate and add 4-5 glass beads to it, add 200 µL of mixtures on each plate."
           table plating_info_tab
         }
