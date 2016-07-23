@@ -123,8 +123,20 @@ class Protocol
             
         end
       } if io_hash[:yeast_selective_plate_types].blank?
-      num_plates = io_hash[:yeast_selective_plate_types].size
-      update_batch_matrix plate_batch, plate_batch.num_samples - num_plates, "YPAD"
+      total_num_plates = io_hash[:yeast_selective_plate_types].size
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        plate_batch_id = "none" 
+        if plate_batch.present?
+          plate_batch_id = "#{plate_batch.id}"
+          num_plates = plate_batch.num_samples
+          update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
+          if num_plates < total_num_plates 
+            num_left = total_num_plates - num_plates
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
+            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+          end
+        end
 
       take yeast_overnights, interactive: true
 
