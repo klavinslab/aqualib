@@ -157,7 +157,7 @@ class Protocol
         check "Remove all the supernatant carefully with a 1000 µL pipettor (~400 µL total)"
       }
 
-      yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:sample, id: pid )[0].properties["Integrant"].properties["Yeast Marker"].downcase[0,3]}
+      yeast_markers = io_hash[:plasmid_ids].collect {|pid| find(:sample, id: pid )[0].properties["Yeast Marker"].downcase[0,3]}
       yeast_transformation_mixtures_markers = Hash.new {|h,k| h[k] = [] }
       yeast_transformation_mixtures.each_with_index do |y,idx|
         yeast_markers.uniq.each do |mk|
