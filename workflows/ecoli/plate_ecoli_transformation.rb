@@ -39,6 +39,12 @@ class Protocol
         note "No transformed aliquots need to be plated. Thanks for your effort!"
       }
     end
+
+    show{
+
+      note all_transformed_aliquots.join(",")
+    }
+
     take [all_transformed_aliquots], interactive: true if all_transformed_aliquots.length > 0
 
     all_plates = all_transformed_aliquots.collect { |t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid" }
