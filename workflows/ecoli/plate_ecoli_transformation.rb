@@ -90,7 +90,6 @@ class Protocol
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "#{plate_type} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
-        update_batch_matrix plate_batch, plate_batch.num_samples - num, plate_type if plate_batch
       else
         show {
           title "No marker info found"
