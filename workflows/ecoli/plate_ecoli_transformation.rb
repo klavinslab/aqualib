@@ -80,7 +80,7 @@ class Protocol
         end
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
-          check "Grab #{num} #{plate_type} Plate (sterile) from batch #{plate_batch.id}"
+          check "Grab #{num} #{plate_type} Plate (sterile) from batch #{plate_batch_id}"
           check "Label with the following ids #{plates_with_initials}"
         }
         show {
