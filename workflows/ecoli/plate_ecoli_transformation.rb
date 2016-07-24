@@ -40,7 +40,7 @@ class Protocol
       }
     end
 
-    take {all_transformed_aliquots}, interactive: true if all_transformed_aliquots.length > 0
+    take all_transformed_aliquots, interactive: true if all_transformed_aliquots.length > 0
 
     all_plates = all_transformed_aliquots.collect { |t| produce new_sample t.sample.name, of: "Plasmid", as: "E coli Plate of Plasmid" }
     all_plates.each_with_index do |all_plate,idx|
