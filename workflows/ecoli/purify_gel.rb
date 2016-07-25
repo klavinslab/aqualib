@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       gel_slice_ids: [74490, 74491, 74492, 74493, 74494, 74495],
-      silent_slice_take: true,
+      #silent_slice_take: true,
       task_ids: [25364, 25365],
       debug_mode: "No"
     }
@@ -95,7 +95,7 @@ class Protocol
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
-        warning "Divide the isopropanol volume evenly between two 1.5 mL tubes (#{tubes_in_two}) if you divided one tube's volume into two earlier." if !tubes_in_two.empty?
+        warning "Divide the isopropanol volume evenly between two 1.5 mL tubes (#{tubes_in_two}) since you divided one tube's volume into two earlier." if !tubes_in_two.empty?
         table [["Gel slice id", "Isopropanol (µL)"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
