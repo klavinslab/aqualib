@@ -60,8 +60,7 @@ class Protocol
             item = s.make_item "Gel Slice"
             items.push item
             new_routes.push lane: [i,j], slice_id: item.id, length: length
-            note = verify_data[:"comment#{i}_#{j}".to_sym]
-            item.notes = note
+            item.notes = verify_data[:"comment#{i}_#{j}".to_sym]
           end
         end
       end
@@ -185,14 +184,6 @@ class Protocol
               fragment_ids_link = fragment_ids.collect { |fid| item_or_sample_html_link(fid, :sample) + " (location: #{Matrix[*gel_matrix].index(fid).collect { |i| i + 1}.join(',')}; length: #{find(:sample, id: fid)[0].properties["Length"]})" }.join(", ")
               image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
               notifs.push "#{'Fragment'.pluralize(fragment_ids.length)} #{fragment_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
-              #gel_matrix.each_with_index { |r, r_idx|
-              #  r.each_with_index { |c, c_idx|
-              #    comment = verify_data["comment#{r_idx}_#{c_idx}".to_sym]
-              #    if comment != ""
-              #      comment_notifs.push "The following comment was left on gel #{c}: #{comment}"
-              #    end
-              #  }
-              #}
             rescue Exception => e
               errors.push e.to_s
             end
