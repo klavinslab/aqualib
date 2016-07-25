@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       gel_slice_ids: [74490, 74491, 74492, 74493, 74494, 74495],
-      #silent_slice_take: true,
+      silent_slice_take: true,
       task_ids: [25364, 25365],
       debug_mode: "No"
     }
