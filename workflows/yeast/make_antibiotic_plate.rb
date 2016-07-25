@@ -53,22 +53,31 @@ class Protocol
     plasmid_marker_hash.each do |marker, num|
 
       if markers.include? marker
+        overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
+        plate_batch_id = "none" 
+        if plate_batch.present?
+          plate_batch_id = "#{plate_batch.id}"
+          num_plates = plate_batch.num_samples
+          update_batch_matrix plate_batch, num_plates - num, "YPAD"
+          if num_plates < num 
+            num_left = num - num_plates
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
+            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+          end
+        end
         show {
           title "Grab YPAD plates and #{antibiotic_hash[marker]} stock"
-          check "Grab #{num} YPAD plates."
+          check "Grab #{num} YPAD plates from batch #{plate_batch_id}."
           check "Grab #{(num * volume_hash[marker] / 1000.0).ceil} 1 mL #{antibiotic_hash[marker]} stock in SF1 or M20."
           check "Waiting for the #{antibiotic_hash[marker]} stock to thaw."
           check "Use sterile beads to spread #{volume_hash[marker]} µL of #{antibiotic_hash[marker]} to each YPAD plates, mark each plate with #{antibiotic_hash[marker]}."
           check "Place the plates with agar side down in the dark fume hood to dry."
         }
         make_plate = true
-
-        aliquot_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{ |b| collection_from b }
-        plate_batch = aliquot_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
-        update_batch_matrix plate_batch, plate_batch.num_samples - num, "YPAD"
         produce new_sample "YPAD + #{antibiotic_hash[marker]}" , of: "YPAD + #{antibiotic_hash[marker]}", as: "Agar Plate"
       end
-
     end
 
     if make_plate

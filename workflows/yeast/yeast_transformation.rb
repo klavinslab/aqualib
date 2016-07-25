@@ -145,8 +145,8 @@ class Protocol
 
       show {
         title "Vortex strongly and heat shock"
-        check "Vortex each tube on highest settings for 45 seconds"
-        check "Place all aliquots on 42 C heat block for 15 minutes"
+        check "Vortex each tube on highest settings until the cells are resuspended."
+        check "Place all aliquots on 42 C heat block for 15 minutes."
       }
 
       show {
@@ -173,6 +173,7 @@ class Protocol
       plating_info_tab = [["1.5 mL tube id","Plate id"]]
       overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}
       
+      plate_batch_ids = Array.new
 
       yeast_transformation_mixtures_markers.each do |key, mixtures|
         if ["nat","kan","hyg","ble"].include? key
@@ -185,8 +186,21 @@ class Protocol
             grab_plate_tab.push(["5-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
           else
             grab_plate_tab.push(["-#{key.upcase}", yeast_plates_sub.length, yeast_plates_sub.collect { |y| y.id }.join(", ")])
-            plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}"}
-            update_batch_matrix plate_batch, plate_batch.num_samples - yeast_plates_sub.length, "SDO -#{key.capitalize}"
+            plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}" }
+            plate_batch_id = "none" 
+            num = yeast_plates_sub.length
+            if plate_batch.present?
+              plate_batch_id = "#{plate_batch.id}"
+              num_plates = plate_batch.num_samples
+              update_batch_matrix plate_batch, num_plates - num, "SDO -#{key.capitalize}"
+              if num_plates < num 
+                num_left = num - num_plates
+                plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "SDO -#{key.capitalize}" }
+                update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "SDO -#{key.capitalize}" if plate_batch_two.present?
+                plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+              end
+            end
+            plate_batch_ids.push(plate_batch_id)
           end
           mixtures.each_with_index do |y,idx|
             plating_info_tab.push([y.id, yeast_plates_sub[idx].id])
@@ -214,12 +228,12 @@ class Protocol
       if mixtures_to_plate.length > 0
         show {
           title "Grab plate"
-          note "Grab the following plates and label with ids."
+          note "Grab the following plates from batches #{plate_batch_ids.join(", ")} and label with ids."
           table grab_plate_tab
         }
         show {
           title "Resuspend in water and plate"
-          check "Add 200 µL of MG water to the following mixtures shown in the table."
+          check "Add 200 µL of MG water to the following mixtures shown in the table and resuspend."
           check "Flip the plate and add 4-5 glass beads to it, add 200 µL of mixtures on each plate."
           table plating_info_tab
         }
