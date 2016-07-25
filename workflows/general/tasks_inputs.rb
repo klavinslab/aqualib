@@ -92,11 +92,11 @@ class Protocol
       total_cost = primers.map { |p|
                                 length = (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length
                                 if length <= 60
-                                  Parameter.get_float("short primer cost")
+                                  Parameter.get_float("short primer cost") * length
                                 elsif length > 60 && length <= 90
-                                  Parameter.get_float("medium primer cost")
+                                  Parameter.get_float("medium primer cost") * length
                                 else
-                                  Parameter.get_float("long primer cost")
+                                  Parameter.get_float("long primer cost") * length
                                 end
                                 }.inject(0) { |sum, x| sum + x }
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name], total_cost)
