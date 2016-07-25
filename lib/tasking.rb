@@ -89,7 +89,7 @@ module Tasking
       title "How many #{task_prototype_name} to run?"
       note "There is a total of #{sizes[-1]} #{task_prototype_name} in the queue. How many do you want to run?"
       select sizes, var: "limit", label: "Enter the number of #{task_prototype_name} you want to run", default: sizes[-1]
-      warning "You don't have enough #{task_prototype_name}s to surpass the $50 threshold. The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{number_to_currency total_cost}." if total_cost < 50
+      warning "You don't have enough #{task_prototype_name}s to surpass the $50 threshold. The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{'%.2f' % total_cost}." if total_cost < 50
     }
     limit_input[:limit] ||= sizes[-1] # a||a = b
     limit_num = limit_input[:limit].to_i
