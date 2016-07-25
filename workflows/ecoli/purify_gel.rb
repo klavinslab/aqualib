@@ -84,17 +84,18 @@ class Protocol
         note "Retrieve after 10 minutues or until the gel slice is competely dissovled."
       }
 
+      tubes_in_two = gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }.map { |gs| "#{gs}" }.join(", ")
       show {
         title "Equally distribute melted gel slices between tubes"
         note "Please equally distribute the volume of the following tubes each between two 1.5 mL tubes:"
-        note gel_slices.select.with_index { |gs, idx| total_volumes[idx] >= 2000 }.map { |gs| "#{gs}" }.join(", ")
+        note tubes_in_two
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
-      } if total_volumes.any? { |v| v >= 2000 }
+      } if tubes_in_two.any?
 
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
-        warning "Divide the isopropanol volume evenly between two 1.5 mL tubes if you divided one tube's volume into two earlier." if total_volumes.any? { |v| v >= 2000 }
+        warning "Divide the isopropanol volume evenly between two 1.5 mL tubes (#{tubes_in_two}) if you divided one tube's volume into two earlier." if tubes_in_two.any?
         table [["Gel slice id", "Isopropanol (µL)"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
