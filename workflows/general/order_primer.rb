@@ -42,8 +42,8 @@ class Protocol
       tab.push [primer.id.to_s + " " + primer.name, primer.properties["Overhang Sequence"] + primer.properties["Anneal Sequence"]]
     end
     primer_lengths = primers.map { |p| (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length }
-    primers_over_60 = primers.select.with_index { |p, idx| primer_lengths[idx] > 60 && primer_lengths[idx] <= 90 }.map { |p| "#{p}" }.join(", ")
-    primers_over_90 = primers.select.with_index { |p, idx| primer_lengths[idx] > 90 }.map { |p| "#{p}" }.join(", ")
+    primers_over_60 = primers.select.with_index { |p, idx| primer_lengths[idx] > 60 && primer_lengths[idx] <= 90 }.map { |p| "#{p} (##{primers.index(p) + 1})" }.join(", ")
+    primers_over_90 = primers.select.with_index { |p, idx| primer_lengths[idx] > 90 }.map { |p| "#{p} (##{primers.index(p) + 1})" }.join(", ")
     idt = show {
       title "Create an IDT DNA oligos order"
       warning "Oligo concentration for primer(s) #{primers_over_60} will have to be set to \"100 nmole DNA oligo.\"" if primers_over_60 != ""
