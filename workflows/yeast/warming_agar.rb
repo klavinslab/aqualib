@@ -9,6 +9,7 @@ class Protocol
 		{
 		io_hash: {},
 	}
+	end
 
 	def main 
 		io_hash = input[:io_hash]
