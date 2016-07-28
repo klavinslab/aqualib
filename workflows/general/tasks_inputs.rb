@@ -83,8 +83,27 @@ class Protocol
       table ready_tab
     }
 
-    # task sizes limit choose
-    io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name])
+    # launch special task_choose_limit for certain cost thresholds
+    if io_hash[:task_name] == "Primer Order"
+      primers = tasks[:ready_ids].map { |tid|
+                                          task = find(:task, id: tid)[0]
+                                          task.simple_spec[:primer_ids].map { |pid| find(:sample, id: pid)[0] }
+                                      }.flatten
+      total_cost = primers.map { |p|
+                                length = (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length
+                                if length <= 60
+                                  Parameter.get_float("short primer cost") * length
+                                elsif length > 60 && length <= 90
+                                  Parameter.get_float("medium primer cost") * length
+                                else
+                                  Parameter.get_float("long primer cost") * length
+                                end
+                                }.inject(0) { |sum, x| sum + x }
+      io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name], total_cost)
+    else
+      # task sizes limit choose
+      io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name])
+    end
 
     case io_hash[:task_name]
 
