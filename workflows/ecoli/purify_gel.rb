@@ -180,7 +180,7 @@ class Protocol
       fragment_stocks.each_with_index do |fs, idx|
         fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
         fs.notes = gel_slices[idx].notes
-        fs.append_notes concs[:"comment#{fs.id}".to_sym]
+        fs.append_notes (!fs.notes.empty? ? "\n" : "" + "Comment from purify_gel (#{jid}): " + concs[:"comment#{fs.id}".to_sym])
         fs.save
       end
       # Give a touch history in log
