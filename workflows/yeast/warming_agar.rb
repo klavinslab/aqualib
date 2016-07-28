@@ -55,16 +55,16 @@ class Protocol
 		end
 	end
 
-	agar = [find(:item, object_type: { name: "#{container}" }, sample_id: 11768)[0]] * quantity
+	agar = [find(:item, object_type: { name: "#{container}s" }, sample_id: 11768)[0]] * quantity
 	show{
 		note "#{agar}"
 		note "#{container}"
 	}
-	# if acid_solutions.present?
-	# 	take [agar] + [acid_solutions], interactive: true
-	# else
-	# 	take agar, interactive: true
-	# end
+	 if acid_solutions.present?
+	 	take agar + acid_solutions, interactive: true
+	 else
+	 	take agar, interactive: true
+	 end
 
 	show{
 		title "Microwave SDO Agar"
@@ -74,7 +74,7 @@ class Protocol
 	show{
 		title "Add Amino Acids"
 		note "Add #{multiplier * 8} mL of the following solution to each bottle(s):"
-		acid_solutions.each do |i|
+		present_acid.each do |i|
 			check i
 		end
 	}
