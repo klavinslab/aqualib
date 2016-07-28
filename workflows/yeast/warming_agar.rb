@@ -5,9 +5,9 @@ class Protocol
 	include Standard
 	include Cloning
 
-	def arguments {
+	def arguments 
+		{
 		io_hash: {},
-
 	}
 
 	def main {
@@ -109,7 +109,7 @@ class Protocol
 
     release [plate_batch], interactive: true
     return { io_hash: io_hash }
-	}
+	end
 end
 
 	
