@@ -97,6 +97,7 @@ class Protocol
 	}
 
 	num = data[:plates_poured]
+	plate_batch = produce new_collection "Agar Plate Batch", 10, 10
 
 	batch_matrix = fill_array 10, 10, num, media
     plate_batch.matrix = batch_matrix
