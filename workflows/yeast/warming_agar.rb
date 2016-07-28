@@ -39,7 +39,7 @@ class Protocol
 		elsif container.include?("400 mL")
 			multiplier = 0.5
 		elsif container.include?("200 mL")
-			multiplier = 0.5
+			multiplier = 0.25
 		end
 
 	acid_solutions = Array.new    
@@ -55,7 +55,7 @@ class Protocol
 		end
 	end
 
-	agar = [find(:item, object_type: { name: container }, id: 11768)[0]] * quantity
+	agar = [find(:item, object_type: { name: container }, sample_id: 11768)[0]] * quantity
 	show{
 		note agar
 	}
