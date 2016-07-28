@@ -57,13 +57,14 @@ class Protocol
 
 	agar = [find(:item, object_type: { name: container }, sample_id: 11768)[0]] * quantity
 	show{
-		note agar
+		note "#{agar}"
+		note "#{container}"
 	}
-	if acid_solutions.present?
-		take [agar] + [acid_solutions], interactive: true
-	else
-		take agar, interactive: true
-	end
+	# if acid_solutions.present?
+	# 	take [agar] + [acid_solutions], interactive: true
+	# else
+	# 	take agar, interactive: true
+	# end
 
 	show{
 		title "Microwave SDO Agar"
