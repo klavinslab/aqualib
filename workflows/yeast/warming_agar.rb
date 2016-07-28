@@ -55,7 +55,7 @@ class Protocol
 		end
 	end
 
-	agar = [find(:item, object_type: { name: "#{container}s" }, sample_id: 11768)[0]] * quantity
+	agar = [find(:item, object_type: { name: "#{container}" }, sample_id: 11768)[0]] * quantity
 	show{
 		note "#{agar}"
 		note "#{container}"
