@@ -8,6 +8,7 @@ class Protocol
 	def arguments 
 		{
 		io_hash: {},
+		debug_mode: "yes"		
 	}
 	end
 
@@ -30,6 +31,9 @@ class Protocol
 		media_name = find(:sample, id: media)[0].name
 		quantity = task_to_run.simple_spec[:quantity]
 		media_ingredients = media_name.split("-").drop(1)
+		show{
+			note "#{media_ingredients}"
+		}
 		acid_bank = ["His", "Trp", "Leu", "Ura"]
 		present_acid = acid_bank - media_ingredients
 		container = task_to_run.simple_spec[:media_container]
@@ -56,10 +60,7 @@ class Protocol
 	end
 
 	agar = [find(:item, object_type: { name: "#{container}" }, sample_id: 11768)[0]] * quantity
-	show{
-		note "#{agar}"
-		note "#{container}"
-	}
+
 	 if acid_solutions.present?
 	 	take agar + acid_solutions, interactive: true
 	 else
@@ -97,7 +98,7 @@ class Protocol
 
 	num = data[:plates_poured]
 
-	batch_matrix = fill_array 10, 10, num, media_type
+	batch_matrix = fill_array 10, 10, num, media
     plate_batch.matrix = batch_matrix
     plate_batch.location = "30 C incubator"
     plate_batch.save
