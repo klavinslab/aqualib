@@ -10,7 +10,7 @@ class Protocol
 		io_hash: {},
 	}
 
-	def main {
+	def main 
 		io_hash = input[:io_hash]
 		tasks = find(:task,{ task_prototype: { name: "Warming Agar" } }).select { |t| %w[waiting ready].include? t.status }
 		if(tasks.length == 1)
