@@ -30,7 +30,7 @@ class Protocol
 		set_task_status(task_to_run, "done")
 		media_name = find(:sample, id: media)[0].name
 		quantity = task_to_run.simple_spec[:quantity]
-		media_ingredients = media_name.split("-").drop(1)
+		media_ingredients = media_name.split("-").map(&:strip).drop(1)
 		show{
 			note "#{media_ingredients}"
 		}
