@@ -106,7 +106,8 @@ class Protocol
     cost = currency((1+@overhead)*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
-    items = s.items.reject { |i| i.deleted? }
+    # filter out items that are not deleted and match object_type chosen previously
+    items = s.items.reject { |i| i.deleted? || i.object_type_id != ot.id }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
@@ -143,6 +144,7 @@ class Protocol
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
+    # filter out collections based on user's sample input
     collections.reject! { |c| c.matrix[0][0] != s.id }
     cids = collections.collect { |c| c.id }
     
