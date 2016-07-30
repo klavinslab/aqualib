@@ -143,6 +143,7 @@ class Protocol
     
     s = Sample.find_by_name(descriptor[:name])
     collections = ot.items.reject { |i| i.deleted? }.collect { |i| collection_from i }
+    collections.reject { |c| c.matrix[0][0] != s.id }
     cids = collections.collect { |c| c.id }
     
     if cids.length > 0
