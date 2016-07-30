@@ -1,7 +1,7 @@
 # Title: Inventory Purchase Protocol
 # Author: Eric Klavins
 # Date: May 31, 2016 
-
+ 
 class Protocol
 
   def main
@@ -150,7 +150,7 @@ class Protocol
     
       result = show do 
         title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
-        table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ item_link(i), i.location, i.num_samples ] } )
+        table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ "#{i}", i.location, i.num_samples ] } )
         select cids, var: "id", label: "Choose collection", default: 0
         get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 2
       end
@@ -274,13 +274,6 @@ class Protocol
 
   def currency num
     ActionController::Base.helpers.number_to_currency num
-  end
-  
-  def item_link item
-    id = item.id
-    name = item.sample.name
-    container = item.object_type.name
-    return "<a href='/items/#{id}' target='_top'>#{container} #{id}: #{name}</a>".html_safe
-  end
+  end  
 
 end
