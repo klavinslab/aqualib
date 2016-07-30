@@ -1,6 +1,7 @@
 # Title: Inventory Purchase Protocol
 # Author: Eric Klavins
 # Date: May 31, 2016 
+needs "aqualib/lib/tasking"
  
 class Protocol
 
@@ -150,7 +151,7 @@ class Protocol
     
       result = show do 
         title "Choose #{ot.name} and number of #{s.name.pluralize} (#{cost} each)"
-        table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ i.id, i.location, i.num_samples ] } )
+        table [ [ "id", "Location", "Number of Samples" ] ] + (collections.collect { |i| [ item_link(i), i.location, i.num_samples ] } )
         select cids, var: "id", label: "Choose collection", default: 0
         get "number", var: "n", label: "How many #{s.name.pluralize}?", default: 2
       end
