@@ -1,8 +1,7 @@
 # Title: Inventory Purchase Protocol
 # Author: Eric Klavins
 # Date: May 31, 2016 
-needs "aqualib/lib/tasking"
- 
+
 class Protocol
 
   def main
@@ -275,6 +274,13 @@ class Protocol
 
   def currency num
     ActionController::Base.helpers.number_to_currency num
-  end  
+  end
+  
+  def item_link item
+    id = item.id
+    name = item.sample.name
+    container = item.object_type.name
+    return "<a href='/items/#{id}' target='_top'>#{container} #{id}: #{name}</a>".html_safe
+  end
 
 end
