@@ -137,6 +137,10 @@ class Protocol
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    show {
+      note result[:choice]
+      note ot.data_object[:samples]
+    }
     m = descriptor[:materials]
     l = descriptor[:labor]
     cost = currency((1+@overhead)*(m+l))
