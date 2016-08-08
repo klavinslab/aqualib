@@ -213,7 +213,7 @@ class Protocol
     end
 
     if gel_slices
-      #delete gel_slices
+      delete gel_slices
       release gel_slices
     end
 
