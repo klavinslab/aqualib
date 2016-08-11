@@ -12,17 +12,17 @@ class Protocol
 
   def select_task_by_plasmid_stock io_hash, stock_ids
       io_hash[:task_ids].select.with_index { |tid, idx| 
-                                              seq_task = find(:task, { task_prototype: { name: "Sequencing" }, id: tid })
-                                              plas_ver_task = find(:task, { task_prototype: { name: "Plasmid Verification" }, id: tid })
-                                              if seq_task.any?
-                                                (stock_ids & seq_task[0].simple_spec[:plasmid_stock_id]).any?
-                                              elsif plas_ver_task.any?
-                                                task = find(:task, id: tid)[0]
-                                                plasmid_ids_from_stocks = stock_ids.map { |sid| find(:item, id: sid)[0].sample.id }
-                                                plasmid_ids_from_plates = task.simple_spec[:plate_ids].map { |pid| find(:item, id: pid)[0].sample.id }
-                                                (plasmid_ids_from_stocks & plasmid_ids_from_plates).any?
-                                              end
-                                            }
+        seq_task = find(:task, { task_prototype: { name: "Sequencing" }, id: tid })
+        plas_ver_task = find(:task, { task_prototype: { name: "Plasmid Verification" }, id: tid })
+        if seq_task.any?
+          (stock_ids & seq_task[0].simple_spec[:plasmid_stock_id]).any?
+        elsif plas_ver_task.any?
+          task = find(:task, id: tid)[0]
+          plasmid_ids_from_stocks = stock_ids.map { |sid| find(:item, id: sid)[0].sample.id }
+          plasmid_ids_from_plates = task.simple_spec[:plate_ids].map { |pid| find(:item, id: pid)[0].sample.id }
+          (plasmid_ids_from_stocks & plasmid_ids_from_plates).any?
+        end
+      }
   end
 
   def hash_by_sample items
@@ -151,17 +151,17 @@ class Protocol
         primer_aliquots = primer_ids.collect{ |pid| choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot" }
       end
     primer_aliquots = primer_ids.collect { |pid| 
-                                          find_result = find(:sample, id: pid)[0].in("Primer Aliquot")
-                                          if find_result.any?
-                                            if io_hash[:item_choice_mode].downcase == "yes"
-                                              choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot"
-                                            else
-                                              find_result[0]
-                                            end
-                                          else
-                                            nil
-                                          end
-                                          }
+      find_result = find(:sample, id: pid)[0].in("Primer Aliquot")
+      if find_result.any?
+        if io_hash[:item_choice_mode].downcase == "yes"
+          choose_sample find(:sample, id: pid)[0].name, object_type: "Primer Aliquot"
+        else
+          find_result[0]
+        end
+      else
+        nil
+      end
+      }
     take plasmid_stocks + primer_aliquots.compact, interactive: true, method: "boxes"
     ensure_stock_concentration plasmid_stocks
 
@@ -223,20 +223,20 @@ class Protocol
       # Cancel any reactions that don't have a corresponding primer aliquot
       select_by_bools enough_vol_plasmid_stock_bools, plasmid_stock_ids
       plasmid_stock_ids_without_primer_aliquots = plasmid_stock_ids.select.with_index { |pid, idx| 
-                                                                                        find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
-                                                                                        (((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
-                                                                                      }.uniq
+        find(:sample, id: primer_ids[idx])[0].in("Primer Aliquot").empty? ||
+        (((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id }.include? primer_ids[idx]) && !(additional_primer_aliquots.map { |p| p.sample.id }.include? primer_ids[idx]))
+      }.uniq
       plasmid_stocks_without_primer_aliquots = plasmid_stocks.select { |p| plasmid_stock_ids_without_primer_aliquots.include? p.id }
       plasmid_stock_ids.each_with_index { |pid, idx|
-                                          if plasmid_stock_ids_without_primer_aliquots.include? pid
-                                            plasmid_stock_ids[idx] = nil
-                                            plasmid_stocks[idx] = nil
-                                            primer_ids[idx] = nil
-                                            plasmid_volume_list[idx] = nil
-                                            primer_volume_list[idx] = nil
-                                            water_volume_list[idx] = nil
-                                          end
-                                        }
+        if plasmid_stock_ids_without_primer_aliquots.include? pid
+          plasmid_stock_ids[idx] = nil
+          plasmid_stocks[idx] = nil
+          primer_ids[idx] = nil
+          plasmid_volume_list[idx] = nil
+          primer_volume_list[idx] = nil
+          water_volume_list[idx] = nil
+        end
+      }
       plasmid_stock_ids.compact!
       plasmid_stocks.compact!
       primer_ids.compact!
@@ -262,7 +262,7 @@ class Protocol
       plasmids_with_volume = plasmid_stock_ids.map.with_index { |pid, idx| plasmid_volume_list[idx].to_s + " µL of " + pid.to_s }
       primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
       primers_with_volume = primer_ids.map.with_index { |pid, idx| primer_volume_list[idx].to_s + " µL of " + 
-                                                              primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
+        primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
 
       load_samples_variable_vol( ["Molecular Grade Water"], [
         water_with_volume,
@@ -285,7 +285,8 @@ class Protocol
         }
         delete not_enough_vol_primer_aliquots
       end
-      release plasmid_stocks + not_enough_vol_plasmid_stocks + plasmid_stocks_without_primer_aliquots + primer_aliquots.compact + additional_primer_aliquots, interactive: true, method: "boxes"
+      release plasmid_stocks + not_enough_vol_plasmid_stocks + plasmid_stocks_without_primer_aliquots + 
+        primer_aliquots.compact + additional_primer_aliquots, interactive: true, method: "boxes"
 
       # create order table for sequencing
       sequencing_tab = [["DNA Name", "DNA Type", "DNA Length", "My Primer Name"]]
