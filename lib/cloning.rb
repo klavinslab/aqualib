@@ -94,6 +94,8 @@ module Cloning
       length: length,
       fwd: fwd_items[0],
       rev: rev_items[0],
+      fwd_id: fwd,
+      rev_id: rev,
       template: template_items[0],
       tanneal: [t1,t2].min
     }

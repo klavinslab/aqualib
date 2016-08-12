@@ -68,9 +68,11 @@ class Protocol
     # batch fragments, templates, primers
     all_fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
     all_templates       = fragment_info_list.collect { |fi| fi[:template] }
-    all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-    all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
-show {
+    all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }.compact
+    all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }.compact
+    all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
+
+    show {
       note fragment_info_list.collect { |fi| [fi[:fwd], fi[:rev]] }.flatten.compact
     }
     show {
@@ -93,7 +95,7 @@ show {
       delete contaminated_primer_aliquots
     end
     additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + 
-      primers_need_to_dilute(fragment_info_list.collect { |fi| [fi[:fwd] ? fi[:fwd].sample.id : nil, fi[:rev] ? fi[:rev].sample.id : nil] }.flatten.compact)))
+      primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
