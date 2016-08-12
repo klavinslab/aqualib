@@ -245,21 +245,21 @@ module Standard
     return matched_collections
   end
 
-	# a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
-	def collection_type_contain_has_colony id, object_type
-		matched_collections = []
-		find_collections = Collection.containing Sample.find(id)
-		if find_collections[0]
-			(find_collections).each do |c|
-				if c.datum && c.location != "deleted"
-					if (c.datum[:num_colony] || 0) > 0
-					  matched_collections.push c
-					end
-				end
-			end
-		end
-		return matched_collections
-	end
+  # a method for finding collections that contains certain sample ids and belongs to a certain object_type that has datum field entered num_colony. Originally designed for finding Divided Yeast Plate.
+  def collection_type_contain_has_colony id, object_type
+    matched_collections = []
+    find_collections = Collection.containing Sample.find(id)
+    if find_collections[0]
+      (find_collections).each do |c|
+        if c.datum && c.location != "deleted"
+          if (c.datum[:num_colony] || 0) > 0
+            matched_collections.push c
+          end
+        end
+      end
+    end
+    return matched_collections
+  end
 
   # fills an array for a collection matrix with a certain number of a certain value (used mostly for batching)
   def fill_array rows, cols, num, val
@@ -285,4 +285,42 @@ module Standard
     items.sort_by! { |item| location_strings.index(item.location) }
   end # sort_by_location
 
+  def determine_enough_volumes_each_item items, volumes, opts={}
+    return [[],[],[]] if items.empty? || volumes.empty?
+    options = { check_contam: false }.merge opts
+
+    total_vols_per_item = total_volumes_by_item items, volumes
+    extra_vol = options[:check_contam] ? 0 : 5
+    verify_data = show {
+      title "Verify enough volume of each #{items[0].object_type.name} exists#{options[:check_contam] ? ", or note if contamination is present" : ""}"
+      total_vols_per_item.each { |id, v| 
+        choices = options[:check_contam] ? ["Yes", "No", "Contamination is present"] : ["Yes", "No"]
+        select choices, var: "#{id}", label: "Is there at least #{(v + extra_vol).round(1)} µL of #{id}?", default: 0 
+      }
+    }
+
+    bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" }
+    if options[:check_contam]
+      [items.select.with_index { |i, idx| bools[idx] },
+      items.select.with_index { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "No" },
+      items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" },
+      bools]
+    else
+      [items.select.with_index { |i, idx| bools[idx] },
+      items.select.with_index { |i, idx| !bools[idx] },
+      bools]
+    end
+  end
+  
+  def total_volumes_by_item items, volumes
+    vol_hash = {}
+    items.compact.each_with_index { |i, idx|
+      if vol_hash[i.id].nil?
+        vol_hash[i.id] = volumes.compact[idx]
+      else
+        vol_hash[i.id] += volumes.compact[idx]
+      end
+    }
+    vol_hash
+  end
 end

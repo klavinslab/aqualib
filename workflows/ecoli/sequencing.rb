@@ -37,45 +37,6 @@ class Protocol
     item_hash
   end
 
-  def total_volumes_by_item items, volumes
-    vol_hash = {}
-    items.compact.each_with_index { |i, idx|
-      if vol_hash[i.id].nil?
-        vol_hash[i.id] = volumes.compact[idx]
-      else
-        vol_hash[i.id] += volumes.compact[idx]
-      end
-    }
-    vol_hash
-  end
-
-  def determine_enough_volumes_each_item items, volumes, opts={}
-    return [[],[],[]] if items.empty? || volumes.empty?
-    options = { check_contam: false }.merge opts
-
-    total_vols_per_item = total_volumes_by_item items, volumes
-    extra_vol = options[:check_contam] ? 0 : 5
-    verify_data = show {
-      title "Verify enough volume of each #{items[0].object_type.name} exists#{options[:check_contam] ? ", or note if contamination is present" : ""}"
-      total_vols_per_item.each { |id, v| 
-        choices = options[:check_contam] ? ["Yes", "No", "Contamination is present"] : ["Yes", "No"]
-        select choices, var: "#{id}", label: "Is there at least #{(v + extra_vol).round(1)} µL of #{id}?", default: 0 
-      }
-    }
-
-    bools = items.map { |i| i.nil? ? true : verify_data[:"#{i.id}".to_sym] == "Yes" }
-    if options[:check_contam]
-      [items.select.with_index { |i, idx| bools[idx] },
-      items.select.with_index { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "No" },
-      items.select { |i| i.nil? ? false : verify_data[:"#{i.id}".to_sym] == "Contamination is present" },
-      bools]
-    else
-      [items.select.with_index { |i, idx| bools[idx] },
-      items.select.with_index { |i, idx| !bools[idx] },
-      bools]
-    end
-  end
-
   def arguments
     {
       io_hash: {},
