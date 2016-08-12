@@ -46,9 +46,9 @@ class Protocol
       note "The predicted time needed is #{predited_time} min."
     }
 
-    dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
-    dilute_sample_ids.flatten!
-    diluted_stocks = dilute_samples dilute_sample_ids
+    #dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
+    #dilute_sample_ids.flatten!
+    #diluted_stocks = dilute_samples dilute_sample_ids
 
     # collect fragment pcr information
     fragment_info_list = []
