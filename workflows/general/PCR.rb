@@ -72,7 +72,7 @@ class Protocol
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
     show {
-      note fragment_info_list.collect { |fi| [fi[:fwd].sample.id, fi[:rev].sample.id] }.flatten
+      note fragment_info_list.compact.collect { |fi| [fi[:fwd].sample.id, fi[:rev].sample.id] }.flatten
     }
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
@@ -91,7 +91,7 @@ class Protocol
       delete contaminated_primer_aliquots
     end
     additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + 
-      primers_need_to_dilute(fragment_info_list.collect { |fi| [fi[:fwd].sample.id, fi[:rev].sample.id] }.flatten)))
+      primers_need_to_dilute(fragment_info_list.compact.collect { |fi| [fi[:fwd].sample.id, fi[:rev].sample.id] }.flatten)))
 
     # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
