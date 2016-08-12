@@ -72,13 +72,6 @@ class Protocol
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }.compact
     all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
 
-    show {
-      note fragment_info_list.collect { |fi| [fi[:fwd], fi[:rev]] }.flatten.compact
-    }
-    show {
-      note fragment_info_list.collect { |fi| [fi[:fwd] ? fi[:fwd].sample.id : nil, fi[:rev] ? fi[:rev].sample.id : nil] }.flatten.compact
-    }
-
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
 
@@ -116,6 +109,7 @@ class Protocol
     pcrs.each do |t, pcr|
       lengths = pcr[:fragment_info].collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30
+      extension_time = 3 * 60 * 1000 if extension_time < 3 * 60 * 1000
       # adding more extension time for longer size PCR.
       if lengths.max < 2000
         extension_time += 30
