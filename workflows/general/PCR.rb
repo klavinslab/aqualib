@@ -71,6 +71,10 @@ class Protocol
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
+    show {
+      note fragment_info_list.collect { |fi| [fi[:fwd], fi[:rev]] }.flatten
+    }
+
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
 
