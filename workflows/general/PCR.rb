@@ -70,7 +70,9 @@ class Protocol
     all_templates       = fragment_info_list.collect { |fi| fi[:template] }
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
-
+show {
+      note fragment_info_list.compact.collect { |fi| [fi[:fwd], fi[:rev]] }.flatten
+    }
     show {
       note fragment_info_list.compact.collect { |fi| [fi[:fwd].sample.id, fi[:rev].sample.id] }.flatten
     }
