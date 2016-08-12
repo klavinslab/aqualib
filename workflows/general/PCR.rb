@@ -72,7 +72,7 @@ class Protocol
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
-    take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks + kapa_stock_item, interactive: true,  method: "boxes"
+    take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks + [kapa_stock_item], interactive: true,  method: "boxes"
 
     # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
     primer_aliquots = all_forward_primers + all_reverse_primers
@@ -205,7 +205,7 @@ class Protocol
     end
 
     release stripwells
-    release all_templates + all_forward_primers + all_reverse_primers + additional_primer_aliquots + kapa_stock_item, interactive: true, method: "boxes"
+    release all_templates + all_forward_primers + all_reverse_primers + additional_primer_aliquots + [kapa_stock_item], interactive: true, method: "boxes"
     
     # change task status
     if io_hash[:task_ids]
