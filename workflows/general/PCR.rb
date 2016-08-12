@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
-      debug_mode: "Yes",
+      debug_mode: "No",
     }
   end
 
@@ -86,7 +86,8 @@ class Protocol
       }
       delete contaminated_primer_aliquots
     end
-    additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + primers_need_to_dilute(primer_ids)))
+    additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + 
+      primers_need_to_dilute(fragment_info_list.collect { |fi| [fi[:fwd], fi[:rev]] }.flatten)))
 
     # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
