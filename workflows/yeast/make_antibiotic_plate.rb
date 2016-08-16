@@ -71,9 +71,9 @@ class Protocol
           title "Grab YPAD plates and #{antibiotic_hash[marker]} stock"
           check "Grab #{num} YPAD plates from batch #{plate_batch_id}."
           check "Grab #{(num * volume_hash[marker] / 1000.0).ceil} 1 mL #{antibiotic_hash[marker]} stock in SF1 or M20."
-          check "Waiting for the #{antibiotic_hash[marker]} stock to thaw."
-          check "Use sterile beads to spread #{volume_hash[marker]} µL of #{antibiotic_hash[marker]} to each YPAD plates, mark each plate with #{antibiotic_hash[marker]}."
-          check "Place the plates with agar side down in the dark fume hood to dry."
+          check "Wait for the #{antibiotic_hash[marker]} stock to thaw."
+          check "Use sterile beads to spread #{volume_hash[marker]} µL of #{antibiotic_hash[marker]} to each YPAD plates, mark each plate with #{antibiotic_hash[marker]} in RED sharpie."
+          check "Wrap plates in foil and place them agar side down in the dark fume hood to dry."
         }
         make_plate = true
         produce new_sample "YPAD + #{antibiotic_hash[marker]}" , of: "YPAD + #{antibiotic_hash[marker]}", as: "Agar Plate"
