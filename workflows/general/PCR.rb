@@ -74,7 +74,7 @@ class Protocol
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     show {
-      kapa_stock_item.is_a? Item
+      note kapa_stock_item.is_a? Item
     }
     take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
 
