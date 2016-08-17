@@ -100,8 +100,8 @@ class Protocol
                                 end
                                 }.inject(0) { |sum, x| sum + x }
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
-        note "The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{'%.2f' % total_cost}." if total_cost >= 50
-        warning "You don't have enough #{task_prototype_name}s to surpass the $50 threshold. The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
+        note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
+        warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
       }
     else
       # task sizes limit choose
