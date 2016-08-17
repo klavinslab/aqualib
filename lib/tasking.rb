@@ -73,7 +73,14 @@ module Tasking
   end
 
   # choose first x task_ids based on the actual reaction sizes, provide an input select interface to the user.
-  def task_choose_limit task_ids, task_prototype_name, total_cost=0
+  def task_choose_limit task_ids, task_prototype_name
+
+    if block_given?
+      user_shows = ShowBlock.new.run(&Proc.new)
+    else
+      user_shows = []
+    end
+
     task_ids = [task_ids] unless task_ids.is_a? Array
     if task_ids.empty?
       return []
@@ -89,8 +96,7 @@ module Tasking
       title "How many #{task_prototype_name} to run?"
       note "There is a total of #{sizes[-1]} #{task_prototype_name} in the queue. How many do you want to run?"
       select sizes, var: "limit", label: "Enter the number of #{task_prototype_name} you want to run", default: sizes[-1]
-      note "The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{'%.2f' % total_cost}." if total_cost >= 50
-      warning "You don't have enough #{task_prototype_name}s to surpass the $50 threshold. The total cost for all #{sizes[-1]} #{task_prototype_name}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
+      raw user_shows
     }
     limit_input[:limit] ||= sizes[-1] # a||a = b
     limit_num = limit_input[:limit].to_i
