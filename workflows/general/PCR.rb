@@ -46,10 +46,6 @@ class Protocol
       note "The predicted time needed is #{predited_time} min."
     }
 
-    #dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
-    #dilute_sample_ids.flatten!
-    #diluted_stocks = dilute_samples dilute_sample_ids
-
     # collect fragment pcr information
     fragment_info_list = []
     io_hash[:fragment_ids].each do |fid|
@@ -71,6 +67,10 @@ class Protocol
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }.compact
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }.compact
     all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
+    show {
+      note all_primer_ids
+      note class all_primer_ids.first
+    }
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
     take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
