@@ -162,6 +162,12 @@ class Protocol
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |t, pcr|
+      show {
+        note primer_aliquots
+        note additional_primer_aliquots
+        note primer_aliquot_hash.keys
+        note primer_aliquot_hash.values
+      }
       fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       show {
