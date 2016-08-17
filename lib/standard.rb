@@ -323,4 +323,16 @@ module Standard
     }
     vol_hash
   end
+  
+  def hash_by_sample items
+    item_hash = {}
+    items.each { |i|
+      if item_hash[i.sample.id].nil?
+        item_hash[i.sample.id] = [i]
+      else
+        item_hash[i.sample.id].push(i)
+      end
+    }
+    item_hash
+  end
 end
