@@ -126,11 +126,12 @@ class Protocol
       pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
       pcr[:forward_primers].concat pcr[:fragment_info].collect { |fi| fi[:fwd] }
       pcr[:reverse_primers].concat pcr[:fragment_info].collect { |fi| fi[:rev] }
+      pcr[:forward_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:fwd_id] }
+      pcr[:reverse_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:rev_id] }
       pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
 
       # set up stripwells
       pcr[:stripwells] = produce spread pcr[:fragments], "Stripwell", 1, 12
-
     end
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
@@ -161,8 +162,8 @@ class Protocol
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |t, pcr|
-      fwd_primer_aliquots_joined = pcr[:forward_primers].map.with_index { |p, idx| primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
-      rev_primer_aliquots_joined = pcr[:reverse_primers].map.with_index { |p, idx| primer_aliquot_hash[p.sample.id].uniq.map { |p| p.id.to_s }.join(" or ") }
+      fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
+      rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       show {
         note fwd_primer_aliquots_joined
         note rev_primer_aliquots_joined
