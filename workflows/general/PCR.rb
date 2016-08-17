@@ -163,6 +163,7 @@ class Protocol
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |t, pcr|
       show {
+        note pcr[:forward_primer_ids]
         note primer_aliquots
         note additional_primer_aliquots
         note primer_aliquot_hash.keys
