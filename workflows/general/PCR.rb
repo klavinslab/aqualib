@@ -69,7 +69,7 @@ class Protocol
     all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
     show {
       note all_primer_ids
-      note class all_primer_ids.first
+      note class(all_primer_ids.first)
     }
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
