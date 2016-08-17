@@ -159,6 +159,8 @@ class Protocol
     end
 
     # add primers to stripwells
+    primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
+    primer_aliquots_with_additional = primer_ids.map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
     pcrs.each do |t, pcr|
       load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
           pcr[:forward_primers],
