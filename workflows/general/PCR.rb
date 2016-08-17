@@ -91,7 +91,7 @@ class Protocol
       primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
+    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
 
     fragment_info_list.each do |fi|
       if fi[:tanneal] >= 70
