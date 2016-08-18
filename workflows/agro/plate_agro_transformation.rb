@@ -49,7 +49,7 @@ class Protocol
 
     plates_marker_hash = Hash.new { |h,k| h[k] = [] }
     all_plates.each do |p|
-      marker_key = "LB"
+      marker_key = "LB + Gent"
       p.sample.properties["Bacterial Marker"].split(',').each do |marker|
         marker_key = marker_key + " + " + formalize_marker_name(marker)
       end
@@ -59,7 +59,7 @@ class Protocol
     deleted_plates = []
     plates_marker_hash.each do |marker, plates|
       transformed_aliquots = plates.collect { |p| all_transformed_aliquots[all_plates.index(p)] }
-      unless marker == "LB"
+      unless marker == "LB + Gent"
         marker = "chlor" if marker == "chl"
         plates_with_initials = plates.collect {|x| "#{x.id} "+ name_initials(x.sample.user.name)}
         num = plates.length
