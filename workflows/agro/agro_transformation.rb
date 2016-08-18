@@ -9,8 +9,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      gibson_result_ids: [14150,14151,14152],
-      plasmid_item_ids: [],
+      gibson_result_ids: [],
+      plasmid_item_ids: [70224, 70478, 69960],
       debug_mode: "No",
       inducer_plate: "IPTG",
     }
