@@ -86,21 +86,25 @@ class Protocol
     # launch special task_choose_limit for certain cost thresholds
     if io_hash[:task_name] == "Primer Order"
       primers = tasks[:ready_ids].map { |tid|
-                                          task = find(:task, id: tid)[0]
-                                          task.simple_spec[:primer_ids].map { |pid| find(:sample, id: pid)[0] }
-                                      }.flatten
+        task = find(:task, id: tid)[0]
+        task.simple_spec[:primer_ids].map { |pid| find(:sample, id: pid)[0] }
+      }.flatten
       total_cost = primers.map { |p|
-                                length = (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length
-                                if length <= 60
-                                  Parameter.get_float("short primer cost") * length
-                                elsif length > 60 && length <= 90
-                                  Parameter.get_float("medium primer cost") * length
-                                else
-                                  Parameter.get_float("long primer cost") * length
-                                end
-                                }.inject(0) { |sum, x| sum + x }
+        length = (p.properties["Overhang Sequence"] + p.properties["Anneal Sequence"]).length
+        if length <= 60
+          Parameter.get_float("short primer cost") * length
+        elsif length > 60 && length <= 90
+          Parameter.get_float("medium primer cost") * length
+        else
+          Parameter.get_float("long primer cost") * length
+        end
+        }.inject(0) { |sum, x| sum + x }
+      num_urgent = tasks[:ready_ids].select { |tid| find(:task, id: tid)[0].simple_spec[:urgent].downcase == "yes" }.count
+
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
         note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
+        note "None of the #{io_hash[:task_name]}s is urgent" if num_urgent.zero?
+        warning "#{num_urgent} of the #{io_hash[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!"
         warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
       }
     else
