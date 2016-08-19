@@ -105,10 +105,10 @@ class Protocol
     if actual_plates.length > 0
       show {
         title "Incubate"
-        note "Put all the following plates in 37 C incubator:"
+        note "Put all the following plates in 30 C incubator:"
         note actual_plates.collect { |p| "#{p}"}
       }
-      move actual_plates, "37 C incubator"
+      move actual_plates, "30 C incubator"
       release actual_plates
     end
 
@@ -120,8 +120,8 @@ class Protocol
         task = find(:task, id: tid)[0]
         set_task_status(task,"plated")
         items = task.simple_spec[:plasmid_item_ids].map { |pid| find(:item, id: pid)[0] }
-        task.notify "Your #{items.first.object_type.name}(s) #{items.map { |i| i.sample.name }.join(", ")} have been plated 
-          into Agrobacterium and placed in the 37 C incubator. You have 3 days until they're stored in the fridge.", job_id: jid
+        task.notify "Your #{items.first.object_type.name}(s) #{items.map { |i| i.sample.name }.join(", ")} have been transformed 
+          into Agrobacterium, plated, and placed in the 30 C incubator. You have 4 days (96 hours) until they're stored in the fridge.", job_id: jid
       end
     end
 

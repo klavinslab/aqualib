@@ -24,7 +24,7 @@ place transformation
   protocol: "aqualib:workflows/agro/agro_transformation.rb"
   group: group
   marked: false
-  start: minutes(50)
+  start: now()
   window: hours(1)
 end
 
@@ -40,7 +40,7 @@ place image
   protocol: "aqualib:workflows/ecoli/image_plate.rb"
   group: group
   marked: false
-  start: hours(72)
+  start: hours(96)
   window: hours(1)
 end
 

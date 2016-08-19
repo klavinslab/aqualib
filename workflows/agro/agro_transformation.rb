@@ -57,7 +57,7 @@ class Protocol
       note "Retrieve a styrofoam ice block and an aluminum tube rack.\nPut the aluminum tube rack on top of the ice block."
       image "arrange_cold_block"
       check "Retrieve #{num} cuvettes and put inside the styrofoam touching ice block."
-      check "Retrieve #{num} #{io_hash[:cell_type]} electrocompetent aliquots from M80 and place on the aluminum tube rack."
+      check "Retrieve #{num} GV3101_pSoup electrocompetent aliquots from M80 and place on the aluminum tube rack."
       image "handle_electrocompetent_cells"
     }
 
@@ -79,7 +79,7 @@ class Protocol
 
     show {
       title "Electroporation and Rescue"
-      note "Repeat for every Gibson aliquot"
+      note "Repeat for every aliquot"
       check "Transfer e-comp cells to electrocuvette with P1000"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 350 uL of LB"
       check "pipette cells up and down 3 times, then transfer to appropriate 1.5 mL tube with P1000"
@@ -97,7 +97,8 @@ class Protocol
 
     show {
       title "Incubate tubes"
-      check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
+      check "Put the tubes with the following ids into 30 C incubator using the small green tube holder."
+      warning "Please put these in the 30 C incubator!"
       note "Retrieve all the tubes 30 minutes later by doing the following plate_agro_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
