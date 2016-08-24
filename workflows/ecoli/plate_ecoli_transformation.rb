@@ -81,7 +81,8 @@ class Protocol
         show {
           title "Grab #{num} #{"plate".pluralize(num)}"
           check "Grab #{num} #{plate_type} Plate (sterile) from batch #{plate_batch_id}"
-          check "Label with the following ids #{plates_with_initials}"
+          check "Label the top of the plates with your intials, the date, and the following ids #{plates_with_initials}"
+          check "Label the side of the plates with the same id number as on top"
         }
         show {
           title "Plating"
