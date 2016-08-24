@@ -68,7 +68,7 @@ class Protocol
         end
       show {
         title "Grab Yeast plates"
-          check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with the following ids:"
+          check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with your name, the date, and the following ids on the top and side of each plate:"
           note glycerol_streaked_yeast_plates.collect { |p| "#{p}"} + overnight_streaked_yeast_plates.collect { |p| "#{p}"}
           check "Divide up each plate with #{num_of_section} sections and mark each with circled #{(1..num_of_section).to_a.join(',')}"
           image "divided_yeast_plate"
