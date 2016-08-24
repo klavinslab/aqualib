@@ -103,7 +103,7 @@ class Protocol
 
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
         note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
-        note "None of the #{io_hash[:task_name]}s is urgent" if num_urgent.zero?
+        note "None of the #{io_hash[:task_name]}s is urgent." if num_urgent.zero?
         warning "#{num_urgent} of the #{tasks[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!" if num_urgent > 0
         warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
       }
@@ -238,6 +238,10 @@ class Protocol
       end
       io_hash[:gel_band_verify] = "Yes"
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
+
+    when "Verification Digest"
+      io_hash = { template_ids: [], enzymes: [], band_lengths: [] }.merge io_hash
+
 
     when "Yeast Mating"
       io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
