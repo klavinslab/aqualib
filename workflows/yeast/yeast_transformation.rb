@@ -249,7 +249,7 @@ class Protocol
         
         show {
           title "Move antibiotic plates to the media fridge (if applicable)"
-          warning "If any antibiotic plates were made, move them to the side of the door in the media fridge."
+          warning "If any antibiotic plates were made, label the foil TOXIC with red sharpie, and move them to the side of the door in the media fridge."
         }
 
         delete mixtures_to_plate
