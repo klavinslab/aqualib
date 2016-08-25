@@ -282,8 +282,13 @@ class Protocol
     io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
     io_hash[:verification_digest_task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      io_hash[:stripwell_ids].concat task.simple_spec[:plasmid_item_ids]
+      io_hash[:stripwell_ids].push find(:item, id: task.simple_spec[:template_id])[0].sample.in("Stripwell").last
     end
+
+    show {
+      note io_hash[:stripwell_ids]
+      note io_hash[:stripwell_ids].flatten
+    }
 
     show {
       title "Fragment analyzing info"
