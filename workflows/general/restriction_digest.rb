@@ -59,8 +59,8 @@ class Protocol
 
     templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
     buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
-    enzymes_with_volume = enzymes.map { |es| es.map { |e| "0.5 µL of #{e.id}" }
-    water_with_volume = water_vols.map { |wv| "#{wv} µL"}
+    enzymes_with_volume = enzymes.map { |es| es.map { |e| "0.5 µL of #{e.id}" } }
+    water_with_volume = water_vols.map { |wv| "#{wv} µL" }
 
     load_samples_variable_vol( ["Template"], [
       templates_with_volume,
