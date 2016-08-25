@@ -261,6 +261,11 @@ module Standard
     return matched_collections
   end
 
+  # returns all collections that contain samples of given id
+  def collections_with_sample id, object_type
+    Collection.containing(Sample.find(id)).select { |c| c.object_type.name == object_type }
+  end
+
   # fills an array for a collection matrix with a certain number of a certain value (used mostly for batching)
   def fill_array rows, cols, num, val
     num = 0 if num < 0
