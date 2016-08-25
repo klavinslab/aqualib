@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       template_ids: [70478, 70675],
       enzymes: [[51],[51,256]],
-      band_lengths: [[54321, 12543], [12345]]
+      band_lengths: [[54321, 12543], [12345]],
       debug_mode: "no"
     }
   end #arguments
