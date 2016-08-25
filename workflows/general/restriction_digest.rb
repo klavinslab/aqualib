@@ -26,25 +26,11 @@ class Protocol
       end
     end
 
-    show {
-      note io_hash[:template_ids]
-      note io_hash[:template_ids].size
-      note io_hash[:enzymes]
-      note io_hash[:enzymes].size
-    }
     templates = io_hash[:template_ids].map { |tid| find(:item, id: tid)[0] }
     enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock")[0] } }
     buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")[0]
-    show {
-      note templates
-      note templates.size
-      note enzymes
-      note enzymes.size
-      note buffer
-    }
 
     take templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
-
     ensure_stock_concentration templates
 
     stripwells = produce spread templates, "Stripwell", 1, 12
@@ -52,20 +38,20 @@ class Protocol
       title "Grab stripwell(s) for restriction digest"
       stripwells.each_with_index do |sw,idx|
         if idx < stripwells.length - 1
-          check "Grab a stripwell with 12 wells, and label it #{sw.id}."
+          check "Grab a stripwell with 12 wells, and label it #{sw}."
         else
           number_of_wells = templates.length - idx * 12
-          check "Grab a stripwell with #{number_of_wells} wells, and label it #{sw.id}."
+          check "Grab a stripwell with #{number_of_wells} wells, and label it #{sw}."
         end
       end
     }
 
     template_vols = templates.map { |t| (200.0 / t.datum[:concentration]).round(1) }
-    water_vols = template_vols.map.with_index { |tv| 10 - tv - 1 - 0.5 * enzymes[idx].length }
+    water_vols = template_vols.map.with_index { |tv, idx| 10 - tv - 1 - 0.5 * enzymes[idx].length }
 
-    templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
-    buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
-    enzymes_with_volume = enzymes.map { |es| es.map { |e| "0.5 µL of #{e.id}" } }
+    templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t}" }
+    buffer_with_volume = templates.map { |t| "1 µL of #{buffer}" }
+    enzymes_with_volume = enzymes.map { |es| es.map { |e| "0.5 µL of #{e}" } }
     water_with_volume = water_vols.map { |wv| "#{wv} µL" }
 
     load_samples_variable_vol( ["Template"], [
