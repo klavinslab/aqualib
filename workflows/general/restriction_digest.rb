@@ -43,7 +43,7 @@ class Protocol
       note buffer
     }
 
-    take templates + enzymes + [buffer], interactive: true, method: "boxes"
+    take templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
 
     ensure_stock_concentration templates
 
@@ -87,6 +87,6 @@ class Protocol
 
     stripwells.each { |sw| sw.location = "37 C standing incubator" }
 
-    release stripwells + templates + enzymes + [buffer], interactive: true, method: "boxes"
+    release stripwells + templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
   end
 end
