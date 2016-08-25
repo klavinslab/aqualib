@@ -28,14 +28,19 @@ class Protocol
 
     show {
       note io_hash[:template_ids]
+      note io_hash[:template_ids].size
       note io_hash[:enzymes]
+      note io_hash[:enzymes].size
     }
-    templates = io_hash[:template_ids].map { |tid| find(:item, id: tid[0]) }
+    templates = io_hash[:template_ids].map { |tid| find(:item, id: tid[0])[0] }
     enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock") } }
     buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")
     show {
       note templates
+      note templates.size
       note enzymes
+      note enzymes.size
+      note buffer
     }
 
     take templates + enzymes + [buffer], interactive: true, method: "boxes"
