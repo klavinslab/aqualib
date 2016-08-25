@@ -9,16 +9,16 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      template_ids: [],
-      enzymes: [],
-      band_lengths: []
+      template_id: [70478, 70675],
+      enzymes: [[51],[51,256]],
+      band_lengths: [54321, 12345]
     }
   end #arguments
 
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "Yes", template_ids: [], enzymes: [], band_lengths: [], task_ids: [], group: "technicians"}.merge io_hash
+    io_hash = { debug_mode: "Yes", template_id: [], enzymes: [[]], band_lengths: [], task_ids: [], group: "technicians" }.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
@@ -26,7 +26,7 @@ class Protocol
     end
 
     show {
-      note io_hash[:template_ids]
+      note io_hash[:template_id]
       note io_hash[:enzymes]
     }
     templates = io_hash[:template_ids].map { |tid| find(:item, id: tid[0]) }
