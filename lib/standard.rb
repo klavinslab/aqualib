@@ -335,4 +335,28 @@ module Standard
     }
     item_hash
   end
+
+  def make_purchase origin_task, description, mat, lab
+    tp = TaskPrototype.find_by_name("Direct Purchase")
+    if tp
+      task = tp.tasks.create({
+        user_id: origin_task.user_id, 
+        name: "#{DateTime.now.to_i} - #{description} from #{origin_task.name}",
+        status: "purchased",
+        budget_id: origin_task.budget_id,
+        specification: {
+            description: description,
+            materials: mat,
+            labor: lab
+         }.to_json
+      })
+      task.save
+      if task.errors.empty?
+        set_task_status(task,"purchased")          
+      else
+        error "Errors", task.errors.full_messages.join(', ')
+      end
+      task
+    end
+  end
 end

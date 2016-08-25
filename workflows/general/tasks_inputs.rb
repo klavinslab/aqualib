@@ -107,6 +107,14 @@ class Protocol
         warning "#{num_urgent} of the #{tasks[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!" if num_urgent > 0
         warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
       }
+
+      if total_cost < 50
+        shipping_cost = 15.0 / num_urgent
+        io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }.select { |t| t.simple_spec[:urgent][0].downcase == "yes" }.each { |t|
+          pt = make_purchase t, "Primer Order Shipping", shipping_cost, 0.0
+          t.notify "#{'%.2f' % shipping_cost} was automatically charged to #{Budget.find_by_id(t.budget_id).name} for shipping costs of urgent Primer Order task #{t.name}", job_id: jid
+        }
+      end
     else
       # task sizes limit choose
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name])
