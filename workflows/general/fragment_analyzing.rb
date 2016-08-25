@@ -268,7 +268,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [] }.merge io_hash
+    io_hash = { debug_mode: "No", gel_band_verify: "No", yeast_plate_ids: [], task_ids: [], group: "admin" }.merge io_hash
     debug_mode = false
     # re define the debug function based on the debug_mode input
     if io_hash[:debug_mode].downcase == "yes"
@@ -276,6 +276,13 @@ class Protocol
         true
       end
       debug_mode = true
+    end
+
+    verification_digest_task_ids = find(:task, { task_prototype: { name: "Verification Digest" } }).select { |t| t.status == "moved to fridge" }.map { |t| t.id }
+    io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
+    io_hash[:verification_digest_task_ids].each do |tid|
+      task = find(:task, id: tid)[0]
+      io_hash[:stripwell_ids].concat task.simple_spec[:plasmid_item_ids]
     end
 
     show {
