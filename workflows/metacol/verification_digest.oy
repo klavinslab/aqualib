@@ -1,7 +1,5 @@
 argument
   debug_mode: string, "Yes or No"
-  item_choice_mode: string, "Yes or No"
-  image_option: string, "Yes or No"
   group: group, "choose the group to assign this metacol"
 end
 
