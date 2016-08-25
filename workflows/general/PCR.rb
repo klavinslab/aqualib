@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
-      debug_mode: "No",
+      debug_mode: "Yes",
     }
   end
 
@@ -67,15 +67,9 @@ class Protocol
     all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }.compact
     all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }.compact
     all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
-    show {
-      note all_primer_ids
-      note all_primer_ids.first.class
-    }
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
-    show {
-      note kapa_stock_item.is_a? Item
-    }
+
     take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
 
     # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
@@ -95,6 +89,10 @@ class Protocol
 
     # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
+
+    show {
+      note fragment_info_list.map { |fi| fi[:tanneal] }
+    }    
 
     fragment_info_list.each do |fi|
       if fi[:tanneal] >= 70
@@ -165,20 +163,8 @@ class Protocol
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |t, pcr|
-      show {
-        note pcr[:forward_primer_ids]
-        note primer_aliquots
-        note additional_primer_aliquots
-        note primer_aliquot_hash.keys
-        note primer_aliquot_hash.values
-      }
       fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
-      show {
-        note fwd_primer_aliquots_joined
-        note rev_primer_aliquots_joined
-        note t
-      }
       load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
           fwd_primer_aliquots_joined,
           rev_primer_aliquots_joined
