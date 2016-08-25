@@ -49,15 +49,15 @@ class Protocol
     template_vols = templates.map { |t| (200.0 / t.datum[:concentration]).round(1) }
     water_vols = template_vols.map.with_index { |tv, idx| (10 - tv - 1 - 0.5 * enzymes[idx].length).round(1) }
 
-    templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t}" }
-    buffer_with_volume = templates.map { |t| "1 µL of #{buffer}" }
-    enzymes_with_volume = enzymes.map { |es| "0.5 µL#{es.length > 1 ? " each" : ""} of #{es.map { |e| "#{e}" }.join(", ") }" }
+    templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
+    buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
+    enzymes_with_volume = enzymes.map { |es| "0.5 µL#{es.length > 1 ? " each" : ""} of #{es.map { |e| "#{e.id}" }.join(" and ") }" }
     water_with_volume = water_vols.map { |wv| "#{wv} µL" }
 
     load_samples_variable_vol( ["Template"], [
       templates_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Template" })
+      { show_together: true, title_appended_text: "with Templates" })
     load_samples_variable_vol( ["Cut Smart Buffer"], [
       buffer_with_volume,
       ], stripwells,
@@ -65,7 +65,7 @@ class Protocol
     load_samples_variable_vol( ["Enzyme"], [
       enzymes_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Enzyme" })
+      { show_together: true, title_appended_text: "with Enzymes" })
     load_samples_variable_vol( ["Molecular Grade Water"], [
       water_with_volume,
       ], stripwells,
@@ -74,5 +74,15 @@ class Protocol
     stripwells.each { |sw| sw.location = "37 C standing incubator" }
 
     release stripwells + templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
+
+    if io_hash[:task_ids]
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        set_task_status(task, "digested")
+      end
+    end
+
+    io_hash[:stripwell_ids] = stripwells.map { |sw| sw.id }
+    return { io_hash: io_hash }
   end
 end
