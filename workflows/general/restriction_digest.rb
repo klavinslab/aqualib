@@ -54,7 +54,7 @@ class Protocol
         if idx < stripwells.length - 1
           check "Grab a stripwell with 12 wells, and label it #{sw.id}."
         else
-          number_of_wells = plasmid_stocks.length - idx * 12
+          number_of_wells = templates.length - idx * 12
           check "Grab a stripwell with #{number_of_wells} wells, and label it #{sw.id}."
         end
       end
