@@ -31,10 +31,13 @@ class Protocol
     }
     templates = io_hash[:template_ids].map { |tid| find(:item, id: tid[0]) }
     enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock") } }
+    buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")
     show {
       note templates
       note enzymes
     }
+
+    take templates + enzymes + [buffer], interactive: true, method: "boxes"
 
     ensure_stock_concentration templates
 
@@ -51,26 +54,33 @@ class Protocol
       end
     }
 
-    templates_with_volume = templates.map { |t| "#{(200.0 / t.datum[:concentration]).round(1)} µL of #{t.id}" }
-    buffer_with_volume = templates.map { |t| "#{(200.0 / t.datum[:concentration]).round(1)} µL of #{t.id}" }
-    enzymes_with_volume = templates.map { |t| "#{(200.0 / t.datum[:concentration]).round(1)} µL of #{t.id}" }
-    water_with_volume = templates.map { |t| "#{(200.0 / t.datum[:concentration]).round(1)} µL of #{t.id}" }
+    template_vols = templates.map { |t| (200.0 / t.datum[:concentration]).round(1) }
+    water_vols = template_vols.map.with_index { |tv| 10 - tv - 1 - 0.5 * enzymes[idx].length }
+
+    templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
+    buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
+    enzymes_with_volume = enzymes.map { |es| es.map { |e| "0.5 µL of #{e.id}" }
+    water_with_volume = water_vols.map { |wv| "#{wv} µL"}
 
     load_samples_variable_vol( ["Template"], [
       templates_with_volume,
       ], stripwells,
       { show_together: true, title_appended_text: "with Template" })
-    load_samples_variable_vol( ["Template"], [
-      templates_with_volume,
+    load_samples_variable_vol( ["Cut Smart Buffer"], [
+      buffer_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Template" })
-    load_samples_variable_vol( ["Template"], [
-      templates_with_volume,
+      { show_together: true, title_appended_text: "with Cut Smart Buffer" })
+    load_samples_variable_vol( ["Enzyme"],
+      enzymes_with_volume,
+      stripwells,
+      { show_together: true, title_appended_text: "with Enzyme" })
+    load_samples_variable_vol( ["Molecular Grade Water"], [
+      water_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Template" })
-    load_samples_variable_vol( ["Template"], [
-      templates_with_volume,
-      ], stripwells,
-      { show_together: true, title_appended_text: "with Template" })
+      { show_together: true, title_appended_text: "with Molecular Grade Water" })
+
+    stripwells.each { |sw| sw.location = "37 C standing incubator" }
+
+    release stripwells + templates + enzymes + [buffer], interactive: true, method: "boxes"
   end
 end
