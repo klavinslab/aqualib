@@ -112,7 +112,7 @@ class Protocol
         shipping_cost = 15.0 / num_urgent
         io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }.select { |t| t.simple_spec[:urgent][0].downcase == "yes" }.each { |t|
           pt = make_purchase t, "Primer Order Shipping", shipping_cost, 0.0
-          t.notify "#{'%.2f' % shipping_cost} was automatically charged to #{Budget.find_by_id(t.budget_id).name} for shipping costs of urgent Primer Order task #{t.name}", job_id: jid
+          pt.notify "#{'%.2f' % shipping_cost} was automatically charged to #{Budget.find_by_id(t.budget_id).name} for shipping costs of urgent Primer Order task #{t.name}", job_id: jid
         }
       end
     else
