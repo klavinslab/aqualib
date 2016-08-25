@@ -248,8 +248,14 @@ class Protocol
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
 
     when "Verification Digest"
-      io_hash = { template_id: [], enzymes: [], band_lengths: [] }.merge io_hash
-
+      io_hash = { template_ids: [], enzymes: [], band_lengths: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:template_ids].push task.simple_spec[:template_id]
+        io_hash[:enzymes].push task.simple_spec[:enzymes]
+        io_hash[:band_lengths].push task.simple_spec[:band_lengths]
+      end
+      io_hash[:size] = 1
 
     when "Yeast Mating"
       io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
