@@ -32,9 +32,9 @@ class Protocol
       note io_hash[:enzymes]
       note io_hash[:enzymes].size
     }
-    templates = io_hash[:template_ids].map { |tid| find(:item, id: tid[0])[0] }
-    enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock") } }
-    buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")
+    templates = io_hash[:template_ids].map { |tid| find(:item, id: tid)[0] }
+    enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock")[0] } }
+    buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")[0]
     show {
       note templates
       note templates.size
