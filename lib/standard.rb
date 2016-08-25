@@ -353,9 +353,6 @@ module Standard
       task.save
       if task.errors.empty?
         set_task_status(task,"purchased")
-        show {
-          note task.name
-        }
       else
         error "Errors", task.errors.full_messages.join(', ')
       end
