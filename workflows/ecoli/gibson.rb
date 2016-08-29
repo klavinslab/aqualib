@@ -130,9 +130,6 @@ class Protocol
     # setup default values for io_hash.
     io_hash = { fragment_ids: [], plasmid_ids: [], debug_mode: "No", item_choice_mode: "No" }.merge io_hash
 
-    # Check if inputs are correct
-    raise "Incorrect inputs, fragments group size does not match number of plasmids to be built" if io_hash[:fragment_ids].length != io_hash[:plasmid_ids].length
-
     # Set debug based on debug_mode
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -142,9 +139,9 @@ class Protocol
 
     # Find fragment stocks into array of arrays
     if io_hash[:item_choice_mode].downcase == "yes"
-      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| choose_sample find(:sample,{id: fid})[0].name, object_type: "Fragment Stock"}}
+      fragment_stocks = io_hash[:fragment_ids].collect { |fids| fids.collect { |fid| choose_sample find(:sample, { id: fid })[0].name, object_type: "Fragment Stock" } }
     else
-      fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:sample,{id: fid})[0].in("Fragment Stock")[0]}}
+      fragment_stocks = io_hash[:fragment_ids].collect { |fids| fids.collect { |fid| find(:sample, { id: fid })[0].in("Fragment Stock")[0] } }
     end
 
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
