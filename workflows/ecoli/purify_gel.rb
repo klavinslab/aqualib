@@ -92,11 +92,15 @@ class Protocol
         note "Label the new tubes accordingly, and discard the old 1.5 mL tubes."
       } if !tubes_in_two.empty?
 
+      iso_table = [["Gel slice id", "Isopropanol (µL)"]]
+        .concat(gel_slices.collect { |s| s.id }
+        .zip(iso_volumes.collect { |v| { content: v, check: true } })
+        .reject { |r| r[1] == { content: 0, check: true } })
       show {
         title "Add isopropanol"
         note "Add isopropanol according to the following table. Pipette up and down to mix."
         warning "Divide the isopropanol volume evenly between two 1.5 mL tubes (#{tubes_in_two}) since you divided one tube's volume into two earlier." if !tubes_in_two.empty?
-        table [["Gel slice id", "Isopropanol (µL)"]].concat(gel_slices.collect {|s| s.id}.zip(iso_volumes.collect { |v| { content: v, check: true } }).reject { |r| r[1] == { content: 0, check: true } })
+        table iso_table
        } if (iso_volumes.select { |v| v > 0 }).length > 0
 
       show {
@@ -157,13 +161,14 @@ class Protocol
         end
       }
 
+      dilute_fragment_stocks = fragment_stocks.select { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
         note "The below stocks have a concentration of less than 10 ng/µL."
         note "Talk to a lab manager to decide whether or not to discard the following stocks."
-        fragment_stocks.select { |fs| concs[:"c#{fs.id}".to_sym] < 10 }.each { |fs|
-                                                                              select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
-                                                                              }
+        dilute_fragment_stocks.each { |fs|
+          select ["Yes", "No"], var: "d#{fs.id}", label: "Discard Fragment Stock #{fs}?"
+        }
       } if fragment_stocks.any? { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
 
       fragment_stocks_to_discard = discard_stock ? fragment_stocks.select { |fs| discard_stock[:"d#{fs.id}".to_sym] == "Yes" } : []
@@ -205,15 +210,15 @@ class Protocol
         produced_fragment_stocks = fragment_stocks.select { |fs| produced_fragment_ids.include? fs.sample.id }
         produced_fragment_stocks.compact!
         produced_fragment_stocks.each { |fragment_stock| 
-                                        notifs.push "This task produces Fragment Stock #{fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}"
-                                        notifs.push "The following comment was left on Fragment Stock #{fragment_stock}: #{fragment_stock.notes}" if fragment_stock.notes != ""
-                                      }
+          notifs.push "This task produces Fragment Stock #{fragment_stock} (conc: #{fragment_stock.datum[:concentration]} ng/µL) for #{sample_html_link fragment_stock.sample}"
+          notifs.push "The following comment was left on Fragment Stock #{fragment_stock}: #{fragment_stock.notes}" if fragment_stock.notes != ""
+        }
         notifs.each { |notif| task.notify notif, job_id: jid }
       end
     end
 
     if gel_slices
-      #delete gel_slices
+      delete gel_slices
       release gel_slices
     end
 

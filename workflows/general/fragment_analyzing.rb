@@ -446,7 +446,7 @@ class Protocol
     }
     show {
       title "Select alignment marker"
-      check "Under \"Marker\", in the \"Reference Marker\" drop-down, select \"15_bp_5_kb_022216\". A green dot should appear to the right of the drop-down."
+      check "Under \"Marker\", in the \"Reference Marker\" drop-down, select \"15bp_5kb_022216\". A green dot should appear to the right of the drop-down."
       image "frag_an_select_marker"
     }
     show {
@@ -481,7 +481,7 @@ class Protocol
     cartridge.save
     show {
       title "This cartridge is running low"
-      warning "Please notify Michelle or Ernesto that there are fewer than fifty runs left in the current cartridge."
+      warning "Please notify Michelle that there are fewer than fifty runs left in the current cartridge."
       note "Thanks! :)"
       cartridge.datum = cartridge.datum.merge({ running_low_notif: true })
       cartridge.save
