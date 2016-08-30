@@ -155,6 +155,10 @@ class Protocol
 
     when "Gibson Assembly"
       io_hash = { fragment_ids: [], plasmid_ids: [] }.merge io_hash
+      partitoned_task_ids = io_hash[:task_ids].partition do |tid|
+        !find(:task, id: tid)[0].name.include? "Test_Gibson"
+      end
+      io_hash[:task_ids] = partitoned_task_ids.flatten
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:fragment_ids].push task.simple_spec[:fragments]
