@@ -99,7 +99,10 @@ class Protocol
           Parameter.get_float("long primer cost") * length
         end
         }.inject(0) { |sum, x| sum + x }
-      num_urgent = tasks[:ready_ids].select { |tid| find(:task, id: tid)[0].simple_spec[:urgent][0].downcase == "yes" }.count
+      num_urgent = tasks[:ready_ids].select do |tid|
+        task = find(:task, id: tid)[0]
+        (!task.simple_spec[:urgent] || task.simple_spec[:urgent][0].downcase == "yes")
+      end.count
 
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
         note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
