@@ -99,21 +99,21 @@ class Protocol
           Parameter.get_float("long primer cost") * length
         end
         }.inject(0) { |sum, x| sum + x }
-      num_urgent = tasks[:ready_ids].select do |tid|
+      urgent_tasks = tasks[:ready_ids].select do |tid|
         task = find(:task, id: tid)[0]
         (task.simple_spec[:urgent] && task.simple_spec[:urgent][0].downcase == "yes")
-      end.count
+      end
 
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
         note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
-        note "None of the #{io_hash[:task_name]}s is urgent." if num_urgent.zero?
-        warning "#{num_urgent} of the #{tasks[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!" if num_urgent > 0
+        note "None of the #{io_hash[:task_name]}s is urgent." if urgent_tasks.empty?
+        warning "#{urgent_tasks.count} of the #{tasks[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!" if urgent_tasks.any?
         warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
       }
 
       if total_cost < 50
-        shipping_cost = 15.0 / num_urgent
-        io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }.select { |t| t.simple_spec[:urgent][0].downcase == "yes" }.each { |t|
+        shipping_cost = 15.0 / urgent_tasks.count
+        urgent_tasks.each { |t|
           pt = make_purchase t, "Primer Order Shipping", shipping_cost, 0.0
           pt.notify "$#{'%.2f' % shipping_cost} was automatically charged to #{Budget.find(t.budget_id).name} for shipping costs of urgent Primer Order task #{task_html_link t}", job_id: jid
         }
