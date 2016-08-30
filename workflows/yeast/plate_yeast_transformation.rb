@@ -84,7 +84,7 @@ class Protocol
 
       show {
         title "Plating"
-        check "Grab plates and label."
+        check "Grab plates and label with your initials, the date, and the following ids on the top and side of the plate."
         table tab_plate
         check "Flip the plate and add 4-5 glass beads to it"
         check "Add 200 µL of 1.5 mL tube contents according to the following table"

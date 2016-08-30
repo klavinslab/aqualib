@@ -228,7 +228,7 @@ class Protocol
       if mixtures_to_plate.length > 0
         show {
           title "Grab plate"
-          note "Grab the following plates from batches #{plate_batch_ids.join(", ")} and label with ids."
+          note "Grab the following plates from batches #{plate_batch_ids.join(", ")} and label with your initials, the date, and the following ids on the top and side of each plate."
           table grab_plate_tab
         }
         show {
@@ -249,7 +249,7 @@ class Protocol
         
         show {
           title "Move antibiotic plates to the media fridge (if applicable)"
-          warning "If any antibiotic plates were made, move them to the side of the door in the media fridge."
+          warning "If any antibiotic plates were made, label the foil TOXIC with red sharpie, and move them to the side of the door in the media fridge."
         }
 
         delete mixtures_to_plate

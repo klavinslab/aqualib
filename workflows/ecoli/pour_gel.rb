@@ -71,7 +71,7 @@ class Protocol
         check "Grab a flask from on top of the microwave M2."
         check "Using a digital scale, measure out #{agarose_mass} g (+/- #{error} g) of agarose powder and add it to the flask."
         check "Get a graduated cylinder from on top of the microwave. Measure and add 50 mL of 1X TAE from jug J2 to the flask."
-        check "Use a paper towel to handle the flask. Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
+        check "Microwave 70 seconds on high in microwave M2, then swirl. The agarose should now be in solution."
         note "If it is not in solution, microwave 7 seconds on high, then swirl. Repeat until dissolved."
         warning "Work in the gel room, wear gloves and eye protection all the time"
       }
