@@ -101,7 +101,7 @@ class Protocol
         }.inject(0) { |sum, x| sum + x }
       num_urgent = tasks[:ready_ids].select do |tid|
         task = find(:task, id: tid)[0]
-        (!task.simple_spec[:urgent] || task.simple_spec[:urgent][0].downcase == "yes")
+        (task.simple_spec[:urgent] && task.simple_spec[:urgent][0].downcase == "yes")
       end.count
 
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
