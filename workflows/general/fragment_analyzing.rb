@@ -278,18 +278,18 @@ class Protocol
       debug_mode = true
     end
 
-    verification_digest_task_ids = find(:task, { task_prototype: { name: "Verification Digest" } }).select { |t| t.status == "moved to fridge" }.map { |t| t.id }
-    io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
-    io_hash[:verification_digest_task_ids].each do |tid|
-      task = find(:task, id: tid)[0]
-      stripwells_with_template = collections_with_sample find(:item, id: task.simple_spec[:template_id]).sample.id, "Stripwell"
-      io_hash[:stripwell_ids].push stripwells_with_template.last.id
-    end
+    # verification_digest_task_ids = find(:task, { task_prototype: { name: "Verification Digest" } }).select { |t| t.status == "moved to fridge" }.map { |t| t.id }
+    # io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
+    # io_hash[:verification_digest_task_ids].each do |tid|
+    #   task = find(:task, id: tid)[0]
+    #   stripwells_with_template = collections_with_sample find(:item, id: task.simple_spec[:template_id]).sample.id, "Stripwell"
+    #   io_hash[:stripwell_ids].push stripwells_with_template.last.id
+    # end
 
-    show {
-      note io_hash[:stripwell_ids]
-      note io_hash[:stripwell_ids].flatten
-    }
+    # show {
+    #   note io_hash[:stripwell_ids]
+    #   note io_hash[:stripwell_ids].flatten
+    # }
 
     show {
       title "Fragment analyzing info"
