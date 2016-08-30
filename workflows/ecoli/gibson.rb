@@ -139,28 +139,21 @@ class Protocol
 
     # Find fragment stocks into array of arrays
     if io_hash[:item_choice_mode].downcase == "yes"
-      fragment_stocks = io_hash[:fragment_ids].collect { |fids| fids.collect { |fid| choose_sample find(:sample, { id: fid })[0].name, object_type: "Fragment Stock" } }
+      fragment_stocks = io_hash[:fragment_ids].collect do |fids| 
+        fids.collect do |fid|
+          choose_sample find(:sample, { id: fid })[0].name, object_type: "Fragment Stock"
+        end
+      end
     else
-      fragment_stocks = io_hash[:fragment_ids].collect { |fids| fids.collect { |fid| find(:sample, { id: fid })[0].in("Fragment Stock")[0] } }
+      fragment_stocks = io_hash[:fragment_ids].collect do |fids|
+        fids.collect do |fid|
+          find(:sample, { id: fid })[0].in("Fragment Stock")[0]
+        end
+      end
     end
-
-    # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
-    fragment_stocks = io_hash[:fragment_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten.uniq
-
-    # Sort fragment_stocks_flatten by location for ease of protocol use
-    sort_by_location fragment_stocks_flatten
-
-    fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
-
-    show {
-      title "Inform user to enter fragment length info"
-      note "The following fragment stocks need length info to be entered in the fragment sample page"
-      note fragment_stocks_need_length_info.collect { |f| "#{f}" }
-      note "Proceed until all the fragment length info entered."
-    } if fragment_stocks_need_length_info.length > 0
 
     predicted_time = time_prediction fragment_stocks_flatten.length, "gibson"
 
@@ -193,12 +186,6 @@ class Protocol
         }
         test_batch = collection_from test_batches.find { |batch| batch.id == test_batch_selection[:batch].to_i } if test_batches.any?
       end
-      # Send test plasmid and fragment ids to end of list
-      test_plasmid_i = io_hash[:plasmid_ids].find_index { |pi| find(:sample, id: pi)[0].name == "Test_gibson" }
-      io_hash[:plasmid_ids][test_plasmid_i], io_hash[:plasmid_ids][-1] = io_hash[:plasmid_ids][-1], io_hash[:plasmid_ids][test_plasmid_i]
-      io_hash[:task_ids][test_plasmid_i], io_hash[:task_ids][-1] = io_hash[:task_ids][-1], io_hash[:task_ids][test_plasmid_i] if io_hash[:task_ids]
-      io_hash[:fragment_ids][test_plasmid_i], io_hash[:fragment_ids][-1] = io_hash[:fragment_ids][-1], io_hash[:fragment_ids][test_plasmid_i]
-      fragment_stocks[test_plasmid_i], fragment_stocks[-1] = fragment_stocks[-1], fragment_stocks[test_plasmid_i]
     end
 
     aliquot_batch = collection_from aliquot_batches.find { |batch| batch.datum[:tested] == "Yes" }
