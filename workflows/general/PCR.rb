@@ -189,7 +189,7 @@ class Protocol
         note "Discard the following primer aliquots:"
         note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
       }
-      ##############################delete not_enough_vol_primer_aliquots
+      delete not_enough_vol_primer_aliquots
     end
 
     # run the thermocycler
