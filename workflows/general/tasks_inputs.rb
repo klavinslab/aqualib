@@ -104,7 +104,7 @@ class Protocol
       end
 
       io_hash[:task_ids] = task_choose_limit(tasks[:ready_ids], io_hash[:task_name]) {
-        note "The total cost for all #{tasks[:ready_ids].count} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
+        note "The total cost for all #{sizes[-1]} #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost >= 50
         note "None of the #{io_hash[:task_name]}s is urgent." if urgent_tasks.empty?
         warning "#{urgent_tasks.count} of the #{tasks[:ready_ids].count} ready #{io_hash[:task_name]} tasks are urgent!" if urgent_tasks.any?
         warning "You don't have enough #{io_hash[:task_name]}s to surpass the $50 threshold. The total cost for all #{io_hash[:task_name]}s is $#{'%.2f' % total_cost}." if total_cost < 50 && total_cost != 0
