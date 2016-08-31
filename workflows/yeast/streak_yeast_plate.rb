@@ -52,6 +52,8 @@ class Protocol
 
       glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
+
+        #detracting from plate batches 
         total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? || !overnight_streaked_yeast_plates.blank?
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         plate_batch_id = "none" 
@@ -66,6 +68,7 @@ class Protocol
             plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
           end
         end
+
       show {
         title "Grab Yeast plates"
           check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with your name, the date, and the following ids on the top and side of each plate:"
@@ -76,10 +79,6 @@ class Protocol
 
 
       take yeast_glycerol_stocks
-      # inoculation_tab = [["Gylcerol Stock id", "Location", "Yeast plate id"]]
-      # yeast_glycerol_stocks.each_with_index do |y, idx|
-      #   inoculation_tab.push [ { content: y.id, check: true }, y.location, glycerol_streaked_yeast_plates[idx].id ]
-      # end
 
       show {
         title "Inoculation from glycerol stock in M80 area"
@@ -108,32 +107,37 @@ class Protocol
 
     # streak plate for yeast overnights if there is yeast_overnight_ids
 
-    if !yeast_overnights.blank?
+    if yeast_overnights.present?
 
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
+      if io_hash[:yeast_selective_plate_types].present?
+
+        io_hash[:yeast_selective_plate_types].each do | plate_type |
+
+          #detracting from plate batches
+          total_num_plates = io_hash[:yeast_selective_plate_types].size
+          sample_name = find(:sample, id: plate_type)[0].name
+          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{sample_name}" }
+          plate_batch_id = "none" 
+          if plate_batch.present?
+            plate_batch_id = "#{plate_batch.id}"
+            num_plates = plate_batch.num_samples
+            update_batch_matrix plate_batch, num_plates - 1, "#{sample_name}"
+          end
+
+        end
+
+      end
+
       show {
         title "Grab yeast plates"
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
-            
+          sample = find(:sample, id: plate_type)[0]
+          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
         end
-      } if io_hash[:yeast_selective_plate_types].blank?
-      total_num_plates = io_hash[:yeast_selective_plate_types].size
-        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
-        plate_batch_id = "none" 
-        if plate_batch.present?
-          plate_batch_id = "#{plate_batch.id}"
-          num_plates = plate_batch.num_samples
-          update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
-          if num_plates < total_num_plates 
-            num_left = total_num_plates - num_plates
-            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
-            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
-            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
-          end
-        end
+      } 
 
       take yeast_overnights, interactive: true
 
@@ -160,7 +164,7 @@ class Protocol
     end
 
     show {
-      title "Wait untilyeast cells dry"
+      title "Wait until yeast cells dry"
       note "Wait until the yeast cells are dried on the plate, as in the image below."
       image "streak_yeast_plate_dry"
     }

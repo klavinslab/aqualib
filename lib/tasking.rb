@@ -176,6 +176,8 @@ module Tasking
       size = task.simple_spec[:plasmid_item_ids].length
     when "Verification Digest"
       size = 1
+    when "Warming Agar"
+      size = task.simple_spec[:media_type].length
     end
     return size
   end

@@ -260,14 +260,58 @@ class Protocol
       io_hash[:size] = 1
 
     when "Yeast Mating"
-      io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [] }.merge io_hash
+      io_hash = { yeast_mating_strain_ids: [], yeast_selective_plate_types: [], user_ids: [], antibiotic_plates: [] }.merge io_hash
+      plate_hash = Hash.new { |hash, key| hash[key] = 0 }
+      io_hash = { has_antibiotic: "no" }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        plate_type = task.simple_spec[:yeast_selective_plate_type]
         io_hash[:yeast_mating_strain_ids].push task.simple_spec[:yeast_mating_strain_ids]
-        io_hash[:yeast_selective_plate_types].push task.simple_spec[:yeast_selective_plate_type]
+        io_hash[:yeast_selective_plate_types].push plate_type
         io_hash[:user_ids].push task.user.id
+        plate_hash[plate_type] = plate_hash[plate_type] + 1
+        sample = find(:sample, id: plate_type)[0].name
+        if sample.include?("clonNAT") || sample.include?("G418") || sample.include?("Hygro") || sample.include?("Bleo")
+          io_hash[:has_antibiotic] = "yes"
+          io_hash[:antibiotic_plates].push plate_type
+        end
+      end
+      io_hash = { needs_plates: "no" }.merge io_hash
+      overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}            
+      plate_hash.each do |key, val|
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0] == find(:sample, id: key)[0]}
+        if !plate_batch.blank?
+          num = plate_batch.num_samples
+        else
+          num = 0
+        end
+
+        if num < (val / 4.0)
+          io_hash[:needs_plates] = "yes"
+          num_left = ((val / 4.0) - num) / 4.0
+          if  num_left <= 8
+            io_hash = { media_type: [key], quantity: [1], media_container: ["200 mL Agar"], size_agar: 1 }.merge io_hash
+          elsif num_left <= 16
+            io_hash = { media_type: [key], quantity: [1], media_container: ["400 mL Agar"], size_agar: 1 }.merge io_hash
+          elsif num_left <= 24
+            io_hash = { media_type: [key], quantity: [1, 1], media_container: ["400 mL Agar", "200 mL Agar"], size_agar: 2 }.merge io_hash
+          elsif num_left <= 32
+            io_hash = { media_type: [key], quantity: [2], media_container: ["400 mL Agar"], size_agar: 1 }.merge io_hash
+          end
+         end
       end
       io_hash[:size] = io_hash[:yeast_mating_strain_ids].length
+
+    when "Warming Agar"
+      io_hash = { media_container: [], media_type: [], quantity: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:media_container].push task.simple_spec[:media_container]
+
+        io_hash[:media_type].push task.simple_spec[:media_type]
+        io_hash[:quantity].push task.simple_spec[:quantity]
+      end
+      io_hash[:size] = io_hash[:media_type].length
 
     else
       show {
