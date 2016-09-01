@@ -28,6 +28,7 @@ class Protocol
     acid_bank = ["His", "Leu", "Ura", "Trp"]
     ingredients = []
     label = media_name
+    container = task_to_run.simple_spec[:media_container]
     if(media_name == "SC")
       present_acid = acid_bank
     elsif(media_name == "SDO")
@@ -36,32 +37,32 @@ class Protocol
       present_acid = acid_bank - media_ingredients
     end
         
-    if(task_to_run.simple_spec[:media_container] == "800 mL Liquid") 
+    if(container == "800 mL Liquid") 
       multiplier = 1;
       water = 800
       bottle = "1 L Bottle"
-    elsif(task_to_run.simple_spec[:media_container] == "400 mL Liquid")
+    elsif(container == "400 mL Liquid")
       multiplier = 0.5;
       water = 400
       bottle = "500 mL Bottle"
-    elsif(task_to_run.simple_spec[:media_container] == "200 mL Liquid")
+    elsif(container == "200 mL Liquid")
       multiplier = 0.25;
       water = 200
       bottle = "250 mL Bottle"
-    elsif(task_to_run.simple_spec[:media_container] == "800 mL Agar") 
+    elsif(container == "800 mL Agar") 
       multiplier = 1;
       label += " Agar"
       water = 800
       bottle = "1 L Bottle"
       io_hash = {has_agar: "yes"}.merge(io_hash)
       ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
-    elsif(task_to_run.simple_spec[:media_container] == "400 mL Agar")
+    elsif(container == "400 mL Agar")
       multiplier = 0.5;
       label += " Agar"
       water = 400
       bottle = "500 mL Bottle"
       ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
-    elsif(task_to_run.simple_spec[:media_container] == "200 mL Agar")
+    elsif(container == "200 mL Agar")
       multiplier = 0.25;
       label += " Agar"
       water = 200
@@ -84,12 +85,12 @@ class Protocol
         acid_solutions += [find(:item,{object_type:{name:"Uracil Solution"}})[0]]
       end
     end
-  
+
     produced_media_id = Array.new 
     produced_media = Array.new
     output_id = ""
     for i in 0..(quantity - 1)
-      output = produce new_sample media_name, of: "Media", as: task_to_run.simple_spec[:media_container]
+      output = produce new_sample media_name, of: "Media", as: container
       produced_media.push(output)
       produced_media[i].location = "Bench"
       output_id = output_id + ", #{output.id}"
