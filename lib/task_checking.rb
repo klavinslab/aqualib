@@ -426,7 +426,15 @@ def create_new_tasks ids, p={}
         notifs.push "#{auto_create_task_name_link} (status: #{task.status}) is in the #{task_prototype_name_link} Tasks to produce #{task_type_argument_hash[task_prototype_name][:output]}."
       end
     else
-      t = Task.new(name: auto_create_task_name, specification: { task_type_argument_hash[task_prototype_name][:spec] => [ id ] }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: params[:user_id] ||sample.user.id, budget_id: params[:budget_id])
+      extra_spec = task_prototype_name == "Primer Order" ? { "urgent" => ["yes"] } : {}
+      t = Task.new(
+        name: auto_create_task_name, 
+        specification: { task_type_argument_hash[task_prototype_name][:spec] => [ id ] }.merge(extra_spec).to_json, 
+        task_prototype_id: tp.id, 
+        status: "waiting", 
+        user_id: params[:user_id] || sample.user.id, 
+        budget_id: params[:budget_id]
+        )
       t.save
       task_status_check t
       auto_create_task_name_link = task_html_link t
