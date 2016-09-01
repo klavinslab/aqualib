@@ -14,10 +14,11 @@ class Protocol
     else
       finished = "no"
     end
+    
     data = show {
-    title "Choose which task to run"
-       select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
-      }
+      title "Choose which task to run"
+      select tasks.collect { |t| t.name }, var: "choice", label: "Choose the task you want to run"
+    }
 
     task_to_run = tasks.select { |t| t.name == data[:choice] }[0]
     media = task_to_run.simple_spec[:media_type]
@@ -129,10 +130,12 @@ class Protocol
     ingredients += [find(:item, {object_type:{name:"Yeast Synthetic Drop-out Medium Supplements"}})[0]]
         
     take bottle + ingredients, interactive: true
+    
     if(acid_solutions.length > 0)
       take acid_solutions, interactive: true
     end
-    if(container.include?("1 L Bottle"))
+
+    if(bottle.include?("1 L Bottle"))
       show {
         title "Add Stir Bar"
         check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."

@@ -117,7 +117,7 @@ class Protocol
        
     take ingredients + bottle, interactive: true
 
-  	if(container.include?("1 L Bottle"))
+  	if(bottle.include?("1 L Bottle"))
   		show {
   			title "Add Stir Bar"
   			check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
