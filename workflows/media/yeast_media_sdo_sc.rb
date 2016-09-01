@@ -132,7 +132,7 @@ class Protocol
     if(acid_solutions.length > 0)
       take acid_solutions, interactive: true
     end
-    if(task_to_run.simple_spec[:media_container].include?("1 L Bottle"))
+    if(container.include?("1 L Bottle"))
       show {
         title "Add Stir Bar"
         check "Retrieve #{quantity} Medium Magnetic Stir Bar(s) from B1.525 or dishwashing station."
@@ -203,7 +203,7 @@ class Protocol
     
     release (bottle)
     release(ingredients + produced_media, interactive: true)
-    return {io_hash: io_hash, done: finished, has_agar: task_to_run.simple_spec[:media_container].include?("800 mL Agar")? "yes":"no"}
+    return {io_hash: io_hash, done: finished, has_agar: container.include?("800 mL Agar")? "yes":"no"}
     
     end
 end
