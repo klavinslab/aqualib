@@ -32,9 +32,9 @@ class Protocol
       end
     end
 
-    for i in 0..(agar_media.length - 1)
+    for i in 1..(agar_media.length)
 
-      take [agar_media[i]], interactive: true
+      take [agar_media[i - 1]], interactive: true
 
       show {
         title "Prepare plates"
