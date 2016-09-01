@@ -97,6 +97,11 @@ class Protocol
       produced_media_id.push(output.id)
     end
 
+    show {
+      title label
+      note "Description: Makes #{quantity} #{water} mL of #{label} media"
+    }
+
     combine_bottles = show {
       title "Combine bottles"
       select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
@@ -122,11 +127,6 @@ class Protocol
     ingredients += [find(:item,{object_type:{name:"Dextrose"}})[0]]
     ingredients += [find(:item,{object_type:{name:"Yeast Nitrogen Base Without Amino Acids"}})[0]]
     ingredients += [find(:item, {object_type:{name:"Yeast Synthetic Drop-out Medium Supplements"}})[0]]
-
-    show {
-      title label
-      note "Description: Makes #{quantity} #{water} mL of #{label} media"
-    }
         
     take bottle + ingredients, interactive: true
     if(acid_solutions.length > 0)
@@ -188,7 +188,13 @@ class Protocol
       note "Shake until most of the powder is dissolved."
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
-
+    
+    if combine_bottles[:choice] == "Yes"
+      show {
+        title "Separate bottles"
+        note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
+      }
+    end
 
     show {
       title "Label Bottle"
