@@ -46,6 +46,10 @@ class Protocol
       note "The predicted time needed is #{predited_time} min."
     }
 
+    dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
+    dilute_sample_ids.flatten!
+    diluted_stocks = dilute_samples dilute_sample_ids
+
     # collect fragment pcr information
     fragment_info_list = []
     io_hash[:fragment_ids].each do |fid|
@@ -70,7 +74,7 @@ class Protocol
 
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
 
-    take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
+    take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item] - diluted_stocks, interactive: true,  method: "boxes"
 
     # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
     primer_aliquots = all_forward_primers + all_reverse_primers
