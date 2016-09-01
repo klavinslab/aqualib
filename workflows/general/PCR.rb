@@ -46,10 +46,6 @@ class Protocol
       note "The predicted time needed is #{predited_time} min."
     }
 
-    dilute_sample_ids = io_hash[:fragment_ids].collect { |id| fragment_recipe(id)[:dilute_sample_ids] }
-    dilute_sample_ids.flatten!
-    diluted_stocks = dilute_samples dilute_sample_ids
-
     # collect fragment pcr information
     fragment_info_list = []
     io_hash[:fragment_ids].each do |fid|
@@ -68,18 +64,35 @@ class Protocol
     # batch fragments, templates, primers
     all_fragments       = fragment_info_list.collect { |fi| fi[:fragment] }
     all_templates       = fragment_info_list.collect { |fi| fi[:template] }
-    all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }
-    all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }
+    all_forward_primers = fragment_info_list.collect { |fi| fi[:fwd] }.compact
+    all_reverse_primers = fragment_info_list.collect { |fi| fi[:rev] }.compact
+    all_primer_ids      = fragment_info_list.collect { |fi| [fi[:fwd_id], fi[:rev_id]] }.flatten
 
-    # take the primers and templates
-    take all_templates + all_forward_primers + all_reverse_primers - diluted_stocks, interactive: true,  method: "boxes"
-
-    # get kapa master mix
     kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
-    take [kapa_stock_item], interactive: true, method: "boxes"
+
+    take all_templates + all_forward_primers + all_reverse_primers + [kapa_stock_item], interactive: true,  method: "boxes"
+
+    # Dilute from primer stocks when there isn't enough volume in the existing aliquot or no aliquot exists
+    primer_aliquots = all_forward_primers + all_reverse_primers
+    enough_vol_primer_aliquots, not_enough_vol_primer_aliquots, contaminated_primer_aliquots, 
+    enough_vol_primer_aliquot_bools = determine_enough_volumes_each_item primer_aliquots, primer_aliquots.collect { |p| 2.5 }, check_contam: true
+    if contaminated_primer_aliquots.any?
+      show {
+        title "Discard contaminated primer aliquots"
+        note "Discard the following primer aliquots:"
+        note contaminated_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+      }
+      delete contaminated_primer_aliquots
+    end
+    additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + 
+      primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], stripwells: [], tanneals: [] } }
+    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
+
+    show {
+      note fragment_info_list.map { |fi| fi[:tanneal] }
+    }    
 
     fragment_info_list.each do |fi|
       if fi[:tanneal] >= 70
@@ -105,6 +118,7 @@ class Protocol
       else
         extension_time += 90
       end
+      extension_time = 3 * 60 if extension_time < 3 * 60
       pcr[:mm], pcr[:ss] = (extension_time.to_i).divmod(60)
       pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(0, 9)
       pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(0, 9)
@@ -113,11 +127,12 @@ class Protocol
       pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
       pcr[:forward_primers].concat pcr[:fragment_info].collect { |fi| fi[:fwd] }
       pcr[:reverse_primers].concat pcr[:fragment_info].collect { |fi| fi[:rev] }
+      pcr[:forward_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:fwd_id] }
+      pcr[:reverse_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:rev_id] }
       pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
 
       # set up stripwells
       pcr[:stripwells] = produce spread pcr[:fragments], "Stripwell", 1, 12
-
     end
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
@@ -146,10 +161,13 @@ class Protocol
     end
 
     # add primers to stripwells
+    primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |t, pcr|
+      fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
+      rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
-          pcr[:forward_primers],
-          pcr[:reverse_primers]
+          fwd_primer_aliquots_joined,
+          rev_primer_aliquots_joined
         ], pcr[:stripwells] ) {
           warning "Use a fresh pipette tip for each transfer.".upcase
         }
@@ -164,6 +182,15 @@ class Protocol
       end
       check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
     }
+
+    if not_enough_vol_primer_aliquots.any?
+      show {
+        title "Discard depleted primer aliquots"
+        note "Discard the following primer aliquots:"
+        note not_enough_vol_primer_aliquots.uniq.map { |p| "#{p}" }.join(", ")
+      }
+      delete not_enough_vol_primer_aliquots
+    end
 
     # run the thermocycler
     pcrs.each do |key, pcr|
@@ -185,14 +212,8 @@ class Protocol
       end
     end
 
-    # release silently
     release stripwells
-
-    # release kapa master mix
-    release [ kapa_stock_item ], interactive: true, method: "boxes"
-
-    # release the templates, primers
-    release all_templates + all_forward_primers + all_reverse_primers , interactive: true, method: "boxes"
+    release all_templates + all_forward_primers + all_reverse_primers + additional_primer_aliquots + [kapa_stock_item], interactive: true, method: "boxes"
     
     # change task status
     if io_hash[:task_ids]
