@@ -99,6 +99,7 @@ class Protocol
 
     original_quantity = quantity
     original_bottle = bottle
+    original_water = water
     
     if combine_bottles[:choice] == "Yes"
       volume = water * quantity
@@ -148,7 +149,7 @@ class Protocol
     if combine_bottles[:choice] == "Yes"
       show {
         title "Separate bottles"
-        note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s)"
+        note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
       }
     end
 
