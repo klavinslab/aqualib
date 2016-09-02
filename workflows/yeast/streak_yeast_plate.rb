@@ -113,9 +113,11 @@ class Protocol
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
       ########TO DELETE
+      sample_name = find(:sample, id: 11780)[0].name
       show{
         io_hash[:yeast_selective_plate_types].each do |plate_type|
           note "#{plate_type}"
+          note "#{sample_name}"
         end
       }
 
@@ -142,7 +144,7 @@ class Protocol
       show {
         title "Grab yeast plates"
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          check "Grab one #{plate_type[idx]} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
+          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
         end
       } 
 
