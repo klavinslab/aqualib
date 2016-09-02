@@ -112,6 +112,13 @@ class Protocol
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
+      ########TO DELETE
+      show{
+        io_hash[:yeast_selective_plate_types].each do |plate_type|
+          note "#{plate_type}"
+      }
+
+
       if io_hash[:yeast_selective_plate_types].present?
 
         io_hash[:yeast_selective_plate_types].each do | plate_type |
