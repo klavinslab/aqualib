@@ -133,6 +133,9 @@ class Protocol
           plate_batch_id = "none" 
           if plate_batch.present?
             plate_batch_id = "#{plate_batch.id}"
+            show{
+              note "#{plate_batch_id}"
+            }
             num_plates = plate_batch.num_samples
             update_batch_matrix plate_batch, num_plates - 1, "#{sample_name}"
           end
