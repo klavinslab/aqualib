@@ -205,6 +205,7 @@ class Protocol
         # store task_id and variable corresponding
         task_hash = {}
         task.simple_spec.each do |variable_name, ids|
+          next if variable_name == :urgent
           variable_name = :fragment_ids if variable_name == :fragments
           io_hash[variable_name] = [] if idx == 0
           io_hash[variable_name].concat ids
