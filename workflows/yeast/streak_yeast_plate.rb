@@ -116,6 +116,7 @@ class Protocol
       show{
         io_hash[:yeast_selective_plate_types].each do |plate_type|
           note "#{plate_type}"
+        end
       }
 
 
