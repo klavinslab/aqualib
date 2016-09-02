@@ -127,7 +127,7 @@ class Protocol
           #detracting from plate batches
           total_num_plates = io_hash[:yeast_selective_plate_types].size
           sample_name = find(:sample, id: plate_type)[0].name
-          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && b.matrix[0][0] == plate_type }
+          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{sample_name}" }
           plate_batch_id = "none" 
           if plate_batch.present?
             plate_batch_id = "#{plate_batch.id}"
