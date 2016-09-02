@@ -31,13 +31,13 @@ class Protocol
         agar_media.push(made_media)
       end
     end
-    for i in 0..(agar_media.length - 1)
+    agar_media.each_with_index do |id|
 
-      take [agar_media[i]], interactive: true
+      take [agar_media[id]], interactive: true
 
       type = show {
         title "Select option"
-        select ["LB + Amp", "LB + Kan"], var: "opt", label: "Choose an option", default: 1
+        select ["LB + Amp", "LB + Kan", "LB", "LB + Spec", "LB + Chlor"], var: "opt", label: "Choose an option", default: 1
       }
 
       opt = type[:opt]

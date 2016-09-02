@@ -119,7 +119,7 @@ class Protocol
           #detracting from plate batches
           total_num_plates = io_hash[:yeast_selective_plate_types].size
           sample_name = find(:sample, id: plate_type)[0].name
-          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{sample_name}" }
+          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && b.matrix[0][0] == plate_type }
           plate_batch_id = "none" 
           if plate_batch.present?
             plate_batch_id = "#{plate_batch.id}"
@@ -134,8 +134,7 @@ class Protocol
       show {
         title "Grab yeast plates"
         io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          sample = find(:sample, id: plate_type)[0]
-          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
+          check "Grab one #{plate_type[idx]} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
         end
       } 
 
