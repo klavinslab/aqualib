@@ -20,7 +20,7 @@ class Protocol
   def update_batch_matrix batch, num_samples, plate_type
     rows = batch.matrix.length
     columns = batch.matrix[0].length
-    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "YPAD")[0].id
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "#{plate_type}")[0].id
     batch.save
   end # update_batch_matrix
 
