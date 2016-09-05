@@ -54,7 +54,7 @@ class Protocol
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
 
         #detracting from plate batches 
-        total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? || !overnight_streaked_yeast_plates.blank?
+        total_num_plates = glycerol_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? 
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         plate_batch_id = "none" 
         if plate_batch.present?
@@ -112,44 +112,40 @@ class Protocol
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
-      ########TO DELETE
-      sample_name = find(:sample, id: 11780)[0].name
-      show{
-        io_hash[:yeast_selective_plate_types].each do |plate_type|
-          note "#{plate_type}"
-          note "#{sample_name}"
-        end
-      }
       plate_batch_id = ""
 
-        io_hash[:yeast_selective_plate_types].each do | plate_type |
+      yeast_plate_table = [["Plate Type", "Number of Plates", "Batch Number", "Plate ID(s)"]]
 
-          #detracting from plate batches
-          total_num_plates = io_hash[:yeast_selective_plate_types].size
-          sample_name = find(:sample, id: plate_type)[0].name
-          plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{sample_name}" }
-          plate_batch_id = "none" 
-          if plate_batch.present?
-            plate_batch_id = "#{plate_batch.id}"
-            num_plates = plate_batch.num_samples
-            update_batch_matrix plate_batch, num_plates - 1, "#{sample_name}"
-          end
+      yeast_plate_hash = Hash.new([])
+
+      io_hash[:yeast_selective_plate_types].each_with_index do | plate_type, idx |
+        sample_name = find(:sample, id: plate_type)[0].name
+        yeast_plate_hash["#{sample_name}"].push(overnight_streaked_yeast_plates[idx].id)
+      end
+
+      yeast_plate_hash.each do | plate_type_name |
+        used_plates = yeast_plate_hash[plate_type_name].length
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{plate_type_name}" }
+        plate_batch_id = "none" 
+        if plate_batch.present?
+          plate_batch_id = "#{plate_batch.id}"
+          num_plates = plate_batch.num_samples
+          update_batch_matrix plate_batch, num_plates - used_plates, "#{plate_type_name}"
         end
+        plate_ids = yeast_plate_hash[plate_type_name]
+        yeast_plate_table.push(["#{plate_type_name}", "#{plate_ids.length}" ,"#{plate_batch_id}", "#{plate_ids.join(", ")}"])
+      end
 
-        show {
-          note "#{plate_batch_id}"
-        }
 
       show {
-        title "Grab yeast plates"
-        io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
-          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"  
-        end
+        title "Grab Yeast Plates"
+        note "Grab the following plates and label with the following IDs."
+        table yeast_plate_table
       } 
 
       take yeast_overnights, interactive: true
 
-      inoculation_tab = [["Yeast overnight id", "Yeast plate id"]]
+      inoculation_tab = [["Yeast Overnight ID", "Yeast Plate ID"]]
       yeast_overnights.each_with_index do |y, idx|
         inoculation_tab.push [ { content: y.id, check: true }, overnight_streaked_yeast_plates[idx].id ]
       end
@@ -167,7 +163,7 @@ class Protocol
       }
 
       release yeast_overnights
-      delete yeast_overnights
+      #UNCOMMENT THIS LATER delete yeast_overnights
 
     end
 
