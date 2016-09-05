@@ -116,14 +116,14 @@ class Protocol
 
       yeast_plate_table = [["Plate Type", "Number of Plates", "Batch Number", "Plate ID(s)"]]
 
-      yeast_plate_hash = Hash.new([])
+      yeast_plate_hash = Hash.new { |h, k| h[k] = [] }
 
       io_hash[:yeast_selective_plate_types].each_with_index do | plate_type, idx |
         sample_name = find(:sample, id: plate_type)[0].name
         yeast_plate_hash["#{sample_name}"].push(overnight_streaked_yeast_plates[idx].id)
       end
 
-      yeast_plate_hash.each do | plate_type_name |
+      yeast_plate_hash.each do | plate_type_name, plate_ids |
         used_plates = yeast_plate_hash[plate_type_name].length
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{plate_type_name}" }
         plate_batch_id = "none" 
@@ -132,8 +132,7 @@ class Protocol
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - used_plates, "#{plate_type_name}"
         end
-        plate_ids = yeast_plate_hash[plate_type_name]
-        yeast_plate_table.push(["#{plate_type_name}", "#{plate_ids.length}" ,"#{plate_batch_id}", "#{plate_ids.join(", ")}"])
+        yeast_plate_table.push(["#{plate_type_name}", plate_ids.length ,"#{plate_batch_id}", plate_ids.join(", ")])
       end
 
 
