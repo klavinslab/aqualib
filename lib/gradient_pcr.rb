@@ -192,7 +192,7 @@ module GradientPCR
   def therm_format grad_set
     str = ""
     grad_set.each_with_index { |grad_hash, idx|
-      str += "\n#{"Therm #{idx + 1}:".bold} Set gradient #{grad_hash[:bins].first}-#{grad_hash[:bins].last}"
+      str += "\n#{"Therm #{idx + 1}:"} Set gradient #{grad_hash[:bins].first}-#{grad_hash[:bins].last}"
       grad_hash[:rows].each { |b, ts|
         str += "\n    #{b}: #{ts.to_s}"
       }
