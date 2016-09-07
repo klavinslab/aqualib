@@ -94,10 +94,6 @@ class Protocol
     # build a pcrs hash that group pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
 
-    show {
-      note fragment_info_list.map { |fi| fi[:tanneal] }
-    }    
-
     fragment_info_list.each do |fi|
       if fi[:tanneal] >= 70
         key = :t70
