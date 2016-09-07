@@ -1,10 +1,12 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
+needs "aqualib/lib/gradient_pcr"
 
 class Protocol
 
   include Standard
   include Cloning
+  include GradientPCR
 
   def arguments
     {
@@ -92,20 +94,24 @@ class Protocol
       primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
+    pcrs = distribute_pcrs fragment_info_list
+    show {
+      note pcrs
+      note pcrs.map { |pcr| pcr[:fragment_info][:tanneal] }
+    }
 
-    fragment_info_list.each do |fi|
-      if fi[:tanneal] >= 70
-        key = :t70
-      elsif fi[:tanneal] >= 67
-        key = :t67
-      elsif fi[:tanneal] >= 64
-        key = :t64
-      else
-        key = :t60
-      end
-      pcrs[key][:fragment_info].push fi
-    end
+    # fragment_info_list.each do |fi|
+    #   if fi[:tanneal] >= 70
+    #     key = :t70
+    #   elsif fi[:tanneal] >= 67
+    #     key = :t67
+    #   elsif fi[:tanneal] >= 64
+    #     key = :t64
+    #   else
+    #     key = :t60
+    #   end
+    #   pcrs[key][:fragment_info].push fi
+    # end
 
     pcrs.each do |t, pcr|
       lengths = pcr[:fragment_info].collect { |fi| fi[:length] }
