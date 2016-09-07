@@ -18,7 +18,8 @@ module GradientPCR
       grad_hash[:rows].each do |b, ts|
         frag_hash[:rows][b] += ts.map do |t|
           frag_info = fragment_info_list_copy.find { |fi| fi[:tanneal] == t }
-          fragment_info_list_copy -= frag_info
+          fragment_info_list_copy -= [frag_info]
+          fragment_info_list_copy.delete_at(fragment_info_list_copy.index(frag_info))
           frag_info
         end
       end
