@@ -29,7 +29,7 @@ module GradientPCR
   def sort_temperatures_into_bins an_temps, num_therm
     bins = [0.0, 0.75, 2.0, 3.7, 6.1, 7.9, 9.3, 10.0]
     #an_temps = Array.new(8) { rand(560..720) }.sort.map { |t| t / 10.0 }
-    puts "\n#{"Annealing temperatures:".bold.gray} #{an_temps.to_s}"
+    puts "\n#{"Annealing temperatures:"} #{an_temps.to_s}"
     #an_temps = [56, 59.3, 72, 71.4, 70, 64, 63.4, 63.4, 67, 67, 68, 72, 57, 71.5, 56.9]
     #an_temps = [56.0, 59.9, 60.0, 63.8, 64.3, 70.0]
     #an_temps = [58.0, 58.7, 60.4, 60.6, 62.3, 62.4, 67.4, 71.8]
@@ -40,19 +40,19 @@ module GradientPCR
 
     best_bin_set = find_best_bin_set an_temps, bins, (56..62).map { |t| t / 1 }, Array.new, num_therm
     best_grad_set = make_grad_hash_set_from_bin_set(an_temps, best_bin_set)
-    puts "\n#{"Best bin set:".bold.light_blue} #{best_bin_set}"
-    puts "\n#{"Best gradient set score:".bold.yellow} #{score_set best_grad_set}"
-    puts "#{"Best gradient set: ".bold.green} #{therm_format best_grad_set}"
+    puts "\n#{"Best bin set:"} #{best_bin_set}"
+    puts "\n#{"Best gradient set score:"} #{score_set best_grad_set}"
+    puts "#{"Best gradient set: "} #{therm_format best_grad_set}"
 
     opt_best_grad_set = optimize_grad_set best_grad_set
-    puts "\n#{"Best gradient set (optimized) score:".bold.yellow} #{score_set opt_best_grad_set}"
-    puts "#{"Best gradient set (optimized): ".bold.green} #{therm_format opt_best_grad_set}"
+    puts "\n#{"Best gradient set (optimized) score:"} #{score_set opt_best_grad_set}"
+    puts "#{"Best gradient set (optimized): "} #{therm_format opt_best_grad_set}"
     #puts opt_best_grad_set
 
     normal_bin_set = [[56],[60],[64],[67]]
     normal_grad_set = make_grad_hash_set_from_bin_set an_temps, normal_bin_set
-    puts "\n#{"Normal gradient set score:".bold.yellow} #{score_bin_set an_temps, normal_bin_set}"
-    puts "#{"Normal gradient set:".bold.green} #{therm_format normal_grad_set}"
+    puts "\n#{"Normal gradient set score:"} #{score_bin_set an_temps, normal_bin_set}"
+    puts "#{"Normal gradient set:"} #{therm_format normal_grad_set}"
 
     return opt_best_grad_set
   end
