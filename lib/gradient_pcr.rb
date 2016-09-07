@@ -26,7 +26,7 @@ module GradientPCR
     end
   end
 
-  def sort_temperatures_to_bins an_temps, num_therm
+  def sort_temperatures_into_bins an_temps, num_therm
     bins = [0.0, 0.75, 2.0, 3.7, 6.1, 7.9, 9.3, 10.0]
     #an_temps = Array.new(8) { rand(560..720) }.sort.map { |t| t / 10.0 }
     puts "\n#{"Annealing temperatures:".bold.gray} #{an_temps.to_s}"
