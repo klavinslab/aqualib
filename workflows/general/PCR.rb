@@ -94,7 +94,7 @@ class Protocol
       primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
-    pcrs = distribute_pcrs fragment_info_list
+    pcrs = distribute_pcrs fragment_info_list, 4
     show {
       note pcrs
       note pcrs.map { |pcr| pcr[:fragment_info][:tanneal] }
