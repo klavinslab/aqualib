@@ -97,7 +97,7 @@ class Protocol
     pcrs = distribute_pcrs fragment_info_list, 4
     show {
       note pcrs
-      note pcrs.map { |pcr| pcr[:fragment_info][:tanneal] }
+      note pcrs.map { |pcr| pcr[:fragment_info].keys }
     }
 
     # fragment_info_list.each do |fi|
@@ -114,7 +114,7 @@ class Protocol
     # end
 
     pcrs.each do |t, pcr|
-      lengths = pcr[:fragment_info].collect { |fi| fi[:length] }
+      lengths = pcr[:fragment_info].value.collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30
       # adding more extension time for longer size PCR.
       if lengths.max < 2000
@@ -137,8 +137,11 @@ class Protocol
       pcr[:reverse_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:rev_id] }
       pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
 
-      # set up stripwells
-      pcr[:stripwells] = produce spread pcr[:fragments], "Stripwell", 1, 12
+      # set up stripwells (one for each temperature bin)
+      pcr[:stripwells] = pcr[:fragment_info].map do |t, fis| 
+        fragments = fis.map { |fi| fi[:fragment] }
+        produce spread fragments, "Stripwell", 1, 12
+      end
     end
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
