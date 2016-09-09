@@ -98,7 +98,7 @@ class Protocol
     show {
       note pcrs
       note pcrs.map { |pcr| pcr[:fragment_info].keys }
-      note pcrs.first[:fragment_info].values.first.keys
+      note pcrs.first[:fragment_info].values.first.first.keys
     }
 
     # fragment_info_list.each do |fi|
