@@ -98,6 +98,7 @@ class Protocol
     show {
       note pcrs
       note pcrs.map { |pcr| pcr[:fragment_info].keys }
+      note pcrs.first[:fragment_info].values.first.keys
     }
 
     # fragment_info_list.each do |fi|
@@ -113,8 +114,8 @@ class Protocol
     #   pcrs[key][:fragment_info].push fi
     # end
 
-    pcrs.each do |t, pcr|
-      lengths = pcr[:fragment_info].value.collect { |fi| fi[:length] }
+    pcrs.each do |pcr|
+      lengths = pcr[:fragment_info].values.collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30
       # adding more extension time for longer size PCR.
       if lengths.max < 2000
@@ -129,13 +130,13 @@ class Protocol
       pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(0, 9)
       pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(0, 9)
 
-      pcr[:fragments].concat pcr[:fragment_info].collect { |fi| fi[:fragment] }
-      pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
-      pcr[:forward_primers].concat pcr[:fragment_info].collect { |fi| fi[:fwd] }
-      pcr[:reverse_primers].concat pcr[:fragment_info].collect { |fi| fi[:rev] }
-      pcr[:forward_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:fwd_id] }
-      pcr[:reverse_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:rev_id] }
-      pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
+      pcr[:fragments].concat pcr[:fragment_info].values.collect { |fi| fi[:fragment] }
+      pcr[:templates].concat pcr[:fragment_info].values.collect { |fi| fi[:template] }
+      pcr[:forward_primers].concat pcr[:fragment_info].values.collect { |fi| fi[:fwd] }
+      pcr[:reverse_primers].concat pcr[:fragment_info].values.collect { |fi| fi[:rev] }
+      pcr[:forward_primer_ids].concat pcr[:fragment_info].values.collect { |fi| fi[:fwd_id] }
+      pcr[:reverse_primer_ids].concat pcr[:fragment_info].values.collect { |fi| fi[:rev_id] }
+      pcr[:tanneals].concat pcr[:fragment_info].values.collect { |fi| fi[:tanneal] }
 
       # set up stripwells (one for each temperature bin)
       pcr[:stripwells] = pcr[:fragment_info].map do |t, fis| 
@@ -146,6 +147,10 @@ class Protocol
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
     stripwells.flatten!
+
+    show {
+      note "stripwell num " + stripwells.length
+    }
 
     show {
       title "Prepare Stripwell Tubes"
@@ -161,7 +166,7 @@ class Protocol
     }
 
     # add templates to stripwells
-    pcrs.each do |t, pcr|
+    pcrs.each do |pcr|
       load_samples( [ "Template, 1 µL"], [
           pcr[:templates]
         ], pcr[:stripwells] ) {
@@ -171,7 +176,7 @@ class Protocol
 
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
-    pcrs.each do |t, pcr|
+    pcrs.each do |pcr|
       fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
       load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
@@ -202,7 +207,7 @@ class Protocol
     end
 
     # run the thermocycler
-    pcrs.each do |key, pcr|
+    pcrs.each do |pcr|
       tanneal = pcr[:tanneals].min.round(0)
       thermocycler = show {
         title "Start the PCRs at #{tanneal} C"
