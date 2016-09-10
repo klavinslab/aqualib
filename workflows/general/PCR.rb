@@ -219,7 +219,7 @@ class Protocol
           check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| sw } } into an available thermal cycler and close the lid."
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-          check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
+          check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
         else
           title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last}"
           pcr[:stripwells].map.with_index do |sws, idx|
