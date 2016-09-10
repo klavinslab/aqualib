@@ -49,7 +49,7 @@ module GradientPCR
     opt_best_grad_set = optimize_grad_set best_grad_set
     puts "\n#{"Best gradient set (optimized) score:"} #{score_set opt_best_grad_set}"
     puts "#{"Best gradient set (optimized): "} #{therm_format opt_best_grad_set}"
-    #puts opt_best_grad_set
+    puts opt_best_grad_set
 
     normal_bin_set = [[56],[60],[64],[67]]
     normal_grad_set = make_grad_hash_set_from_bin_set an_temps, normal_bin_set
