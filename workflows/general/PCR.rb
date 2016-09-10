@@ -236,7 +236,7 @@ class Protocol
         check "Press 'Run' and select 50 µL."
       }
       # set the location of the stripwell
-      pcr[:stripwells].each do |sw|
+      pcr[:stripwells].flatten.each do |sw|
         sw.move thermocycler[:name]
       end
     end
