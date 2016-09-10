@@ -179,9 +179,13 @@ class Protocol
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |pcr|
-      pcr[:fragment_info].values.each do |fis, idx|
-        fwd_primer_aliquots_joined = fis.map.with_index { |fi, idx| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
-        rev_primer_aliquots_joined = fis.map.with_index { |fi, idx| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+      pcr[:fragment_info].values.each_with_index do |fis, idx|
+        fis.map { |fi| show { fi.class } }
+        fis.map { |fi| show { fi[:fwd_id].class } }
+        fis.map { |fi| show { primer_aliquot_hash[fi[:fwd_id]].class } }
+        fis.map { |fi| show { primer_aliquot_hash[fi[:fwd_id]] } }
+        fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+        rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
             fwd_primer_aliquots_joined,
             rev_primer_aliquots_joined
