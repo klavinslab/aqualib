@@ -145,7 +145,7 @@ class Protocol
       end
     end
 
-    stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
+    stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
 
     show {
