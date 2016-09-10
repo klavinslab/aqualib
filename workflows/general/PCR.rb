@@ -180,10 +180,6 @@ class Protocol
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |pcr|
       pcr[:fragment_info].values.each_with_index do |fis, idx|
-        fis.map { |fi| show { fi.class } }
-        fis.map { |fi| show { fi[:fwd_id].class } }
-        fis.map { |fi| show { primer_aliquot_hash[fi[:fwd_id]].class } }
-        fis.map { |fi| show { primer_aliquot_hash[fi[:fwd_id]] } }
         fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
@@ -216,17 +212,28 @@ class Protocol
 
     # run the thermocycler
     pcrs.each do |pcr|
-      tanneal = pcr[:tanneals].min.round(0)
+      is_gradient = pcr[:bins].length > 1
       thermocycler = show {
-        title "Start the PCRs at #{tanneal} C"
-        check "Place the stripwells #{pcr[:stripwells].collect { |sw| sw.id } } into an available thermal cycler and close the lid."
-        get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
-        separator
-        check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-        check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
+        if !is_gradient
+          title "Start a PCR at #{pcr[:bins].first} C"
+          check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| sw } } into an available thermal cycler and close the lid."
+          get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+          check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
+        else
+          title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last}"
+          pcr[:stripwells].map.with_index do |sws, idx|
+            sw = sws.first
+            row_num = pcr[:bins].index pcr[:fragment_info].keys[idx].to_f
+            row_letter = (row_num + 'A'.ord).chr
+            check "Place the stripwell #{sw} into Row #{row_letter} of an available thermal cycler."
+          end
+          get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+          check "Set the anneal temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}. This is the 3rd temperature."
+        end
         check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
         check "Press 'Run' and select 50 µL."
-        #image "thermal_cycler_select"
       }
       # set the location of the stripwell
       pcr[:stripwells].each do |sw|
