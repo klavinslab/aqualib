@@ -212,7 +212,7 @@ class Protocol
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
         else
-          title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last}"
+          title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
           pcr[:stripwells].map.with_index do |sws, idx|
             sw = sws.first
             row_num = pcr[:bins].index pcr[:fragment_info].keys[idx].to_f
