@@ -149,7 +149,7 @@ class Protocol
     stripwells.flatten!
 
     show {
-      note "stripwell num " + stripwells.length
+      note "stripwell num #{stripwells.length}"
     }
 
     show {
