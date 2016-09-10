@@ -119,7 +119,7 @@ module GradientPCR
           grand_grad_hash[:rows].delete(b.to_s)
         end
       end
-      { bins: bins, rows: Hash[row_hash.sort] }
+      { bins: bins, rows: row_hash }
     }
   end
 
