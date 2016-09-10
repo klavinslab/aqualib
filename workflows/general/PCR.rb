@@ -180,8 +180,8 @@ class Protocol
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each do |pcr|
       pcr[:fragment_info].values.each do |fis, idx|
-        fwd_primer_aliquots_joined = fis.map.with_index { |pid, idx| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
-        rev_primer_aliquots_joined = fis.map.with_index { |pid, idx| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+        fwd_primer_aliquots_joined = fis.map.with_index { |fi, idx| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+        rev_primer_aliquots_joined = fis.map.with_index { |fi, idx| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
             fwd_primer_aliquots_joined,
             rev_primer_aliquots_joined
