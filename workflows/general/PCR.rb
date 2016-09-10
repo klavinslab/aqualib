@@ -95,11 +95,6 @@ class Protocol
 
     # build a pcrs hash that group pcr by T Anneal
     pcrs = distribute_pcrs fragment_info_list, 4
-    show {
-      note pcrs
-      note pcrs.map { |pcr| pcr[:fragment_info].keys }
-      note pcrs.first[:fragment_info].values.first.first.keys
-    }
 
     # fragment_info_list.each do |fi|
     #   if fi[:tanneal] >= 70
@@ -147,10 +142,6 @@ class Protocol
 
     stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
-
-    show {
-      note "stripwell num #{stripwells.length}"
-    }
 
     show {
       title "Prepare Stripwell Tubes"
@@ -216,7 +207,7 @@ class Protocol
       thermocycler = show {
         if !is_gradient
           title "Start a PCR at #{pcr[:bins].first} C"
-          check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| sw } } into an available thermal cycler and close the lid."
+          check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| "#{sw}" } } into an available thermal cycler and close the lid."
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
@@ -226,6 +217,7 @@ class Protocol
             sw = sws.first
             row_num = pcr[:bins].index pcr[:fragment_info].keys[idx].to_f
             row_letter = (row_num + 'A'.ord).chr
+            row_letter = 'H' if pcr[:bins].length == 2 && idx == 1
             check "Place the stripwell #{sw} into Row #{row_letter} of an available thermal cycler."
           end
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
