@@ -1,7 +1,7 @@
 module GradientPCR
   def distribute_pcrs fragment_info_list, num_therm
     frags_by_bins = sort_fragments_into_bins fragment_info_list, num_therm
-    frags_by_bins.map do |frag_hash|
+    frags_by_bins.reject { |frag_hash| frag_hash[:rows].empty }.map do |frag_hash|
       { 
         fragment_info: frag_hash[:rows], bins: frag_hash[:bins], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [],
         reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] 
