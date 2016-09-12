@@ -11,7 +11,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
+      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13872,13850,13849],
       debug_mode: "Yes",
     }
   end
