@@ -26,8 +26,8 @@ class Protocol
 		}
 
 		show {
-			title "Label"
-			note "Label the bottle with #{media_type} your initials, and the date."
+			title "Thank you"
+			note "You're awesome!"
 		}
 
 		media = produce new_sample "50% glycerol", of: "Media", as: "800 mL Liquid"
