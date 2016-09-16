@@ -149,7 +149,7 @@ class Protocol
       pcr[:fragment_info].values.each_with_index do |fis, idx|
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
         fis.each_with_index { |fi, fi_idx| show { note stripwell.id }
-          template_tab.concat([stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }]) }
+          template_tab.push([stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }]) }
       end
 
       show {
