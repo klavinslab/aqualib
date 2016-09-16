@@ -135,12 +135,12 @@ class Protocol
     stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
 
-    mgh20_tab = [["Stripwell", "Wells to pipette"]] +
+    stripwell_tab = [["Stripwell", "Wells to pipette"]] +
       stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
       title "Prepare Stripwell Tubes"
       note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
-      table mgh20_tab
+      table stripwell_tab
     }
 
     # add templates to stripwells
@@ -152,7 +152,7 @@ class Protocol
       end
 
       show {
-        title "Load templates into stripwells for PCR ##{idx + 1}"
+        title "Load templates for PCR ##{idx + 1}"
         table template_tab
         warning "Use a fresh pipette tip for each transfer.".upcase
       }
@@ -177,30 +177,22 @@ class Protocol
       end
 
       show {
-        title "Load primers into stripwells for PCR ##{idx + 1}"
+        title "Load primers for PCR ##{idx + 1}"
         table primer_tab
         warning "Use a fresh pipette tip for each transfer.".upcase
       }
-      # pcr[:fragment_info].values.each_with_index do |fis, idx|
-      #   fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
-      #   rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
-      #   load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
-      #       fwd_primer_aliquots_joined,
-      #       rev_primer_aliquots_joined
-      #     ], pcr[:stripwells][idx] ) {
-      #       warning "Use a fresh pipette tip for each transfer.".upcase
-      #     }
-      # end
     end
 
     # add kapa master mix
     show {
       title "Add Master Mix"
-      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
-      stripwells.each do |sw|
-        check "Pipette 25 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
-      end
-      check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
+      note "Pipette 25 µL of master mix (item #{kapa_stock_item}) into stripwells based on the following table:"
+      table stripwell_tab
+      # warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX."
+      # stripwells.each do |sw|
+      #   check "Pipette 25 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
+      # end
+      check "Cap each stripwell. Press each one very hard to make sure it is sealed."
     }
 
     if not_enough_vol_primer_aliquots.any?
