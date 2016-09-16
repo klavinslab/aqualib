@@ -148,14 +148,7 @@ class Protocol
       template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
-        show {
-          note stripwell
-        }
-        show {
-          note stripwell.id
-        }
-        fis.each_with_index { |fi, fi_idx| template_tab += [stripwell.id, fi_idx + 1, 
-          { content: fi[:template].id, check: true }] }
+        fis.each_with_index { |fi, fi_idx| template_tab.concat [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
       end
 
       show {
@@ -206,17 +199,17 @@ class Protocol
     end
 
     # run the thermocycler
-    pcrs.each do |pcr|
+    pcrs.each_with_index do |pcr, idx|
       is_gradient = pcr[:bins].length > 1
       thermocycler = show {
         if !is_gradient
-          title "Start a PCR at #{pcr[:bins].first} C"
+          title "Start PCR ##{idx + 1} at #{pcr[:bins].first} C"
           check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| "#{sw}" }.join(", ")} into an available thermal cycler and close the lid."
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
         else
-          title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
+          title "Start PCR ##{idx + 1} (gradient) over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Click on annealing temperature -> options, and check the gradient checkbox."
           check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}."
