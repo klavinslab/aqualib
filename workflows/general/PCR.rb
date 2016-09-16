@@ -125,14 +125,6 @@ class Protocol
       pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(0, 9)
       pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(0, 9)
 
-      # pcr[:fragments].concat pcr[:fragment_info].values.collect { |fi| fi[:fragment] }
-      # pcr[:templates].concat pcr[:fragment_info].values.collect { |fi| fi[:template] }
-      # pcr[:forward_primers].concat pcr[:fragment_info].values.collect { |fi| fi[:fwd] }
-      # pcr[:reverse_primers].concat pcr[:fragment_info].values.collect { |fi| fi[:rev] }
-      # pcr[:forward_primer_ids].concat pcr[:fragment_info].values.collect { |fi| fi[:fwd_id] }
-      # pcr[:reverse_primer_ids].concat pcr[:fragment_info].values.collect { |fi| fi[:rev_id] }
-      # pcr[:tanneals].concat pcr[:fragment_info].values.collect { |fi| fi[:tanneal] }
-
       # set up stripwells (one for each temperature bin)
       pcr[:stripwells] = pcr[:fragment_info].map do |t, fis| 
         fragments = fis.map { |fi| fi[:fragment] }
@@ -143,17 +135,12 @@ class Protocol
     stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
 
+    mgh20tab = ["Stripwell", "Wells to pipette"] +
+      stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", sw.non_empty_string] }
     show {
       title "Prepare Stripwell Tubes"
-      stripwells.each do |sw|
-        if sw.num_samples <= 6
-          check "Grab a new stripwell with 6 wells and label with the id #{sw}."
-        else
-          check "Grab a new stripwell with 12 wells and label with the id #{sw}."
-        end
-        note "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
-      end
-      # TODO: Put an image of a labeled stripwell here
+      note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
+      table mgh20tab
     }
 
     # add templates to stripwells
@@ -213,16 +200,19 @@ class Protocol
           check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
         else
           title "Start a gradient PCR over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
+          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+          check "Click on annealing temperature -> options, and check the gradient checkbox."
+          check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}."
+          note "The following rows are ordered front to back."
           pcr[:stripwells].map.with_index do |sws, idx|
             sw = sws.first
-            row_num = pcr[:bins].index pcr[:fragment_info].keys[idx].to_f
+            temp = pcr[:fragment_info].keys[idx].to_f
+            row_num = pcr[:bins].index temp
             row_letter = ('H'.ord - row_num).chr
             row_letter = 'A' if pcr[:bins].length == 2 && idx == 1
-            check "Place the stripwell #{sw} into Row #{row_letter} of an available thermal cycler."
+            check "Place the stripwell #{sw} into Row #{row_letter} (#{temp}) of an available thermal cycler."
           end
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
-          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-          check "Set the anneal temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}. This is the 3rd temperature."
         end
         check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
         check "Press 'Run' and select 50 µL."
