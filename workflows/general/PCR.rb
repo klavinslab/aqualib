@@ -148,38 +148,50 @@ class Protocol
       template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
-        fis.each_with_index { |fi, fi_idx| show { note stripwell.id }
-          template_tab.push([stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }]) }
+        fis.each_with_index { |fi, fi_idx| template_tab.push [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
       end
 
       show {
         title "Load templates into stripwells for PCR ##{idx + 1}"
-        note template_tab
-        note template_tab.size
         table template_tab
+        warning "Use a fresh pipette tip for each transfer.".upcase
       }
-      # pcr[:fragment_info].values.each_with_index do |fis, idx|
-      #   load_samples( [ "Template, 1 µL"], [
-      #       fis.map { |fi| fi[:template] }
-      #     ], pcr[:stripwells][idx] ) {
-      #       warning "Use a fresh pipette tip for each transfer.".upcase
-      #     }
-      # end
     end
 
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
-    pcrs.each do |pcr|
+    pcrs.each_with_index do |pcr, idx|
+      primer_tab = [["Stripwell", "Well", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
         fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
-        load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
-            fwd_primer_aliquots_joined,
-            rev_primer_aliquots_joined
-          ], pcr[:stripwells][idx] ) {
-            warning "Use a fresh pipette tip for each transfer.".upcase
-          }
+        stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
+        fis.each_with_index do |fi, fi_idx| 
+          primer_tab.push [
+            stripwell.id, 
+            fi_idx + 1, 
+            { content: fwd_primer_aliquots_joined[fi_idx], check: true }, 
+            { content: rev_primer_aliquots_joined[fi_idx], check: true }
+          ]
+          end
+        end
       end
+
+      show {
+        title "Load primers into stripwells for PCR ##{idx + 1}"
+        table primer_tab
+        warning "Use a fresh pipette tip for each transfer.".upcase
+      }
+      # pcr[:fragment_info].values.each_with_index do |fis, idx|
+      #   fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+      #   rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+      #   load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
+      #       fwd_primer_aliquots_joined,
+      #       rev_primer_aliquots_joined
+      #     ], pcr[:stripwells][idx] ) {
+      #       warning "Use a fresh pipette tip for each transfer.".upcase
+      #     }
+      # end
     end
 
     # add kapa master mix
