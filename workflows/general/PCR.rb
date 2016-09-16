@@ -173,7 +173,6 @@ class Protocol
             { content: fwd_primer_aliquots_joined[fi_idx], check: true }, 
             { content: rev_primer_aliquots_joined[fi_idx], check: true }
           ]
-          end
         end
       end
 
