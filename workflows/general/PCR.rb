@@ -135,23 +135,33 @@ class Protocol
     stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
 
-    mgh20tab = ["Stripwell", "Wells to pipette"] +
+    mgh20_tab = [["Stripwell", "Wells to pipette"]] +
       stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", sw.non_empty_string] }
     show {
       title "Prepare Stripwell Tubes"
       note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
-      table mgh20tab
+      table mgh20_tab
     }
 
     # add templates to stripwells
-    pcrs.each do |pcr|
+    pcrs.each_with_index do |pcr, idx|
+      template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
-        load_samples( [ "Template, 1 µL"], [
-            fis.map { |fi| fi[:template] }
-          ], pcr[:stripwells][idx] ) {
-            warning "Use a fresh pipette tip for each transfer.".upcase
-          }
+        stripwell = pcr[:stripwells][idx]
+        fis.each_with_index { |fi, fi_idx| template_tab += [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
       end
+
+      show {
+        title "Load templates into stripwells for PCR ##{idx + 1}"
+        table template_tab
+      }
+      # pcr[:fragment_info].values.each_with_index do |fis, idx|
+      #   load_samples( [ "Template, 1 µL"], [
+      #       fis.map { |fi| fi[:template] }
+      #     ], pcr[:stripwells][idx] ) {
+      #       warning "Use a fresh pipette tip for each transfer.".upcase
+      #     }
+      # end
     end
 
     # add primers to stripwells
@@ -203,14 +213,14 @@ class Protocol
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Click on annealing temperature -> options, and check the gradient checkbox."
           check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}."
-          note "The following rows are ordered front to back."
+          note "The following stripwells are ordered front to back."
           pcr[:stripwells].map.with_index do |sws, idx|
             sw = sws.first
             temp = pcr[:fragment_info].keys[idx].to_f
             row_num = pcr[:bins].index temp
             row_letter = ('H'.ord - row_num).chr
             row_letter = 'A' if pcr[:bins].length == 2 && idx == 1
-            check "Place the stripwell #{sw} into Row #{row_letter} (#{temp}) of an available thermal cycler."
+            check "Place the stripwell #{sw} into Row #{row_letter} (#{temp} C) of an available thermal cycler."
           end
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
         end
