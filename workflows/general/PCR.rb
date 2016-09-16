@@ -125,8 +125,8 @@ class Protocol
     stripwell_tab = [["Stripwell", "Wells to pipette"]] +
       stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
-      title "Prepare stripwells"
-      note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
+      title "Label and prepare stripwells"
+      note "Label stripwells, and pipette 19 µL of molecular grade water into stripwells based on the following table:"
       table stripwell_tab
     }
 
@@ -173,7 +173,7 @@ class Protocol
     # add kapa master mix
     show {
       title "Add Master Mix"
-      note "Pipette 25 µL of master mix (item #{kapa_stock_item}) into stripwells based on the following table:"
+      note "Pipette 25 µL of master mix (#{kapa_stock_item}) into stripwells based on the following table:"
       table stripwell_tab
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX."
       check "Cap each stripwell. Press each one very hard to make sure it is sealed."
@@ -202,7 +202,7 @@ class Protocol
           title "Start PCR ##{idx + 1} (gradient) over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
           check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
           check "Click on annealing temperature -> options, and check the gradient checkbox."
-          check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last}."
+          check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last} C."
           note "The following stripwells are ordered front to back."
           pcr[:stripwells].map.with_index do |sws, idx|
             sw = sws.first
