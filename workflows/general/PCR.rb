@@ -147,7 +147,7 @@ class Protocol
     pcrs.each_with_index do |pcr, idx|
       template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
-        stripwell = pcr[:stripwells][idx]
+        stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
         show {
           note stripwell
         }
