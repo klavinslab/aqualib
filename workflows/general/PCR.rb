@@ -154,6 +154,8 @@ class Protocol
 
       show {
         title "Load templates into stripwells for PCR ##{idx + 1}"
+        note template_tab
+        note template_tab.size
         table template_tab
       }
       # pcr[:fragment_info].values.each_with_index do |fis, idx|
