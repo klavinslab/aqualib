@@ -126,7 +126,7 @@ class Protocol
       stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
       title "Label and prepare stripwells"
-      note "Label stripwells, and pipette 19 µL of molecular grade water into stripwells based on the following table:"
+      note "Label stripwells, and pipette 19 µL of molecular grade water into each based on the following table:"
       table stripwell_tab
     }
 
