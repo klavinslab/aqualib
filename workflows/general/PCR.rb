@@ -216,8 +216,8 @@ class Protocol
           pcr[:stripwells].map.with_index do |sws, idx|
             sw = sws.first
             row_num = pcr[:bins].index pcr[:fragment_info].keys[idx].to_f
-            row_letter = (row_num + 'A'.ord).chr
-            row_letter = 'H' if pcr[:bins].length == 2 && idx == 1
+            row_letter = ('H'.ord - row_num).chr
+            row_letter = 'A' if pcr[:bins].length == 2 && idx == 1
             check "Place the stripwell #{sw} into Row #{row_letter} of an available thermal cycler."
           end
           get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
