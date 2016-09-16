@@ -150,7 +150,6 @@ class Protocol
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
         fis.each_with_index { |fi, fi_idx| show { note stripwell.id }
           template_tab.concat [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
-        }
       end
 
       show {
