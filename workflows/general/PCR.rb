@@ -96,19 +96,6 @@ class Protocol
     # build a pcrs hash that group pcr by T Anneal
     pcrs = distribute_pcrs fragment_info_list, 4
 
-    # fragment_info_list.each do |fi|
-    #   if fi[:tanneal] >= 70
-    #     key = :t70
-    #   elsif fi[:tanneal] >= 67
-    #     key = :t67
-    #   elsif fi[:tanneal] >= 64
-    #     key = :t64
-    #   else
-    #     key = :t60
-    #   end
-    #   pcrs[key][:fragment_info].push fi
-    # end
-
     pcrs.each do |pcr|
       lengths = pcr[:fragment_info].values.flatten.collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30
@@ -138,7 +125,7 @@ class Protocol
     stripwell_tab = [["Stripwell", "Wells to pipette"]] +
       stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
-      title "Prepare Stripwell Tubes"
+      title "Prepare stripwells"
       note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
       table stripwell_tab
     }
@@ -188,10 +175,7 @@ class Protocol
       title "Add Master Mix"
       note "Pipette 25 µL of master mix (item #{kapa_stock_item}) into stripwells based on the following table:"
       table stripwell_tab
-      # warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX."
-      # stripwells.each do |sw|
-      #   check "Pipette 25 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
-      # end
+      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX."
       check "Cap each stripwell. Press each one very hard to make sure it is sealed."
     }
 
