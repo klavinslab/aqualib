@@ -136,7 +136,7 @@ class Protocol
     stripwells.flatten!
 
     mgh20_tab = [["Stripwell", "Wells to pipette"]] +
-      stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", sw.non_empty_string] }
+      stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
       title "Prepare Stripwell Tubes"
       note "Pipette 19 µL of molecular grade water into stripwells based on the following table:"
@@ -148,7 +148,14 @@ class Protocol
       template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
       pcr[:fragment_info].values.each_with_index do |fis, idx|
         stripwell = pcr[:stripwells][idx]
-        fis.each_with_index { |fi, fi_idx| template_tab += [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
+        show {
+          note stripwell
+        }
+        show {
+          note stripwell.id
+        }
+        fis.each_with_index { |fi, fi_idx| template_tab += [stripwell.id, fi_idx + 1, 
+          { content: fi[:template].id, check: true }] }
       end
 
       show {
