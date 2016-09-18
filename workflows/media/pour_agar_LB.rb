@@ -37,7 +37,7 @@ class Protocol
 
       type = show {
         title "Select option"
-        select ["LB + Amp", "LB + Kan", "LB", "LB + Spec", "LB + Chlor"], var: "opt", label: "Choose an option", default: 1
+        select ["LB + Amp", "LB + Kan"], var: "opt", label: "Choose an option", default: 1
       }
 
       opt = type[:opt]

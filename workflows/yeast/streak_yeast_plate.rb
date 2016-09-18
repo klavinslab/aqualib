@@ -61,6 +61,11 @@ class Protocol
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
+          if num_plates - total_num_plates == 0
+            plate_batch.mark_as_deleted
+          end
+
+
           if num_plates < total_num_plates 
             num_left = total_num_plates - num_plates
             plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
@@ -124,7 +129,7 @@ class Protocol
       end
 
       yeast_plate_hash.each do | plate_type_name, plate_ids |
-        used_plates = yeast_plate_hash[plate_type_name].length
+        used_plates = plate_ids.length
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{plate_type_name}" }
         plate_batch_id = "none" 
         if plate_batch.present?
@@ -132,7 +137,7 @@ class Protocol
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - used_plates, "#{plate_type_name}"
         end
-        yeast_plate_table.push(["#{plate_type_name}", plate_ids.length ,"#{plate_batch_id}", plate_ids.join(", ")])
+        yeast_plate_table.push(["#{plate_type_name}", used_plates ,"#{plate_batch_id}", plate_ids.join(", ")])
       end
 
 
