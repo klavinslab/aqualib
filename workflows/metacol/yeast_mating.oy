@@ -16,6 +16,22 @@ place tasks_inputs
   window: hours(1)
 end
 
+place warming_agar
+  protocol: "aqualib:workflows/yeast/warming_agar.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place move_agar_plates
+  protocol: "aqualib:workflows/media/move_agar_plates.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
 place make_plate
   protocol: "aqualib:workflows/yeast/make_yeast_plate.rb"
   group: group
@@ -57,19 +73,27 @@ place re_image_plate
 end
 
 wire tasks_inputs => make_plate
-wire make_plate => yeast_mating
+wire tasks_inputs => yeast_mating
+wire tasks_inputs => warming_agar
+wire warming_agar => move_agar_plates
 wire yeast_mating => streak_plate
 wire streak_plate => image_plate
 wire image_plate => re_image_plate
 
-transition [ tasks_inputs ] => [ make_plate ] when !error(0) && completed (0) end
-transition [ make_plate ] => [ yeast_mating ] when !error(0) && completed (0) end
-transition [ yeast_mating ] => [ streak_plate ] when !error(0) && completed (0) end
-transition [ streak_plate ] => [ image_plate ] when !error(0) && completed (0) end
-transition [ image_plate ] => [] when !error(0) && completed (0) end
-transition [ re_image_plate ] => [] when !error(0) && completed (0) end
+transition [ tasks_inputs ] => [ make_plate ] when !error(0) && completed(0) && (return_value(0,"io_hash")[:has_antibiotic] == "yes") end
+transition [ tasks_inputs ] => [ warming_agar ] when !error(0) && completed(0) && (return_value(0,"io_hash")[:needs_plates] == "yes") end
+transition [ tasks_inputs ] => [ yeast_mating ] when !error(0) && completed(0)  && (return_value(0,"io_hash")[:needs_plates] == "no") && (return_value(0,"io_hash")[:has_antibiotic] == "no") end
+transition [ warming_agar ] => [ move_agar_plates ] when !error(0) && completed(0) end
+transition [ make_plate ] => [ yeast_mating ] when !error(0) && completed(0) end
+transition [ move_agar_plates ] => [ yeast_mating ] when !error(0) && completed(0) end
+transition [ yeast_mating ] => [ streak_plate ] when !error(0) && completed(0) end
+transition [ streak_plate ] => [ image_plate ] when !error(0) && completed(0) end
+transition [ image_plate ] => [] when !error(0) && completed(0) end
+transition [ re_image_plate ] => [] when !error(0) && completed(0) end
 
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ warming_agar ] => [ warming_agar ] when error(0) end
+transition [ move_agar_plates ] => [ move_agar_plates ] when error(0) end
 transition [ make_plate ] => [ make_plate ] when error(0) end
 transition [ yeast_mating ] => [ yeast_mating ] when error(0) end
 transition [ streak_plate ] => [ streak_plate ] when error(0) end
