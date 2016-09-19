@@ -3,8 +3,8 @@ class Protocol
 
 		media_type = "FCC"
         
-        glycerol = find(:item, { object_type: {name: "Glycerol"}}) [0]
-        water = find( :item, {object_type: {name: "Molecular Biology Grade Water"}})[0]
+        glycerol = find(:item, { object_type: { name: "Glycerol" } } )[0]
+        water = find(:item, { object_type: { name: "Molecular Biology Grade Water" } } )[0]
 		dmso = find(:item, { object_type: { name: "DMSO" } } )[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
 
