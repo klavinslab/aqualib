@@ -4,7 +4,7 @@ class Protocol
 		media_type = "FCC"
         
         glycerol = find(:item, { object_type: {name: "Glycerol"}}) [0]
-        water = find( :item, {object_type: {name: "Molecular Biology Grade Water"}})
+        water = find( :item, {object_type: {name: "Molecular Biology Grade Water"}})[0]
 		dmso = find(:item, { object_type: { name: "DMSO" } } )[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
 
@@ -13,7 +13,7 @@ class Protocol
 			note "This protocol makes #{media_type} for yeast transformations."
 		}
 
-		##take [glycerol, water, dmso, bottle], interactive: true
+		take [glycerol, water, dmso, bottle], interactive: true
 
 		show {
 			title "Measure out DMSO"
