@@ -5,7 +5,7 @@ class Protocol
         
         glycerol = find(:item, { object_type: {name: "Glycerol"}}) [0]
         water = find( :item, {object_type: {name: "Molecular Biology Grade Water"}})
-		dmso = find(:item, { object_type: { name: "Dimethyl Sulfoxide (DMSO)" } } )[0]
+		dmso = find(:item, { object_type: { name: "DMSO" } } )[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
 
 		show {
