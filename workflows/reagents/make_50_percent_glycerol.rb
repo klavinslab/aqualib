@@ -25,14 +25,14 @@ class Protocol
 			note "Using the DI water carboy, DI water up to the 800 mL mark on the bottle."
 		}
 
-		show {
-			title "Thank you"
-			note "You're awesome!"
-		}
-
 		media = produce new_sample "50% glycerol", of: "Media", as: "800 mL Liquid"
 
 		media.location = "To be autoclaved area"
+
+		show {
+			title "Label"
+			note "Label the bottle with 50% glycerol, #{media}, the date, and your initials"
+		}
 
 		release [glycerol, media], interactive: true
 		
