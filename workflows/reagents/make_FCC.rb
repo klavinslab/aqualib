@@ -13,7 +13,7 @@ class Protocol
 			note "This protocol makes #{media_type} for yeast transformations."
 		}
 
-		take [glycerol, water, dmso, bottle], interactive: true
+		##take [glycerol, water, dmso, bottle], interactive: true
 
 		show {
 			title "Measure out DMSO"
