@@ -18,8 +18,6 @@ module GradientPCR
       grad_hash[:rows].each do |b, ts|
         frag_hash[:rows][b] += ts.map do |t|
           frag_info = fragment_info_list_copy.find { |fi| fi[:tanneal] == t }
-          #puts "fragment_info_list_copy: #{fragment_info_list_copy.length}\nfrag_info: #{frag_info}\ntemperature: #{t}"
-          #fragment_info_list_copy -= [frag_info]
           fragment_info_list_copy.delete_at(fragment_info_list_copy.index(frag_info))
           frag_info
         end
@@ -30,15 +28,7 @@ module GradientPCR
 
   def sort_temperatures_into_bins an_temps, num_therm
     bins = [0.0, 0.75, 2.0, 3.7, 6.1, 7.9, 9.3, 10.0]
-    #an_temps = Array.new(8) { rand(560..720) }.sort.map { |t| t / 10.0 }
     puts "\n#{"Annealing temperatures:"} #{an_temps.to_s}"
-    #an_temps = [56, 59.3, 72, 71.4, 70, 64, 63.4, 63.4, 67, 67, 68, 72, 57, 71.5, 56.9]
-    #an_temps = [56.0, 59.9, 60.0, 63.8, 64.3, 70.0]
-    #an_temps = [58.0, 58.7, 60.4, 60.6, 62.3, 62.4, 67.4, 71.8]
-    #an_temps = [58.1, 59.1, 59.9, 62.9, 65.2, 70.6, 71.4, 72.0]
-    #an_temps = [56.2, 58.6, 61.1, 62.4, 63.1, 65.6, 67.5, 69.4]
-    #an_temps = [58.1, 58.3, 59.0, 61.5, 62.3, 63.4, 63.5, 70.8]
-    #an_temps = [57.6, 58.0, 64.2, 66.8, 67.6, 69.2, 70.8, 71.8]
 
     best_bin_set = find_best_bin_set an_temps, bins, (56..62).map { |t| t / 1 }, Array.new, num_therm
     best_grad_set = make_grad_hash_set_from_bin_set(an_temps, best_bin_set)
@@ -128,7 +118,6 @@ module GradientPCR
       if grad_hash[:rows].length <= 1 # Can take another temperature set
         high_score_hash_and_bin = find_highest_scoring_hash_and_bin grad_set, grad_hash
         if !high_score_hash_and_bin[:hash].empty? # Move highest scoring temperature set to this grad_hash
-        	#puts high_score_hash_and_bin
           hs_bin = high_score_hash_and_bin[:bin]
           hs_ts = high_score_hash_and_bin[:hash][hs_bin]
           grad_hash[:rows].merge!({ hs_bin => hs_ts }) { |bin, ts1, ts2| ts1 + ts2 }
@@ -137,9 +126,7 @@ module GradientPCR
         if grad_hash[:rows].length == 1 && grad_set[(idx + 1)..-1].any? { |gh| gh[:rows].length == 1 } # Move isolated temperature set to this grad_hash
           targ_hash = grad_set[(idx + 1)..-1].find { |gh| gh[:rows].length == 1 }
           targ_bin = targ_hash[:rows].keys.find { |b| targ_hash[:rows][b].any? }
-          #puts "GRAD1: " + grad_hash.to_s
           grad_hash[:rows].merge!({ targ_bin => targ_hash[:rows][targ_bin] }) { |bin, ts1, ts2| ts1 + ts2 }
-          #puts "GRAD2: " + grad_hash.to_s
           targ_hash[:rows].delete(targ_bin)
           #puts "HEY"
         end
@@ -153,22 +140,17 @@ module GradientPCR
 
   def update_rows grad_hash  
     if grad_hash[:rows].length == 1 # Set single temperature
-      #puts grad_hash
       row = grad_hash[:rows].values.first
       grad_hash[:rows] = { row.min.to_s => row.sort }
       grad_hash[:bins] = [row.min]
-      #puts grad_hash
-      #puts "WAAT"
     elsif grad_hash[:rows].length == 2 # Set the upper and lower temperature bounds
       rows = grad_hash[:rows].values
       grad_hash[:rows] = { rows.first.min.to_s => rows.first.sort, rows.last.min.to_s => rows.last.sort }
       grad_hash[:bins] = [grad_hash[:rows].keys.min.to_f, grad_hash[:rows].keys.max.to_f].sort
-      #puts "WOOT"
     end
   end
 
   def num_bins_with_any_temps_set grad_set
-    #puts "WAAAAAFAFLDKSJFSLDKJF: " + grad_set.to_s
     grad_set.map { |gh| gh[:rows].values.inject(0) { |sum, ts| sum + (ts.any? ? 1 : 0) } }
   end
 
@@ -180,14 +162,11 @@ module GradientPCR
         high_score_hash_and_bin ||= { hash: gh[:rows], bin: b }
         hs_bin = high_score_hash_and_bin[:bin]
         hs_ts = high_score_hash_and_bin[:hash][hs_bin]
-        #puts "high score: " + high_score_hash_and_bin.to_s
-        #puts "gh: " + gh.to_s
         if score_temps(ts, b.to_f) > score_temps(hs_ts, hs_bin.to_f)
           high_score_hash_and_bin = { hash: gh[:rows], bin: b }
         end
       }
     }
-    #puts high_score_hash_and_bin.to_s
     high_score_hash_and_bin || { hash: {}, bin: "" }
   end
 
@@ -200,44 +179,5 @@ module GradientPCR
       }
     }
     str
-  end
-end
-
-class String
-  # colorization
-  def colorize(color_code)
-    "\e[#{color_code}m#{self}\e[0m"
-  end
-
-  def red
-    colorize(31)
-  end
-
-  def green
-    colorize(32)
-  end
-
-  def yellow
-    colorize(33)
-  end
-
-  def blue
-    colorize(34)
-  end
-
-  def pink
-    colorize(35)
-  end
-
-  def light_blue
-    colorize(36)
-  end
-
-  def gray
-    colorize(37)
-  end
-
-  def bold
-    colorize(1)
   end
 end
