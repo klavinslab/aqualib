@@ -1,15 +1,17 @@
 needs "aqualib/lib/standard"
 needs "aqualib/lib/cloning"
+needs "aqualib/lib/gradient_pcr"
 
 class Protocol
 
   include Standard
   include Cloning
+  include GradientPCR
 
   def arguments
     {
       io_hash: {},
-      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778],
+      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13872,13850,13849],
       debug_mode: "Yes",
     }
   end
@@ -92,23 +94,10 @@ class Protocol
       primers_need_to_dilute(all_primer_ids)))
 
     # build a pcrs hash that group pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { fragment_info: [], mm: 0, ss: 0, fragments: [], templates: [], forward_primers: [], reverse_primers: [], forward_primer_ids: [], reverse_primer_ids: [], stripwells: [], tanneals: [] } }
+    pcrs = distribute_pcrs fragment_info_list, 4
 
-    fragment_info_list.each do |fi|
-      if fi[:tanneal] >= 70
-        key = :t70
-      elsif fi[:tanneal] >= 67
-        key = :t67
-      elsif fi[:tanneal] >= 64
-        key = :t64
-      else
-        key = :t60
-      end
-      pcrs[key][:fragment_info].push fi
-    end
-
-    pcrs.each do |t, pcr|
-      lengths = pcr[:fragment_info].collect { |fi| fi[:length] }
+    pcrs.each do |pcr|
+      lengths = pcr[:fragment_info].values.flatten.collect { |fi| fi[:length] }
       extension_time = (lengths.max)/1000.0*30
       # adding more extension time for longer size PCR.
       if lengths.max < 2000
@@ -123,64 +112,71 @@ class Protocol
       pcr[:mm] = "0#{pcr[:mm]}" if pcr[:mm].between?(0, 9)
       pcr[:ss] = "0#{pcr[:ss]}" if pcr[:ss].between?(0, 9)
 
-      pcr[:fragments].concat pcr[:fragment_info].collect { |fi| fi[:fragment] }
-      pcr[:templates].concat pcr[:fragment_info].collect { |fi| fi[:template] }
-      pcr[:forward_primers].concat pcr[:fragment_info].collect { |fi| fi[:fwd] }
-      pcr[:reverse_primers].concat pcr[:fragment_info].collect { |fi| fi[:rev] }
-      pcr[:forward_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:fwd_id] }
-      pcr[:reverse_primer_ids].concat pcr[:fragment_info].collect { |fi| fi[:rev_id] }
-      pcr[:tanneals].concat pcr[:fragment_info].collect { |fi| fi[:tanneal] }
-
-      # set up stripwells
-      pcr[:stripwells] = produce spread pcr[:fragments], "Stripwell", 1, 12
+      # set up stripwells (one for each temperature bin)
+      pcr[:stripwells] = pcr[:fragment_info].map do |t, fis| 
+        fragments = fis.map { |fi| fi[:fragment] }
+        produce spread fragments, "Stripwell", 1, 12
+      end
     end
 
-    stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
+    stripwells = pcrs.collect { |pcr| pcr[:stripwells] }
     stripwells.flatten!
 
+    stripwell_tab = [["Stripwell", "Wells to pipette"]] +
+      stripwells.map { |sw| ["#{sw} (#{sw.num_samples <= 6 ? 6 : 12} wells)", { content: sw.non_empty_string, check: true }] }
     show {
-      title "Prepare Stripwell Tubes"
-      stripwells.each do |sw|
-        if sw.num_samples <= 6
-          check "Grab a new stripwell with 6 wells and label with the id #{sw}."
-        else
-          check "Grab a new stripwell with 12 wells and label with the id #{sw}."
-        end
-        note "Pipette 19 µL of molecular grade water into wells " + sw.non_empty_string + "."
-      end
-      # TODO: Put an image of a labeled stripwell here
+      title "Label and prepare stripwells"
+      note "Label stripwells, and pipette 19 µL of molecular grade water into each based on the following table:"
+      table stripwell_tab
     }
 
     # add templates to stripwells
-    pcrs.each do |t, pcr|
-      load_samples( [ "Template, 1 µL"], [
-          pcr[:templates]
-        ], pcr[:stripwells] ) {
-          warning "Use a fresh pipette tip for each transfer.".upcase
-        }
+    pcrs.each_with_index do |pcr, idx|
+      template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
+      pcr[:fragment_info].values.each_with_index do |fis, idx|
+        stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
+        fis.each_with_index { |fi, fi_idx| template_tab.push [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
+      end
+
+      show {
+        title "Load templates for PCR ##{idx + 1}"
+        table template_tab
+        warning "Use a fresh pipette tip for each transfer.".upcase
+      }
     end
 
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
-    pcrs.each do |t, pcr|
-      fwd_primer_aliquots_joined = pcr[:forward_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
-      rev_primer_aliquots_joined = pcr[:reverse_primer_ids].map.with_index { |pid, idx| primer_aliquot_hash[pid].uniq.map { |p| p.id.to_s }.join(" or ") }
-      load_samples( [ "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL" ], [
-          fwd_primer_aliquots_joined,
-          rev_primer_aliquots_joined
-        ], pcr[:stripwells] ) {
-          warning "Use a fresh pipette tip for each transfer.".upcase
-        }
+    pcrs.each_with_index do |pcr, idx|
+      primer_tab = [["Stripwell", "Well", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL"]]
+      pcr[:fragment_info].values.each_with_index do |fis, idx|
+        fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+        rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
+        stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
+        fis.each_with_index do |fi, fi_idx| 
+          primer_tab.push [
+            stripwell.id, 
+            fi_idx + 1, 
+            { content: fwd_primer_aliquots_joined[fi_idx], check: true }, 
+            { content: rev_primer_aliquots_joined[fi_idx], check: true }
+          ]
+        end
+      end
+
+      show {
+        title "Load primers for PCR ##{idx + 1}"
+        table primer_tab
+        warning "Use a fresh pipette tip for each transfer.".upcase
+      }
     end
 
     # add kapa master mix
     show {
       title "Add Master Mix"
-      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
-      stripwells.each do |sw|
-        check "Pipette 25 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
-      end
-      check "Put the cap on each stripwell. Press each one very hard to make sure it is sealed."
+      note "Pipette 25 µL of master mix (#{kapa_stock_item}) into stripwells based on the following table:"
+      table stripwell_tab
+      warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX."
+      check "Cap each stripwell. Press each one very hard to make sure it is sealed."
     }
 
     if not_enough_vol_primer_aliquots.any?
@@ -193,21 +189,36 @@ class Protocol
     end
 
     # run the thermocycler
-    pcrs.each do |key, pcr|
-      tanneal = pcr[:tanneals].min.round(0)
+    pcrs.each_with_index do |pcr, idx|
+      is_gradient = pcr[:bins].length > 1
       thermocycler = show {
-        title "Start the PCRs at #{tanneal} C"
-        check "Place the stripwells #{pcr[:stripwells].collect { |sw| sw.id } } into an available thermal cycler and close the lid."
-        get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
-        separator
-        check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-        check "Set the anneal temperature to #{tanneal}. This is the 3rd temperature."
+        if !is_gradient
+          title "Start PCR ##{idx + 1} at #{pcr[:bins].first} C"
+          check "Place the stripwell(s) #{pcr[:stripwells].first.collect { |sw| "#{sw}" }.join(", ")} into an available thermal cycler and close the lid."
+          get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+          check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
+        else
+          title "Start PCR ##{idx + 1} (gradient) over range #{pcr[:bins].first}-#{pcr[:bins].last} C"
+          check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+          check "Click on annealing temperature -> options, and check the gradient checkbox."
+          check "Set the annealing temperature range to be #{pcr[:bins].first}-#{pcr[:bins].last} C."
+          note "The following stripwells are ordered front to back."
+          pcr[:stripwells].map.with_index do |sws, idx|
+            sw = sws.first
+            temp = pcr[:fragment_info].keys[idx].to_f
+            row_num = pcr[:bins].index temp
+            row_letter = ('H'.ord - row_num).chr
+            row_letter = 'A' if pcr[:bins].length == 2 && idx == 1
+            check "Place the stripwell #{sw} into Row #{row_letter} (#{temp} C) of an available thermal cycler."
+          end
+          get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+        end
         check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
         check "Press 'Run' and select 50 µL."
-        #image "thermal_cycler_select"
       }
       # set the location of the stripwell
-      pcr[:stripwells].each do |sw|
+      pcr[:stripwells].flatten.each do |sw|
         sw.move thermocycler[:name]
       end
     end
