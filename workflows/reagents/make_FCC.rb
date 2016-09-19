@@ -45,12 +45,6 @@ class Protocol
 		}
 
 		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
-      
-        output_id = ""
-		output = produce new_sample media_name, of: "Media", as: container
-  		produced_media.push(output)
-  		produced_media_id.push(output.id)
-          output_id = output_id + ", #{output.id}"
 
 		media.location = "To be autoclaved area"
 
