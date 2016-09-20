@@ -239,7 +239,7 @@ def task_status_check t
       argument.slice!(0) # remove white space in the beginning
       inventory_types = argument.split('|')
       inventory_types.uniq!
-      argument_lengths.push ids.length if ids.is_a? Array && variable_name != "band_lengths"
+      argument_lengths.push ids.length if ids.is_a?(Array) && variable_name != "band_lengths"
       ids = [ids] unless ids.is_a? Array
       ids.flatten!
       ids.uniq!
