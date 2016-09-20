@@ -263,7 +263,7 @@ module Standard
 
   # returns all collections that contain samples of given id
   def collections_with_sample id, object_type
-    find(:item, { object_type: object_type } )
+    find(:item, { object_type: { name: object_type } } )
       .map { |i| collection_from i.id }
       .select { |c| c.matrix.flatten.include? id }
   end
