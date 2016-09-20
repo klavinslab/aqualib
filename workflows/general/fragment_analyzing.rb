@@ -283,7 +283,10 @@ class Protocol
     io_hash[:verification_digest_task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       stripwells_with_template = collections_with_sample find(:item, id: task.simple_spec[:template_id]).sample.id, "Stripwell"
-      io_hash[:stripwell_ids].push stripwells_with_template.last.id
+      io_hash[:stripwell_ids].push stripwells_with_template.first.id
+      show {
+        note stripwells_with_template
+      }
     end
 
     show {
