@@ -282,7 +282,8 @@ class Protocol
     io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
     io_hash[:verification_digest_task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      stripwells_with_template = collections_with_sample find(:item, id: task.simple_spec[:template_id]).sample.id, "Stripwell"
+      show { note find(:item, id: task.simple_spec[:template_id])[0].sample_id }
+      stripwells_with_template = collections_with_sample find(:item, id: task.simple_spec[:template_id])[0].sample_id, "Stripwell"
       io_hash[:stripwell_ids].push stripwells_with_template.first.id
       show {
         note stripwells_with_template
