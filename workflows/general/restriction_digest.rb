@@ -45,7 +45,7 @@ class Protocol
         end
 
         task_id_mapping = io_hash[:task_ids][(idx * 12)...(sw.num_samples + idx * 12)]
-        sw.data = sw.data.merge { task_id_mapping: task_id_mapping }
+        sw.datum = sw.datum.merge { task_id_mapping: task_id_mapping }
       end
     }
 

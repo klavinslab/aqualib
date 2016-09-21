@@ -93,7 +93,7 @@ class Protocol
   end # ColorGenerator
 
   def stripwell_by_task_id tid
-    Item.include(:data).find { |i| !i.data[:task_id_mapping].nil? && i.data[:task_id_mapping].include? tid }
+    Item.include(:data).find { |i| !i.datum[:task_id_mapping].nil? && i.datum[:task_id_mapping].include? tid }
   end
 
   def arguments
