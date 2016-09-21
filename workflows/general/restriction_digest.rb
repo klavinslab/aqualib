@@ -36,13 +36,16 @@ class Protocol
     stripwells = produce spread templates.map { |t| t.sample }, "Stripwell", 1, 12
     show {
       title "Grab stripwell(s) for restriction digest"
-      stripwells.each_with_index do |sw,idx|
+      stripwells.each_with_index do |sw, idx|
         if idx < stripwells.length - 1
           check "Grab a stripwell with 12 wells, and label it #{sw}."
         else
           number_of_wells = templates.length - idx * 12
           check "Grab a stripwell with #{number_of_wells} wells, and label it #{sw}."
         end
+
+        task_id_mapping = io_hash[:task_ids][(idx * 12)...(sw.num_samples + idx * 12)]
+        sw.data = sw.data.merge { task_id_mapping: task_id_mapping }
       end
     }
 
