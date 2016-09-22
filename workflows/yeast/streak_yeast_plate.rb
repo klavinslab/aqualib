@@ -20,7 +20,7 @@ class Protocol
   def update_batch_matrix batch, num_samples, plate_type
     rows = batch.matrix.length
     columns = batch.matrix[0].length
-    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "#{plate_type}")[0].id
+    batch.matrix = fill_array rows, columns, num_samples, find(:sample, name: "YPAD")[0].id
     batch.save
   end # update_batch_matrix
 
@@ -52,20 +52,13 @@ class Protocol
 
       glycerol_streaked_yeast_plates = produce spread yeast_strains_glycerol, "Divided Yeast Plate", 1, num_of_section
       overnight_streaked_yeast_plates = produce spread yeast_strains_overnight, "Divided Yeast Plate", 1, 1
-
-        #detracting from plate batches 
-        total_num_plates = glycerol_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? 
+        total_num_plates = glycerol_streaked_yeast_plates.length + overnight_streaked_yeast_plates.length if !glycerol_streaked_yeast_plates.blank? || !overnight_streaked_yeast_plates.blank?
         plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" } 
         plate_batch_id = "none" 
         if plate_batch.present?
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
-          if num_plates - total_num_plates == 0
-            plate_batch.mark_as_deleted
-          end
-
-
           if num_plates < total_num_plates 
             num_left = total_num_plates - num_plates
             plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
@@ -73,7 +66,6 @@ class Protocol
             plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
           end
         end
-
       show {
         title "Grab Yeast plates"
           check "Grab #{total_num_plates} of YPAD plates from batch #{plate_batch_id}, label with your name, the date, and the following ids on the top and side of each plate:"
@@ -84,6 +76,10 @@ class Protocol
 
 
       take yeast_glycerol_stocks
+      # inoculation_tab = [["Gylcerol Stock id", "Location", "Yeast plate id"]]
+      # yeast_glycerol_stocks.each_with_index do |y, idx|
+      #   inoculation_tab.push [ { content: y.id, check: true }, y.location, glycerol_streaked_yeast_plates[idx].id ]
+      # end
 
       show {
         title "Inoculation from glycerol stock in M80 area"
@@ -112,44 +108,36 @@ class Protocol
 
     # streak plate for yeast overnights if there is yeast_overnight_ids
 
-    if yeast_overnights.present?
+    if !yeast_overnights.blank?
 
       yeast_overnights = io_hash[:yeast_overnight_ids].collect { |yid| find(:item, id: yid)[0] }
       overnight_streaked_yeast_plates = yeast_overnights.collect { |y| produce new_sample y.sample.name, of: "Yeast Strain", as: "Yeast Plate"}
 
-      plate_batch_id = ""
-
-      yeast_plate_table = [["Plate Type", "Number of Plates", "Batch Number", "Plate ID(s)"]]
-
-      yeast_plate_hash = Hash.new { |h, k| h[k] = [] }
-
-      io_hash[:yeast_selective_plate_types].each_with_index do | plate_type, idx |
-        sample_name = find(:sample, id: plate_type)[0].name
-        yeast_plate_hash["#{sample_name}"].push(overnight_streaked_yeast_plates[idx].id)
-      end
-
-      yeast_plate_hash.each do | plate_type_name, plate_ids |
-        used_plates = plate_ids.length
-        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "#{plate_type_name}" }
+      show {
+        title "Grab yeast plates"
+        io_hash[:yeast_selective_plate_types].each_with_index do |plate_type, idx|
+          check "Grab one #{plate_type} plate and label with #{overnight_streaked_yeast_plates[idx].id}"
+            
+        end
+      } if io_hash[:yeast_selective_plate_types].blank?
+      total_num_plates = io_hash[:yeast_selective_plate_types].size
+        plate_batch = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD" }
         plate_batch_id = "none" 
         if plate_batch.present?
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
-          update_batch_matrix plate_batch, num_plates - used_plates, "#{plate_type_name}"
+          update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
+          if num_plates < total_num_plates 
+            num_left = total_num_plates - num_plates
+            plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
+            update_batch_matrix plate_batch_two, plate_batch_two.num_samples - num_left, "YPAD" if plate_batch_two.present?
+            plate_batch_id = plate_batch_id + ", #{plate_batch_two.id}" if plate_batch_two.present?
+          end
         end
-        yeast_plate_table.push(["#{plate_type_name}", used_plates ,"#{plate_batch_id}", plate_ids.join(", ")])
-      end
-
-
-      show {
-        title "Grab Yeast Plates"
-        note "Grab the following plates and label with the following IDs."
-        table yeast_plate_table
-      } 
 
       take yeast_overnights, interactive: true
 
-      inoculation_tab = [["Yeast Overnight ID", "Yeast Plate ID"]]
+      inoculation_tab = [["Yeast overnight id", "Yeast plate id"]]
       yeast_overnights.each_with_index do |y, idx|
         inoculation_tab.push [ { content: y.id, check: true }, overnight_streaked_yeast_plates[idx].id ]
       end
@@ -167,12 +155,12 @@ class Protocol
       }
 
       release yeast_overnights
-      #UNCOMMENT THIS LATER delete yeast_overnights
+      delete yeast_overnights
 
     end
 
     show {
-      title "Wait until yeast cells dry"
+      title "Wait untilyeast cells dry"
       note "Wait until the yeast cells are dried on the plate, as in the image below."
       image "streak_yeast_plate_dry"
     }

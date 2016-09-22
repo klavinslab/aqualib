@@ -32,9 +32,9 @@ class Protocol
       end
     end
 
-    for i in 1..(agar_media.length)
+    for i in 0..(agar_media.length - 1)
 
-      take [agar_media[i - 1]], interactive: true
+      take [agar_media[i]], interactive: true
 
       show {
         title "Prepare plates"
@@ -66,10 +66,10 @@ class Protocol
           note "Wait untill all plates have completely solidified. This should take about 10 minutes."
         }
 
-        batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i].sample.name)[0].id
-        plate_batch.matrix = batch_matrix
-        plate_batch.location = "Media Bay"
-        plate_batch.save
+      batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i].sample.name)[0].id
+      plate_batch.matrix = batch_matrix
+      plate_batch.location = "Media Bay"
+      plate_batch.save
 
         show {
           title "Stack and label"
@@ -77,11 +77,11 @@ class Protocol
           note "Put a piece of labeling tape on each stack with:"
           note "'#{plate_batch}, 'initials', and 'date'."
         }
-
-        delete agar_media[i]
-        io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
-        release [plate_batch], interactive: true
       end
+
+      delete agar_media[i]
+      io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
+      release [plate_batch], interactive: true
     end
     return {io_hash: io_hash}
   end
