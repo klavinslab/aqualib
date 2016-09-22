@@ -441,6 +441,7 @@ class Protocol
 
     verification_digest_task_ids.each do |tid|
       stripwell = verif_dig_stripwells.find { |sw| sw.datum[:task_id_mapping].include? tid }
+      show { note stripwell.id }
       upload_id = gel_uploads[stripwell.id][:stripwell][0][:id]
       upload_url = Upload.find(upload_id).url
       associated_gel = collection_from stripwell.id
