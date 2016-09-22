@@ -36,8 +36,7 @@ class Protocol
 
       plate_tab = [["Plate Type", "Quantity"]]
       plate_hash.each do |plate_type, num|
-        sample = find(:sample, id: plate_type)[0].name
-        plate_tab.push ["#{sample}", num]
+        plate_tab.push ["#{plate_type}", num]
       end
 
       show {

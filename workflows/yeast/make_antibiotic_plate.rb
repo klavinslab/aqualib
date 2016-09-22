@@ -60,11 +60,6 @@ class Protocol
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - num, "YPAD"
-
-          if num_plates - num == 0
-            plate_batch.mark_as_deleted
-          end
-
           if num_plates < num 
             num_left = num - num_plates
             plate_batch_two = overall_batches.find{ |b| !b.num_samples.zero? && find(:sample, id: b.matrix[0][0])[0].name == "YPAD"}
