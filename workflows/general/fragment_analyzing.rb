@@ -125,9 +125,11 @@ class Protocol
 
     verification_digest_task_ids = find(:task, { task_prototype: { name: "Verification Digest" } }).select { |t| t.status == "moved to fridge" }.map { |t| t.id }
     io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
+    verif_dig_stripwells = []
     io_hash[:verification_digest_task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       stripwell_with_fragment = Item.find { |i| !i.datum[:task_id_mapping].nil? && i.datum[:task_id_mapping].include?(tid) }
+      verif_dig_stripwells.push stripwell_with_fragment
       io_hash[:stripwell_ids].push stripwell_with_fragment.id
     end
 
@@ -418,6 +420,7 @@ class Protocol
           associated_stripwell_ids[stripwell.id] = task_yeast_strain_ids & stripwell_strain_ids
         end
       end
+
       notifs = []
       show {
         note associated_stripwell_ids.to_json
@@ -432,6 +435,22 @@ class Protocol
           image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
           notifs.push "#{'Yeast Strain'.pluralize(yeast_ids.length)} #{yeast_ids_link} associated gel: #{item_or_sample_html_link id, :item} (#{image_url}) is uploaded."
         end
+      end
+      notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
+    end
+
+    verification_digest_task_ids.each do |tid|
+      stripwell = verif_dig_stripwells.find { |sw| sw.datum[:task_id_mapping].include? tid }
+      upload_id = gel_uploads[id][:stripwell][0][:id]
+        upload_url = Upload.find(upload_id).url
+        associated_gel = collection_from id
+        gel_matrix = associated_gel.matrix
+        # yeast_ids_link = yeast_ids.collect { |id| item_or_sample_html_link(id, :sample) + " (location: #{Matrix[*gel_matrix].index(id).collect { |i| i + 1}.join(',')})" }.join(", ")
+        image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
+
+        task = find(:task, id: tid)[0]
+        template = find(:item, id: task.simple_spec[:template_id])[0]
+        task.notify "#{template.object_type} #{item_or_sample_html_link template.id, :item} associated gel: #{item_or_sample_html_link stripwell.id, :item} (#{image_url}) is uploaded."
       end
       notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
     end
