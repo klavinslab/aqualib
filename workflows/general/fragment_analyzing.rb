@@ -1,9 +1,11 @@
 needs "aqualib/lib/cloning"
+needs "aqualib/lib/standard"
 needs "aqualib/lib/frag_an_stripwell_consolidation"
 
 class Protocol
 
   include Cloning
+  include RowNamer
   include StripwellArrayOrganization
 
   require 'matrix'
@@ -68,15 +70,6 @@ class Protocol
     end
 
   end #gel_band_verify
-
-  module RowNamer
-    def int_to_letter i
-      (i + 'A'.ord).chr
-    end # int_to_letter
-    def row_name i
-      "Row #{int_to_letter i}"
-    end # row_name
-  end # RowName
 
   module ColorGenerator
     def sample_color_gradient_default seed

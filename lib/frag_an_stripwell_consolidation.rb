@@ -1,3 +1,5 @@
+include RowNamer
+
 module StripwellArrayOrganization
   def place_stripwells stripwells
     well_array = [[]]

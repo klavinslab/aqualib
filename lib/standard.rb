@@ -367,3 +367,12 @@ module Standard
     end
   end
 end
+
+module RowNamer
+  def int_to_letter i
+    (i + 'A'.ord).chr
+  end # int_to_letter
+  def row_name i
+    "Row #{int_to_letter i}"
+  end # row_name
+end # RowNamer
