@@ -21,7 +21,7 @@ class Protocol
         if route != -1
           s = find(:sample, { id: route })[0]
           qc_length = [s.properties["QC_length"]]
-          assoc_task = -1 || stripwell.datum[:task_id_mapping][route_idx] if stripwell.datum[:task_id_mapping]
+          assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
           if assoc_task != -1
             qc_length = find(:task, id: assoc_task)[0].simple_spec[:band_lengths]
           end
@@ -80,7 +80,7 @@ class Protocol
     # Verification Digest tasks
     stripwell.matrix.each_with_index do |row, row_idx|
       row.each_with_index do |route, route_idx|
-        assoc_task = -1 || stripwell.datum[:task_id_mapping][route_idx] if stripwell.datum[:task_id_mapping]
+        assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
         if assoc_task != -1
           ver_dig_task = find(:task, id: assoc_task)[0]
           show {
