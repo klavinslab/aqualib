@@ -136,7 +136,6 @@ module StripwellArrayOrganization
   end # create_analyzer_well_table
 
   def format_table well_array
-    extend ColorGenerator
     extend RowNamer
     piece_index = 0 # The current stripwell piece (used for int_to_letter and cell color)
     well_array.each_with_index.map { |row, i|
@@ -165,4 +164,16 @@ module StripwellArrayOrganization
     }
     instructions
   end # create_relabel_instructions
+
+  def sample_color_gradient_default seed
+    sample_color_gradient 1.11, 1.11, 1.11, 4, 6, 8, 230, 25, seed
+  end # sample_color_gradient_default
+  def sample_color_gradient frequency1, frequency2, frequency3,
+                           phase1, phase2, phase3,
+                           center, width, seed
+    rgb =  [Math.sin(frequency1 * seed + phase1) * width + center,
+            Math.sin(frequency2 * seed + phase2) * width + center,
+            Math.sin(frequency3 * seed + phase3) * width + center]
+    "#%02x%02x%02x" % rgb
+  end # sample_color_gradient
 end # StripwellArrayOrganization

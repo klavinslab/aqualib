@@ -71,20 +71,6 @@ class Protocol
 
   end #gel_band_verify
 
-  module ColorGenerator
-    def sample_color_gradient_default seed
-      sample_color_gradient 1.11, 1.11, 1.11, 4, 6, 8, 230, 25, seed
-    end # sample_color_gradient_default
-    def sample_color_gradient frequency1, frequency2, frequency3,
-                             phase1, phase2, phase3,
-                             center, width, seed
-      rgb =  [Math.sin(frequency1 * seed + phase1) * width + center,
-              Math.sin(frequency2 * seed + phase2) * width + center,
-              Math.sin(frequency3 * seed + phase3) * width + center]
-      "#%02x%02x%02x" % rgb
-    end # sample_color_gradient
-  end # ColorGenerator
-
   def arguments
     {
       io_hash: {},
