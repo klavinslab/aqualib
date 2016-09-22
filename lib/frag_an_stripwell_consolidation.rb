@@ -60,16 +60,20 @@ module StripwellArrayOrganization
 
   def stripwells_from_table stripwells, well_array
     all_wells = stripwells.collect { |stripwell| stripwell.matrix[0].select { |well| well != -1 } }.flatten
+    all_task_id_mappings = stripwells.collect { |stripwell| stripwell.datum[:task_id_mapping] || Array.new(stripwell.num_samples) { -1 } }.flatten
 
     well_array.collect { |row|
       stripwells = row.uniq { |stripwell| stripwell.id }
       if stripwells.length == 1
         all_wells.slice!(0...stripwells[0].num_samples)
+        all_task_id_mappings.slice!(0...stripwells[0].num_samples)
         stripwells[0]
       else
         new_stripwell = produce new_collection "Stripwell", 1, 12
         new_stripwell.matrix = [all_wells[0...row.length] + Array.new(12 - row.length) { -1 }]
+        new_stripwell.datum = new_stripwell.datum.merge(all_task_id_mappings[0...row.length])
         all_wells.slice!(0...row.length)
+        all_task_id_mappings.slice!(0...row.length)
         new_stripwell.save
         new_stripwell
       end

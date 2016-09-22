@@ -92,10 +92,6 @@ class Protocol
     end # sample_color_gradient
   end # ColorGenerator
 
-  def stripwell_by_task_id tid
-    Item.include(:data).find { |i| !i.datum[:task_id_mapping].nil? && i.datum[:task_id_mapping].include? tid }
-  end
-
   def arguments
     {
       io_hash: {},
@@ -126,17 +122,14 @@ class Protocol
     io_hash[:verification_digest_task_ids] = task_choose_limit(verification_digest_task_ids, "Verification Digest")
     io_hash[:verification_digest_task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      stripwell_with_template = stripwell_by_task tid
-      io_hash[:stripwell_ids].push stripwells_with_template.id
+      stripwell_with_fragment = Item.find { |i| !i.datum[:task_id_mapping].nil? && i.datum[:task_id_mapping].include?(tid) }
+      io_hash[:stripwell_ids].push stripwell_with_fragment.id
       show {
-        note stripwell_with_template.id
+        note stripwell_with_fragment.id
       }
     end
 
-    show {
-      note io_hash[:stripwell_ids]
-      note io_hash[:stripwell_ids].flatten
-    }
+    io_hash[:stripwell_ids].uniq!
 
     show {
       title "Fragment analyzing info"
