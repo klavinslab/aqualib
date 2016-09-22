@@ -440,7 +440,7 @@ class Protocol
     end
 
     verification_digest_task_ids.each do |tid|
-      stripwell = verif_dig_stripwells.find { |sw| sw.datum[:task_id_mapping].include? tid }
+      stripwell = new_stripwells.find { |sw| sw.datum[:task_id_mapping] ? sw.datum[:task_id_mapping].include? tid : false }
       show { note stripwell.id }
       show { note gel_uploads.keys }
       upload_id = gel_uploads[stripwell.id][:stripwell][0][:id]
