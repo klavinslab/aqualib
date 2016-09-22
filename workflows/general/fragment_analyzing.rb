@@ -10,31 +10,39 @@ class Protocol
 
   require 'matrix'
 
-  def stripwell_band_verify col, options = {}
-    m = col.matrix
+  def stripwell_band_verify stripwell, options = {}
+    m = stripwell.matrix
     routes = []
     opts = { except: [], plate_ids: [] }.merge options
     opts[:plate_ids].uniq!
 
-    (0..m.length-1).each do |i|
-      (0..m[i].length-1).each do |j|
-        if m[i][j] > 0 && ! ( opts[:except].include? [i,j] )
-          s = find(:sample,{ id: m[i][j] })[0]
-          qc_length = s.properties['QC_length']
-          qc_length = 'N/A' if qc_length == nil || qc_length == 0 || qc_length == ""
-          routes.push lane: [i,j], length: qc_length
+    stripwell.matrix.each_with_index do |row, row_idx|
+      row.each_with_index do |route, route_idx|
+        if route != -1
+          s = find(:sample, { id: route })[0]
+          qc_length = [s.properties["QC_length"]]
+          assoc_task = stripwell.datum[:task_id_mapping][route_idx] if stripwell.datum[:task_id_mapping]
+          if assoc_task != -1
+            qc_length = find(:task, id: assoc_task)[0].simple_spec[:band_lengths]
+          end
+          qc_length = ['N/A'] if qc_length == nil || qc_length == 0 || qc_length == ""
+          routes.push({ lane: [row_idx, route_idx], lengths: qc_length })
         end
       end
     end
 
     verify_data = show {
-      title "Stripwell #{col}: verify that each lane matches expected size"
+      title "Stripwell #{stripwell}: verify that each lane matches expected size"
       note "Look at the gel image, and match bands with the lengths listed on the side of the gel image."
       note "For more accurate values, select each well under \"analyze\" -> \"electropherogram\" to see peaks for fragments found with labeled lengths."
       note "Select No if there is no band or band does not match expected size,
       select N/A if expected length is N/A and there is a band."
-      routes.each_with_index do |r,idx|
-        select ["N/A", "Yes", "No"], var: "verify#{r[:lane][0]}_#{r[:lane][1]}", label: "Does gel lane on Row #{r[:lane][0]+1} Col #{r[:lane][1]+1} match the expected length of #{r[:length]} bp"
+      routes.each_with_index do |route, idx|
+        route[:lengths].each_with_index do |length, idx|
+          select ["N/A", "Yes", "No"], 
+            var: "verify#{route[:lane][0]}_#{route[:lane][1]}_#{idx}", 
+            label: "Does gel lane on Row #{route[:lane][0]+1} Col #{route[:lane][1]+1} match the expected length of #{length} bp"
+        end
       end
     }
 
@@ -49,9 +57,9 @@ class Protocol
             if plate
               result = plate.datum[:QC_result]
               if result
-                result.push verify_data[:"verify#{i}_#{j}".to_sym]
+                result.push verify_data[:"verify#{i}_#{j}_0".to_sym]
               else
-                result = [verify_data[:"verify#{i}_#{j}".to_sym]]
+                result = [verify_data[:"verify#{i}_#{j}_0".to_sym]]
               end
               plate.datum = plate.datum.merge({ QC_result: result })
               plate.save
@@ -67,6 +75,21 @@ class Protocol
         plate.save
       end
       release plates
+    end
+
+    # Verification Digest tasks
+    stripwell.matrix.each_with_index do |row, row_idx|
+      row.each_with_index do |route, route_idx|
+        assoc_task = stripwell.datum[:task_id_mapping][route_idx] if stripwell.datum[:task_id_mapping]
+        if assoc_task != -1
+          ver_dig_task = find(:task, id: assoc_task)[0]
+          show {
+            ver_dig_task.simple_spec[:band_lengths].each_with_index do |length, idx|
+              note verify_data[:"verify#{row_idx}_#{route_idx}_#{idx}"]
+            end
+          }
+        end
+      end
     end
 
   end #gel_band_verify
@@ -103,9 +126,6 @@ class Protocol
       task = find(:task, id: tid)[0]
       stripwell_with_fragment = Item.find { |i| !i.datum[:task_id_mapping].nil? && i.datum[:task_id_mapping].include?(tid) }
       io_hash[:stripwell_ids].push stripwell_with_fragment.id
-      show {
-        note stripwell_with_fragment.id
-      }
     end
 
     io_hash[:stripwell_ids].uniq!
