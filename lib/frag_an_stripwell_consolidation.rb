@@ -71,7 +71,7 @@ module StripwellArrayOrganization
       else
         new_stripwell = produce new_collection "Stripwell", 1, 12
         new_stripwell.matrix = [all_wells[0...row.length] + Array.new(12 - row.length) { -1 }]
-        new_stripwell.datum = new_stripwell.datum.merge(all_task_id_mappings[0...row.length])
+        new_stripwell.datum = new_stripwell.datum.merge({ task_id_mapping: all_task_id_mappings[0...row.length] })
         all_wells.slice!(0...row.length)
         all_task_id_mappings.slice!(0...row.length)
         new_stripwell.save
