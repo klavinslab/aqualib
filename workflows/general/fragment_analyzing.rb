@@ -20,13 +20,13 @@ class Protocol
       row.each_with_index do |route, route_idx|
         if route != -1
           s = find(:sample, { id: route })[0]
-          qc_length = [s.properties["QC_length"]]
+          qc_lengths = [s.properties["QC_length"]]
           assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
           if assoc_task != -1
-            qc_length = find(:task, id: assoc_task)[0].simple_spec[:band_lengths]
+            qc_lengths = find(:task, id: assoc_task)[0].simple_spec[:band_lengths]
           end
-          qc_length = ['N/A'] if qc_length == nil || qc_length == 0 || qc_length == ""
-          routes.push({ lane: [row_idx, route_idx], lengths: qc_length })
+          qc_lengths = ['N/A'] if qc_lengths == [nil] || qc_lengths == [0] || qc_lengths == [""]
+          routes.push({ lane: [row_idx, route_idx], lengths: qc_lengths })
         end
       end
     end
@@ -83,11 +83,14 @@ class Protocol
         assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
         if assoc_task != -1
           ver_dig_task = find(:task, id: assoc_task)[0]
-          show {
-            ver_dig_task.simple_spec[:band_lengths].each_with_index do |length, idx|
-              note verify_data[:"verify#{row_idx}_#{route_idx}_#{idx}"]
-            end
-          }
+          band_verifs = ver_dig_task.simple_spec[:band_lengths].map.with_index { |length, idx| verify_data[:"verify#{row_idx}_#{route_idx}_#{idx}"] }
+          if band_verifs.uniq == ["Yes"]
+            set_task_status ver_dig_task, "correct"
+          elsif band_verifs.uniq.length == 1
+            set_task_status ver_dig_task, "incorrect"
+          else
+            set_task_status ver_dig_task, "partial"
+          end
         end
       end
     end
