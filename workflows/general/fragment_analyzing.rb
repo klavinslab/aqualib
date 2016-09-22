@@ -442,17 +442,14 @@ class Protocol
     verification_digest_task_ids.each do |tid|
       stripwell = verif_dig_stripwells.find { |sw| sw.datum[:task_id_mapping].include? tid }
       upload_id = gel_uploads[id][:stripwell][0][:id]
-        upload_url = Upload.find(upload_id).url
-        associated_gel = collection_from id
-        gel_matrix = associated_gel.matrix
-        # yeast_ids_link = yeast_ids.collect { |id| item_or_sample_html_link(id, :sample) + " (location: #{Matrix[*gel_matrix].index(id).collect { |i| i + 1}.join(',')})" }.join(", ")
-        image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
-
-        task = find(:task, id: tid)[0]
-        template = find(:item, id: task.simple_spec[:template_id])[0]
-        task.notify "#{template.object_type} #{item_or_sample_html_link template.id, :item} associated gel: #{item_or_sample_html_link stripwell.id, :item} (#{image_url}) is uploaded."
-      end
-      notifs.each { |notif| task.notify "[Data] #{notif}", job_id: jid }
+      upload_url = Upload.find(upload_id).url
+      associated_gel = collection_from id
+      gel_matrix = associated_gel.matrix
+      # yeast_ids_link = yeast_ids.collect { |id| item_or_sample_html_link(id, :sample) + " (location: #{Matrix[*gel_matrix].index(id).collect { |i| i + 1}.join(',')})" }.join(", ")
+      image_url = "<a href=#{upload_url} target='_blank'>image</a>".html_safe
+      task = find(:task, id: tid)[0]
+      template = find(:item, id: task.simple_spec[:template_id])[0]
+      task.notify "#{template.object_type} #{item_or_sample_html_link template.id, :item} associated gel: #{item_or_sample_html_link stripwell.id, :item} (#{image_url}) is uploaded."
     end
 
     # Upload raw data
