@@ -43,7 +43,6 @@ class Protocol
 
 		media.location = "B1.565"
 
-		release [bottle, media, lithium_acetate, bottle_top_filter] interactive: true
-		
+		release [bottle, media, lithium_acetate, bottle_top_filter], interactive: true		
 	end
 end
