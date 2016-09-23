@@ -38,13 +38,15 @@ class Protocol
 		media = produce new_sample "1 M Lithium Acetate", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
+
+		bottle.location = "dishwashing area"
 		
 		show {
 			title "Label"
 			note "Label bottle with Lithium Acetate, filter sterilized, #{media}, the date, and your initials."
 		}
 
-		release [media, lithium_acetate], interactive: true
+		release [media, lithium_acetate, bottle], interactive: true
 
 		release [bottle]
 	end

@@ -38,15 +38,15 @@ class Protocol
 			title "Mix solution"
 			check "Shake until all contents are well mixed."
 		}
+		
+		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
 
+		media.location = "To be autoclaved area"
+		
 		show {
 			title "Label"
 			note "Label the bottle with FCC #{media} your initials, and the date."
 		}
-
-		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
-
-		media.location = "To be autoclaved area"
 
 		release [glycerol, water, dmso, media], interactive: true
 		
