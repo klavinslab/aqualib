@@ -29,20 +29,22 @@ class Protocol
 
 		show {
 			title "Filter sterilize Lithium Acetate"
-			note "Screw bottle top filter onto empty 250 mL bottle and connect to vacuum."
-			note "Turn on vacuum and slowly add the unsterilized 1 M Lithium Acetate."
-			note "Once all solution has been sterilized, turn off vacuum, remove and throw away bottle top filter."
+			check "Screw bottle top filter onto empty 250 mL bottle and connect to vacuum."
+			check "Turn on vacuum and slowly add the unsterilized 1 M Lithium Acetate."
+			check "Once all solution has been sterilized, turn off vacuum, remove and throw away bottle top filter."
 		}
 
 		show {
 			title "Label"
-			note "Label bottle with #{media_type} filter stereilized, the date, and your initials."
+			note "Label bottle with Lithium Acetate filter sterilized #{media}, the date, and your initials."
 		}
 
 		media = produce new_sample "1 M Lithium Acetate", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
 
-		release [bottle, media, lithium_acetate, bottle_top_filter], interactive: true		
+		release [media, lithium_acetate], interactive: true
+
+		release [bottle]
 	end
 end
