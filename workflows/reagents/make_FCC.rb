@@ -36,12 +36,12 @@ class Protocol
 
 		show {
 			title "Mix solution"
-			note "Shake until all contents are well mixed."
+			check "Shake until all contents are well mixed."
 		}
 
 		show {
 			title "Label"
-			note "Label the bottle with #{media_type} your initials, and the date."
+			note "Label the bottle with FCC #{media} your initials, and the date."
 		}
 
 		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"

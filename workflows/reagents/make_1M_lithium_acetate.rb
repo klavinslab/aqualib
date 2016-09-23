@@ -16,13 +16,13 @@ class Protocol
 
 		show {
 			title "Weigh out Lithium Acetate"
-			note "Weigh out 13.2g Lithium Acetate and add to bottle. "
+			check "Weigh out 13.2g Lithium Acetate and add to bottle. "
 		}
 
 		show {
 			title "Add DI Water"
-			note "Take the bottle to the DI water carboy and add water up to the 200 mL mark."
-			note "Label the bottle with #{media_type}, the date, and your initials. "
+			check "Take the bottle to the DI water carboy and add water up to the 200 mL mark."
+			check "Shake until all contents are well mixed."
 		}
 
 		take [bottle_top_filter, bottle], interactive: true
@@ -34,14 +34,15 @@ class Protocol
 			check "Once all solution has been sterilized, turn off vacuum, remove and throw away bottle top filter."
 		}
 
-		show {
-			title "Label"
-			note "Label bottle with Lithium Acetate filter sterilized #{media}, the date, and your initials."
-		}
-
+		
 		media = produce new_sample "1 M Lithium Acetate", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
+		
+		show {
+			title "Label"
+			note "Label bottle with Lithium Acetate, filter sterilized, #{media}, the date, and your initials."
+		}
 
 		release [media, lithium_acetate], interactive: true
 
