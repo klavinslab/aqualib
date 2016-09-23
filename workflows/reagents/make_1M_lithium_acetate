@@ -1,0 +1,11 @@
+class Protocol 
+	def main
+
+		media_type = "1M Lithium Acetate"
+
+		lithium_acetate = find(:item, { object_type: { name: "Lithium Acetate" } } )[0]
+		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
+
+		show {
+			title "About this protocol"
+		}
