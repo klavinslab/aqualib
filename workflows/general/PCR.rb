@@ -132,15 +132,17 @@ class Protocol
 
     # add templates to stripwells
     pcrs.each_with_index do |pcr, idx|
-      template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
+      template_tabs = []
       pcr[:fragment_info].values.each_with_index do |fis, idx|
+        template_tab = [["Stripwell", "Well", "Template, 1 µL"]]
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
         fis.each_with_index { |fi, fi_idx| template_tab.push [stripwell.id, fi_idx + 1, { content: fi[:template].id, check: true }] }
+        template_tabs.push template_tab
       end
 
       show {
         title "Load templates for PCR ##{idx + 1}"
-        table template_tab
+        template_tabs.each { |template_tab| table template_tab }
         warning "Use a fresh pipette tip for each transfer.".upcase
       }
     end
@@ -148,8 +150,9 @@ class Protocol
     # add primers to stripwells
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each_with_index do |pcr, idx|
-      primer_tab = [["Stripwell", "Well", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL"]]
+      primer_tabs = []
       pcr[:fragment_info].values.each_with_index do |fis, idx|
+        primer_tab = [["Stripwell", "Well", "Forward Primer, 2.5 µL", "Reverse Primer, 2.5 µL"]]
         fwd_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:fwd_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         rev_primer_aliquots_joined = fis.map { |fi| primer_aliquot_hash[fi[:rev_id]].uniq.map { |p| p.id.to_s }.join(" or ") }
         stripwell = pcr[:stripwells][idx].first # TODO support multiple stripwells
@@ -160,12 +163,13 @@ class Protocol
             { content: fwd_primer_aliquots_joined[fi_idx], check: true }, 
             { content: rev_primer_aliquots_joined[fi_idx], check: true }
           ]
+        primer_tabs.push primer_tab
         end
       end
 
       show {
         title "Load primers for PCR ##{idx + 1}"
-        table primer_tab
+        primer_tabs.each { |primer_tab| table primer_tab }
         warning "Use a fresh pipette tip for each transfer.".upcase
       }
     end
