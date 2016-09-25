@@ -193,7 +193,7 @@ class Protocol
               plate_batch_id = "#{plate_batch.id}"
               num_plates = plate_batch.num_samples
               update_batch_matrix plate_batch, num_plates - num, "SDO -#{key.capitalize}"
-              if num_plates - num == 0
+              if num_plates == num
                 plate_batch.mark_as_deleted
               end
               if num_plates < num 
