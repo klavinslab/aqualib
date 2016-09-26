@@ -4,7 +4,7 @@ class Protocol
 		media_type = "50X TAE"
 
 		tris= find(:item, { object_type: { name: "Tris-base" } } )[0]
-		bottle = find(:item, { object_type: { name: "800 mL Bottle" } } )[0]
+		bottle = find(:item, { object_type: { name: "1 L Bottle" } } )[0]
 		edta = find(:item, { object_type: { name: "EDTA Disodium Salt"} } )[0]
 		acetic_acid = find(:item, { object_type: { name: "Acetic Acid, Glacial"}})
 
