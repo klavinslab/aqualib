@@ -13,7 +13,7 @@ class Protocol
 			note "This protocol makes #{media_type} for yeast transformations."
 		}
 
-		take [PEG_3350, bottle, medium_magnetic_stir_bar], interactive: true 
+		take [peg_3350, bottle, medium_magnetic_stir_bar], interactive: true 
 
 		show {
 			title "Weigh out PEG 3350"
