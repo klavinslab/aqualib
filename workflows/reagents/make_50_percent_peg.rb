@@ -7,6 +7,7 @@ class Protocol
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
 		medium_magnetic_stir_bar = find(:item, { object_type: { name: "Medium Magnetic Stir Bar"} } )[0]
 		stir_plate = find(:item, { object_type: { name: "Hot/Stir Plate"} } )[0]
+		bottle_top_filter = find(:item, { object_type: { name: "1 L Bottle Top Filter"} } )[0]
 
 		show {
 			title "About this protocol"
@@ -46,8 +47,6 @@ class Protocol
 		media = produce new_sample "50% PEG", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
-
-		bottle.location = "dishwashing area"
 		
 		show {
 			title "Label"

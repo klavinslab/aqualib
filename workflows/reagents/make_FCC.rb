@@ -7,6 +7,7 @@ class Protocol
         water = find(:item, { object_type: { name: "Molecular Biology Grade Water" } } )[0]
 		dmso = find(:item, { object_type: { name: "DMSO" } } )[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
+		bottle_top_filter = find(:item, { object_type: { name: "1 L Bottle Top Filter"} } )[0]
 
 		show {
 			title "About this protocol"
@@ -51,8 +52,6 @@ class Protocol
 		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
-
-		bottle.location = "dishwashing area"
 		
 		show {
 			title "Label"
