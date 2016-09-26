@@ -5,7 +5,7 @@ class Protocol
 
 		peg_3350= find(:item, { object_type: { name: "PEG 3350" } } )[0]
 		bottle = find(:item, { object_type: { name: "250 mL Bottle" } } )[0]
-		medium_magnetic_stir_bar = find(:item, { object_type: { name: "Medium Magnetic stir bar"} } )[0]
+		medium_magnetic_stir_bar = find(:item, { object_type: { name: "Medium Magnetic Stir Bar"} } )[0]
 		stir_plate = find(:item, { object_type: { name: "Hot/Stir Plate"} } )[0]
 
 		show {
