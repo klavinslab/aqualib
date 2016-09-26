@@ -39,13 +39,24 @@ class Protocol
 			check "Shake until all contents are well mixed."
 		}
 		
+		take [bottle_top_filter, bottle], interactive: true
+
+		show {
+			title "Filter sterilize FCC"
+			check "Screw bottle top filter onto empty 250 mL bottle and connect to vacuum."
+			check "Turn on vacuum and slowly add the unsterilized FCC."
+			check "Once all solution has been sterilized, turn off vacuum, remove and throw away bottle top filter."
+		}
+
 		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
 
-		media.location = "To be autoclaved area"
+		media.location = "B1.565"
+
+		bottle.location = "dishwashing area"
 		
 		show {
 			title "Label"
-			note "Label the bottle with FCC #{media} your initials, and the date."
+			note "Label the bottle with FCC, filter sterilized, #{media}, your initials, and the date."
 		}
 
 		release [glycerol, water, dmso, media], interactive: true
