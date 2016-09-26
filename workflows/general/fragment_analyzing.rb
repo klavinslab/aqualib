@@ -22,7 +22,7 @@ class Protocol
           s = find(:sample, { id: route })[0]
           qc_lengths = [s.properties["QC_length"]]
           assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
-          if assoc_task != -1
+          if assoc_task && assoc_task != -1
             qc_lengths = find(:task, id: assoc_task)[0].simple_spec[:band_lengths]
           end
           qc_lengths = ['N/A'] if qc_lengths == [nil] || qc_lengths == [0] || qc_lengths == [""]
@@ -81,7 +81,7 @@ class Protocol
     stripwell.matrix.each_with_index do |row, row_idx|
       row.each_with_index do |route, route_idx|
         assoc_task = stripwell.datum[:task_id_mapping][route_idx] || -1 if stripwell.datum[:task_id_mapping]
-        if assoc_task != -1
+        if assoc_task && assoc_task != -1
           ver_dig_task = find(:task, id: assoc_task)[0]
           band_verifs = ver_dig_task.simple_spec[:band_lengths].map.with_index { |length, idx| verify_data[:"verify#{row_idx}_#{route_idx}_#{idx}"] }
           if band_verifs.uniq == ["Yes"]
