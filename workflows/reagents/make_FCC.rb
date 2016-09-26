@@ -52,8 +52,6 @@ class Protocol
 		media = produce new_sample "FCC", of: "Media", as: "200 mL Liquid"
 
 		media.location = "B1.565"
-
-		bottle.location = "dishwashing area"
 		
 		show {
 			title "Label"
