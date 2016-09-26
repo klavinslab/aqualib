@@ -61,7 +61,7 @@ class Protocol
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - total_num_plates, "YPAD"
-          if num_plates - total_num_plates == 0
+          if num_plates == total_num_plates 
             plate_batch.mark_as_deleted
           end
 
@@ -136,6 +136,10 @@ class Protocol
           plate_batch_id = "#{plate_batch.id}"
           num_plates = plate_batch.num_samples
           update_batch_matrix plate_batch, num_plates - used_plates, "#{plate_type_name}"
+
+          if num_plates == used_plates
+            plate_batch.mark_as_deleted
+          end
         end
         yeast_plate_table.push(["#{plate_type_name}", used_plates ,"#{plate_batch_id}", plate_ids.join(", ")])
       end
