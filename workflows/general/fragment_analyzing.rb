@@ -37,7 +37,9 @@ class Protocol
       note "For more accurate values, select each well under \"analyze\" -> \"electropherogram\" to see peaks for fragments found with labeled lengths."
       note "Select No if there is no band or band does not match expected size,
       select N/A if expected length is N/A and there is a band."
+      warning "One or more lanes below have multiple expected bands!" if routes.any? { |route| route[:lengths].length > 1 }
       routes.each_with_index do |route, idx|
+        note "" if route[:lengths].length > 1
         route[:lengths].each_with_index do |length, idx|
           select ["N/A", "Yes", "No"], 
             var: "verify#{route[:lane][0]}_#{route[:lane][1]}_#{idx}", 
