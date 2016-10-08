@@ -10,11 +10,11 @@ class Protocol
     end
   
   
-    people_to_highfive = ["Michelle", "Eric", "Alberto", "David", "Ayesha"]
+    people_to_high_five = ["Michelle", "Eric", "Alberto", "David", "Ayesha"]
     show do
-      title "High-five checklist"
+      title "High five checklist"
       people_to_highfive.each do |person|
-        check "Give #{person} a high-five"
+        check "Give #{person} a high five"
       end
     end
 
