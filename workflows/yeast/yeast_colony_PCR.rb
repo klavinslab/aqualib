@@ -50,9 +50,9 @@ class Protocol
     # take primer aliquots
     take primers - diluted_primer_aliquots, interactive: true, method: "boxes"
 
-    # get phusion enzyme
-    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
-    take [phusion_stock_item], interactive: true, method: "boxes"
+    # get kapa enzyme
+    kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [kapa_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that pcrs by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], forward_primers: [], reverse_primers: [], lysate_stripwells: [], pcr_stripwells: [], tanneals: [] } }
@@ -116,13 +116,13 @@ class Protocol
     show {
       title "Add Master Mix"
       pcr_stripwells.each do |sw|
-        check "Pipette 5 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
+        check "Pipette 5 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       separator
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
     }
 
-    release [phusion_stock_item], interactive: true, method: "boxes"
+    release [kapa_stock_item], interactive: true, method: "boxes"
 
     # run the thermocycler
     pcrs.each do |key, pcr|
