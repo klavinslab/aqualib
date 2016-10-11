@@ -15,7 +15,7 @@ class Protocol
 
     show do
       title "High five checklist"
-      people_to_highfive.each do |person|
+      people_to_high_five.each do |person|
         check "Give #{person} a high five"
       end
     end
