@@ -21,12 +21,17 @@ class Protocol
     @overhead = Parameter.get_float("markup rate")
     @tasks = []
     
-    purchaes = show do
+    purchases = show do
       title "Number of Purchases"
       note "Please enter how many purchases you want to make today."
-      get "number", var: "num", label: "Purchases", default: 2  
+      get "number", var: "num", label: "Purchases", default: 2 
+      (1..purchases[:num]).each do
+        note "hi"
+      end
     end
     
+
+
     while again 
     
       result = show do
