@@ -25,7 +25,7 @@ class Protocol
       title "Number of Purchases"
       note "Please enter how many purchases you want to make today."
       get "number", var: "num", label: "Purchases", default: 2 
-      (1..purchases[:num]).each do
+      (1..num).each do
         note "hi"
       end
     end
