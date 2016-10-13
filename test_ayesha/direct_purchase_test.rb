@@ -24,7 +24,7 @@ class Protocol
     purchaes = show do
       title "Number of Purchases"
       note "Please enter how many purchases you want to make today."
-      get "Number", var: "num", label: "Purchases", default: 2  
+      get "number", var: "num", label: "Purchases", default: 2  
     end
     
     while again 
