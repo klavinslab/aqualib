@@ -104,7 +104,7 @@ class Protocol
     m = descriptor[:materials]
     l = descriptor[:labor]
     u = descriptor[:unit]
-    cost = currency((1+@overhead)*(m+l))    
+       
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
@@ -115,8 +115,9 @@ class Protocol
         title "Choose Volume"
         get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
       end
+      cost = currency((1+@overhead)*(m+l) * vol[:n]) 
       message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
-      if confirm message, cost * vol[:n]
+      if confirm message, cost
         take [item]
         task = make_purchase message, m, l
         release [item]
