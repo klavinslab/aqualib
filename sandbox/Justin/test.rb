@@ -1,4 +1,5 @@
-require "lib/util.pl"
+needs "aqualib/lib/standard"
+needs "aqualib/lib/cloning"
 
 class Protocol
   def main
