@@ -21,17 +21,8 @@ class Protocol
     @overhead = Parameter.get_float("markup rate")
     @tasks = []
     
-    purchases = show do
-      title "Number of Purchases"
-      note "Please enter how many purchases you want to make today."
-      get "number", var: "num", label: "Purchases", default: 2 
-      (1..num).each do
-        note "hi"
-      end
-    end
+    again = true
     
-
-
     while again 
     
       result = show do
@@ -43,7 +34,7 @@ class Protocol
       end
       
       case result[:choice]
-        when "Basics"then basic_chooser 
+        when "Basics"then basic_chooser
         when "Samples" then sample_chooser 
         when "Batched" then batched_chooser
       end
@@ -112,15 +103,20 @@ class Protocol
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
+    u = descriptor[:unit]
     cost = currency((1+@overhead)*(m+l))    
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
     
     if items.length > 0
-      item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
+      item = choose_item items, "Choose #{ot.name} of #{s.name}"
+      vol = show do
+        title "Choose Volume"
+        get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+      end
       message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
-      if confirm message, cost
+      if confirm message, cost * vol[:n]
         take [item]
         task = make_purchase message, m, l
         release [item]
