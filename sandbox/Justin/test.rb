@@ -7,5 +7,6 @@ class Protocol
     to_be_added.each do |i|
       sample = find(:sample, id:i)
       produce new_sample sample[:name], of: “Enzyme”, as: “Enzyme Stock”
+    end
   end
 end
