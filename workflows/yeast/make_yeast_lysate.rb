@@ -56,7 +56,7 @@ class Protocol
     
     naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
 
-    take [naoh]
+    take [naoh], interactive: true
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
