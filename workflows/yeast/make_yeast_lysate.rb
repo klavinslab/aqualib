@@ -51,8 +51,8 @@ class Protocol
       end
     end
     #Check with Garrett what this next step even means...
-    #sds = yeast_samples.length * 3 * 1.1
-    #water = yeast_samples.length * 27 * 1.1
+    sds = yeast_samples.length * 3 * 1.1
+    water = yeast_samples.length * 27 * 1.1
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
