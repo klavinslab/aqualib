@@ -53,10 +53,6 @@ class Protocol
     #Check with Garrett what this next step even means...
     #sds = yeast_samples.length * 3 * 1.1
     #water = yeast_samples.length * 27 * 1.1
-    
-    naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
-
-    take [naoh], interactive: true
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
