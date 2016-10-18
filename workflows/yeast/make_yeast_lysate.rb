@@ -50,9 +50,18 @@ class Protocol
         yeast_colonies.push "#{y.id}.c#{start_colony+x}"
       end
     end
-    #Check with Garrett what this next step even means...
+    
     sds = yeast_samples.length * 3 * 1.1
     water = yeast_samples.length * 27 * 1.1
+
+     show {
+      title "Prepare 0.2 percent SDS"
+      check "Grab a 2 percent SDS stock."
+      check "Grab an empty 1.5 mL tube, label as 0.2 percent SDS."
+      check "Pipette #{sds.round(1)} µL of 2 percent SDS stock into the 1.5 mL tube."
+      check "Pipette #{water.round(1)} µL of molecular grade water into the 1.5 mL tube."
+      check "Mix with vortexer."
+    }
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
@@ -91,7 +100,7 @@ class Protocol
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
-        note "Pipette 25 µL of 20 mM NaOH into wells " + sw.non_empty_string + "."
+        note "Pipette 30 µL of 0.2 percent SDS into wells " + sw.non_empty_string + "."
       end
       # TODO: Put an image of a labeled stripwell here
     }
