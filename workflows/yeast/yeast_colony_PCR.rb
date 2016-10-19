@@ -95,9 +95,15 @@ class Protocol
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
           check "Pipette 3.5 µL of molecular grade water into wells " + sw.non_empty_string + "."
-          check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
         end
       end
+    }
+
+    show {
+      title "Add Template"
+      check "Spin down stripwell #{pcr[:lysate_stripwells][idx]} immediately before adding to new stipwell."
+      check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
+      warning "Spin down stipwell from lysate protocol right before adding to PCR stripwell."
     }
 
     # add primers to stripwells

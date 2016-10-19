@@ -90,6 +90,7 @@ class Protocol
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
         note "Pipette 25 µL of 20 mM NaOH into wells " + sw.non_empty_string + "."
+        warning "Using 25 µL NaOH, not 30 µL SDS.  "
       end
       # TODO: Put an image of a labeled stripwell here
     }
@@ -133,9 +134,9 @@ class Protocol
     take stripwells, interactive: true
 
     show {
-      title "Spin down"
-      check "Spin down all stripwells for about 30 seconds until a small pellet is visible at the bottom of the tubes."
+      title "Keep stripwells"
           check "Keep the new stripwell on the bench for the next protocol to use."
+          warning "DO NOT SPIN DOWN STIPWELLS."
     }
 
     stripwells.each do |sw|
