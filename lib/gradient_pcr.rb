@@ -30,7 +30,7 @@ module GradientPCR
     bins = [0.0, 0.75, 2.0, 3.7, 6.1, 7.9, 9.3, 10.0]
     puts "\n#{"Annealing temperatures:"} #{an_temps.to_s}"
 
-    best_bin_set = find_best_bin_set an_temps, bins, (52..62).map { |t| t / 1 }, Array.new, num_therm
+    best_bin_set = find_best_bin_set an_temps, bins, (46..62).map { |t| t / 1 }, Array.new, num_therm
     best_grad_set = make_grad_hash_set_from_bin_set(an_temps, best_bin_set)
     puts "\n#{"Best bin set:"} #{best_bin_set}"
     puts "\n#{"Best gradient set score:"} #{score_set best_grad_set}"
@@ -41,7 +41,7 @@ module GradientPCR
     puts "#{"Best gradient set (optimized): "} #{therm_format opt_best_grad_set}"
     puts opt_best_grad_set
 
-    normal_bin_set = [[52],[60],[64],[67]]
+    normal_bin_set = [[46],[60],[64],[67]]
     normal_grad_set = make_grad_hash_set_from_bin_set an_temps, normal_bin_set
     puts "\n#{"Normal gradient set score:"} #{score_bin_set an_temps, normal_bin_set}"
     puts "#{"Normal gradient set:"} #{therm_format normal_grad_set}"

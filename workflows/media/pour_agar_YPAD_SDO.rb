@@ -66,7 +66,7 @@ class Protocol
           note "Wait untill all plates have completely solidified. This should take about 10 minutes."
         }
 
-        batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i].sample.name)[0].id
+        batch_matrix = fill_array 10, 10, res, find(:sample, name: agar_media[i - 1].sample.name)[0].id
         plate_batch.matrix = batch_matrix
         plate_batch.location = "Media Bay"
         plate_batch.save
@@ -78,7 +78,7 @@ class Protocol
           note "'#{plate_batch}, 'initials', and 'date'."
         }
 
-        delete agar_media[i]
+        delete agar_media[i - 1]
         io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
         release [plate_batch], interactive: true
       end

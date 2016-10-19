@@ -183,8 +183,8 @@ class Protocol
     m = collection.matrix
     x = 0
     
-    (0..m.length-1).each do |i|
-      (0..m[i].length-1).each do |j|
+    (0..m.length-1).reverse_each do |i|
+      (0..m[i].length-1).reverse_each do |j|
         if m[i][j] != -1 && x < n
           m[i][j] = -1
           x += 1
