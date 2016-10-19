@@ -101,9 +101,13 @@ class Protocol
 
     show {
       title "Add Template"
+      pcrs.each do |t, pcr|
+        pcr[:pcr_stripwells].each_with_index do |sw, idx|
       check "Spin down stripwell #{pcr[:lysate_stripwells][idx]} immediately before adding to new stipwell."
       check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
       warning "Spin down stipwell from lysate protocol right before adding to PCR stripwell."
+        end
+      end
     }
 
     # add primers to stripwells

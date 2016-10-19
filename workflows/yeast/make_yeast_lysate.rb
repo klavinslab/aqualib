@@ -128,7 +128,7 @@ class Protocol
 
     show {
       title "Wait for 10 minutes"
-      timer initial: { hours: 0, minutes: 5, seconds: 0}
+      timer initial: { hours: 0, minutes: 10, seconds: 0}
     }
 
     take stripwells, interactive: true
@@ -136,7 +136,7 @@ class Protocol
     show {
       title "Keep stripwells"
           check "Keep the new stripwell on the bench for the next protocol to use."
-          warning "DO NOT SPIN DOWN STIPWELLS."
+          warning "DO NOT SPIN DOWN STRIPWELLS."
     }
 
     stripwells.each do |sw|
