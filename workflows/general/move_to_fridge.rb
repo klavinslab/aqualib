@@ -31,7 +31,7 @@ class Protocol
 
     take stripwells, interactive: true
 
-    stripwells.each { |sw| sw.location = "Fridge?" }
+    stripwells.each { |sw| sw.location = "R4 (beneath the DI dispensers)" }
 
     release stripwells, interactive: true
 

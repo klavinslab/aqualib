@@ -57,7 +57,7 @@ class Protocol
     }
 
     template_vols = templates.map { |t| (300.0 / t.datum[:concentration]).round(1) }
-    water_vols = template_vols.map.with_index { |tv, idx| (10 - tv - 1 - 0.5 * enzymes[idx].length).round(1) }
+    water_vols = template_vols.map.with_index { |tv, idx| [(10 - tv - 1 - 0.5 * enzymes[idx].length).round(1), 0].max }
 
     templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
     buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
@@ -93,7 +93,7 @@ class Protocol
     show {
       title "Start incubation timer"
       check "<a href='https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=one%20hour%20timer' target='_blank'>Click here</a> to start a one-hour timer."
-      check "After one hour, the next protocol, move_to_fridge, will become pending."
+      check "After one hour, the next protocol, move_to_fridge, will be ready."
     }
 
     if io_hash[:task_ids]
