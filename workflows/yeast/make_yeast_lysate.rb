@@ -83,9 +83,9 @@ class Protocol
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
     stripwells.flatten!
 
-    naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
+    #naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
 
-    take [naoh], interactive: true
+    #take [naoh], interactive: true
 
     show {
       title "Prepare Stripwell Tubes"
