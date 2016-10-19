@@ -85,7 +85,7 @@ class Protocol
 
     naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
 
-    take [noah], interactive: true
+    take [naoh], interactive: true
 
     show {
       title "Prepare Stripwell Tubes"
