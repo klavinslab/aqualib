@@ -114,14 +114,16 @@ class Protocol
       vol = show do
         title "Choose Volume"
         get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+        get "number", var: "remaining", label: "How many #{u}'s of #{s.name} left?", default: 5
       end
+
       cost = currency((1+@overhead)*(m+l) * vol[:n]) 
       message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
       if confirm message, cost
         take [item]
         task = make_purchase message, m, l
         release [item]
-        if descriptor[:delete]
+        if descriptor[:delete] || vol[:remaining] == 0
           item.mark_as_deleted
         end
       end
