@@ -58,7 +58,9 @@ class Protocol
 
     template_vols = templates.map { |t| (300.0 / t.datum[:concentration]).round(1) }
     water_vols = template_vols.map.with_index { |tv, idx| [(10 - tv - 1 - 0.5 * enzymes[idx].length).round(1), 0].max }
-
+show {
+  note template_vols
+}
     templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
     buffer_with_volume = templates.map { |t| "1 µL of #{buffer.id}" }
     enzymes_with_volume = enzymes.map { |es| "0.5 µL#{es.length > 1 ? " each" : ""} of #{es.map { |e| "#{e.id}" }.join(" and ") }" }
