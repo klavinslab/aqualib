@@ -51,8 +51,6 @@ class Protocol
       end
     end
     
-    #sds = yeast_samples.length * 3 * 1.1
-    #water = yeast_samples.length * 27 * 1.1
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
@@ -128,27 +126,16 @@ class Protocol
     release yeast_items, interactive: true
 
     show {
-      title "Wait for 5 minutes"
+      title "Wait for 10 minutes"
       timer initial: { hours: 0, minutes: 5, seconds: 0}
     }
 
     take stripwells, interactive: true
 
     show {
-      title "Spin down and dilute"
-      check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
-       # stripwells.each do |sw|
-        #  if sw.num_samples <= 6
-         #   check "Grab a new stripwell with 6 wells and label with the id #{sw}."
-          #else
-           # check "Grab a new stripwell with 12 wells and label with the id #{sw}."
-          #end
-          #note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
-          #check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
+      title "Spin down"
+      check "Spin down all stripwells for about 30 seconds until a small pellet is visible at the bottom of the tubes."
           check "Keep the new stripwell on the bench for the next protocol to use."
-          #check "Dispose the spundown stripwell with id #{sw}."
-         # separator
-        #end
     }
 
     stripwells.each do |sw|
