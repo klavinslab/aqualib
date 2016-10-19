@@ -30,8 +30,15 @@ class Protocol
     enzymes = io_hash[:enzymes].map { |eids| eids.map { |eid| find(:sample, id: eid)[0].in("Enzyme Stock")[0] } }
     buffer = find(:sample, name: "Cut Smart")[0].in("Enzyme Buffer Stock")[0]
 
-    take templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
+    take templates + [buffer], interactive: true, method: "boxes"
     ensure_stock_concentration templates
+
+    show {
+      title "Keep enzymes on ice block"
+      warning "Grab an ice block, and place the enzymes on it while performing the following step!"
+    }
+
+    take enzymes.flatten, interactive: true, method: "boxes"
 
     stripwells = produce spread templates.map { |t| t.sample }, "Stripwell", 1, 12
     show {
@@ -49,7 +56,7 @@ class Protocol
       end
     }
 
-    template_vols = templates.map { |t| (200.0 / t.datum[:concentration]).round(1) }
+    template_vols = templates.map { |t| (300.0 / t.datum[:concentration]).round(1) }
     water_vols = template_vols.map.with_index { |tv, idx| (10 - tv - 1 - 0.5 * enzymes[idx].length).round(1) }
 
     templates_with_volume = templates.map.with_index { |t, idx| "#{template_vols[idx]} µL of #{t.id}" }
@@ -60,7 +67,9 @@ class Protocol
     load_samples_variable_vol( ["Template"], [
       templates_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Templates" })
+      { show_together: true, title_appended_text: "with Templates" }) {
+      warning "Use a P2 for volumes smaller than 0.4 µL." if template_vols.any? { |tv| tv < 0.4 }
+    }
     load_samples_variable_vol( ["Cut Smart Buffer"], [
       buffer_with_volume,
       ], stripwells,
@@ -72,11 +81,20 @@ class Protocol
     load_samples_variable_vol( ["Molecular Grade Water"], [
       water_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Molecular Grade Water" })
+      { show_together: true, title_appended_text: "with Molecular Grade Water" }) {
+      warning "Use a P2 for volumes smaller than 0.4 µL." if water_vols.any? { |tv| tv < 0.4 }
+      warning "Cap the stripwells after pipetting!"
+    }
 
     stripwells.each { |sw| sw.location = "37 C standing incubator" }
 
     release stripwells + templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
+
+    show {
+      title "Start incubation timer"
+      check "<a href='https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=one%20hour%20timer' target='_blank'>Click here</a> to start a one-hour timer."
+      check "After one hour, the next protocol, move_to_fridge, will become pending."
+    }
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
