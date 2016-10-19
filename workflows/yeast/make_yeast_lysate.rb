@@ -147,8 +147,8 @@ class Protocol
           #check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
           check "Keep the new stripwell on the bench for the next protocol to use."
           #check "Dispose the spundown stripwell with id #{sw}."
-          separator
-        end
+         # separator
+        #end
     }
 
     stripwells.each do |sw|
