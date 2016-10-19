@@ -51,17 +51,8 @@ class Protocol
       end
     end
     
-    sds = yeast_samples.length * 3 * 1.1
-    water = yeast_samples.length * 27 * 1.1
-
-     show {
-      title "Prepare 0.2 percent SDS"
-      check "Grab a 2 percent SDS stock."
-      check "Grab an empty 1.5 mL tube, label as 0.2 percent SDS."
-      check "Pipette #{sds.round(1)} µL of 2 percent SDS stock into the 1.5 mL tube."
-      check "Pipette #{water.round(1)} µL of molecular grade water into the 1.5 mL tube."
-      check "Mix with vortexer."
-    }
+    #sds = yeast_samples.length * 3 * 1.1
+    #water = yeast_samples.length * 27 * 1.1
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
@@ -92,6 +83,10 @@ class Protocol
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
     stripwells.flatten!
 
+    naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
+
+    take [noah], interactive: true
+
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
@@ -100,7 +95,7 @@ class Protocol
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
-        note "Pipette 30 µL of 0.2 percent SDS into wells " + sw.non_empty_string + "."
+        note "Pipette 25 µL of 20 mM NaOH into wells " + sw.non_empty_string + "."
       end
       # TODO: Put an image of a labeled stripwell here
     }
@@ -124,7 +119,7 @@ class Protocol
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'LYSATE'."
-      check "Press 'run' and select 30 µL."
+      check "Press 'run' and select 25 µL."
       # TODO: image: "thermal_cycler_home"
     }
 
