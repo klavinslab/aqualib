@@ -83,10 +83,6 @@ class Protocol
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
     stripwells.flatten!
 
-    #naoh = find(:item, { object_type: { name: "20 mM NaOH" } } )[0]
-
-    #take [naoh], interactive: true
-
     show {
       title "Prepare Stripwell Tubes"
       stripwells.each do |sw|
@@ -141,16 +137,16 @@ class Protocol
     show {
       title "Spin down and dilute"
       check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
-        stripwells.each do |sw|
-          if sw.num_samples <= 6
-            check "Grab a new stripwell with 6 wells and label with the id #{sw}."
-          else
-            check "Grab a new stripwell with 12 wells and label with the id #{sw}."
-          end
-          note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
-          check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
+       # stripwells.each do |sw|
+        #  if sw.num_samples <= 6
+         #   check "Grab a new stripwell with 6 wells and label with the id #{sw}."
+          #else
+           # check "Grab a new stripwell with 12 wells and label with the id #{sw}."
+          #end
+          #note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
+          #check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
           check "Keep the new stripwell on the bench for the next protocol to use."
-          check "Dispose the spundown stripwell with id #{sw}."
+          #check "Dispose the spundown stripwell with id #{sw}."
           separator
         end
     }
