@@ -31,6 +31,7 @@ class Protocol
     plasmid_items = io_hash[:plasmid_item_ids].collect { |id| find(:item,{ id: id })[0] }
     items_to_transform = gibson_results + plasmid_items
     take items_to_transform, interactive: true, method: "boxes"
+    ensure_stock_concentration items_to_transform
 
     transformed_aliquots = items_to_transform.collect {|g| produce new_sample g.sample.name, of: "Plasmid", as: "Transformed Agro Aliquot"}
     transformed_aliquots.each_with_index do |transformed_aliquot,idx|
@@ -70,10 +71,13 @@ class Protocol
       image "thawed_electrocompotent_cells"
     }
 
+    vols_with_ids = items_to_transform.map { |i| "#{[(200 / i.datum[:concentration]).round(1), 5.0].min} µL of #{i.id}" }
+
     show {
       title "Pipette plasmid into electrocompetent aliquot"
       note "Pipette plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
-      table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
+      table [["Plasmid/Gibson Result", "Electrocompetent aliquot", "1.5 mL tube label"]]
+        .concat(vols_with_ids.collect { |v| { content: v, check: true } }.zip(num_arr, ids.collect { |i| { content: i, check: true } }))
       image "pipette_plasmid_into_electrocompotent_cells"
     }
 
@@ -101,8 +105,8 @@ class Protocol
       warning "Please put these in the 30 C incubator!"
       note "Retrieve all the tubes 30 minutes later by doing the following plate_agro_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
-      note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
-      image "put_green_tube_holder_to_incubator"
+      note "Place #{amp} Amp + Gent plates and #{kan} Kan + Gent plates into the incubator"
+      image "put_green_tube_holder_in_30C_incubator"
     }
 
     show {
