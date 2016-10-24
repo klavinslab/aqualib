@@ -12,6 +12,10 @@ class Protocol
   
 
     people_to_high_five = ["Michelle", "Eric", "Alberto", "David", "Ayesha"]
+    foo = [0, 4, 6]
+    show do
+      note people_to_high_five[2]
+    end
 
     show do
       title "High five checklist"
