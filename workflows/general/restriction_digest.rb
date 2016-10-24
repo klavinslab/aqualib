@@ -38,7 +38,7 @@ class Protocol
       warning "Grab an ice block, and place the enzymes on it while performing the following step!"
     }
 
-    take enzymes.flatten, interactive: true, method: "boxes"
+    take enzymes.flatten.uniq, interactive: true, method: "boxes"
 
     stripwells = produce spread templates.map { |t| t.sample }, "Stripwell", 1, 12
     show {
@@ -64,11 +64,12 @@ class Protocol
     enzymes_with_volume = enzymes.map { |es| "0.5 µL#{es.length > 1 ? " each" : ""} of #{es.map { |e| "#{e.id}" }.join(" and ") }" }
     water_with_volume = water_vols.map { |wv| "#{wv} µL" }
 
-    load_samples_variable_vol( ["Template"], [
-      templates_with_volume,
+    load_samples_variable_vol( ["Molecular Grade Water"], [
+      water_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Templates" }) {
-      warning "Use a P2 for volumes smaller than 0.4 µL." if template_vols.any? { |tv| tv < 0.4 }
+      { show_together: true, title_appended_text: "with Molecular Grade Water" }) {
+      warning "Use a P2 for volumes smaller than 0.4 µL." if water_vols.any? { |tv| tv < 0.4 }
+      warning "Cap the stripwells after pipetting!"
     }
     load_samples_variable_vol( ["Cut Smart Buffer"], [
       buffer_with_volume,
@@ -78,17 +79,16 @@ class Protocol
       enzymes_with_volume,
       ], stripwells,
       { show_together: true, title_appended_text: "with Enzymes" })
-    load_samples_variable_vol( ["Molecular Grade Water"], [
-      water_with_volume,
+    load_samples_variable_vol( ["Template"], [
+      templates_with_volume,
       ], stripwells,
-      { show_together: true, title_appended_text: "with Molecular Grade Water" }) {
-      warning "Use a P2 for volumes smaller than 0.4 µL." if water_vols.any? { |tv| tv < 0.4 }
-      warning "Cap the stripwells after pipetting!"
+      { show_together: true, title_appended_text: "with Templates" }) {
+      warning "Use a P2 for volumes smaller than 0.4 µL." if template_vols.any? { |tv| tv < 0.4 }
     }
-
+    
     stripwells.each { |sw| sw.location = "37 C standing incubator" }
 
-    release stripwells + templates + enzymes.flatten + [buffer], interactive: true, method: "boxes"
+    release stripwells + templates + enzymes.flatten.uniq + [buffer], interactive: true, method: "boxes"
 
     show {
       title "Start incubation timer"
