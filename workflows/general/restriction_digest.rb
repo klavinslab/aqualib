@@ -69,7 +69,6 @@ class Protocol
       ], stripwells,
       { show_together: true, title_appended_text: "with Molecular Grade Water" }) {
       warning "Use a P2 for volumes smaller than 0.4 µL." if water_vols.any? { |tv| tv < 0.4 }
-      warning "Cap the stripwells after pipetting!"
     }
     load_samples_variable_vol( ["Cut Smart Buffer"], [
       buffer_with_volume,
@@ -84,6 +83,7 @@ class Protocol
       ], stripwells,
       { show_together: true, title_appended_text: "with Templates" }) {
       warning "Use a P2 for volumes smaller than 0.4 µL." if template_vols.any? { |tv| tv < 0.4 }
+      warning "Cap the stripwells after pipetting!"
     }
     
     stripwells.each { |sw| sw.location = "37 C standing incubator" }
