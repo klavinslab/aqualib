@@ -31,9 +31,9 @@ class Protocol
         agar_media.push(made_media)
       end
     end
-    for i in 1..(agar_media.length)
+    agar_media.each_with_index do |idx|
 
-      take [agar_media[i - 1]], interactive: true
+      take [agar_media[idx]], interactive: true
 
       type = show {
         title "Select option"
