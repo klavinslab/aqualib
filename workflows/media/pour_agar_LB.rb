@@ -5,7 +5,7 @@ class Protocol
   include Standard
   def arguments
       {
-        io_hash: {}
+        io_hash: {total_media: [70709]}
       }
   end
 
