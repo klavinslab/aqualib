@@ -50,18 +50,7 @@ class Protocol
         yeast_colonies.push "#{y.id}.c#{start_colony+x}"
       end
     end
-
-    sds = yeast_samples.length * 3 * 1.1
-    water = yeast_samples.length * 27 * 1.1
-
-    show {
-      title "Prepare 0.2 percent SDS"
-      check "Grab a 2 percent SDS stock."
-      check "Grab an empty 1.5 mL tube, label as 0.2 percent SDS."
-      check "Pipette #{sds.round(1)} µL of 2 percent SDS stock into the 1.5 mL tube."
-      check "Pipette #{water.round(1)} µL of molecular grade water into the 1.5 mL tube."
-      check "Mix with vortexer."
-    }
+    
 
     # build a pcrs hash that group fragment pcr by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
@@ -100,7 +89,8 @@ class Protocol
         else
           check "Grab a new stripwell with 12 wells and label with the id #{sw}."
         end
-        note "Pipette 30 µL of 0.2 percent SDS into wells " + sw.non_empty_string + "."
+        note "Pipette 25 µL of 20 mM NaOH into wells " + sw.non_empty_string + "."
+        warning "Using 25 µL NaOH, not 30 µL SDS.  "
       end
       # TODO: Put an image of a labeled stripwell here
     }
@@ -124,7 +114,7 @@ class Protocol
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       separator
       check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'LYSATE'."
-      check "Press 'run' and select 30 µL."
+      check "Press 'run' and select 25 µL."
       # TODO: image: "thermal_cycler_home"
     }
 
@@ -137,27 +127,16 @@ class Protocol
     release yeast_items, interactive: true
 
     show {
-      title "Wait for 5 minutes"
-      timer initial: { hours: 0, minutes: 5, seconds: 0}
+      title "Wait for 10 minutes"
+      timer initial: { hours: 0, minutes: 10, seconds: 0}
     }
 
     take stripwells, interactive: true
 
     show {
-      title "Spin down and dilute"
-      check "Spin down all stripwells for about 40 seconds to 1 minute until a small pellet is visible at the bottom of the tubes."
-        stripwells.each do |sw|
-          if sw.num_samples <= 6
-            check "Grab a new stripwell with 6 wells and label with the id #{sw}."
-          else
-            check "Grab a new stripwell with 12 wells and label with the id #{sw}."
-          end
-          note "Pipette 40 µL of molecular grade water into wells " + sw.non_empty_string + "."
-          check "Pipette 10 µL each well of supernatant of the spundown stripwell with id #{sw} into each well of the new stripwell with the same id."
+      title "Keep stripwells"
           check "Keep the new stripwell on the bench for the next protocol to use."
-          check "Dispose the spundown stripwell with id #{sw}."
-          separator
-        end
+          warning "DO NOT SPIN DOWN STRIPWELLS."
     }
 
     stripwells.each do |sw|

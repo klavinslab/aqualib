@@ -228,7 +228,8 @@ class Protocol
     end
 
     release stripwells
-    release all_templates + all_forward_primers + all_reverse_primers + additional_primer_aliquots + [kapa_stock_item], interactive: true, method: "boxes"
+    release all_templates + all_forward_primers + all_reverse_primers + additional_primer_aliquots - 
+            contaminated_primer_aliquots - not_enough_vol_primer_aliquots + [kapa_stock_item], interactive: true, method: "boxes"
     
     # change task status
     if io_hash[:task_ids]

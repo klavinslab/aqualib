@@ -50,9 +50,9 @@ class Protocol
     # take primer aliquots
     take primers - diluted_primer_aliquots, interactive: true, method: "boxes"
 
-    # get phusion enzyme
-    phusion_stock_item =  find(:sample, name: "Phusion HF Master Mix")[0].in("Enzyme Stock")[0]
-    take [phusion_stock_item], interactive: true, method: "boxes"
+    # get kapa enzyme
+    kapa_stock_item =  find(:sample, name: "Kapa HF Master Mix")[0].in("Enzyme Stock")[0]
+    take [kapa_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that pcrs by T Anneal
     pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], forward_primers: [], reverse_primers: [], lysate_stripwells: [], pcr_stripwells: [], tanneals: [] } }
@@ -95,7 +95,17 @@ class Protocol
             check "Grab a new stripwell with 12 wells and label with the id #{sw}."
           end
           check "Pipette 3.5 µL of molecular grade water into wells " + sw.non_empty_string + "."
-          check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
+        end
+      end
+    }
+
+    show {
+      title "Add Template"
+      pcrs.each do |t, pcr|
+        pcr[:pcr_stripwells].each_with_index do |sw, idx|
+      check "Spin down stripwell #{pcr[:lysate_stripwells][idx]} immediately before adding to new stipwell."
+      check "Transfer 0.5 µL from each well in stripwell #{pcr[:lysate_stripwells][idx]} to the new stripwell #{sw}"
+      warning "Spin down stipwell from lysate protocol right before adding to PCR stripwell."
         end
       end
     }
@@ -116,13 +126,13 @@ class Protocol
     show {
       title "Add Master Mix"
       pcr_stripwells.each do |sw|
-        check "Pipette 5 µL of master mix (item #{phusion_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
+        check "Pipette 5 µL of master mix (item #{kapa_stock_item}) into each of wells " + sw.non_empty_string + " of stripwell #{sw}."
       end
       separator
       warning "USE A NEW PIPETTE TIP FOR EACH WELL AND PIPETTE UP AND DOWN TO MIX"
     }
 
-    release [phusion_stock_item], interactive: true, method: "boxes"
+    release [kapa_stock_item], interactive: true, method: "boxes"
 
     # run the thermocycler
     pcrs.each do |key, pcr|
