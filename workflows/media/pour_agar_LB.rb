@@ -99,7 +99,6 @@ class Protocol
           note "'#{plate_batch}, 'initials', and 'date'."
         }
       end
-
       delete agar_media[i - 1]
     end
     io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
