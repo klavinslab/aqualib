@@ -100,8 +100,8 @@ class Protocol
         }
       end
       delete agar_media[i - 1]
+      io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
     end
-    io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
     release [plate_batch], interactive: true
     return {io_hash: io_hash}
   end
