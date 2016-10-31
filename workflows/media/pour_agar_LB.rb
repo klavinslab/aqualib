@@ -27,10 +27,11 @@ class Protocol
     agar_media = Array.new
     all_media.each do |x|
       made_media = find(:item, id: x)[0]
-      if(made_media.object_type.name.include?("Agar"))
+      if(made_media.object_type.name.include?("800 mL Agar"))
         agar_media.push(made_media)
       end
     end
+    plate_batch_ids = Array.new
     for i in 1..(agar_media.length)
 
       take [agar_media[i - 1]], interactive: true
@@ -99,10 +100,10 @@ class Protocol
           note "'#{plate_batch}, 'initials', and 'date'."
         }
       end
-
-      delete agar_media[i]
+      delete agar_media[i - 1]
+      plate_batch_ids.push(plate_batch.id)
     end
-    io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
+    io_hash = {plate_batch_id: plate_batch_ids}.merge(io_hash)
     release [plate_batch], interactive: true
     return {io_hash: io_hash}
   end

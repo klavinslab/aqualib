@@ -27,7 +27,7 @@ class Protocol
     agar_media = Array.new
     all_media.each do |x|
       made_media = find(:item, id: x)[0]
-      if(made_media.object_type.name.include?("Agar"))
+      if(made_media.object_type.name.include?("800 mL Agar"))
         agar_media.push(made_media)
       end
     end

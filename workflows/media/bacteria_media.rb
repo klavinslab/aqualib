@@ -46,7 +46,10 @@ class Protocol
       raise ArgumentError, "Chosen media is not valid"
     end
     
-    if(container == "800 mL Liquid") 
+    combine = true
+
+    if(container == "800 mL Liquid")
+      combine = false 
       multiplier = 1;
       water = 800
       bottle = "1 L Bottle"
@@ -59,6 +62,7 @@ class Protocol
       water = 200
       bottle = "250 mL Bottle"
     elsif(container == "800 mL Agar")
+      combine = false
       multiplier = 1;
       amount += 9.6
       water = 800
@@ -87,21 +91,29 @@ class Protocol
       produced_media_id.push(output.id)
       output_id = output_id + ", #{output.id}"
     end
+
     show {
       title "#{label}"
       note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
     }
 
-    combine_bottles = show {
-      title "Combine bottles"
-      select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
-    }
+    combine_bottles = false
+
+    if combine
+      choice = show do
+        title "Combine bottles"
+        select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
+      end
+      combine_bottles = choice[:choice]
+    end
+
+
 
     original_quantity = quantity
     original_bottle = bottle
     original_water = water
     
-    if combine_bottles[:choice] == "Yes"
+    if combine_bottles
       volume = water * quantity
       quantity = volume / 800
       multiplier = 1
@@ -146,7 +158,7 @@ class Protocol
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
-    if combine_bottles[:choice] == "Yes"
+    if combine_bottles
       show {
         title "Separate bottles"
         note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
@@ -159,6 +171,6 @@ class Protocol
     }
     release(bottle)
     release(ingredient + produced_media, interactive: true)
-    return {io_hash: io_hash, done: finished, has_agar: container.include?("800 mL Agar")? "yes":"no"}
+    return {io_hash: io_hash, done: finished, has_agar: container.include?("Agar")? "yes":"no"}
   end
 end
