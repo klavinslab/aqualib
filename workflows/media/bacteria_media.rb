@@ -91,23 +91,29 @@ class Protocol
       produced_media_id.push(output.id)
       output_id = output_id + ", #{output.id}"
     end
+
     show {
       title "#{label}"
       note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
     }
 
+    combine_bottles = false
+
     if combine
-      combine_bottles = show do
+      choice = show do
         title "Combine bottles"
         select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
       end
+      combine_bottles = choice[:choice]
     end
+
+
 
     original_quantity = quantity
     original_bottle = bottle
     original_water = water
     
-    if combine_bottles[:choice] == "Yes"
+    if combine_bottles
       volume = water * quantity
       quantity = volume / 800
       multiplier = 1
@@ -152,7 +158,7 @@ class Protocol
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
-    if combine_bottles[:choice] == "Yes"
+    if combine_bottles
       show {
         title "Separate bottles"
         note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
