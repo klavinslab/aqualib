@@ -31,6 +31,7 @@ class Protocol
         agar_media.push(made_media)
       end
     end
+    plate_batch_ids = Array.new
     for i in 1..(agar_media.length)
 
       take [agar_media[i - 1]], interactive: true
@@ -100,8 +101,9 @@ class Protocol
         }
       end
       delete agar_media[i - 1]
-      io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
+      plate_batch_ids.push(plate_batch.id)
     end
+    io_hash = {plate_batch_id: plate_batch_ids}.merge(io_hash)
     release [plate_batch], interactive: true
     return {io_hash: io_hash}
   end
