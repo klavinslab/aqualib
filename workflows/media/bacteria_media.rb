@@ -46,7 +46,10 @@ class Protocol
       raise ArgumentError, "Chosen media is not valid"
     end
     
-    if(container == "800 mL Liquid") 
+    combine = true
+
+    if(container == "800 mL Liquid")
+      combine = false 
       multiplier = 1;
       water = 800
       bottle = "1 L Bottle"
@@ -59,6 +62,7 @@ class Protocol
       water = 200
       bottle = "250 mL Bottle"
     elsif(container == "800 mL Agar")
+      combine = false
       multiplier = 1;
       amount += 9.6
       water = 800
@@ -92,10 +96,12 @@ class Protocol
       note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
     }
 
-    combine_bottles = show {
-      title "Combine bottles"
-      select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
-    }
+    if combine
+      combine_bottles = show do
+        title "Combine bottles"
+        select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
+      end
+    end
 
     original_quantity = quantity
     original_bottle = bottle
