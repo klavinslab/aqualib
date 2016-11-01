@@ -43,7 +43,7 @@ class Protocol
       tab = [ [ "Description", "Amount" ] ] + transactions.collect { |t|
         [ 
          t.description.split(":")[0].split(" - ")[1], 
-          curerncy((1+t.markup_rate)*t.amount) 
+          currency((1+t.markup_rate)*t.amount) 
         ] 
       }
       
@@ -64,7 +64,7 @@ class Protocol
   
   def choose_object_from objects, number=false
     result = show do
-      title "Chose Object"
+      title "Choose Object"
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
       get "number", var: "n", label: "How many?", default: 5 if number
     end
@@ -96,7 +96,7 @@ class Protocol
     ot = choose_object_from samples
 
     result = show do
-      title "Chose Sample"
+      title "Choose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
     end
     
