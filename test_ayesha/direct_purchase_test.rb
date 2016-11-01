@@ -104,17 +104,26 @@ class Protocol
     m = descriptor[:materials]
     l = descriptor[:labor]
     u = descriptor[:unit]
-       
 
-    s = Sample.find_by_name(descriptor[:name])
-    items = s.items.reject { |i| i.deleted? }
+    items = Sample.find_by_name(descriptor[:name]).items.reject { |i| i.deleted? }
+    #items = s.items.reject { |i| i.deleted? }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s.name}"
-      vol = show do
-        title "Choose Volume"
-        get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
-        select ["Yes", "No"], var: "delete", label: "Is the sample empty?", default: 5
+
+      whole = show do 
+        title "Buy whole tube?"
+        select ["Yes", "No"], var: "choice", label: "Would you like to buy the whole tube?", default: 0
+      end
+
+      if whole[:choice] == "Yes"
+        vol[:n] = descriptor[:total_volume]
+      else
+        vol = show do
+          title "Choose Volume"
+          get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+          select ["Yes", "No"], var: "delete", label: "Is the sample empty?", default: 5
+        end
       end
 
       cost = currency((1+@overhead)*(m+l) * vol[:n]) 
@@ -123,7 +132,7 @@ class Protocol
         take [item]
         task = make_purchase message, m, l
         release [item]
-        if descriptor[:delete] || vol[:delete] == "Yes"
+        if (descriptor[:delete] && vol[:delete] == "Yes") || (descriptor[:delete] && whole[:choice] == "Yes")
           item.mark_as_deleted
         end
       end
