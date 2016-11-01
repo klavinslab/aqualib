@@ -105,8 +105,8 @@ class Protocol
     l = descriptor[:labor]
     u = descriptor[:unit]
 
-    items = Sample.find_by_name(descriptor[:name]).items.reject { |i| i.deleted? }
-    #items = s.items.reject { |i| i.deleted? }
+    s = Sample.find_by_name(descriptor[:name])
+    items = s.items.reject { |i| i.deleted? }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s.name}"
