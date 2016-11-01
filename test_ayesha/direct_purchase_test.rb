@@ -104,6 +104,7 @@ class Protocol
     m = descriptor[:materials]
     l = descriptor[:labor]
     u = descriptor[:unit]
+    vol = {}
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
