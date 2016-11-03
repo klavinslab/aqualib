@@ -84,7 +84,7 @@ class Protocol
 
       batch_matrix = fill_array 10, 10, res, find(:sample, name: opt)[0].id
       plate_batch.matrix = batch_matrix
-      plate_batch.location = "Media Bay"
+      plate_batch.location = "30 degree incubator"
       plate_batch.save
 
       if(res > 0)
