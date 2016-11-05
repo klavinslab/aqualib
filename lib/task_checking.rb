@@ -294,6 +294,7 @@ def task_status_check t
           sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
           errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
           errors.concat num_of_overnights_checking(ids)
+          argument_lengths.push 1 if variable_name == "glycerol_stock_id"
         when "num_colonies"
           ids.each do |id|
             errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
