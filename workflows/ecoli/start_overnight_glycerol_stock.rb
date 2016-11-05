@@ -56,7 +56,7 @@ class Protocol
 
     tab = [["Glycerol stock id", "Location", "Overnight id"]]
     glycerol_stocks.each_with_index do |g,idx|
-      tab.push [g.id, { content: g.location, check: true }, { content: glycerol_overnights[idx].id, check: true } ]
+      tab.push [g.id, { content: g.location, check: true }, { content: overnights[idx].id, check: true } ]
     end
 
     show {
