@@ -290,10 +290,11 @@ def task_status_check t
             new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
             errors.concat sample_check(ids, assert_property: "Length")[:errors]
           end
-        when "plate_ids", "glycerol_stock_ids", "plasmid_item_ids"
+        when "plate_ids", "glycerol_stock_ids", "glycerol_stock_id", "plasmid_item_ids"
           sample_ids = ids.collect { |id| find(:item, id: id)[0].sample.id }
           errors.concat sample_check(sample_ids, assert_property: "Bacterial Marker")[:errors]
           errors.concat num_of_overnights_checking(ids)
+          argument_lengths.push 1 if variable_name == "glycerol_stock_id"
         when "num_colonies"
           ids.each do |id|
             errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
