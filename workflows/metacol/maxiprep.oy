@@ -39,6 +39,7 @@ wire overnight => maxiprep
 
 transition [ tasks_inputs ] => [ overnight ]  when !error(0) && completed(0) end
 transition [ overnight ] => [ maxiprep ] when !error(0) && completed(0) end
+transition [ maxiprep ] => [] when !error(0) && completed(0) end
 
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ overnight ] => [ overnight ] when error(0) end
