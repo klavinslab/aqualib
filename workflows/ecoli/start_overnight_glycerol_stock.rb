@@ -70,7 +70,9 @@ class Protocol
       o.location = "37 C shaker incubator"
       o.save
     end
-    release glycerol_stocks + overnights, interactive: true
+
+    release glycerol_stocks, interactive: false
+    release overnights, interactive: true
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
