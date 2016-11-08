@@ -270,12 +270,14 @@ class Protocol
         io_hash[:yeast_mating_strain_ids].push task.simple_spec[:yeast_mating_strain_ids]
         io_hash[:yeast_selective_plate_types].push plate_type
         io_hash[:user_ids].push task.user.id
-        plate_hash[plate_type] = plate_hash[plate_type] + 1
         sample = find(:sample, id: plate_type)[0].name
         if sample.include?("clonNAT") || sample.include?("G418") || sample.include?("Hygro") || sample.include?("Bleo")
           io_hash[:has_antibiotic] = "yes"
           io_hash[:antibiotic_plates].push plate_type
+          sample = sample.split(" +")[0]
+          plate_type = find(:sample, name: "#{sample}").id
         end
+        plate_hash[plate_type] = plate_hash[plate_type] + 1
       end
       io_hash = { needs_plates: "no" }.merge io_hash
       overall_batches = find(:item, object_type: { name: "Agar Plate Batch" }).map{|b| collection_from b}            
