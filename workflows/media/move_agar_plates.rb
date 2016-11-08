@@ -10,7 +10,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    for i in 1..io_hash[:plate_batch_id].length
+    for i in 1..io_hash[[:plate_batch_id]].length
       plate_batch = find(:item, id: io_hash[:plate_batch_id])[i-1]
       take [plate_batch], interactive: true
         
