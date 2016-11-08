@@ -274,8 +274,8 @@ class Protocol
         if sample.include?("clonNAT") || sample.include?("G418") || sample.include?("Hygro") || sample.include?("Bleo")
           io_hash[:has_antibiotic] = "yes"
           io_hash[:antibiotic_plates].push plate_type
-          sample = sample.split(" +")[0]
-          plate_type = find(:sample, name: "#{sample}").id
+          sample = Sample.find_by_name(sample.split(" +")[0])
+          plate_type = sample.id
         end
         plate_hash[plate_type] = plate_hash[plate_type] + 1
       end
