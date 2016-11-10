@@ -175,7 +175,7 @@ module Tasking
     when "Ecoli Transformation"
       size = task.simple_spec[:plasmid_item_ids].length
     when "Golden Gate Assembly"
-      size = task.simple_spec[:backbone].length
+      size = 1
     when "Verification Digest", "Maxiprep"
       size = 1
     when "Warming Agar"
