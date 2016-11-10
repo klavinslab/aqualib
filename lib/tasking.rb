@@ -174,6 +174,8 @@ module Tasking
       size = task.simple_spec[:glycerol_stock_ids].length
     when "Ecoli Transformation"
       size = task.simple_spec[:plasmid_item_ids].length
+    when "Golden Gate Assembly"
+      size = task.simple_spec[:backbone].length
     when "Verification Digest", "Maxiprep"
       size = 1
     when "Warming Agar"
