@@ -120,8 +120,8 @@ class Protocol
       bottle = "1 L Bottle"
     end
         
-    new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
-    io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
+    new_total = [io_hash.delete(:total_media) { Array.new } + produced_media_id]
+    io_hash = {type: "yeast", total_media: io_hash[:total_media].push(new_total)}
 
     bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
     ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
