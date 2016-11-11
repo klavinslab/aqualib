@@ -120,7 +120,7 @@ class Protocol
       bottle = "1 L Bottle"
     end
     
-    io_hash[:total_media] = []    
+    io_hash[:total_media] = Array.new   
     new_total = [io_hash.delete(:total_media) { Array.new } + produced_media_id]
     io_hash = {type: "yeast", total_media: io_hash[:total_media].push(new_total)}
 
