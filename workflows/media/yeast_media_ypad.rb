@@ -182,6 +182,10 @@ class Protocol
     release(bottle)
     release(ingredients + produced_media, interactive: true)
 
-    return {io_hash: io_hash, done: finished, has_agar: container.include?("800 mL Agar")? "yes":"no"}
+    if container.include?("800 mL Agar")
+      io_hash[:has_agar] = "yes"
+    end
+
+    return {io_hash: io_hash, done: finished, has_agar: io_hash[:has_agar]}
   end
 end
