@@ -38,11 +38,13 @@ class Protocol
         
         
     label = media_name 
+    combine = true
         
     if(container == "800 mL Liquid") 
 	    multiplier = 1;
 		  water = 800
 		  bottle = "1 L Bottle"
+      combine = false
 	  elsif(container == "400 mL Liquid")
 	  	multiplier = 0.5;
 		  water = 400
@@ -58,6 +60,7 @@ class Protocol
   		bottle = "1 L Bottle"
   	  io_hash = {has_agar: "yes"}.merge(io_hash)
   		ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
+      combine = false
   	elsif(container == "400 mL Agar")
   		multiplier = 0.5;
   		label += " Agar"
@@ -98,7 +101,7 @@ class Protocol
       }
       combine = false if combine_bottles[:choice] == "No"
     end
-    
+
     original_quantity = quantity
     original_bottle = bottle
     original_water = water
