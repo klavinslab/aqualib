@@ -23,7 +23,7 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    all_media = [io_hash[:total_media]]
+    all_media = io_hash[:total_media]
     agar_media = Array.new
     all_media.each do |x|
       made_media = find(:item, id: x)[0]
