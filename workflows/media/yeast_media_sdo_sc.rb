@@ -119,7 +119,7 @@ class Protocol
     original_bottle = bottle
     original_water = water
     
-    if combine_bottles[:choice] == "Yes"
+    if combine
       volume = water * quantity
       quantity = volume / 800
       multiplier = 1

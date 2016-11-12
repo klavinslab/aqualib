@@ -105,13 +105,11 @@ class Protocol
       combine = false if choice[:choice] == "No"
     end
 
-
-
     original_quantity = quantity
     original_bottle = bottle
     original_water = water
     
-    if combine_bottles
+    if combine
       volume = water * quantity
       quantity = volume / 800
       multiplier = 1
@@ -167,6 +165,7 @@ class Protocol
       title "Label Media"
       note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id}, and 'date'"
     }
+    
     release(bottle)
     release(ingredient + produced_media, interactive: true)
     return {io_hash: io_hash, done: finished, has_agar: container.include?("800 mL Agar")? "yes":"no"}
