@@ -3,7 +3,7 @@ class Protocol
   def arguments
       {
         io_hash: {},
-        plate_batch_id: 70708
+        plate_batch_id: [70708]
       }
   end
 
@@ -11,7 +11,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     for i in 1..io_hash[:plate_batch_id].length
-      plate_batch = find(:item, id: io_hash[:plate_batch_id])[i-1]
+      plate_batch = find(:item, id: io_hash[:plate_batch_id][i-1])[0]
       take [plate_batch], interactive: true
         
       show do

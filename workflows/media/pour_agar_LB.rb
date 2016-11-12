@@ -32,6 +32,7 @@ class Protocol
       end
     end
     plate_batch_ids = Array.new
+    
     for i in 1..(agar_media.length)
 
       take [agar_media[i - 1]], interactive: true

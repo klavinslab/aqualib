@@ -97,23 +97,19 @@ class Protocol
       note "Description: This prepares #{quantity} bottle(s) of #{label} for growing bacteria"
     }
 
-    combine_bottles = false
-
     if combine
       choice = show do
         title "Combine bottles"
         select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
       end
-      combine_bottles = choice[:choice]
+      combine = false if choice[:choice] == "No"
     end
-
-
 
     original_quantity = quantity
     original_bottle = bottle
     original_water = water
     
-    if combine_bottles
+    if combine
       volume = water * quantity
       quantity = volume / 800
       multiplier = 1
@@ -123,8 +119,8 @@ class Protocol
 
     bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
     take ingredient + bottle, interactive: true
-          new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
-          io_hash = {type: "bacteria", total_media: new_total}.merge(io_hash)
+    io_hash[:total_media] = Array.new if io_hash[:total_media].nil?
+    io_hash = {total_media: (io_hash[:total_media] << produced_media_id).flatten!}
     
     if(bottle.include?("1 L Bottle"))
       show {
@@ -158,7 +154,7 @@ class Protocol
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
-    if combine_bottles
+    if combine
       show {
         title "Separate bottles"
         note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
@@ -169,8 +165,10 @@ class Protocol
       title "Label Media"
       note "Label the bottle(s) with '#{label}', 'Your initials'#{output_id}, and 'date'"
     }
+
+
     release(bottle)
     release(ingredient + produced_media, interactive: true)
-    return {io_hash: io_hash, done: finished, has_agar: container.include?("Agar")? "yes":"no"}
+    return {io_hash: io_hash, done: finished, has_agar: container.include?("800 mL Agar") ? "yes":"no"}
   end
 end

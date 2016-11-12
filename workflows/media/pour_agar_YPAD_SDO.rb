@@ -23,8 +23,9 @@ class Protocol
 
   def main
     io_hash = input[:io_hash]
-    all_media = [io_hash[:total_media]]
+    all_media = io_hash[:total_media]
     agar_media = Array.new
+    plate_batch_id = Array.new
     all_media.each do |x|
       made_media = find(:item, id: x)[0]
       if(made_media.object_type.name.include?("800 mL Agar"))
@@ -79,10 +80,11 @@ class Protocol
         }
 
         delete agar_media[i - 1]
-        io_hash = {plate_batch_id: plate_batch.id}.merge(io_hash)
+        plate_batch_id.push(plate_batch.id)
         release [plate_batch], interactive: true
       end
     end
+    io_hash[:plate_batch_id] = plate_batch_id
     return {io_hash: io_hash}
   end
 end

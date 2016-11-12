@@ -43,7 +43,7 @@ class Protocol
       tab = [ [ "Description", "Amount" ] ] + transactions.collect { |t|
         [ 
          t.description.split(":")[0].split(" - ")[1], 
-          curerncy((1+t.markup_rate)*t.amount) 
+          currency((1+t.markup_rate)*t.amount) 
         ] 
       }
       
@@ -64,7 +64,7 @@ class Protocol
   
   def choose_object_from objects, number=false
     result = show do
-      title "Chose Object"
+      title "Choose Object"
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
       get "number", var: "n", label: "How many?", default: 5 if number
     end
@@ -96,7 +96,7 @@ class Protocol
     ot = choose_object_from samples
 
     result = show do
-      title "Chose Sample"
+      title "Choose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
     end
     
@@ -104,17 +104,27 @@ class Protocol
     m = descriptor[:materials]
     l = descriptor[:labor]
     u = descriptor[:unit]
-       
+    vol = {}
 
     s = Sample.find_by_name(descriptor[:name])
     items = s.items.reject { |i| i.deleted? }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s.name}"
-      vol = show do
-        title "Choose Volume"
-        get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
-        get "number", var: "remaining", label: "How many #{u}'s of #{s.name} left?", default: 5
+
+      whole = show do 
+        title "Buy whole tube?"
+        select ["Yes", "No"], var: "choice", label: "Would you like to buy the whole tube?", default: 0
+      end
+
+      if whole[:choice] == "Yes"
+        vol[:n] = descriptor[:total_volume]
+      else
+        vol = show do
+          title "Choose Volume"
+          get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+          select ["Yes", "No"], var: "delete", label: "Is the sample empty?", default: 5
+        end
       end
 
       cost = currency((1+@overhead)*(m+l) * vol[:n]) 
@@ -123,7 +133,7 @@ class Protocol
         take [item]
         task = make_purchase message, m, l
         release [item]
-        if descriptor[:delete] || vol[:remaining] == 0
+        if (descriptor[:delete] && vol[:delete] == "Yes") || (descriptor[:delete] && whole[:choice] == "Yes")
           item.mark_as_deleted
         end
       end
