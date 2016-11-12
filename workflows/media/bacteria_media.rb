@@ -172,6 +172,7 @@ class Protocol
 
     show do 
       note "#{io_hash[:has_agar]}"
+    end
 
     release(bottle)
     release(ingredient + produced_media, interactive: true)
