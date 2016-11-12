@@ -37,11 +37,14 @@ class Protocol
     else
       present_acid = acid_bank - media_ingredients
     end
-        
+    
+    combine = true
+
     if(container == "800 mL Liquid") 
       multiplier = 1;
       water = 800
       bottle = "1 L Bottle"
+      combine = false
     elsif(container == "400 mL Liquid")
       multiplier = 0.5;
       water = 400
@@ -103,10 +106,13 @@ class Protocol
       note "Description: Makes #{quantity} #{water} mL of #{label} media"
     }
 
-    combine_bottles = show {
-      title "Combine bottles"
-      select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
-    }
+    if combine
+      combine_bottles = show {
+        title "Combine bottles"
+        select ["Yes", "No"], var: "choice", label: "Would you like to combine the #{quantity} bottles of #{container} together?", default: "No"
+      }
+      combine = false if combine_bottles[:choice] == "No"
+    end
 
     original_quantity = quantity
     original_bottle = bottle
@@ -192,7 +198,7 @@ class Protocol
       note "It is ok if a small amount of powder is not dissolved because the autoclave will dissolve it"
     }
     
-    if combine_bottles[:choice] == "Yes"
+    if combine
       show {
         title "Separate bottles"
         note "Take #{original_quantity} of #{original_bottle} and pour out media from 800 mL bottle(s) into each bottle until the #{original_water} mark."
