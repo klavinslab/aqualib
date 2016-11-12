@@ -60,6 +60,7 @@ class Protocol
       bottle = "1 L Bottle"
       io_hash = {has_agar: "yes"}.merge(io_hash)
       ingredients += [find(:item,{object_type:{name:"Bacto Agar"}})[0]]
+      combine = false
     elsif(container == "400 mL Agar")
       multiplier = 0.5;
       label += " Agar"

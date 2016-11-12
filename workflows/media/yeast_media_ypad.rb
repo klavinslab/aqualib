@@ -109,12 +109,10 @@ class Protocol
     end
 
   	bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
+    
+    io_hash[:total_media] = Array.new if io_hash[:total_media].nil?
+    io_hash = {type: "yeast", total_media: (io_hash[:total_media] << produced_media_id).flatten!}
 
-    new_total = io_hash.delete(:total_media) { Array.new } + produced_media_id
-    io_hash = {type: "yeast", total_media: new_total}.merge(io_hash)
-
-
-       
     take ingredients + bottle, interactive: true
 
   	if(bottle.include?("1 L Bottle"))
