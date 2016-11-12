@@ -121,7 +121,7 @@ class Protocol
     end
        
     io_hash[:total_media] = Array.new if io_hash[:total_media].nil?
-    io_hash = {type: "yeast", (total_media: io_hash[:total_media] << produced_media_id).flatten!}
+    io_hash = {type: "yeast", total_media: (io_hash[:total_media] << produced_media_id).flatten!}
 
     bottle = [find(:item, object_type: { name: bottle})[0]] * quantity
     ingredients += [find(:item,{object_type:{name:"Adenine (Adenine hemisulfate)"}})[0]]
