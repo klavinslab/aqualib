@@ -170,6 +170,9 @@ class Protocol
       io_hash[:has_agar] = "yes"
     end
 
+    show do 
+      note "#{io_hash[:has_agar]}"
+
     release(bottle)
     release(ingredient + produced_media, interactive: true)
     return {io_hash: io_hash, done: finished, has_agar: io_hash[:has_agar]}
