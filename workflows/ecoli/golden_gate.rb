@@ -87,8 +87,8 @@ class Protocol
       end
     end
 
-    puts task_hashes.map { |th| th[:enzyme] }
-    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq
+    puts task_hashes.map { |th| th[:enzyme].id }
+    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq, interactive: true, method: "boxes"
 
     # TODO if no 40 fmole/uL, determine concentration of stocks
     ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
@@ -99,12 +99,15 @@ class Protocol
     # produce 1 ng/µL Plasmid Stocks
     diluted_stocks = []
     task_hashes.each do |task_hash|
-      task_hash[:stocks_to_dilute].map! do |stock|
-        next if stock.nil?
+      task_hash[:stocks].map!.with_index do |stock, idx|
+        next unless stock.nil?
 
-        diluted_stock = stock.sample.in("40 fmole/µL #{stock.sample.sample_type.name} Stock")[0]
+        stock_to_dilute = task_hash[:stocks_to_dilute][idx]
+        diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock.sample.sample_type.name} Stock")[0]
         if diluted_stock.nil?
-          diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("40 fmole/µL #{stock.sample.sample_type.name} Stock") 
+          diluted_stock = produce new_sample stock_to_dilute.sample.name, 
+                            of: stock_to_dilute.sample.sample_type.name, 
+                            as: "40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock"
         end
         
         diluted_stocks.push diluted_stock
