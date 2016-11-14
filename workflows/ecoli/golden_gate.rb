@@ -105,7 +105,7 @@ class Protocol
         stock_to_dilute = task_hash[:stocks_to_dilute][idx]
         puts "stock_to_dilute #{stock_to_dilute}"
         puts "idx #{idx}"
-        diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock.sample.sample_type.name} Stock")[0]
+        diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock")[0]
         if diluted_stock.nil?
           diluted_stock = produce new_sample stock_to_dilute.sample.name, 
                             of: stock_to_dilute.sample.sample_type.name, 
