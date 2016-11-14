@@ -77,17 +77,22 @@ class Protocol
 
         if stock.nil?
           task_hash[:stocks_to_dilute][idx] = sample.in("#{sample.sample_type.name} Stock")[0]
+          puts "No 40 fmole/uL stock found for #{sample.sample_type.name}!"
         else
           task_hash[:stocks][idx] = stock
+          puts "40 fmole/uL stock found for #{sample.sample_type.name}!"
         end
       end
     end
 
+    puts task_hashes.map { |th| th[:enzyme] }
     take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq
 
     # TODO if no 40 fmole/uL, determine concentration of stocks
     ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
     
+    task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
+
     # TODO If stocks too concentrated, dilute to 40 fmole/uL and make new item
     # produce 1 ng/µL Plasmid Stocks
     diluted_stocks = []
@@ -113,13 +118,16 @@ class Protocol
     end
 
     # display the dilution info to user
-    show {
+    show do
       title "Make 40 fmole/µL Stocks"
+
       check "Grab #{stocks_to_dilute.length} 1.5 mL tubes, label them with #{diluted_stocks.join(", ")}"
       check "Add stocks and water into newly labeled 1.5 mL tubes following the table below"
+
       table dilution_table
-      check "Vortex and then spin down for a few seconds"
-    }
+
+      check "Vortex and then spin down for a few seconds
+"    end
 
     # TODO If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
