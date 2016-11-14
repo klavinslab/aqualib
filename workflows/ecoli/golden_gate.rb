@@ -104,6 +104,7 @@ class Protocol
         diluted_stock = stock.sample.in("40 fmole/µL #{stock.sample.sample_type.name} Stock")[0]
         if diluted_stock.nil?
           diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("40 fmole/µL #{stock.sample.sample_type.name} Stock") 
+        end
         
         diluted_stocks.push diluted_stock
 
