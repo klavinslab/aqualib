@@ -98,8 +98,8 @@ class Protocol
     # produce 1 ng/µL Plasmid Stocks
     diluted_stocks = []
     task_hashes.each do |task_hash|
-      task_hash[:stocks].map! do |stock|
-        next unless stock.nil?
+      task_hash[:stocks_to_dilute].map! do |stock|
+        next if stock.nil?
         diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("1 fmole/µL #{s.sample.sample_type.name} Stock") 
         diluted_stocks.push diluted_stock
 
@@ -127,8 +127,8 @@ class Protocol
 
       table dilution_table
 
-      check "Vortex and then spin down for a few seconds
-"    end
+      check "Vortex and then spin down for a few seconds"
+    end
 
     # TODO If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
