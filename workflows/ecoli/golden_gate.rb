@@ -65,8 +65,8 @@ class Protocol
         inserts_ids: spec[:inserts],
         enzyme: find(:sample, id: spec[:restriction_enzyme])[0].in("Enzyme Stock")[0],
         sample_ids: [spec[:backbone]] + spec[:inserts],
-        stocks: Array.new(spec[:backbone].length + spec[:inserts].length) { nil } },
-        stocks_to_dilute: Array.new(spec[:backbone].length + spec[:inserts].length) { nil } }
+        stocks: Array.new(1 + spec[:inserts].length) { nil },
+        stocks_to_dilute: Array.new(1 + spec[:inserts].length) { nil } }
     end
 
     # TODO look for 40 fmole/uL stocks for backbone and inserts
