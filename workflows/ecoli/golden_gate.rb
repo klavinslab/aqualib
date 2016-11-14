@@ -100,7 +100,11 @@ class Protocol
     task_hashes.each do |task_hash|
       task_hash[:stocks_to_dilute].map! do |stock|
         next if stock.nil?
-        diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("40 fmole/µL #{stock.sample.sample_type.name} Stock") 
+
+        diluted_stock = stock.sample.in("40 fmole/µL #{stock.sample.sample_type.name} Stock")[0]
+        if diluted_stock.nil?
+          diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("40 fmole/µL #{stock.sample.sample_type.name} Stock") 
+        
         diluted_stocks.push diluted_stock
 
         diluted_stock
@@ -113,7 +117,7 @@ class Protocol
     water_volumes = concs.collect { |c| c - 1.0 }
 
     # build a checkable table for user
-    dilution_table = [["Newly labled tube", "Template stock, 1 µL", "Water volume"]]
+    dilution_table = [["Newly labeled tube", "Template stock, 1 µL", "Water volume"]]
     stocks_to_dilute.each_with_index do |s, idx|
       dilution_table.push([diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
     end
@@ -138,7 +142,7 @@ class Protocol
     # TODO volume checks. Ensure there is enough volume in each stock
 
     # TODO make stripwell, one well per reaction
-    stripwells = produce spread task_hashes.map { |th| th[:stocks] }.flatten, "Stripwell", 1, 12
+    stripwells = produce spread task_hashes.map { |th| th[:stocks].map { |stock| stock.sample } }.flatten, "Stripwell", 1, 12
 
     # TODO make mastermix (1 uL ligase, 2 uL 10x "T4 DNA Ligase", 6 uL H2O)
     show do
@@ -159,7 +163,7 @@ class Protocol
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      set_task_status(task, "golden gate")
+      #set_task_status(task, "golden gate")
     end
 
     #io_hash[:golden_gate_result_ids] = golden_gate_results.collect { |g| g.id }
