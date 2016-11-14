@@ -79,6 +79,7 @@ class Protocol
         if stock.nil?
           task_hash[:stocks_to_dilute][idx] = sample.in("#{sample.sample_type.name} Stock")[0]
           puts "No 40 fmole/uL stock found for #{sample.sample_type.name}!"
+          puts "  Found #{sample.in("#{sample.sample_type.name} Stock")[0].id} instead"
         else
           task_hash[:stocks][idx] = stock
           puts "40 fmole/uL stock found for #{sample.sample_type.name}!"
