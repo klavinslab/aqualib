@@ -88,17 +88,17 @@ class Protocol
     # TODO if no 40 fmole/uL, determine concentration of stocks
     ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
     
-
     # TODO If stocks too concentrated, dilute to 40 fmole/uL and make new item
     # produce 1 ng/µL Plasmid Stocks
     diluted_stocks = []
     task_hashes.each do |task_hash|
       task_hash[:stocks].map! do |stock|
         next unless stock.nil?
-        diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("1 fmole/µL " + s.sample.sample_type.name + " Stock") 
+        diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("1 fmole/µL #{s.sample.sample_type.name} Stock") 
         diluted_stocks.push diluted_stock
 
         diluted_stock
+      end
     end
 
     # collect all concentrations
