@@ -9,6 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
+      plasmid_ids: [11948, 11935],
       backbone_ids: [13832, 13887],
       inserts_ids: [[13832, 13911],[13792, 13918, 13919]],
       restriction_enzyme_ids: [13938, 13938],
@@ -22,7 +23,7 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
 
     # setup default values for io_hash.
-    io_hash = { backbone_ids: [], inserts_ids: [[]], restriction_enzyme_ids: [], task_ids: [], debug_mode: "No" }.merge io_hash
+    io_hash = { plasmid_ids: [], backbone_ids: [], inserts_ids: [[]], restriction_enzyme_ids: [], task_ids: [], debug_mode: "No" }.merge io_hash
 
     # Set debug based on debug_mode
     if io_hash[:debug_mode].downcase == "yes"
@@ -62,6 +63,7 @@ class Protocol
       spec = task.simple_spec
 
       { task: task,
+        plasmid_id: spec[:plasmid],
         backbone_id: spec[:backbone],
         inserts_ids: spec[:inserts],
         enzyme: find(:sample, id: spec[:restriction_enzyme])[0].in("Enzyme Stock")[0],
@@ -87,82 +89,137 @@ class Protocol
       end
     end
 
-    puts task_hashes.map { |th| th[:enzyme].id }
-    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq, interactive: true, method: "boxes"
+    # take all items needed from inventory
+    ligase = find(:sample, name: "T4 DNA Ligase")[0].in("Enzyme Stock")[0]
+    ligase_buffer = find(:sample, name: "T4 DNA Ligase Buffer")[0].in("Enzyme Buffer Aliquot")[0]
+    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
 
     # TODO if no 40 fmole/uL, determine concentration of stocks
     ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
     
+    # save stocks_to_dilute concentrations
+    task_hashes.each do |task_hash|
+      task_hash[:stock_to_dilute].compact.each do |stock|
+        stock.datum = stock.datum.merge { fmole_ul: stock.datum[:concentration] / (stock.sample.properties["Length"] * 66 / 1e5) }
+        stock.save
+      end
+
+      puts "#{task_hash[:stocks].map { |stock| stock.datum[:fmole_ul] }} fmole/uL"
+    end
+
     task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
 
-    # TODO If stocks too concentrated, dilute to 40 fmole/uL and make new item
-    # produce 1 ng/µL Plasmid Stocks
-    diluted_stocks = []
-    task_hashes.each do |task_hash|
-      task_hash[:stocks].map!.with_index do |stock, idx|
-        next unless stock.nil?
-
-        stock_to_dilute = task_hash[:stocks_to_dilute][idx]
-        puts "stock_to_dilute #{stock_to_dilute}"
-        puts "idx #{idx}"
-        diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock")[0]
-        if diluted_stock.nil?
-          diluted_stock = produce new_sample stock_to_dilute.sample.name, 
-                            of: stock_to_dilute.sample.sample_type.name, 
-                            as: "40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock"
-        end
-        
-        diluted_stocks.push diluted_stock
-
-        diluted_stock
-      end
-    end
-
-    # collect all concentrations
+    # if stocks too concentrated, dilute to 40 fmole/uL and make new item
     stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten
-    concs = stocks_to_dilute.map { |s| s.datum[:concentration].to_f }
-    water_volumes = concs.collect { |c| c - 1.0 }
+    if stocks_to_dilute.any? # TODO check here if concentration is too high
 
-    # build a checkable table for user
-    dilution_table = [["Newly labeled tube", "Template stock, 1 µL", "Water volume"]]
-    stocks_to_dilute.each_with_index do |s, idx|
-      dilution_table.push([diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }])
-    end
+      # produce 40 fmole/µL stocks
+      diluted_stocks = []
+      task_hashes.each do |task_hash|
+        task_hash[:stocks].map!.with_index do |stock, idx|
+          next unless stock.nil?
 
-    # display the dilution info to user
-    show do
-      title "Make 40 fmole/µL Stocks"
+          stock_to_dilute = task_hash[:stocks_to_dilute][idx]
+          puts "stock_to_dilute #{stock_to_dilute}"
+          puts "idx #{idx}"
+          diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock")[0]
+          if diluted_stock.nil?
+            diluted_stock = produce new_sample stock_to_dilute.sample.name, 
+                              of: stock_to_dilute.sample.sample_type.name, 
+                              as: "40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock"
+          end
+          
+          diluted_stocks.push diluted_stock
 
-      check "Grab #{stocks_to_dilute.length} 1.5 mL tubes, label them with #{diluted_stocks.join(", ")}"
-      check "Add stocks and water into newly labeled 1.5 mL tubes following the table below"
+          diluted_stock
+        end
+      end
 
-      table dilution_table
+      # collect all concentrations
+      concs = stocks_to_dilute.map { |s| s.datum[:concentration].to_f }
+      water_volumes = task_hashes. { |c|  - 1.0 }
 
-      check "Vortex and then spin down for a few seconds"
+      # build a checkable table for user
+      dilution_table = [["Newly labeled tube", "Template stock, 1 µL", "Water volume"]]
+      stocks_to_dilute.each_with_index do |s, idx|
+        dilution_table.push [diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }]
+      end
+
+      # display the dilution info to user
+      show do
+        title "Make 40 fmole/µL Stocks"
+
+        check "Grab #{stocks_to_dilute.length} 1.5 mL tubes, label them with #{diluted_stocks.join(", ")}."
+        check "Add stocks and water into newly labeled 1.5 mL tubes following the table below."
+
+        table dilution_table
+
+        check "Vortex and then spin down for a few seconds."
+      end
     end
 
     # TODO If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
       task_hash[:volumes] = task_hash[:stocks].map { |s| 1.0 }
+
+      total_stock_vol = task_hash[:volumes].inject(0) { |sum, v| sum + v }
+      task_hash[:water_vol] = [20 - 10 - total_stock_vol, 0].max
     end
 
     # TODO volume checks. Ensure there is enough volume in each stock
 
-    # TODO make stripwell, one well per reaction
-    stripwells = produce spread task_hashes.map { |th| th[:stocks].map { |stock| stock.sample } }.flatten, "Stripwell", 1, 12
+    # make stripwell, one well per reaction. TODO support multiple stripwells
+    stripwell = (produce spread task_hashes.map { |th| find(:sample, id: th[:plasmid_id])[0] }, "Stripwell", 1, 12)[0]
 
-    # TODO make mastermix (1 uL ligase, 2 uL 10x "T4 DNA Ligase", 6 uL H2O)
+    # make mastermix (1 uL ligase, 2 uL 10x "T4 DNA Ligase", 6 uL H2O)
+    vol_scale = task_hashes.length + 1
     show do
-      title "Make mastermix"
+      title "Make master mix"
 
-      check "Add 1 "
+      check "Label a new eppendorf tube MM."
+      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (ligase.id) to the tube."
+      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (ligase_buffer.id) buffer to the tube."
+      check "Add #{6.0 * vol_scale} µL of water to the tube."
+
+      check "Vortex for 20-30 seconds"
+      
+      warning "Keep the master mix on an ice block while doing the next steps"
     end
 
-    # TODO dispense 10 uL Mastermix into stripwell
+    # dispense 10 uL Mastermix into stripwell
+    show do
+      title "Dispense master mix"
 
-    # TODO dispense 1 uL enzyme into stripwell
+      note "Pipette 10 µL of master mix into each of the first #{stripwell.num_samples} wells of a new stripwell."
+    end
 
-    # TODO dispense H20 to 20 uL
+    # dispense 1 uL enzyme into stripwell
+    enzyme_table = [["Well", "Enzyme, 1 µL"]]
+    task_hashes.each_with_index do |task_hash, idx|
+      enzyme_table.push [idx + 1, task_hash[:enzyme].id]
+    end
+    
+    show do
+      title "Dispense enzymes"
+
+      note "Pipette 1 µL of the specified enzyme into each well of the stripwell based on the following table:"
+      
+      table enzyme_table
+    end
+    
+    # dispense H20 to 20 uL
+    water_table = [["Well", "Water (µL)"]]
+    task_hashes.each_with_index do |task_hash, idx|
+      water_table.push [idx + 1, task_hash[:water_vol]]
+    end
+
+    show do
+      title "Dispense water"
+
+      note "Pipette water into the stripwell according to the following table:"
+
+      table water_table
+    end
 
     # TODO dispense DNA
 
