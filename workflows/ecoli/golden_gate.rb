@@ -100,7 +100,7 @@ class Protocol
     task_hashes.each do |task_hash|
       task_hash[:stocks_to_dilute].map! do |stock|
         next if stock.nil?
-        diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("1 fmole/µL #{stock.sample.sample_type.name} Stock") 
+        diluted_stock = produce new_sample stock.sample.name, of: stock.sample.sample_type.name, as: ("40 fmole/µL #{stock.sample.sample_type.name} Stock") 
         diluted_stocks.push diluted_stock
 
         diluted_stock
