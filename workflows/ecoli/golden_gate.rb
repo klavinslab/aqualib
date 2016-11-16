@@ -92,8 +92,6 @@ class Protocol
     # take all items needed from inventory
     ligase = find(:sample, name: "T4 DNA Ligase")[0].in("Enzyme Stock")[0]
     ligase_buffer = find(:sample, name: "T4 DNA Ligase Buffer")[0].in("Enzyme Buffer Aliquot")[0]
-    puts ligase
-    puts ligase_buffer
     take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
 
     # TODO if no 40 fmole/uL, determine concentration of stocks
@@ -101,7 +99,7 @@ class Protocol
     
     # save stocks_to_dilute concentrations
     task_hashes.each do |task_hash|
-      task_hash[:stock_to_dilute].compact.each do |stock|
+      task_hash[:stocks_to_dilute].compact.each do |stock|
         stock.datum = stock.datum.merge({ fmole_ul: stock.datum[:concentration] / (stock.sample.properties["Length"] * 66 / 1e5) })
         stock.save
       end
