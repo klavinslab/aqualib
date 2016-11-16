@@ -100,7 +100,7 @@ class Protocol
     # save stocks_to_dilute concentrations
     task_hashes.each do |task_hash|
       task_hash[:stock_to_dilute].compact.each do |stock|
-        stock.datum = stock.datum.merge { fmole_ul: stock.datum[:concentration] / (stock.sample.properties["Length"] * 66 / 1e5) }
+        stock.datum = stock.datum.merge({ fmole_ul: stock.datum[:concentration] / (stock.sample.properties["Length"] * 66 / 1e5) })
         stock.save
       end
 
@@ -135,17 +135,14 @@ class Protocol
         end
       end
 
-      # collect all concentrations
-      concs = stocks_to_dilute.map { |s| s.datum[:concentration].to_f }
-      water_volumes = task_hashes. { |c|  - 1.0 }
+      # dilute to 40 fmole/µL from stock
+      water_volumes = stocks_to_dilute.map { |s| (s.datum[:fmole_ul] / 40.0 - 1.0).round(1) }
 
-      # build a checkable table for user
       dilution_table = [["Newly labeled tube", "Template stock, 1 µL", "Water volume"]]
       stocks_to_dilute.each_with_index do |s, idx|
         dilution_table.push [diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }]
       end
 
-      # display the dilution info to user
       show do
         title "Make 40 fmole/µL Stocks"
 
