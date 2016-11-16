@@ -13,7 +13,7 @@ class Protocol
       backbone_ids: [13832, 13887],
       inserts_ids: [[13832, 13911],[13792, 13918, 13919]],
       restriction_enzyme_ids: [13938, 13938],
-      task_ids: [23550, 23551],
+      task_ids: [23552, 23553],
       debug_mode: "No",
     }
   end

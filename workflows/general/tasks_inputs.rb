@@ -165,9 +165,10 @@ class Protocol
       io_hash[:size] = io_hash[:plasmid_ids].length
 
     when "Golden Gate Assembly"
-      io_hash = { backbone_ids: [], inserts_ids: [], restriction_enzyme_ids: [] }.merge io_hash
+      io_hash = { plasmid_ids: [], backbone_ids: [], inserts_ids: [], restriction_enzyme_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
+        io_hash[:plasmid_ids].push task.simple_spec[:plasmid]
         io_hash[:backbone_ids].push task.simple_spec[:backbone]
         io_hash[:inserts_ids].push task.simple_spec[:inserts]
         io_hash[:restriction_enzyme_ids].push task.simple_spec[:restriction_enzyme]
