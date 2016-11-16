@@ -104,7 +104,7 @@ class Protocol
         stock.save
       end
 
-      puts "#{task_hash[:stocks_to_dilute].map { |stock| stock.datum[:fmole_ul] }} fmole/uL"
+      puts "#{task_hash[:stocks_to_dilute].compact.map { |stock| stock.datum[:fmole_ul] }} fmole/uL"
     end
 
     task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
