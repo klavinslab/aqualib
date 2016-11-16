@@ -110,7 +110,7 @@ class Protocol
     task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
 
     # if stocks too concentrated, dilute to 40 fmole/uL and make new item
-    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten
+    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
     if stocks_to_dilute.any? # TODO check here if concentration is too high
 
       # produce 40 fmole/µL stocks
@@ -129,7 +129,7 @@ class Protocol
                               as: "40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock"
           end
           
-          diluted_stocks.push diluted_stock
+          diluted_stocks.push diluted_stock unless diluted_stocks.include? diluted_stock
 
           diluted_stock
         end
