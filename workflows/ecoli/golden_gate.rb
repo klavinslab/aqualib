@@ -166,6 +166,7 @@ class Protocol
     # TODO volume checks. Ensure there is enough volume in each stock
 
     # make stripwell, one well per reaction. TODO support multiple stripwells
+    puts task_hashes.map { |th| find(:sample, id: th[:plasmid_id])[0] }
     stripwell = (produce spread task_hashes.map { |th| find(:sample, id: th[:plasmid_id])[0] }, "Stripwell", 1, 12)[0]
 
     # make mastermix (1 uL ligase, 2 uL 10x "T4 DNA Ligase", 6 uL H2O)
