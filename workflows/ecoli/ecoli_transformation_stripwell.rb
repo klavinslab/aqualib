@@ -58,7 +58,7 @@ class Protocol
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
 
-    transformed_aliquots = gg_stripwell.matrix[0].map { |s_id| produce new_sample find(:sample, id: s_id)[0].name,
+    transformed_aliquots = gg_stripwell.matrix[0].map { |s_id| puts s_id; produce new_sample find(:sample, id: s_id)[0].name,
                                                                  of: "Plasmid", 
                                                                  as: "Transformed E. coli Aliquot" }
     transformed_aliquots.each do |transformed_aliquot|
