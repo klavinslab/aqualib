@@ -254,6 +254,7 @@ class Protocol
 
       # check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
       # check "Press 'Run' and select 50 µL."
+    end
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
