@@ -152,7 +152,11 @@ class Protocol
     end
 
     # if stocks not concentrated enough, add to io_hash[:stocks]
+    puts "stocks " + task_hashes.map { |th| th[:stocks].map { |s| s.nil? ? nil : s.id } }.to_s
+    puts "stocks_to_dilute " + task_hashes.map { |th| th[:stocks_to_dilute].map { |s| s.nil? ? nil : s.id } }.to_s
     task_hashes.each { |task_hash| task_hash[:stocks].map!.with_index { |stock, idx| stock.nil? ? task_hash[:stocks_to_dilute][idx] : stock } }
+    puts "stocks " + task_hashes.map { |th| th[:stocks].map { |s| s.nil? ? nil : s.id } }.to_s
+    puts "stocks_to_dilute " + task_hashes.map { |th| th[:stocks_to_dilute].map { |s| s.nil? ? nil : s.id } }.to_s
 
     # If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
