@@ -72,7 +72,7 @@ class Protocol
         stocks_to_dilute: Array.new(1 + spec[:inserts].length) { nil } }
     end
 
-    # TODO look for 40 fmole/uL stocks for backbone and inserts
+    # look for 40 fmole/uL stocks for backbone and inserts
     task_hashes.each do |task_hash|
       ([task_hash[:backbone_id]] + task_hash[:inserts_ids]).each_with_index do |sid, idx|
         sample = find(:sample, id: sid)[0]
@@ -94,10 +94,8 @@ class Protocol
     ligase_buffer = find(:sample, name: "T4 DNA Ligase Buffer")[0].in("Enzyme Buffer Aliquot")[0]
     take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
 
-    # TODO if no 40 fmole/uL, determine concentration of stocks
-    ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
-    
     # save stocks_to_dilute concentrations
+    ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
     task_hashes.each do |task_hash|
       task_hash[:stocks_to_dilute].compact.each do |stock|
         stock.datum = stock.datum.merge({ fmole_ul: stock.datum[:concentration] / (stock.sample.properties["Length"] * 66 / 1e5) })
@@ -110,18 +108,16 @@ class Protocol
     task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
 
     # if stocks too concentrated, dilute to 40 fmole/uL and make new item
-    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
-    if stocks_to_dilute.any? # TODO check here if concentration is too high
+    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact.select { |stock| stock.datum[:fmole_ul] > 40.0 } }.flatten.uniq
+    if stocks_to_dilute.any?
 
       # produce 40 fmole/µL stocks
       diluted_stocks = []
       task_hashes.each do |task_hash|
         task_hash[:stocks].map!.with_index do |stock, idx|
-          next unless stock.nil?
-
           stock_to_dilute = task_hash[:stocks_to_dilute][idx]
-          puts "stock_to_dilute #{stock_to_dilute}"
-          puts "idx #{idx}"
+          next unless stocks_to_dilute.include? stock_to_dilute
+
           diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock")[0]
           if diluted_stock.nil?
             diluted_stock = produce new_sample stock_to_dilute.sample.name, 
@@ -155,9 +151,19 @@ class Protocol
       end
     end
 
-    # TODO If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
+    # if stocks not concentrated enough, add to io_hash[:stocks]
+    task_hashes.each { |task_hash| task_hash[:stocks].map!.with_index { |stock, idx| stock.nil? ? task_hash[:stocks_to_dilute][idx] : stock } }
+
+    # If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
-      task_hash[:volumes] = task_hash[:stocks].map { |s| 1.0 }
+      task_hash[:volumes] = task_hash[:stocks].map do |stock|
+        conc = stock.datum[:fmole_ul]
+        if conc <= 40.0
+          40.0 / conc
+        else
+          1.0
+        end
+      end
 
       total_stock_vol = task_hash[:volumes].inject(0) { |sum, v| sum + v }
       task_hash[:water_vol] = [20 - 10 - total_stock_vol, 0].max
@@ -219,16 +225,42 @@ class Protocol
       table water_table
     end
 
-    # TODO dispense DNA
+    # dispense DNA
+    task_hashes.each_with_index do |task_hash, sw_idx|
+      stock_table = [["Stock Id", "Volume (µL)"]]
+      task_hash[:stocks].each_with_index do |stock|
+        stock_table.push [stock.id, task_hash[:volumes][idx]]
+      end
+
+      show do
+        title "Dispense DNA (well #{sw_idx + 1})"
+
+        note "Pipette DNA into the #{(sw_idx + 1).ordinalize} well of the stripwell according to the following table:"
+
+        table stock_table
+      end
+    end
 
     # TODO spin down and put in thermocycler (37 C 1', 16 C 1') x 30, 55 C 5'
+    show do
+      title "Start thermocycler"
+
+      check "Place the stripwell into an available thermal cycler and close the lid."
+      get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+      
+      # TODO populate show block with proper instructions
+      # check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
+      # check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
+
+      # check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
+      # check "Press 'Run' and select 50 µL."
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       #set_task_status(task, "golden gate")
     end
 
-    #io_hash[:golden_gate_result_ids] = golden_gate_results.collect { |g| g.id }
+    io_hash[:golden_gate_result_stripwell_id] = stripwell.id
 
     return { io_hash: io_hash }
   end
