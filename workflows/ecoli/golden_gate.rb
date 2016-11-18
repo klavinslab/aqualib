@@ -164,7 +164,7 @@ class Protocol
     task_hashes.each do |task_hash|
       task_hash[:volumes] = task_hash[:stocks].map do |stock|
         conc = stock.datum[:fmole_ul]
-        if conc <= 40.0
+        if conc && conc <= 40.0
           40.0 / conc
         else
           1.0
