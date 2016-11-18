@@ -123,7 +123,7 @@ class Protocol
     show {
       title "Add plasmid to electrocompetent aliquot, electroporate and rescue "
       note "Repeat for each row in the table:"
-      check "Pipette 2 uL plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
+      check "Pipette 2 uL Golden Gate result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
       check "Transfer 42 uL of e-comp cells to electrocuvette with P100"
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 300 uL of LB"
       check "pipette cells up and down 3 times, then transfer 300 uL to appropriate 1.5 mL tube with P1000"
@@ -166,11 +166,6 @@ class Protocol
 
     move transformed_aliquots, "37 C incubator"
     release transformed_aliquots
-
-    gibson_results.each do |g|
-      g.store
-      g.reload
-    end
 
     release [gg_stripwell], interactive: true, method: "boxes"
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
