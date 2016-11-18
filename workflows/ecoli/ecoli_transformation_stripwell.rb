@@ -169,6 +169,8 @@ class Protocol
 
     gg_stripwell.mark_as_deleted
     gg_stripwell.save
+    release [gg_stripwell]
+    
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
