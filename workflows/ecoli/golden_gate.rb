@@ -256,7 +256,8 @@ class Protocol
     stripwell.location = therm[:name]
     stripwell.save
 
-    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer, stripwell], interactive: true, method: "boxes"
+    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
+    release [stripwell]
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
