@@ -157,14 +157,14 @@ class Protocol
       task_hash[:volumes] = task_hash[:stocks].map do |stock|
         conc = stock.datum[:fmole_ul]
         if conc && conc <= 40.0
-          40.0 / conc
+          (40.0 / conc).round(1)
         else
           1.0
         end
       end
 
       total_stock_vol = task_hash[:volumes].inject(0) { |sum, v| sum + v }
-      task_hash[:water_vol] = [20 - 10 - total_stock_vol, 0].max
+      task_hash[:water_vol] = [20 - 10 - 1 - total_stock_vol, 0].max
     end
 
     # TODO volume checks. Ensure there is enough volume in each stock
@@ -198,7 +198,7 @@ class Protocol
     # dispense 1 uL enzyme into stripwell
     enzyme_table = [["Well", "Enzyme, 1 µL"]]
     task_hashes.each_with_index do |task_hash, idx|
-      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, checkable: true }]
+      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
     end
     
     show do
@@ -212,7 +212,7 @@ class Protocol
     # dispense H20 to 20 uL
     water_table = [["Well", "Water (µL)"]]
     task_hashes.each_with_index do |task_hash, idx|
-      water_table.push [idx + 1, { content: task_hash[:water_vol], checkable: true }]
+      water_table.push [idx + 1, { content: task_hash[:water_vol], check: true }]
     end
 
     show do
@@ -227,7 +227,7 @@ class Protocol
     task_hashes.each_with_index do |task_hash, sw_idx|
       stock_table = [["Stock Id", "Volume (µL)"]]
       task_hash[:stocks].each_with_index do |stock, idx|
-        stock_table.push [stock.id, { content: task_hash[:volumes][idx], checkable: true }]
+        stock_table.push [stock.id, { content: task_hash[:volumes][idx], check: true }]
       end
 
       show do
@@ -253,6 +253,8 @@ class Protocol
       # check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
       # check "Press 'Run' and select 50 µL."
     end
+
+    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
