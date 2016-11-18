@@ -18,7 +18,7 @@ class Protocol
 
 
 
-  def find_batch(plasmid_items)
+  def find_batch(sample_ids)
   	ecoli_batch = find(:item, object_type: { name: "E. coli Comp Cell Batch" }).sort { |batch1, batch2| batch1.id <=> batch2.id }
   	ecoli_batch.each do |item|
   	  
@@ -34,9 +34,10 @@ class Protocol
   	  #}
   	  
   	  # bug where (plasmid_items.length == 1 &&) does not hold true when only one is inserted 
-  	  if plasmid_items[0].sample.name == "SSJ128" && item.get("tested") == "No"
+      sample = find(:sample, id: sample_ids[0])[0]
+  	  if sample.name == "SSJ128" && item.get("tested") == "No"
   	    return item
-  	  elsif plasmid_items[0].sample.name != "SSJ128" && item.get("tested") == "Yes"
+  	  elsif sample.name != "SSJ128" && item.get("tested") == "Yes"
   	    return item
   	  end
     end
@@ -70,8 +71,8 @@ class Protocol
     num_arr = *(1..num)
 
     # TODO: Fix e. coli batching so it doesn't reference plasmid_items[0] when nil
-    if plasmid_items.length != 0
-      ecolibatch = find_batch(plasmid_items)
+    if gg_sample_ids.length != 0
+      ecolibatch = find_batch(gg_sample_ids)
       if ecolibatch.nil?
         #raise "No such E coli batch"
       elsif ecolibatch.get("tested") == "No"
