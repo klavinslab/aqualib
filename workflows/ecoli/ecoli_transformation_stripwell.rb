@@ -53,9 +53,8 @@ class Protocol
       end
     end
 
-    gg_stripwell_item = find(:item, id: io_hash[:golden_gate_result_stripwell_id])[0]
-    gg_stripwell = collection_from gg_stripwell_item
-    take gg_stripwell, interactive: true, method: "boxes"
+    gg_stripwell = collection_from find(:item, id: io_hash[:golden_gate_result_stripwell_id])[0]
+    take [gg_stripwell], interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
 
@@ -63,7 +62,7 @@ class Protocol
                                                                  of: "Plasmid", 
                                                                  as: "Transformed E. coli Aliquot" }
     transformed_aliquots.each do |transformed_aliquot|
-      transformed_aliquot.datum = transformed_aliquot.datum.merge({ from: gg_stripwell_item.id })
+      transformed_aliquot.datum = transformed_aliquot.datum.merge({ from: gg_stripwell.id })
     end
     ids = transformed_aliquots.collect {|t| t.id}
     num = transformed_aliquots.length
@@ -171,7 +170,7 @@ class Protocol
       g.reload
     end
 
-    release gg_stripwell_item, interactive: true, method: "boxes"
+    release [gg_stripwell], interactive: true, method: "boxes"
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
