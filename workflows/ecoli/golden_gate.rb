@@ -240,7 +240,7 @@ class Protocol
     end
 
     # TODO spin down and put in thermocycler (37 C 1', 16 C 1') x 30, 55 C 5'
-    show do
+    therm = show do
       title "Start thermocycler"
 
       check "Place the stripwell into an available thermal cycler and close the lid."
@@ -253,12 +253,14 @@ class Protocol
       # check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
       # check "Press 'Run' and select 50 µL."
     end
+    stripwell.location = therm[:name]
+    stripwell.save
 
     release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer, stripwell], interactive: true, method: "boxes"
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
-      #set_task_status(task, "golden gate")
+      set_task_status(task, "golden gate")
     end
 
     io_hash[:golden_gate_result_stripwell_id] = stripwell.id
