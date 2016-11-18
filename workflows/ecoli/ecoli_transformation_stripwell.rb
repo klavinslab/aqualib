@@ -167,7 +167,8 @@ class Protocol
     move transformed_aliquots, "37 C incubator"
     release transformed_aliquots
 
-    delete gg_stripwell
+    gg_stripwell.mark_as_deleted
+    gg_stripwell.save
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
