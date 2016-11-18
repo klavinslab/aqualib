@@ -116,7 +116,7 @@ class Protocol
       task_hashes.each do |task_hash|
         task_hash[:stocks].map!.with_index do |stock, idx|
           stock_to_dilute = task_hash[:stocks_to_dilute][idx]
-          next unless stocks_to_dilute.include? stock_to_dilute
+          return stock unless stocks_to_dilute.include? stock_to_dilute
 
           diluted_stock = stock_to_dilute.sample.in("40 fmole/µL #{stock_to_dilute.sample.sample_type.name} Stock")[0]
           if diluted_stock.nil?
