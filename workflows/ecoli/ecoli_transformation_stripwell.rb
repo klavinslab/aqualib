@@ -54,11 +54,12 @@ class Protocol
     end
 
     gg_stripwell = collection_from find(:item, id: io_hash[:golden_gate_result_stripwell_id])[0]
+    gg_sample_ids = gg_stripwell.matrix[0].compact
     take [gg_stripwell], interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
 
-    transformed_aliquots = gg_stripwell.matrix[0].map { |s_id| puts s_id; produce new_sample find(:sample, id: s_id)[0].name,
+    transformed_aliquots = gg_sample_ids.map { |s_id| produce new_sample find(:sample, id: s_id)[0].name,
                                                                  of: "Plasmid", 
                                                                  as: "Transformed E. coli Aliquot" }
     transformed_aliquots.each do |transformed_aliquot|
@@ -136,7 +137,7 @@ class Protocol
     
     amp = 0
     kan = 0
-    gg_stripwell.matrix[0].each do |s_id|
+    gg_sample_ids.each do |s_id|
       sample = find(:sample, id: s_id)[0]
       if sample.properties["Bacterial Marker"] == "Amp"
         amp += 1
