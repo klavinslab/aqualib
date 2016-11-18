@@ -171,7 +171,6 @@ class Protocol
     io_hash[:transformed_aliquots_ids] = transformed_aliquots.collect { |t| t.id }
 
     # Set tasks in the io_hash to be transformed
-    io_hash[:task_ids].concat io_hash[:ecoli_transformation_task_ids]
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
       set_task_status(task,"transformed")
