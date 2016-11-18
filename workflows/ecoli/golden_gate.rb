@@ -254,7 +254,7 @@ class Protocol
       # check "Press 'Run' and select 50 µL."
     end
 
-    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
+    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer, stripwell], interactive: true, method: "boxes"
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
