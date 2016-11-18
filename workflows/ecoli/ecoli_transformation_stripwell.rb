@@ -128,7 +128,7 @@ class Protocol
       check "Slide into electroporator, press PULSE button twice, and QUICKLY add 300 uL of LB"
       check "pipette cells up and down 3 times, then transfer 300 uL to appropriate 1.5 mL tube with P1000"
       #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
-      table [["Golden Gate Well, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat((1..gg_stripwell.num_samples).map { |i| { content: g.id, check: true } }.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
+      table [["Golden Gate Well, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat((1..gg_stripwell.num_samples).map { |i| { content: i, check: true } }.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
       image "pipette_plasmid_into_electrocompotent_cells"
       #check "Take a labeled electrocompetent aliquot. Using the set 100uL pipette, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
       #check "Remove the cuvette from the electroporator and QUICKLY add 300 µL of LB."
