@@ -54,7 +54,7 @@ class Protocol
     end
 
     gg_stripwell_item = find(:item, id: io_hash[:golden_gate_result_stripwell_id])[0]
-    gg_stripwell = collection_from gg_stripwell
+    gg_stripwell = collection_from gg_stripwell_item
     take gg_stripwell, interactive: true, method: "boxes"
 
     io_hash[:cell_type] = "DH5alpha" if !io_hash[:cell_type] || io_hash[:cell_type] == ""
