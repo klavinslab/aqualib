@@ -289,8 +289,7 @@ def task_status_check t
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
             new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
             errors.concat sample_check(ids, assert_property: "Length")[:errors]
-          end
-        elsif t.task_prototype.name == "Golden Gate Assembly"
+          elsif t.task_prototype.name == "Golden Gate Assembly"
             inventory_check_result = inventory_check(ids, inventory_types: ["Fragment Stock", "40 fmole/µL Fragment Stock", "Plasmid Stock", "40 fmole/µL Plasmid Stock"])
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
             new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make].select { |sid| find(:sample, id: sid)[0].sample_type.name == "Fragment" }
