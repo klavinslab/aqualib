@@ -25,18 +25,14 @@ class Protocol
     # setup default values for io_hash.
     io_hash = { plasmid_ids: [], backbone_ids: [], inserts_ids: [[]], restriction_enzyme_ids: [], task_ids: [], debug_mode: "No" }.merge io_hash
 
-    # Set debug based on debug_mode
+    # set debug based on debug_mode
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
-    show {
-      note io_hash.to_s
-    }
-
-    # TODO check for length in backbone and inserts (error out if none)
+    # check for length in backbone and inserts (error out if none)
     missing_length_task_ids = io_hash[:task_ids].select do |tid|
       task = find(:task, id: tid)[0]
       spec = task.simple_spec
@@ -51,10 +47,6 @@ class Protocol
           false
         end
       end
-    end
-
-    show do
-      note missing_length_task_ids
     end
 
     # create hash for storing data related to tasks (built more later)
@@ -206,7 +198,7 @@ class Protocol
     # dispense 1 uL enzyme into stripwell
     enzyme_table = [["Well", "Enzyme, 1 µL"]]
     task_hashes.each_with_index do |task_hash, idx|
-      enzyme_table.push [idx + 1, task_hash[:enzyme].id]
+      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, checkable: true }]
     end
     
     show do
@@ -220,7 +212,7 @@ class Protocol
     # dispense H20 to 20 uL
     water_table = [["Well", "Water (µL)"]]
     task_hashes.each_with_index do |task_hash, idx|
-      water_table.push [idx + 1, task_hash[:water_vol]]
+      water_table.push [idx + 1, { content: task_hash[:water_vol], checkable: true }]
     end
 
     show do
@@ -234,8 +226,8 @@ class Protocol
     # dispense DNA
     task_hashes.each_with_index do |task_hash, sw_idx|
       stock_table = [["Stock Id", "Volume (µL)"]]
-      task_hash[:stocks].each_with_index do |stock|
-        stock_table.push [stock.id, task_hash[:volumes][idx]]
+      task_hash[:stocks].each_with_index do |stock, idx|
+        stock_table.push [stock.id, { content: task_hash[:volumes][idx], checkable: true }]
       end
 
       show do
