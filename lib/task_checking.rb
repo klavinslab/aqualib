@@ -278,7 +278,7 @@ def task_status_check t
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
             new_tasks["Primer Order"] = inventory_check_result[:ids_to_make]
           end
-        when "fragments"
+        when "fragments", "inserts", "backbone"
           if t.task_prototype.name == "Fragment Construction"
             errors.push "New rule: #{variable_name} only accepts 1 item for easier status tracking." if ids.length > 1
             sample_check_result = sample_check(ids, assert_property: ["Forward Primer","Reverse Primer","Template","Length"])
@@ -288,6 +288,12 @@ def task_status_check t
             inventory_check_result = inventory_check(ids, inventory_types: "Fragment Stock")
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
             new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make]
+            errors.concat sample_check(ids, assert_property: "Length")[:errors]
+          end
+        elsif t.task_prototype.name == "Golden Gate Assembly"
+            inventory_check_result = inventory_check(ids, inventory_types: ["Fragment Stock", "40 fmole/µL Fragment Stock", "Plasmid Stock", "40 fmole/µL Plasmid Stock"])
+            errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
+            new_tasks["Fragment Construction"] = inventory_check_result[:ids_to_make].select { |sid| find(:sample, id: sid)[0].sample_type.name == "Fragment" }
             errors.concat sample_check(ids, assert_property: "Length")[:errors]
           end
         when "plate_ids", "glycerol_stock_ids", "glycerol_stock_id", "plasmid_item_ids"
