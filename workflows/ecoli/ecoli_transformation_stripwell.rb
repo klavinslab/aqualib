@@ -46,13 +46,14 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
-    io_hash = { debug_mode: "Yes", golden_gate_result_stripwell_id: [], task_ids: [], group: "technicians"}.merge io_hash
+    io_hash = { debug_mode: "Yes", golden_gate_result_stripwell_id: 0, task_ids: [], group: "technicians"}.merge io_hash
     if io_hash[:debug_mode].downcase == "yes"
       def debug
         true
       end
     end
 
+    puts io_hash[:golden_gate_result_stripwell_id].class
     gg_stripwell = collection_from find(:item, id: io_hash[:golden_gate_result_stripwell_id])[0]
     take gg_stripwell, interactive: true, method: "boxes"
 
