@@ -161,6 +161,12 @@ class Protocol
         end
       }
 
+      fragment_stocks.each_with_index do |fs, idx|
+        fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
+        fs.notes = [gel_slices[idx].notes, "Comment from purify_gel (#{jid}): " + concs[:"comment#{fs.id}".to_sym]].join(", ")
+        fs.save
+      end
+      
       dilute_fragment_stocks = fragment_stocks.select { |fs| concs[:"c#{fs.id}".to_sym] < 10 }
       discard_stock = show {
         title "Decide whether to keep dilute stocks"
@@ -182,11 +188,6 @@ class Protocol
         delete fragment_stocks_to_discard
       end
 
-      fragment_stocks.each_with_index do |fs, idx|
-        fs.datum = { concentration: concs[:"c#{fs.id}".to_sym], volume: 28, volume_verified: "Yes" }
-        fs.notes = [gel_slices[idx].notes, "Comment from purify_gel (#{jid}): " + concs[:"comment#{fs.id}".to_sym]].join(", ")
-        fs.save
-      end
       # Give a touch history in log
       take fragment_stocks
       release fragment_stocks, interactive: true, method: "boxes"
