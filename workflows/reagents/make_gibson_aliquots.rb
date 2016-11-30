@@ -223,10 +223,11 @@ class Protocol
     }
 
     while !batch_data[:num_aliquots]
-    batch_data = show {
-      title "Enter in number of aliquots made"
-      get "number", var: "num_aliquots", label: "Please enter the number of aliquots you were able to prepare.", default: 80 
-    }
+      batch_data = show {
+        title "Enter in number of aliquots made"
+        get "number", var: "num_aliquots", label: "Please enter the number of aliquots you were able to prepare.", default: 80 
+      }
+    end
 
     aliquot_batch = produce new_collection "Gibson Aliquot Batch", 10, 10
     show {
