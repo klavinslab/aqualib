@@ -323,6 +323,7 @@ class Protocol
         get "number", var: "runs_left", label: "Enter the number of \"Remaining Runs\" left in this cartridge.", default: 0
       }
     end
+    prev_runs_left = cartridge.datum[:runs_left]
     cartridge.datum = cartridge.datum.merge({ runs: (cartridge.datum[:runs] ? cartridge.datum[:runs] : 0) + new_stripwells.length, runs_left: run_data[:runs_left] })
     cartridge.save
     show {
@@ -331,7 +332,7 @@ class Protocol
       note "Thanks! :)"
       cartridge.datum = cartridge.datum.merge({ running_low_notif: true })
       cartridge.save
-    } if cartridge.datum[:runs_left] < 50 && !cartridge.datum[:running_low_notif]
+    } if prev_runs_left && cartridge.datum[:runs_left] < 50 && (prev_runs_left / 10 > cartridge.datum[:runs_left] / 10)
 
     job_id = jid # jid not accessible within the scope of show block
     show {
