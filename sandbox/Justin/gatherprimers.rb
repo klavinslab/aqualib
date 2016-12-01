@@ -33,9 +33,8 @@ class Protocol
       end
     end
 
-    # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
-    primer_stocks = io_hash[:primer_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
-
+    primer_stocks = io_hash[:primer_ids].collect{ |pid| find(:sample,{id: pid})[0].in("Primer Aliquot") }
+   
     take primer_stocks, interactive: true,  method: "boxes"
   end
 
