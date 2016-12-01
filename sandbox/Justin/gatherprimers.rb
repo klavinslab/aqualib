@@ -33,7 +33,7 @@ class Protocol
       end
     end
 
-    primer_stocks = io_hash[:primer_ids].collect{ |pid| find(:sample,{id: pid})[0].in("Primer Aliquot") }
+    primer_stocks = io_hash[:primer_ids].collect{ |pid| find(:sample,{id: pid})[0].in("Primer Aliquot")[0] }
    
     take primer_stocks, interactive: true,  method: "boxes"
   end
