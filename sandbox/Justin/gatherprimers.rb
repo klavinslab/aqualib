@@ -36,10 +36,7 @@ class Protocol
     # Rewrite fragment_stocks if the input[:sample_or_item] is specified as item.
     primer_stocks = io_hash[:primer_ids].collect{|fids| fids.collect {|fid| find(:item,{id: fid})[0]}} if input[:sample_or_item] == "item"
 
-    # Flatten the fragment_stocks array of arrays
-    primer_stocks_flatten = primer_stocks.flatten.uniq
-
-    take primer_stocks_flatten, interactive: true,  method: "boxes"
+    take primer_stocks, interactive: true,  method: "boxes"
   end
 
 end
