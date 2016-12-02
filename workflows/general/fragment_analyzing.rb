@@ -328,9 +328,8 @@ class Protocol
     cartridge.save
     show {
       title "This cartridge is running low"
-      warning "Please notify Michelle that there are fewer than fifty runs left in the current cartridge."
+      warning "Please notify Michelle that there are #{cartridge.datum[:runs_left]} runs left in the current cartridge."
       note "Thanks! :)"
-      cartridge.datum = cartridge.datum.merge({ running_low_notif: true })
       cartridge.save
     } if prev_runs_left && cartridge.datum[:runs_left] < 50 && (prev_runs_left / 10 > cartridge.datum[:runs_left] / 10)
 

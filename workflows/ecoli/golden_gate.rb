@@ -99,8 +99,8 @@ class Protocol
 
     task_hashes.each { |th| puts "stocks #{th[:stocks]}, stocks_to_dilute #{th[:stocks_to_dilute]}" }
 
-    # if stocks too concentrated, dilute to 40 fmole/uL and make new item
-    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact.select { |stock| stock.datum[:fmole_ul] > 40.0 } }.flatten.uniq
+    # if stocks too concentrated (< 0.2 uL to pipette into reaction), dilute to 40 fmole/uL and make new item
+    stocks_to_dilute = task_hashes.map { |th| th[:stocks_to_dilute].compact.select { |stock| 40.0 / stock.datum[:fmole_ul] < 0.2 } }.flatten.uniq
     if stocks_to_dilute.any?
 
       # produce 40 fmole/µL stocks
@@ -145,7 +145,7 @@ class Protocol
       end
     end
 
-    # if stocks not concentrated enough, add to io_hash[:stocks]
+    # if stocks not concentrated enough, add to task_hash[:stocks]
     puts "stocks " + task_hashes.map { |th| th[:stocks].map { |s| s.nil? ? nil : s.id } }.to_s
     puts "stocks_to_dilute " + task_hashes.map { |th| th[:stocks_to_dilute].map { |s| s.nil? ? nil : s.id } }.to_s
     task_hashes.each { |task_hash| task_hash[:stocks].map!.with_index { |stock, idx| stock.nil? ? task_hash[:stocks_to_dilute][idx] : stock } }
@@ -179,8 +179,8 @@ class Protocol
       title "Make master mix"
 
       check "Label a new eppendorf tube MM."
-      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (ligase.id) to the tube."
-      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (ligase_buffer.id) buffer to the tube."
+      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase #{ligase.id} to the tube."
+      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer #{ligase_buffer.id} buffer to the tube."
       check "Add #{6.0 * vol_scale} µL of water to the tube."
 
       check "Vortex for 20-30 seconds"
