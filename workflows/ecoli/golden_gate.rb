@@ -156,10 +156,10 @@ class Protocol
     task_hashes.each do |task_hash|
       task_hash[:volumes] = task_hash[:stocks].map do |stock|
         conc = stock.datum[:fmole_ul]
-        if conc && conc <= 40.0
-          (40.0 / conc).round(1)
-        else
+        if stock.sample_type.name.includes? "40 fmole/µL"
           1.0
+        else
+          (40.0 / conc).round(1)
         end
       end
 
@@ -179,8 +179,8 @@ class Protocol
       title "Make master mix"
 
       check "Label a new eppendorf tube MM."
-      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase #{ligase.id} to the tube."
-      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer #{ligase_buffer.id} buffer to the tube."
+      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (#{ligase}) to the tube."
+      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (#{ligase_buffer.id}) buffer to the tube."
       check "Add #{6.0 * vol_scale} µL of water to the tube."
 
       check "Vortex for 20-30 seconds"
