@@ -128,16 +128,16 @@ class Protocol
       # dilute to 40 fmole/µL from stock
       water_volumes = stocks_to_dilute.map { |s| (s.datum[:fmole_ul] / 40.0 - 1.0).round(1) }
 
-      dilution_table = [["Newly labeled tube", "Template stock, 1 µL", "Water volume"]]
+      dilution_table = [["Newly labeled tube", "Water volume", "Template stock, 1 µL"]]
       stocks_to_dilute.each_with_index do |s, idx|
-        dilution_table.push [diluted_stocks[idx].id, { content: s.id, check: true }, { content: water_volumes[idx].to_s + " µL", check: true }]
+        dilution_table.push [diluted_stocks[idx].id, { content: water_volumes[idx].to_s + " µL", check: true }, { content: s.id, check: true }]
       end
 
       show do
         title "Make 40 fmole/µL Stocks"
 
         check "Grab #{stocks_to_dilute.length} 1.5 mL tubes, label them with #{diluted_stocks.join(", ")}."
-        check "Add stocks and water into newly labeled 1.5 mL tubes following the table below."
+        check "Add water and stocks into newly labeled 1.5 mL tubes following the table below."
 
         table dilution_table
 
@@ -179,34 +179,13 @@ class Protocol
       title "Make master mix"
 
       check "Label a new eppendorf tube MM."
-      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (#{ligase}) to the tube."
-      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (#{ligase_buffer.id}) buffer to the tube."
       check "Add #{6.0 * vol_scale} µL of water to the tube."
+      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (#{ligase}) to the tube."
+      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (#{ligase_buffer}) buffer to the tube."
 
       check "Vortex for 20-30 seconds"
       
       warning "Keep the master mix on an ice block while doing the next steps"
-    end
-
-    # dispense 10 uL Mastermix into stripwell
-    show do
-      title "Dispense master mix"
-
-      note "Pipette 10 µL of master mix into each of the first #{stripwell.num_samples} wells of a new stripwell."
-    end
-
-    # dispense 1 uL enzyme into stripwell
-    enzyme_table = [["Well", "Enzyme, 1 µL"]]
-    task_hashes.each_with_index do |task_hash, idx|
-      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
-    end
-    
-    show do
-      title "Dispense enzymes"
-
-      note "Pipette 1 µL of the specified enzyme into each well of the stripwell based on the following table:"
-      
-      table enzyme_table
     end
     
     # dispense H20 to 20 uL
@@ -221,6 +200,28 @@ class Protocol
       note "Pipette water into the stripwell according to the following table:"
 
       table water_table
+    end
+
+    # dispense 10 uL Mastermix into stripwell
+    show do
+      title "Prepare stripwell"
+
+      note "Label a #{task_hashes.length <= 6 ? 6 : 12}-well stripwell #{stripwell}."
+      note "Pipette 10 µL of master mix into each of the first #{stripwell.num_samples} wells of the stripwell."
+    end
+
+    # dispense 1 uL enzyme into stripwell
+    enzyme_table = [["Well", "Enzyme, 1 µL"]]
+    task_hashes.each_with_index do |task_hash, idx|
+      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
+    end
+    
+    show do
+      title "Dispense enzymes"
+
+      note "Pipette 1 µL of the specified enzyme into each well of the stripwell based on the following table:"
+      
+      table enzyme_table
     end
 
     # dispense DNA
@@ -243,14 +244,14 @@ class Protocol
     therm = show do
       title "Start thermocycler"
 
-      check "Place the stripwell into an available thermal cycler and close the lid."
+      check "Place the stripwell into an available thermocycler and close the lid."
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
       
       # TODO populate show block with proper instructions
       # check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
-      # check "Set the anneal temperature to #{pcr[:bins].first}. This is the 3rd temperature."
+      # check "Set the anneal temperature to . This is the 3rd temperature."
 
-      # check "Set the 4th time (extension time) to be #{pcr[:mm]}:#{pcr[:ss]}."
+      # check "Set the 4th time (extension time) to be ."
       # check "Press 'Run' and select 50 µL."
     end
     stripwell.location = therm[:name]
