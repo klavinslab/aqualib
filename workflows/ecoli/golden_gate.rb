@@ -156,7 +156,7 @@ class Protocol
     task_hashes.each do |task_hash|
       task_hash[:volumes] = task_hash[:stocks].map do |stock|
         conc = stock.datum[:fmole_ul]
-        if stock.object_type.name.includes? "40 fmole/µL"
+        if stock.object_type.name.include? "40 fmole/µL"
           1.0
         else
           (40.0 / conc).round(1)
