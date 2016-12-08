@@ -13,7 +13,7 @@ class Protocol
       #Enter the DNA sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
       plasmid_ids: [[82379]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
-      sample_or_item: "sample",
+      sample_or_item: "item",
       debug_mode: "Yes",
     }
   end
@@ -33,7 +33,7 @@ class Protocol
     end
 
     # Find fragment stocks into array of arrays
-    plasmid_stocks_array = io_hash[:plasmid_ids].collect{|pids| pids.collect {|pid| find(:item, {id: fid})[0]}}
+    plasmid_stocks_array = io_hash[:plasmid_ids].collect{|pids| pids.collect {|pid| find(:item, {id: pid})[0]}}
     plasmid_stocks_flatten = plasmid_stocks_array.flatten.uniq
 
     take fragment_stocks_flatten, interactive: true,  method: "boxes"
