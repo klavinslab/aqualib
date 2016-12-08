@@ -55,7 +55,7 @@ class Protocol
  
     # For each reaction, calculate the volume of plasmid required
     reaction_volumes = []
-    plasmid_stocks.zip io_hash[:dna_amount] do |reaction|
+    plasmid_stocks_array.zip io_hash[:dna_amount] do |reaction|
       plasmids = reaction[0]
       plasmid_concentrations = plasmids.collect { |p| p.dataum[:concentration] }
       dnas = reaction[1]
