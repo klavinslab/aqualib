@@ -12,6 +12,7 @@ class Protocol
       io_hash: {},
       #Enter the DNA sample ids as array of arrays, eg [[2058,2059],[2060,2061],[2058,2062]]
       plasmid_ids: [[82379]],
+      dna_amount: [[1]],
       #Tell the system if the ids you entered are sample ids or item ids by enter sample or item, sample is the default option in the protocol.
       sample_or_item: "item",
       debug_mode: "Yes",
@@ -23,7 +24,7 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
 
     # setup default values for io_hash.
-    io_hash = { plasmid_ids: [], debug_mode: "No", item_choice_mode: "No" }.merge io_hash
+    io_hash = { plasmid_ids: [], dna_amount:[], debug_mode: "No", item_choice_mode: "No" }.merge io_hash
 
     # Set debug based on debug_mode
     if io_hash[:debug_mode].downcase == "yes"
@@ -52,6 +53,9 @@ class Protocol
       end
     end
 
+#     plasmid_stocks.zip io_hash[:dna_amount] do |item|
+      
+      
 #     fragment_volumes = []
 #     fragment_stocks.each do |fs|
 #       conc_over_length = fs.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
