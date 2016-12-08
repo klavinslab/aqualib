@@ -58,6 +58,7 @@ class Protocol
         title "Debug"
         plasmid_stocks_array.each do |p|
           note "plasmid_stocks #{p}"
+        end
       }
       
 #     fragment_volumes = []
