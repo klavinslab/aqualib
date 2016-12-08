@@ -52,8 +52,16 @@ class Protocol
         x.save
       end
     end
-
-#     plasmid_stocks.zip io_hash[:dna_amount] do |item|
+ 
+    # For each reaction, calculate the volume of plasmid required
+    reaction_volumes = []
+    plasmid_stocks.zip io_hash[:dna_amount] do |reaction|
+      plasmids = reaction[0]
+      plasmid_concentrations = plasmids.collect { |p| p.dataum[:concentration] }
+      dnas = reaction[1]
+      volumes = plasmid_concentrations.zip(dna).collect { |p, d| d * 1000.0 / p }
+      reaction_volumes.push volumes
+    end
       
       
 #     fragment_volumes = []
