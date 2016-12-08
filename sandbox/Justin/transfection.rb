@@ -57,6 +57,7 @@ class Protocol
     reaction_volumes = []
     plasmid_stocks_array.each do |pid|
       pid.collect{ |p| p.datum[:concentration] }
+    end
 #     plasmid_stocks_array.zip io_hash[:dna_amount] do |reaction|
 #       plasmids = reaction[0]
 #       plasmid_concentrations = plasmids.collect { |p| p.dataum[:concentration] }
