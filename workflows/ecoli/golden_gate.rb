@@ -245,7 +245,8 @@ class Protocol
       title "Start thermocycler"
 
       check "Place the stripwell into an available thermocycler and close the lid."
-      get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC1"
+      check "Run the <b>MAIN/GGATE</b> protocol in the thermocycler. Choose 20uL as the volume and click OK"
+      get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC3"
       
       # TODO populate show block with proper instructions
       # check "Click 'Home' then click 'Saved Protocol'. Choose 'YY' and then 'CLONEPCR'."
