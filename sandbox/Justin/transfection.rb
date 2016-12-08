@@ -36,12 +36,12 @@ class Protocol
     plasmid_stocks_array = io_hash[:plasmid_ids].collect{|pids| pids.collect {|pid| find(:item, {id: pid})[0]}}
     plasmid_stocks_flatten = plasmid_stocks_array.flatten.uniq
 
-    take fragment_stocks_flatten, interactive: true,  method: "boxes"
+    take plasmid_stocks_flatten, interactive: true,  method: "boxes"
 
     plasmid_stocks_need_to_measure = plasmid_stocks_flatten.select {|f| !f.datum[:concentration]}
     if plasmid_stocks_need_to_measure.length > 0
       data = show {
-        title "Nanodrop the following fragment stocks."
+        title "Nanodrop the following plasmid stocks."
         plasmid_stocks_need_to_measure.each do |x|
           get "number", var: "c#{x.id}", label: "Go to B9 and nanodrop tube #{x.id}, enter DNA concentrations in the following", default: 30.2
         end
