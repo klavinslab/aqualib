@@ -267,6 +267,37 @@ class Protocol
         ensure_stock_concentration usable_fragments
 
         # Calculate fragment stock volumes for equimolar combination
+        ###################################################
+        # math behind the equimolar volume calculation
+        # Assume that there are n fragment stocks, each with concentrations c1,..., cn, and lengths of l1,...,ln. The volumes of each fragment stocks to add in the Gibson reaction is denoted as v1,...,vn. Assuming that the molecular weight (g/mol) of the fragment is proportional to the lenght of the fragment, to ensure equimolar of these n fragment stocks, the following must satisfy:
+        # v1 + ... + vn = 5 (the total gibson reaction volume)
+        # v1 * c1 / l1 = ... = vn * cn / ln
+        # unit of v is uL, unit of c is g/uL, unit of l1 (molecular weight) is g/mol
+        # thus v * c / l represent the moles of the fragment stock, and esuring v1 * c1 / l1 = ... = vn * cn / ln lead to equimolar fragment stocks.
+        # These mathmatical constraints can be reformated as:
+        # v1 + ... + vn = 5
+        # v1 * c1 / l1 - v2 * c2 / l2 = 0
+        # v1 * c1 / l1 - v3 * c3 / l3 = 0
+        #          ...
+        # v1 * c1 / l1 - vn * cn / ln = 0
+        # The following matrix equations hold:
+        # coefficient_matrix * fragment_volumes = total_vector,
+        # where 
+        # coefficient_matrix = [
+        # [1, 1, ..., 1]
+        # [c1 / l1, -c2 / l2, ..., 0]
+        # [c1 / l1, 0, - c3 / l3 ..., 0]
+        # ...
+        # [c1 / l1, 0, ..., - vn * cn / ln]
+        # ]  (n x n matrix)
+        # fragment_volumes = [[v1], [v2], ..., [vn]] (n x 1 matrix)
+        # total_vector = [[5], [0], ..., [0]] (n x 1 matrix)
+        # matrix multiplication
+        # coefficient_matrix.inv * coefficient_matrix * fragment_volumes = coefficient_matrix.inv * total_vector
+        # Therefore we have
+        # fragment_volumes = coefficient_matrix.inv * total_vector
+        ###################################################
+
         verify_stock_volumes usable_fragments
         fragment_volumes = []
         conc_over_length = usable_fragments.collect{|f| f.datum[:concentration].to_f/f.sample.properties["Length"]}
