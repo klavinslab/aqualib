@@ -141,7 +141,7 @@ class Protocol
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
 
-        if task.task_prototype.name == "Gibson Assembly"
+        if ["Gibson Assembly", "Golden Gate Assembly"].include? task.task_prototype.name
 
           plasmid_id = task.simple_spec[:plasmid]
           plasmid_name = find(:sample, id: plasmid_id)[0].name
@@ -171,7 +171,7 @@ class Protocol
                 t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
                 t.save
                 task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
-                t.notify "Automatically created from #{task_prototype_html_link 'Gibson Assembly'} #{task_html_link task}.", job_id: jid
+                t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
               end
             elsif colony_number[:"c#{plate_id}".to_sym] == 0
               set_task_status(task,"no colonies")
