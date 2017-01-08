@@ -3,7 +3,7 @@
 # Date: May 31, 2016 
  
 class Protocol
-
+  
   def main
 
     @object_types = ObjectType.all
@@ -96,27 +96,36 @@ class Protocol
     ot = choose_object_from samples
 
     result = show do
-      title "Chose Sample"
+      title "Choose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
     end
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
     l = descriptor[:labor]
-    cost = currency((1+@overhead)*(m+l))    
+    u = descriptor[:unit]
+    vol = {}
 
     s = Sample.find_by_name(descriptor[:name])
-    # filter out items that are not deleted and match object_type chosen previously
-    items = s.items.reject { |i| i.deleted? || i.object_type_id != ot.id }
+    items = s.items.reject { |i| i.deleted? }
     
     if items.length > 0
-      item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
+      item = choose_item items, "Choose #{ot.name} of #{s.name}"
+
+      vol = show do
+        title "Choose Volume"
+        get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+        select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container, or is the container empty?", default: 5
+      end
+
+
+      cost = currency((1+@overhead)*(m+l) * vol[:n]) 
       message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
       if confirm message, cost
         take [item]
-        task = make_purchase message, m, l
+        task = make_purchase message, m, l, vol[:n]
         release [item]
-        if descriptor[:delete]
+        if (descriptor[:delete] || vol[:delete] == "Yes")
           item.mark_as_deleted
         end
       end
@@ -226,7 +235,7 @@ class Protocol
     Item.find(result[:choice])          
   end
   
-  def make_purchase description, mat, lab
+  def make_purchase description, mat, lab, v=nil
     tp = TaskPrototype.find_by_name("Direct Purchase")
     if tp
       task = tp.tasks.create({
@@ -238,6 +247,7 @@ class Protocol
             description: description,
             materials: mat,
             labor: lab
+            vol: v
          }.to_json
       })
       task.save
