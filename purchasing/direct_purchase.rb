@@ -137,7 +137,8 @@ class Protocol
       end
     else
       error "There are no items of #{ot.name}/#{s.name} in stock"
-    end     
+    end 
+  end    
   ###############################################################################################################
   def batched_chooser 
 
@@ -183,11 +184,10 @@ class Protocol
           collection.mark_as_deleted
         end
       end    
-      
     else
       error "There are no #{ot.name} in stock"
     end
-   end
+  end
 
   def take_samples collection, n
    
