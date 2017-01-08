@@ -129,7 +129,8 @@ class Protocol
       message = "Purchase #{ot.name} of #{s}, item #{item.id}"
       if confirm message, cost
         take [item]
-        task = make_purchase message, m, l, vol[:n]
+        task = make_purchase message, m, l
+        descriptor[:vol] = vol[:n]
         release [item]
         if (descriptor[:delete] || vol[:delete] == "Yes")
           item.mark_as_deleted
@@ -238,7 +239,7 @@ class Protocol
   end
 
 
-  def make_purchase description, mat, lab, v=nil
+  def make_purchase description, mat, lab
     tp = TaskPrototype.find_by_name("Direct Purchase")
     if tp
       task = tp.tasks.create({
@@ -250,7 +251,6 @@ class Protocol
             description: description,
             materials: mat,
             labor: lab,
-            vol: v
          }.to_json
       })
       task.save
