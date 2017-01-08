@@ -249,7 +249,7 @@ class Protocol
         specification: {
             description: description,
             materials: mat,
-            labor: lab
+            labor: lab,
             vol: v
          }.to_json
       })
