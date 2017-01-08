@@ -2,9 +2,15 @@
 # # Author: Eric Klavins
 # # Date: May 31, 2016 
  
+<<<<<<< HEAD
 # class Protocol
 
 #   def main
+=======
+class Protocol
+  
+  def main
+>>>>>>> direct_p
 
 #     @object_types = ObjectType.all
 #     @job = Job.find(jid)
@@ -64,8 +70,8 @@
   
 #   def choose_object_from objects, number=false
 #     result = show do
-#       title "Chose Object"
-#       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+#       title "Chose Object
+#"       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
 #       get "number", var: "n", label: "How many?", default: 5 if number
 #     end
 #     return objects.find { |b| b.name == result[:choice] } unless number
@@ -95,34 +101,44 @@
 #     samples = @object_types.select { |ot| sample? ot }      
 #     ot = choose_object_from samples
 
-#     result = show do
-#       title "Chose Sample"
-#       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
-#     end
+    result = show do
+      title "Choose Sample"
+      select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
+    end
     
-#     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
-#     m = descriptor[:materials]
-#     l = descriptor[:labor]
-#     cost = currency((1+@overhead)*(m+l))    
+    descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
+    m = descriptor[:materials]
+    l = descriptor[:labor]
+    u = descriptor[:unit]
+    vol = {}
 
-#     s = Sample.find_by_name(descriptor[:name])
-#     # filter out items that are not deleted and match object_type chosen previously
-#     items = s.items.reject { |i| i.deleted? || i.object_type_id != ot.id }
+    s = Sample.find_by_name(descriptor[:name])
+    items = s.items.reject { |i| i.deleted? }
     
-#     if items.length > 0
-#       item = choose_item items, "Choose #{ot.name} of #{s.name} (#{cost} each)"
-#       message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
-#       if confirm message, cost
-#         take [item]
-#         task = make_purchase message, m, l
-#         release [item]
-#         if descriptor[:delete]
-#           item.mark_as_deleted
-#         end
-#       end
-#     else
-#       error "There are no items of #{ot.name}/#{s.name} in stock"
-#     end
+    if items.length > 0
+      item = choose_item items, "Choose #{ot.name} of #{s.name}"
+
+      vol = show do
+        title "Choose Volume"
+        get "number", var: "n", label: "How many #{u}'s of #{s.name}?", default: 5
+        select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container, or is the container empty?", default: 5
+      end
+
+
+      cost = currency((1+@overhead)*(m+l) * vol[:n]) 
+      message = "Purchase #{ot.name} of #{s.name}, item #{item.id}"
+      if confirm message, cost
+        take [item]
+        task = make_purchase message, m, l, vol[:n]
+        release [item]
+        if (descriptor[:delete] || vol[:delete] == "Yes")
+          item.mark_as_deleted
+        end
+      end
+    else
+      error "There are no items of #{ot.name}/#{s.name} in stock"
+    end
+>>>>>>> direct_p
               
 #   end
   
@@ -226,6 +242,7 @@
 #     Item.find(result[:choice])          
 #   end
   
+<<<<<<< HEAD
 #   def make_purchase description, mat, lab
 #     tp = TaskPrototype.find_by_name("Direct Purchase")
 #     if tp
@@ -250,6 +267,33 @@
 #       task
 #     end
 #   end
+=======
+  def make_purchase description, mat, lab, v=nil
+    tp = TaskPrototype.find_by_name("Direct Purchase")
+    if tp
+      task = tp.tasks.create({
+        user_id: @user.id, 
+        name: "#{DateTime.now.to_i} - #{description}",
+        status: "purchased",
+        budget_id: @budget.id,
+        specification: {
+            description: description,
+            materials: mat,
+            labor: lab
+            vol: v
+         }.to_json
+      })
+      task.save
+      if task.errors.empty?
+        set_task_status(task,"purchased")          
+      else
+        error "Errors", task.errors.full_messages.join(', ')
+      end
+      @tasks << task
+      task
+    end
+  end
+>>>>>>> direct_p
   
 #   def valid_sample_descriptor s
 #     val = s[:name]      && s[:name].class == String &&
