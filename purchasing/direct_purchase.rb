@@ -75,6 +75,7 @@ class Protocol
     
     basics = @object_types.select { |ot| basic? ot }      
     ot, n = choose_object_from basics, true
+    vol = {}
   
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
