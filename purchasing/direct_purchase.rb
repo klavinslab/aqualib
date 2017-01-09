@@ -8,6 +8,7 @@ class Protocol
     {
       io_hash: {}
     }
+  end
   
   def main
 
