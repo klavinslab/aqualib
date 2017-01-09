@@ -3,6 +3,11 @@
 # Date: May 31, 2016 
 
 class Protocol
+
+  def arguments
+    {
+      io_hash: {}
+    }
   
   def main
 
@@ -57,7 +62,7 @@ class Protocol
       again = ( result[:again] == "Yes" )
       
     end
-     return {}
+     return { io_hash: io_hash }
    end
 
   def choose_object_from objects, number=false
@@ -130,7 +135,7 @@ class Protocol
       if confirm message, cost
         take [item]
         task = make_purchase message, m, l
-        descriptor[:vol] = vol[:n].to_json
+        io_hash[:vol] = vol[:n]
         release [item]
         if (descriptor[:delete] || vol[:delete] == "Yes")
           item.mark_as_deleted
