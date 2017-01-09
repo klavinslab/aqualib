@@ -130,7 +130,7 @@ class Protocol
       if confirm message, cost
         take [item]
         task = make_purchase message, m, l
-        descriptor[:vol] = vol[:n]
+        descriptor[:vol] = vol[:n].to_json
         release [item]
         if (descriptor[:delete] || vol[:delete] == "Yes")
           item.mark_as_deleted
