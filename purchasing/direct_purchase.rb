@@ -78,7 +78,7 @@ class Protocol
   
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
-    u = descriptor[:unit] 
+    u = ot.data_object[:unit] 
     vol[:n] = 1
 
     if u 
