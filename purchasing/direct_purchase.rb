@@ -86,11 +86,10 @@ class Protocol
     vol = show do
       title "Choose Amount"
       get "number", var: "n", label: "How many #{u.pluralize} of #{ot.name}?", default: 5
-      select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
     end
 
     message = "Purchase #{vol[:n]} #{ot.name.pluralize}"
-    if confirm message, currency((1+@overhead) * n * (m+l) * vol[:n]) 
+    if confirm message, currency((1+@overhead) * (m+l) * vol[:n]) 
       task = make_purchase message, m*vol[:n], l*vol[:n]
     end        
     
