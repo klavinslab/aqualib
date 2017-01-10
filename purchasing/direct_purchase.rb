@@ -75,25 +75,23 @@ class Protocol
   def basic_chooser 
     
     basics = @object_types.select { |ot| basic? ot }      
-    ot, n = choose_object_from basics, true
+    ot = choose_object_from basics
     vol = {}
   
     m = ot.data_object[:materials]
     l = ot.data_object[:labor]
     u = ot.data_object[:unit] 
     vol[:n] = 1
-
-    if u 
-      vol = show do
-        title "Choose Volume"
-        get "number", var: "n", label: "How many #{u}'s of #{ot.name}?", default: 5
-        select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
-      end
+ 
+    vol = show do
+      title "Choose Amount"
+      get "number", var: "n", label: "How many #{u.pluralize} of #{ot.name}?", default: 5
+      select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
     end
 
     message = "Purchase #{n} #{ot.name.pluralize}"
     if confirm message, currency((1+@overhead) * n * (m+l) * vol[:n]) 
-      task = make_purchase message, n*m*vol[:n], n*l*vol[:n]
+      task = make_purchase message, m*vol[:n], l*vol[:n]
     end        
     
   end
@@ -125,7 +123,7 @@ class Protocol
       else
         vol = show do
           title "Choose Volume"
-          get "number", var: "n", label: "How many #{u}'s of #{s}?", default: 5 
+          get "number", var: "n", label: "How many #{u.pluralize} of #{s}?", default: 5 
           select ["No", "Yes"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
         end
       end
