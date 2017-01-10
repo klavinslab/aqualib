@@ -114,15 +114,15 @@ class Protocol
     s = descriptor[:name] 
     vol = {}
 
-    items = Sample.find_by_name(s).items.reject { |i| i.deleted? }
+    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot[0].name}
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s}"
 
       vol = show do
         title "Choose Volume"
-        get "number", var: "n", label: "How many #{u}'s of #{s}?", default: 5
-        select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
+        get "number", var: "n", label: "How many #{u}'s of #{s}?", default: 5 
+        select ["No", "Yes"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
       end
 
 
@@ -230,9 +230,6 @@ class Protocol
   def choose_item items, message
     result = show do 
       title message
-      items.each do |i|
-        item i
-      end
       select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
     Item.find(result[:choice])          
