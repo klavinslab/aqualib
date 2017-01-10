@@ -114,7 +114,7 @@ class Protocol
     s = descriptor[:name] 
     vol = {}
 
-    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot[0].name}
+    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot.name}
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s}"
