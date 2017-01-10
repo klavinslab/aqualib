@@ -89,7 +89,7 @@ class Protocol
       select ["Yes", "No"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
     end
 
-    message = "Purchase #{n} #{ot.name.pluralize}"
+    message = "Purchase #{vol[:n]} #{ot.name.pluralize}"
     if confirm message, currency((1+@overhead) * n * (m+l) * vol[:n]) 
       task = make_purchase message, m*vol[:n], l*vol[:n]
     end        
