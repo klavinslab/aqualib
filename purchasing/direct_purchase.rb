@@ -120,10 +120,14 @@ class Protocol
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s}"
 
-      vol = show do
-        title "Choose Volume"
-        get "number", var: "n", label: "How many #{u}'s of #{s}?", default: 5 
-        select ["No", "Yes"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
+      if ot.name.include?("Agar")
+        vol[:n] = descriptor[:total_volume]
+      else
+        vol = show do
+          title "Choose Volume"
+          get "number", var: "n", label: "How many #{u}'s of #{s}?", default: 5 
+          select ["No", "Yes"], var: "delete", label: "Are you purchasing the whole container or is the container now empty?", default: "No"
+        end
       end
 
 
