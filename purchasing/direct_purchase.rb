@@ -67,8 +67,6 @@ class Protocol
       get "number", var: "n", label: "How many?", default: 5 if number
     end
 
-    show do 
-
     return objects.find { |b| b.name == result[:choice] } unless number
     return [ objects.find { |b| b.name == result[:choice] }, result[:n] ] if number
   end
@@ -234,9 +232,6 @@ class Protocol
     result = show do 
       title message
       note "Please choose which item you would like to use: "
-      items.each do |i|
-        note "#{i.object_type.name}"
-      end
       select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
     Item.find(result[:choice])          
