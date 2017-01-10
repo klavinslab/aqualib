@@ -114,7 +114,7 @@ class Protocol
     s = descriptor[:name] 
     vol = {}
 
-    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot.name}
+    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot.name }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s}"
@@ -230,6 +230,10 @@ class Protocol
   def choose_item items, message
     result = show do 
       title message
+      note "Please choose which item you would like to use: "
+      items.each do |i|
+        note "#{i.object_type.name}"
+      end
       select items.collect { |i| i.id }, var: "choice", label: "Choose item", default: 0
     end
     Item.find(result[:choice])          
