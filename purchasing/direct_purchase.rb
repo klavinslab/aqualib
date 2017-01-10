@@ -270,14 +270,16 @@ class Protocol
   def valid_sample_descriptor s
     val = s[:name]      && s[:name].class == String &&
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
-          s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum )    
+          s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum ) && 
+          s[:unit]      && s[:unit].class == String &&
+          s[:total_volume] && s[:total_volume.class == Integer]
     error("Bad descriptor", s.to_s) unless val
     val
   end
 
   def basic? ot
     ot.handler != "sample_container" && ot.handler != "collection"  &&
-    ot.data_object[:materials] && ot.data_object[:labor]      
+    ot.data_object[:materials] && ot.data_object[:labor] && ot.data_object[:unit]     
   end
 
   def sample? ot
