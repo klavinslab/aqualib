@@ -66,6 +66,9 @@ class Protocol
       select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
       get "number", var: "n", label: "How many?", default: 5 if number
     end
+
+    show do 
+
     return objects.find { |b| b.name == result[:choice] } unless number
     return [ objects.find { |b| b.name == result[:choice] }, result[:n] ] if number
   end
@@ -114,7 +117,7 @@ class Protocol
     s = descriptor[:name] 
     vol = {}
 
-    items = Sample.find_by_name(s).items.reject { |i| i.deleted? && i.object_type.name != ot.name }
+    items = Sample.find_by_name(s).items.reject { |i| i.deleted? }.reject {|i| i.object_type.name != ot.name }
     
     if items.length > 0
       item = choose_item items, "Choose #{ot.name} of #{s}"
