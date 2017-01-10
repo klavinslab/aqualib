@@ -138,7 +138,7 @@ class Protocol
         end
       end
     else
-      error "There are no items of #{ot.name}/#{s.name} in stock"
+      error "There are no items of #{ot.name}/#{s} in stock"
     end 
   end    
   ###############################################################################################################
