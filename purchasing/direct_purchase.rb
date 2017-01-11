@@ -269,7 +269,7 @@ class Protocol
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
           s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum ) && 
           s[:unit]      && s[:unit].class == String &&
-          s[:total_volume] && s[:total_volume.class == Integer]
+          s[:total_volume] && s[:total_volume].class == Integer
     error("Bad descriptor", s.to_s) unless val
     val
   end
