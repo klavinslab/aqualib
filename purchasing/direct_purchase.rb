@@ -269,7 +269,7 @@ class Protocol
           s[:materials] && ( s[:materials].class == Float || s[:materials].class == Fixnum ) &&
           s[:labor]     && ( s[:labor].class == Float     || s[:labor].class == Fixnum ) && 
           s[:unit]      && s[:unit].class == String &&
-          s[:total_volume] && s[:total_volume].class == Integer
+          s[:total_volume] && s[:total_volume].is_a? Integer
     #error("Bad descriptor", s.to_s) unless val #comment this out so user doesn't see it
     val
   end
@@ -286,7 +286,7 @@ class Protocol
 
   def batched? ot
     ot.handler == "collection" && ot.data_object[:samples] && 
-    ot.data_object[:samples].each { |s| return nil unless valid_sample_descriptor s }
+    ot.data_object[:samples].each { |s| return nil unless (s[:materials] && s[:labor] && s[:unit]) }
   end
 
   def currency num
