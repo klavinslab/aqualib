@@ -62,8 +62,8 @@ class Protocol
 
   def choose_object_from objects, number=false
     result = show do
-      title "Chose Object"
-      select objects.collect { |ot| ot.name }, var: "choice", label: "Choose item", default: 0
+      title "Choose Object"
+      select objects.collect { |ot| ot.name }, var: "choice", label: "Choose object:", default: 0
       get "number", var: "n", label: "How many?", default: 5 if number
     end
 
@@ -76,6 +76,9 @@ class Protocol
     
     basics = @object_types.select { |ot| basic? ot }      
     ot = choose_object_from basics
+
+    error "There seems to be a problem with the object you've chosen." if ot.nil?
+
     vol = {}
   
     m = ot.data_object[:materials]
@@ -100,6 +103,9 @@ class Protocol
    
     samples = @object_types.select { |ot| sample? ot }      
     ot = choose_object_from samples
+
+    error "There seems to be a problem with the object you've chosen." if ot.nil?
+
     result = show do
       title "Choose Sample"
       select ot.data_object[:samples].collect { |s| s[:name] }, var: "choice", label: "Choose sample", default: 2
@@ -147,6 +153,8 @@ class Protocol
 
     collections = @object_types.select { |ot| batched? ot }
     ot = choose_object_from collections
+
+    error "There seems to be a problem with the object you've chosen." if ot.nil?
   
     result = show do
       title "Choose sample type" 
