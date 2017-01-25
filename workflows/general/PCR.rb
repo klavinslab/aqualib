@@ -11,7 +11,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13872,13850,13849],
+      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13850,13849],
+      task_ids: [23559, 23558],
       debug_mode: "Yes",
     }
   end
@@ -93,6 +94,24 @@ class Protocol
     additional_primer_aliquots = (dilute_samples ((not_enough_vol_primer_aliquots + contaminated_primer_aliquots).map { |p| p.sample.id } + 
       primers_need_to_dilute(all_primer_ids)))
 
+    # cancel tasks with no primer aliquots
+    primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
+    fragment_infos_to_remove = fragment_info_list.select do |fi| 
+      !primer_aliquot_hash.values.flatten.include?(fi[:fwd]) ||
+      !primer_aliquot_hash.values.flatten.include?(fi[:rev])
+    end
+
+    fragment_infos_to_remove.each do |fi|
+      tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
+      tasks_to_cancel = tasks.select { |t| t.simple_spec[:fragments].include?(fi[:fragment].id) }
+      tasks_to_cancel.each do |t|
+        set_task_status(t, "canceled")
+        t.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
+      end
+    end
+
+    fragment_info_list = fragment_info_list - fragment_infos_to_remove
+
     # build a pcrs hash that group pcr by T Anneal
     pcrs = distribute_pcrs fragment_info_list, 4
 
@@ -148,7 +167,6 @@ class Protocol
     end
 
     # add primers to stripwells
-    primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     pcrs.each_with_index do |pcr, idx|
       primer_tabs = []
       pcr[:fragment_info].values.each_with_index do |fis, idx|
@@ -235,7 +253,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"pcr")
+        set_task_status(task,"pcr") if task.status != "canceled"
       end
     end
     
