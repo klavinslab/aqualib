@@ -100,13 +100,19 @@ class Protocol
       !primer_aliquot_hash.values.include?(fi[:fwd]) ||
       !primer_aliquot_hash.values.include?(fi[:rev])
     end
+    
+    show {
+      note primer_aliquot_hash.values
+      note fragment_info_list.first[:fwd]
+      note fragment_infos_to_remove
+    }
 
     fragment_infos_to_remove.each do |fi|
       tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
       tasks_to_cancel = tasks.select { |t| t.simple_spec[:fragments].include?(fi[:fragment].id) }
       tasks_to_cancel.each do |t|
-        set_task_status(task, "canceled")
-        task.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
+        set_task_status(t, "canceled")
+        t.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
       end
     end
 
