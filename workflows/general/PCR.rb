@@ -11,8 +11,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13872,13850,13849],
-      task_ids: [],
+      "fragment_ids Fragment" => [2061,2062,4684,4685,4779,4767,4778,13873,13850,13849],
+      task_ids: [23559, 23558],
       debug_mode: "Yes",
     }
   end
@@ -109,6 +109,10 @@ class Protocol
         task.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
       end
     end
+
+    show {
+      note fragment_infos_to_remove
+    }
 
     fragment_info_list = fragment_info_list - fragment_infos_to_remove
 
