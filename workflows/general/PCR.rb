@@ -97,12 +97,12 @@ class Protocol
     # cancel tasks with no primer aliquots
     primer_aliquot_hash = hash_by_sample primer_aliquots.compact + additional_primer_aliquots - contaminated_primer_aliquots
     fragment_infos_to_remove = fragment_info_list.select do |fi| 
-      !primer_aliquot_hash.values.include?(fi[:fwd]) ||
-      !primer_aliquot_hash.values.include?(fi[:rev])
+      !primer_aliquot_hash.values.flatten.include?(fi[:fwd]) ||
+      !primer_aliquot_hash.values.flatten.include?(fi[:rev])
     end
     
     show {
-      note primer_aliquot_hash.values.map { |p| p.id }
+      note primer_aliquot_hash.values.flatten.map { |p| p.id }
       note fragment_info_list.first[:fwd].id
       note fragment_infos_to_remove.map { |fi| fi[:fwd].id }
     }
