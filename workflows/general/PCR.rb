@@ -100,12 +100,6 @@ class Protocol
       !primer_aliquot_hash.values.flatten.include?(fi[:fwd]) ||
       !primer_aliquot_hash.values.flatten.include?(fi[:rev])
     end
-    
-    show {
-      note primer_aliquot_hash.values.flatten.map { |p| p.id }
-      note fragment_info_list.first[:fwd].id
-      note fragment_infos_to_remove.map { |fi| fi[:fwd].id }
-    }
 
     fragment_infos_to_remove.each do |fi|
       tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
@@ -115,10 +109,6 @@ class Protocol
         t.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
       end
     end
-
-    show {
-      note fragment_infos_to_remove
-    }
 
     fragment_info_list = fragment_info_list - fragment_infos_to_remove
 
