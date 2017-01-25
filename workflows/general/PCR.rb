@@ -102,9 +102,9 @@ class Protocol
     end
     
     show {
-      note primer_aliquot_hash.values
-      note fragment_info_list.first[:fwd]
-      note fragment_infos_to_remove
+      note primer_aliquot_hash.values.map { |p| p.id }
+      note fragment_info_list.first[:fwd].id
+      note fragment_infos_to_remove.map { |fi| fi[:fwd].id }
     }
 
     fragment_infos_to_remove.each do |fi|
@@ -263,7 +263,7 @@ class Protocol
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
-        set_task_status(task,"pcr")
+        set_task_status(task,"pcr") if task.status != "canceled"
       end
     end
     
