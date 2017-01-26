@@ -105,8 +105,8 @@ class Protocol
       tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
       tasks_to_cancel = tasks.select { |t| t.simple_spec[:fragments].include?(fi[:fragment].id) }
       tasks_to_cancel.each do |t|
-        set_task_status(t, "canceled")
-        t.notify "Task canceled. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
+        set_task_status(t, "waiting")
+        t.notify "Task set to waiting. No primer aliquot or stock exists for one of the needed primers.", job_id: jid
       end
     end
 
