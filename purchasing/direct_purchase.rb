@@ -3,6 +3,10 @@
 # Date: May 31, 2016 
 
 class Protocol
+
+  def labor_rate
+    Parameter.get_float('labor rate')
+  end
   
   def main
 
@@ -92,7 +96,7 @@ class Protocol
     end
 
     message = "Purchase #{vol[:n]} #{ot.name.pluralize}"
-    if confirm message, currency((1+@overhead) * (m+l) * vol[:n]) 
+    if confirm message, currency((1+@overhead) * (m+(l * labor_rate)) * vol[:n]) 
       task = make_purchase message, m*vol[:n], l*vol[:n]
     end        
     
@@ -134,7 +138,7 @@ class Protocol
       end
 
 
-      cost = currency((1+@overhead)*(m+l) * vol[:n]) 
+      cost = currency((1+@overhead)*(m+(l * labor_rate) * vol[:n]) 
       message = "Purchase #{ot.name} of #{s}, item #{item.id}"
       if confirm message, cost
         take [item]
