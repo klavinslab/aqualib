@@ -138,7 +138,7 @@ class Protocol
       end
 
 
-      cost = currency((1+@overhead)*(m+(l * labor_rate) * vol[:n]) 
+      cost = currency((1+@overhead)*(m+(l * labor_rate) * vol[:n])) 
       message = "Purchase #{ot.name} of #{s}, item #{item.id}"
       if confirm message, cost
         take [item]
