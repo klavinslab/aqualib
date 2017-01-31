@@ -52,7 +52,7 @@ class Protocol
       end
 
       show do
-        title "Combine plasmids for #{task.name}"
+        title "Combine plasmids for #{t.name}"
 
         check "Label a new tube #{target_plasmids[idx]} for the new stock"
 
