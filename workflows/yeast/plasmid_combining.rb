@@ -9,7 +9,6 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      #stripwell that containing digested plasmids
       task_ids: [23561,23560],
       debug_mode: "Yes"
     }
@@ -26,35 +25,26 @@ class Protocol
       end
     end
 
+    # Find items and things
     tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
     input_plasmids = tasks.map { |t| t.simple_spec[:plasmids].map { |pid| find(:sample, id: pid)[0].in("Plasmid Stock")[0] } }
     concentrations = tasks.map { |t| t.simple_spec[:concentrations] }
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
 
-    show do
-      title "Tasking debug"
+    take input_plasmids.flatten
 
-      tasks.each_with_index do |t, idx|
-        note "Task #{idx}"
-        note t.simple_spec[:plasmids]
-        note input_plasmids[idx].class
-        note input_plasmids[idx].map { |p| p.id }
-        note concentrations[idx]
-        note target_plasmids[idx].id
-      end
-    end
-
+    # Combine plasmids
     tasks.each_with_index do |t, idx|
       tab = [["Input Plasmid Stock", "Volume (uL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
         vol = 1000 / concentrations[idx][pidx]
-        tab.push [{ content: "#{p}", check: true }, vol]
+        tab.push [{ content: p.id, check: true }, vol]
       end
 
       show do
         title "Combine plasmids for #{t.name}"
 
-        check "Label a new tube #{target_plasmids[idx]} for the new stock"
+        note "Label a new tube #{target_plasmids[idx]} for the new stock"
 
         note "Pipette the following volumes of input stocks into the output stock"
         table tab
@@ -63,6 +53,8 @@ class Protocol
       target_plasmids[idx].datum = target_plasmids[idx].datum.merge({ concentration: 67 })
       target_plasmids[idx].save
     end
+
+    release (input_plasmids + target_plasmids).flatten
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
