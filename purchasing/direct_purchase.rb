@@ -117,7 +117,7 @@ class Protocol
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor]
+    l = descriptor[:labor] * labor_rate
     u = descriptor[:unit]
     s = descriptor[:name] 
     vol = {}
@@ -138,7 +138,7 @@ class Protocol
       end
 
 
-      cost = currency((1+@overhead)*(m+(l * labor_rate)) * vol[:n]) 
+      cost = currency((1+@overhead)*(m+l) * vol[:n]) 
       message = "Purchase #{ot.name} of #{s}, item #{item.id}"
       if confirm message, cost
         take [item]
