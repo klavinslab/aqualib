@@ -31,22 +31,23 @@ class Protocol
     concentrations = tasks.map { |t| t.simple_spec[:concentrations] }
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
 
-    take input_plasmids.flatten
+    take input_plasmids.flatten, interactive: true, method: "boxes"
+    ensure_stock_concentration input_plasmids.flatten
 
     # Combine plasmids
     tasks.each_with_index do |t, idx|
-      tab = [["Input Plasmid Stock", "Volume (uL)"]]
+      tab = [["Input Plasmid Stock", "Volume (μL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
-        vol = 1000 / concentrations[idx][pidx]
+        vol = (20.0 * concentrations[idx][pidx] / p.datum[:concentration]
         tab.push [{ content: p.id, check: true }, vol]
       end
 
       show do
         title "Combine plasmids for #{t.name}"
 
-        note "Label a new tube #{target_plasmids[idx]} for the new stock"
+        note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
 
-        note "Pipette the following volumes of input stocks into the output stock"
+        note "Pipette the following volumes of input stocks into the output stock."
         table tab
       end
 
@@ -54,7 +55,7 @@ class Protocol
       target_plasmids[idx].save
     end
 
-    release (input_plasmids + target_plasmids).flatten
+    release (input_plasmids + target_plasmids).flatten, interactive: true, method: "boxes"
 
     io_hash[:task_ids].each do |tid|
       task = find(:task, id: tid)[0]
