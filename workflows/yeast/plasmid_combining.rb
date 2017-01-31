@@ -37,6 +37,7 @@ class Protocol
       task_specs.each_with_index do |ts, idx|
         note "Task #{idx}"
         note ts[:plasmids]
+        note input_plasmids[idx]
         #note input_plasmids[idx].map { |p| p.id }
         note concentrations[idx]
         note input_plasmids[idx].id
