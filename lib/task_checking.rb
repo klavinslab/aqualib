@@ -306,6 +306,9 @@ def task_status_check t
           end
         when "plasmid"
           errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
+        when "plasmids" && t.task_prototype.name == "Plasmid Combining"
+          inventory_check_result = inventory_check(ids, inventory_types: ["Plasmid Stock"])
+          errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
         when "yeast_transformed_strain_ids"
           errors.push "New rule: #{variable_name} only accepts 1 item for easier status tracking." if ids.length > 1
           sample_check_result = sample_check(ids, assert_property: "Parent")

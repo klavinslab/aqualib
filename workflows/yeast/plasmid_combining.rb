@@ -38,7 +38,7 @@ class Protocol
         note "Task #{idx}"
         note ts[:plasmids]
         note input_plasmids[idx].class
-        note input_plasmids[idx].map { |p| p.id }
+        #note input_plasmids[idx].map { |p| p.id }
         note concentrations[idx]
         note target_plasmids[idx].id
       end
