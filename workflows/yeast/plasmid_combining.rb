@@ -26,7 +26,7 @@ class Protocol
       end
     end
 
-    tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0].simple_spec }
+    tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
     input_plasmids = tasks.map { |t| t.simple_spec[:plasmids].map { |pid| find(:sample, id: pid)[0].in("Plasmid Stock")[0] } }
     concentrations = tasks.map { |t| t.simple_spec[:concentrations] }
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
