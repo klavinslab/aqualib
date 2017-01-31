@@ -29,7 +29,7 @@ class Protocol
     task_specs = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0].simple_spec }
     input_plasmids = task_specs.map { |ts| ts[:plasmids].map { |pid| find(:sample, id: pid)[0].in("Plasmid Stock")[0] } }
     concentrations = task_specs.map { |ts| ts[:concentrations] }
-    input_plasmids = task_specs.map { |ts| find(:sample, id: ts[:target_plasmid])[0].make_item "Plasmid Stock" }
+    target_plasmids = task_specs.map { |ts| find(:sample, id: ts[:target_plasmid])[0].make_item "Plasmid Stock" }
 
     show do
       title "Tasking debug"
@@ -38,9 +38,9 @@ class Protocol
         note "Task #{idx}"
         note ts[:plasmids]
         note input_plasmids[idx].class
-        #note input_plasmids[idx].map { |p| p.id }
+        note input_plasmids[idx].map { |p| p.id }
         note concentrations[idx]
-        note input_plasmids[idx].id
+        note target_plasmids[idx].id
       end
     end
 
