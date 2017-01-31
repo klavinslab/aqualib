@@ -48,7 +48,7 @@ class Protocol
       tab = [["Input Plasmid Stock", "Volume (uL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
         vol = 1000 / concentrations[idx][pidx]
-        tab.push [{ content: p.id, check: true }, vol]
+        tab.push [{ content: p, check: true }, vol]
       end
 
       show do
@@ -61,6 +61,7 @@ class Protocol
       end
 
       target_plasmids[idx].datum = target_plasmids[idx].datum.merge({ concentration: 67 })
+      target_plasmids[idx].save
     end
 
     io_hash[:task_ids].each do |tid|
