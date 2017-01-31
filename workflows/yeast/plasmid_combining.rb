@@ -48,7 +48,7 @@ class Protocol
       tab = [["Input Plasmid Stock", "Volume (uL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
         vol = 1000 / concentrations[idx][pidx]
-        tab.push [{ content: p, check: true }, vol]
+        tab.push [{ content: "#{p}", check: true }, vol]
       end
 
       show do
