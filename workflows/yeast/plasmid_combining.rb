@@ -47,7 +47,7 @@ class Protocol
         #title "Combine plasmids for #{t.name}"
 
         #note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
-        note t
+        note t.name
         note "Pipette the following volumes of input stocks into the output stock."
         #table tab
       end
