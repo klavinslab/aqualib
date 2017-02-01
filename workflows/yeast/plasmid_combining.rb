@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      task_ids: [23561,23560],
+      task_ids: [23563,23564],
       debug_mode: "Yes"
     }
   end
@@ -17,7 +17,7 @@ class Protocol
   def main
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
-    io_hash = { debug_mode: "No", task_ids: [], plasmids: [], concentrations: [], target_plasmid: [] }.merge io_hash
+    io_hash = { debug_mode: "No", task_ids: [], plasmids: [], nanograms: [], target_plasmid: [] }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -28,7 +28,7 @@ class Protocol
     # Find items and things
     tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
     input_plasmids = tasks.map { |t| t.simple_spec[:plasmids].map { |pid| find(:sample, id: pid)[0].in("Plasmid Stock")[0] } }
-    concentrations = tasks.map { |t| t.simple_spec[:concentrations] }
+    nanograms = tasks.map { |t| t.simple_spec[:nanograms] }
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
 
     take input_plasmids.flatten, interactive: true, method: "boxes"
@@ -38,7 +38,7 @@ class Protocol
     tasks.each_with_index do |t, idx|
       tab = [["Input Plasmid Stock", "Volume (μL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
-        vol = (20.0 * concentrations[idx][pidx] / p.datum[:concentration]
+        vol = nanograms[idx][pidx] / p.datum[:concentration]
         tab.push [{ content: p.id, check: true }, vol]
       end
 

@@ -217,11 +217,11 @@ class Protocol
       io_hash[:size] = io_hash[:glycerol_stock_ids].length
 
     when "Plasmid Combining"
-      io_hash = { plasmids: [], concentrations: [], target_plasmid: [] }.merge io_hash
+      io_hash = { plasmids: [], nanograms: [], target_plasmid: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         io_hash[:plasmids].push task.simple_spec[:plasmids]
-        io_hash[:concentrations].push task.simple_spec[:concentrations]
+        io_hash[:nanograms].push task.simple_spec[:nanograms]
         io_hash[:target_plasmid].push task.simple_spec[:target_plasmid]
       end
       io_hash[:size] = 1
