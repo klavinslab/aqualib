@@ -44,12 +44,12 @@ class Protocol
       # end
       puts "45"
       show do
-        title "Combine plasmids for #{t.name}"
+        #title "Combine plasmids for #{t.name}"
 
         #note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
 
         note "Pipette the following volumes of input stocks into the output stock."
-        table tab
+        #table tab
       end
       puts "54"
       target_plasmids[idx].datum = target_plasmids[idx].datum.merge({ concentration: 67 })
