@@ -36,7 +36,7 @@ class Protocol
     puts "36"
     # Combine plasmids
     tasks.each_with_index do |t, idx|
-      tab = [["Input Plasmid Stock", "Volume (μL)"]]
+      tab = [["Input Plasmid Stock", "Volume (uL)"]]
       puts "40"
       # input_plasmids[idx].each_with_index do |p, pidx|
       #   vol = nanograms[idx][pidx] / p.datum[:concentration]
