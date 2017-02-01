@@ -32,7 +32,7 @@ class Protocol
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
 
     take input_plasmids.flatten.uniq, interactive: true, method: "boxes"
-    ensure_stock_concentration input_plasmids.flatten.uniq
+    #ensure_stock_concentration input_plasmids.flatten.uniq
 
     # Combine plasmids
     tasks.each_with_index do |t, idx|
