@@ -31,7 +31,7 @@ class Protocol
     nanograms = tasks.map { |t| t.simple_spec[:nanograms] }
     target_plasmids = tasks.map { |t| find(:sample, id: t.simple_spec[:target_plasmid])[0].make_item "Plasmid Stock" }
 
-    take input_plasmids.flatten, interactive: true, method: "boxes"
+    take input_plasmids.flatten.uniq, interactive: true, method: "boxes"
     ensure_stock_concentration input_plasmids.flatten.uniq
 
     # Combine plasmids
