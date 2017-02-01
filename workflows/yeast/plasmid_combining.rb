@@ -38,18 +38,18 @@ class Protocol
     tasks.each_with_index do |t, idx|
       tab = [["Input Plasmid Stock", "Volume (μL)"]]
       puts "40"
-      input_plasmids[idx].each_with_index do |p, pidx|
-        vol = nanograms[idx][pidx] / p.datum[:concentration]
-        tab.push [{ content: p.id, check: true }, vol]
-      end
+      # input_plasmids[idx].each_with_index do |p, pidx|
+      #   vol = nanograms[idx][pidx] / p.datum[:concentration]
+      #   tab.push [{ content: p.id, check: true }, vol]
+      # end
       puts "45"
       show do
-        title "Combine plasmids for #{t.name}"
+        # title "Combine plasmids for #{t.name}"
 
-        note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
+        # note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
 
-        note "Pipette the following volumes of input stocks into the output stock."
-        table tab
+        # note "Pipette the following volumes of input stocks into the output stock."
+        # table tab
       end
       puts "54"
       target_plasmids[idx].datum = target_plasmids[idx].datum.merge({ concentration: 67 })
