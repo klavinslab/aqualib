@@ -44,7 +44,7 @@ class Protocol
       # end
       puts "45"
       show do
-        #title "Combine plasmids for #{t.name}"
+        title "Combine plasmids for #{t.name}"
 
         #note "Label a new tube #{target_plasmids[idx]}. This will be the new plasmid stock."
         note t.name
