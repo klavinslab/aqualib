@@ -33,12 +33,12 @@ class Protocol
 
     take input_plasmids.flatten.uniq, interactive: true, method: "boxes"
     ensure_stock_concentration input_plasmids.flatten.uniq
-    
+
     # Combine plasmids
     tasks.each_with_index do |t, idx|
       tab = [["Input Plasmid Stock", "Volume (uL)"]]
       input_plasmids[idx].each_with_index do |p, pidx|
-        vol = nanograms[idx][pidx] / p.datum[:concentration]
+        vol = (nanograms[idx][pidx] / p.datum[:concentration]).round(1)
         tab.push [{ content: p.id, check: true }, vol]
       end
 
