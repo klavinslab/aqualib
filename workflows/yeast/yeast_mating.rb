@@ -84,8 +84,8 @@ class Protocol
         y.user_id = io_hash[:user_ids][idx]
         y.description = "A diploid strain automatically generated from yeast mating."
         y.project = y0.project
-        y.properties["Parent"] = "#{y0.id}, #{y1.id}"
         y.save
+        y.set_property "Parent", "#{y0.id}, #{y1.id}"
         y.set_property "Mating Type", "diploid"    
       end
       yeast_mated_strains.push y
