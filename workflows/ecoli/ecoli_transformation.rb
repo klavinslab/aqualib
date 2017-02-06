@@ -154,11 +154,11 @@ class Protocol
 
     show {
       title "Incubate tubes"
-      check "Put the tubes with the following ids into 37 C incubator using the small green tube holder."
+      check "Put the tubes with the following ids into 37 C shaker/incubator using the small green tube holder."
       note "Retrieve all the tubes 30 minutes later by doing the following plate_ecoli_transformation protocol. You can finish this protocol now by perfoming the next return steps."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
-      image "put_green_tube_holder_to_incubator"
+      image "37_c_shaker_incubator"
     }
 
     show {
@@ -169,7 +169,7 @@ class Protocol
       image "dump_dirty_cuvettes"
     }
 
-    move transformed_aliquots, "37 C incubator"
+    move transformed_aliquots, "37 C shaker/incubator"
     release transformed_aliquots
 
     gibson_results.each do |g|
