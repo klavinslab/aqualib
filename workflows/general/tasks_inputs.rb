@@ -216,6 +216,16 @@ class Protocol
       end
       io_hash[:size] = io_hash[:glycerol_stock_ids].length
 
+    when "Plasmid Combining"
+      io_hash = { plasmids: [], nanograms: [], target_plasmid: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:plasmids].push task.simple_spec[:plasmids]
+        io_hash[:nanograms].push task.simple_spec[:nanograms]
+        io_hash[:target_plasmid].push task.simple_spec[:target_plasmid]
+      end
+      io_hash[:size] = 1
+
     when "Primer Order", "Discard Item", "Yeast Competent Cell", "Fragment Construction", "Yeast Transformation"
       # a general task processing script only works for those tasks with one variable_name
       io_hash[:task_hash] = []

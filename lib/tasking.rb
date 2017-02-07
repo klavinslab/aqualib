@@ -164,6 +164,8 @@ module Tasking
       size = task.simple_spec[:num_colonies].inject { |sum, i| sum + i }
     when "Cytometer Reading", "Glycerol Stock", "Discard Item", "Streak Plate"
       size = task.simple_spec[:item_ids].length
+    when "Plasmid Combining"
+      size = 1
     when "Yeast Transformation"
       size = task.simple_spec[:yeast_transformed_strain_ids].length
     when "Sequencing Verification"
