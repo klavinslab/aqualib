@@ -111,7 +111,7 @@ class Protocol
       }
 
         release [plate_batch], interactive: true
-        io_hash = { plate_batch_id: plate_batch.id }.merge io_hash
+        io_hash = { plate_batch_id: [plate_batch.id] }.merge io_hash
       end
       return { io_hash: io_hash }
   end
