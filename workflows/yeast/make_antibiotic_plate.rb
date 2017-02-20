@@ -63,10 +63,10 @@ class Protocol
 
     if ura_leu_plate_markers && batch
       ura_leu_plate_markers.each do |marker, num|
-        num_plates = plate_batch.num_samples
+        num_plates = batch.num_samples
         update_batch_matrix batch, num_plates - num, "SDO -Leu -Ura"
         plate_batch_id = "#{batch.id}"
-        plate_batch.mark_as_deleted if (num_plates - num) == 0
+        batch.mark_as_deleted if (num_plates - num) == 0
 
         show do
           title "Grab SDO -Leu -Ura plates and #{antibiotic_hash[marker]} stock"
