@@ -54,7 +54,7 @@ class Protocol
 
       if project.include? "LabW17" #filtering inputs based on projects
         ura_leu_plate_markers.store(marker, ura_leu_plate_markers[marker] + 1)
-        batch = Collection.where(sample_id: 11783).where("data is not null").first
+        batch =  Collection.where(object_type_id: 493).select { |b| b.data.include? "11783" }.first
       else
         plasmid_marker_hash.store(marker, plasmid_marker_hash[marker] + 1)
       end
