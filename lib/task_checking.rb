@@ -308,7 +308,7 @@ def task_status_check t
           errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]
         when "plasmids"
           if t.task_prototype.name == "Plasmid Combining"
-            inventory_check_result = inventory_check(ids, inventory_types: ["Plasmid Stock, Fragment Stock"])
+            inventory_check_result = inventory_check(ids, inventory_types: ["Plasmid Stock", "Fragment Stock"])
             errors.concat inventory_check_result[:errors].collect! { |error| "[Notif] #{error}"}
           end
         when "yeast_transformed_strain_ids"
