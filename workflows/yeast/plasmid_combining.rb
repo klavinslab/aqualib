@@ -29,7 +29,7 @@ class Protocol
     tasks = io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }
     input_plasmids = tasks.map do |t|
       t.simple_spec[:plasmids].map do |pid|
-        find(:sample, id: pid)[0].in("Plasmid Stock")[0] | find(:sample, id: pid)[0].in("Fragment Stock")[0]
+        find(:sample, id: pid)[0].in("Plasmid Stock")[0] || find(:sample, id: pid)[0].in("Fragment Stock")[0]
       end
     end
     nanograms = tasks.map { |t| t.simple_spec[:nanograms] }
