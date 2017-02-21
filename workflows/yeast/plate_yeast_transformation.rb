@@ -59,6 +59,7 @@ class Protocol
       yeast_markers.collect! do |mk|
         (mk == "g41") ? "kan" : mk
       end
+
       yeast_plates_markers = Hash.new {|h,k| h[k] = [] }
       yeast_plates.each_with_index do |y,idx|
         yeast_plates_markers[yeast_markers[idx]].push y
@@ -71,9 +72,14 @@ class Protocol
         ant_marker = antibiotic_hash[marker]
         tab_plate.push( [antibiotic_hash[marker], plates.length, plates.collect { |y| y.id }.join(", ") ])
         for i in 1..plates.length
+          if plates[i-1].sample.project.include? "LabW17"
+            plate = find(:item, {sample: {name: "SDO -Leu -Ura + #{ant_marker}"}, object_type: { name: "Agar Plate"} })[0]
+          else 
             plate = find(:item, {sample: {name: "YPAD + #{ant_marker}"}, object_type: { name: "Agar Plate"} })[0]
-            plate.mark_as_deleted if plate
-            i += 1
+          end
+
+          plate.mark_as_deleted if plate
+          i += 1
         end
       end
 
