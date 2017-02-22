@@ -63,22 +63,24 @@ class Protocol
 
     if ura_leu_plate_markers && batch
       ura_leu_plate_markers.each do |marker, num|
-        num_plates = batch.num_samples
-        update_batch_matrix batch, num_plates - num, "SDO -Leu -Ura"
-        plate_batch_id = "#{batch.id}"
-        batch.mark_as_deleted if (num_plates - num) == 0
+        if markers.include? marker
+          num_plates = batch.num_samples
+          update_batch_matrix batch, num_plates - num, "SDO -Leu -Ura"
+          plate_batch_id = "#{batch.id}"
+          batch.mark_as_deleted if (num_plates - num) == 0
 
-        show do
-          title "Grab SDO -Leu -Ura plates and #{antibiotic_hash[marker]} stock"
-          check "Grab #{num} SDO -Leu -Ura plates from batch #{plate_batch_id}."
-          check "Grab #{(num * volume_hash[marker] / 1000.0).ceil} 1 mL #{antibiotic_hash[marker]} stock in SF1 or M20."
-          check "Wait for the #{antibiotic_hash[marker]} stock to thaw."
-          check "Use sterile beads to spread #{volume_hash[marker]} µL of #{antibiotic_hash[marker]} to each SDO -Leu -Ura plates, mark each plate with #{antibiotic_hash[marker]} in RED sharpie."
-          check "Wrap plates in foil and place them agar side down in the dark fume hood to dry."
-        end
+          show do
+            title "Grab SDO -Leu -Ura plates and #{antibiotic_hash[marker]} stock"
+            check "Grab #{num} SDO -Leu -Ura plates from batch #{plate_batch_id}."
+            check "Grab #{(num * volume_hash[marker] / 1000.0).ceil} 1 mL #{antibiotic_hash[marker]} stock in SF1 or M20."
+            check "Wait for the #{antibiotic_hash[marker]} stock to thaw."
+            check "Use sterile beads to spread #{volume_hash[marker]} µL of #{antibiotic_hash[marker]} to each SDO -Leu -Ura plates, mark each plate with #{antibiotic_hash[marker]} in RED sharpie."
+            check "Wrap plates in foil and place them agar side down in the dark fume hood to dry."
+          end
 
-        produce new_sample "SDO -Leu -Ura + #{antibiotic_hash[marker]}" , of: "SDO -Leu -Ura + #{antibiotic_hash[marker]}", as: "Agar Plate"
-      end 
+          produce new_sample "SDO -Leu -Ura + #{antibiotic_hash[marker]}" , of: "SDO -Leu -Ura + #{antibiotic_hash[marker]}", as: "Agar Plate"
+        end 
+      end
     end
 
     plasmid_marker_hash.each do |marker, num|
