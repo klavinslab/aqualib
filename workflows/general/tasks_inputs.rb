@@ -40,8 +40,8 @@ class Protocol
 
     # add old plates to discard in the Discard Item tasks
     if io_hash[:task_name] == "Discard Item"
-      divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 80
-      yeast_plates_to_delete = items_beyond_days "Yeast Plate", 80
+      divided_yeast_plates_to_delete = items_beyond_days "Divided Yeast Plate", 28
+      yeast_plates_to_delete = items_beyond_days "Yeast Plate", 28
       new_discard_item_task_ids = []
       divided_yeast_plates_to_delete.each do |p|
         # find the first sample id that is not -1 in the matrix
