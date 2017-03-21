@@ -86,7 +86,7 @@ class Protocol
     vol = {}
   
     m = ot.data_object[:materials]
-    l = ot.data_object[:labor]
+    l = ot.data_object[:labor] *labor_rate
     u = ot.data_object[:unit] 
     vol[:n] = 1
  
@@ -167,7 +167,7 @@ class Protocol
   
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor]
+    l = descriptor[:labor] * labor_rate
     cost = currency((1+@overhead)*(m+l))
   
     s = Sample.find_by_name(descriptor[:name])
