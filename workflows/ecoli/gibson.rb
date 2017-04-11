@@ -153,9 +153,6 @@ class Protocol
     # Flatten the fragment_stocks array of arrays
     fragment_stocks_flatten = fragment_stocks.flatten.uniq
 
-    # Sort fragment_stocks_flatten by location for ease of protocol use
-    sort_by_location fragment_stocks_flatten
-
     fragment_stocks_need_length_info = fragment_stocks_flatten.select {|f| f.sample.properties["Length"] == 0}
 
     show {
