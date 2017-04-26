@@ -90,9 +90,9 @@ class Protocol
         check "Write down the following ids on cap of each test tube using dot labels #{overnights.collect {|x| x.id}}"
       }
 
-      overnights.each do |on|
-        on.datum = on.datum.merge { marker: marker }
-        on.save
+      overnights.each do |o|
+        o.datum = o.datum.merge({ marker: marker })
+        o.save
       end
     end
 
