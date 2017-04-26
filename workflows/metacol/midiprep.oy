@@ -1,0 +1,68 @@
+argument
+  debug_mode: string, "Yes or No"
+  item_choice_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    item_choice_mode: item_choice_mode
+    task_name: "Midiprep"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place streak_plate
+  protocol: "aqualib:workflows/ecoli/plate_midiprep.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place small_inoculation
+  protocol: "aqualib:workflows/ecoli/small_inoculation_midiprep.rb"
+  group: group
+  marked: false
+  start: hours(8)
+  window: hours(1)
+end
+
+place large_inoculation
+  protocol: "aqualib:workflows/ecoli/large_inoculation_midiprep.rb"
+  group: group
+  marked: false
+  start: hours(8)
+  window: hours(1)
+end
+
+place midiprep
+  protocol: "aqualib:workflows/ecoli/midiprep.rb"
+  group: group
+  marked: false
+  start: hours(12)
+  window: hours(1)
+end
+
+wire tasks_inputs => streak_plate
+wire streak_plate => small_inoculation
+wire small_inoculation => large_inoculation
+wire large_inoculation => midiprep
+
+transition [ tasks_inputs ] => [ streak_plate ]  when !error(0) && completed(0) end
+transition [ streak_plate ] => [ small_inoculation ]  when !error(0) && completed(0) end
+transition [ small_inoculation ] => [ large_inoculation ] when !error(0) && completed(0) end
+transition [ large_inoculation ] => [ midiprep ]  when !error(0) && completed(0) end
+transition [ midiprep ] => [] when !error(0) && completed(0) end
+
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ streak_plate ] => [ streak_plate ] when error(0) end
+transition [ small_inoculation ] => [ small_inoculation ] when error(0) end
+transition [ large_inoculation ] => [ large_inoculation ] when error(0) end
+transition [ midiprep ] => [ midiprep ] when error(0) end
