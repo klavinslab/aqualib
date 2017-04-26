@@ -35,7 +35,7 @@ class Protocol
 
       table [["Large Overnight ID", "Marker"]]
             .concat(large_overnights.map { |o| o.id }
-            .zip small_overnights.map { |o| { content: o.datum[:marker], check: true })
+            .zip small_overnights.map { |o| { content: o.datum[:marker], check: true } })
     }
 
     take small_overnights, interactive: true
