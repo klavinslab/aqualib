@@ -82,13 +82,18 @@ class Protocol
       overnight_marker_hash[marker_key].push x
     end
 
-    overnight_marker_hash.each do |marker, overnight|
+    overnight_marker_hash.each do |marker, overnights|
       show {
         title "Media preparation in media bay"
-        check "Grab #{overnight.length} of 14 mL Test Tube"
+        check "Grab #{overnights.length} of 14 mL Test Tube"
         check "Add 3 mL of #{marker} to each empty 14 mL test tube using serological pipette"
-        check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
+        check "Write down the following ids on cap of each test tube using dot labels #{overnights.collect {|x| x.id}}"
       }
+
+      overnights.each do |on|
+        on.datum = on.datum.merge { marker: marker }
+        on.save
+      end
     end
 
     take plates, interactive: true

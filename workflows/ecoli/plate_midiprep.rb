@@ -89,7 +89,7 @@ class Protocol
         }
         show {
           title "Plating"
-          check "Use sterile beads to plate THE ENTIRE VOLUME (300 uL) from glycerol stocks (1.5 mL tubes) on to the plates following the table below."
+          check "Use sterile beads to plate THE ENTIRE VOLUME (300 µL) from glycerol stocks (1.5 mL tubes) on to the plates following the table below."
           warning "Note the change in plating volume!"
           check "Discard used glycerol stocks after plating."
           table [["1.5 mL tube", "#{plate_type} Plate"]].concat((glycerol_stocks.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })

@@ -23,36 +23,41 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash = { plate_ids: [], num_colonies: [] }.merge io_hash
+    io_hash = { small_overnight_ids: [] }.merge io_hash
 
-    Inoculate 200 uL of the small inoculation into 100  mL LB + marker.
-    Incubate for 12 hrs.
-
-    overnight_marker_hash.each do |marker, overnight|
-      show {
-        title "Media preparation in media bay"
-        check "Grab #{overnight.length} of 14 mL Test Tube"
-        check "Add 3 mL of #{marker} to each empty 14 mL test tube using serological pipette"
-        check "Write down the following ids on cap of each test tube using dot labels #{overnight.collect {|x| x.id}}"
-      }
-    end
-
-    take plates, interactive: true
+    small_overnights = io_hash[:small_overnight_ids].map { |oid| find(:item, id: pid)[0] }
+    large_overnights = small_overnights { |o| produce new_sample o.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid (100 mL)" }
 
     show {
-      title "Inoculation from plate"
-      note "Use 10 µL sterile tips to inoculate colonies from plate into 14 mL tubes according to the following table."
-      check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated colonies on that plate."
-      table [["Plate id", "Overnight id"]].concat(colony_plates.collect { |p| p.id }.zip overnights.collect { |o| { content: o.id, check: true } })
+      title "Media preparation in media bay"
+
+      check "Label new tubes, and add 100 mL of media and marker(s) to them according to the following table."
+
+      table [["Large Overnight ID", "Marker"]]
+            .concat(large_overnights.map { |o| o.id }
+            .zip small_overnights.map { |o| { content: o.datum[:marker], check: true })
     }
 
-    overnights.each do |o|
+    take small_overnights, interactive: true
+
+    show {
+      title "Inoculation from small overnight"
+
+      note "Inoculate 200 µL from each of the following small overnights into the large tubes according to the following table."
+
+      table [["Small Overnight ID", "Large Overnight ID"]]
+            .concat(small_overnights.map { |o| o.id }
+            .zip large_overnights.map { |o| { content: o.id, check: true } })
+    }
+
+    delete small_overnights
+
+    large_overnights.each do |o|
       o.location = "37 C shaker incubator"
       o.save
     end
 
-    release overnights, interactive: true
-    release plates, interactive: true
+    release large_overnights, interactive: true
 
     if io_hash[:task_ids]
       io_hash[:task_ids].each do |tid|
@@ -61,7 +66,7 @@ class Protocol
       end
     end
 
-    io_hash[:overnight_ids] = overnights.collect { |o| o.id }
+    io_hash[:overnight_ids] = large_overnights.collect { |o| o.id }
     return { io_hash: io_hash }
 
   end # main
