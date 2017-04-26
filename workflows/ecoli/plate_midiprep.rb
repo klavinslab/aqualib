@@ -16,7 +16,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      glycerol_stocks_ids: [9191,9190,8418],
+      glycerol_stock_ids: [9191,9190,8418],
     }
   end
 
@@ -32,7 +32,7 @@ class Protocol
       end
     end
 
-    all_glycerol_stocks = io_hash[:glycerol_stocks_ids].collect { |tid| find(:item, id: tid)[0] }
+    all_glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_glycerol_stocks.length == 0
       show {
         title "No plating required"
