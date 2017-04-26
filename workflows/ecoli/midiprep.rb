@@ -62,8 +62,8 @@ class Protocol
  
     overnights.each do |x|
         show{ title "Transfer culture into centrifuge tubes"
-        	check "Label 4 250 mL centrifuge tubes with overnight id #{x.id}" 
-        	check "Transfer 200 ml of overnight culture #{x.id} into each labeled tube."
+        	check "Label 4 50 mL falcon tubes with overnight id #{x.id}" 
+        	check "Transfer 50 ml of overnight culture #{x.id} into each labeled tube."
         	}
     end
       
@@ -82,7 +82,7 @@ class Protocol
     show{
 		title "Prepare equipment during spin"
 		check "During the spin, take out #{num} QIAfilter Cartridge(s). Label them with #{overnight_ids}. Screw the cap onto the outlet nozzle of the QIAfilter Cartridge(s). Place the QIAfilter Cartridge(s) into a convenient tube or test tube rack."
-		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 ml beaker. Add 10ml of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
+		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 ml beaker. Add 4 mL of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
    		 }
 
 	show{
@@ -92,7 +92,7 @@ class Protocol
     
     show{
       title "Resuspend cells in P1"
-      check "Add 20 mL of P1 into each centrifuge tube using the serological pipet and vortex strongly to resuspend."
+      check "Add 6 mL of P1 into each centrifuge tube using the serological pipet and vortex strongly to resuspend."
     	}
     
     show{
@@ -102,18 +102,20 @@ class Protocol
     
     show{
       title "Add P2"
-      check "Add 80 mL of P2 into each centrifuge tube using the serological pipet and gently invert to mix."
-		warning "Cells should not be exposed to active P2 for more than 5 minutes."
-    	}
+      check "Add 6 mL of P2 into each centrifuge tube using the serological pipette and gently invert 4-6 times to mix."
+      check "Incubate tube at room temperature for 5 minutes."
+		  
+      warning "Cells should not be exposed to active P2 for more than 5 minutes."
+      }
     
 
     show{
         title "Add prechilled P3 and gently invert to mix"
-		check "Pipette 80 ml of prechilled P3 into each tube with serological pipette and gently invert 4-6 times to mix."
+		    check "Pipette 6 mL of prechilled P3 into each tube with serological pipette and gently invert 4-6 times to mix."
     	}
     
     show{
-      title "Centrifuge tubes at 20,000 X g for 30 mins at 4 C "
+      title "Centrifuge tubes at 20,000 X g for 15 mins at 4 C "
       check "Once you've started the centrifuge, click ok"
     	}
     
@@ -131,7 +133,7 @@ class Protocol
     
 	show{
 		title "Wash HiSpeed tips with QC buffer"
-		check "After all the lysate has entered, add 60ml Buffer QC to each HiSpeed tip #{overnight_ids}. Allow the wash to fiter through the tip by gravity flow."
+		check "After all the lysate has entered, add 20 mL Buffer QC to each HiSpeed tip #{overnight_ids}. Allow the wash to fiter through the tip by gravity flow."
 		check "While you are waiting for the buffer to filter through the tip, get #{num} 50 mL falcon tubes. Label them #{overnight_ids} respectively and put them in a tube stand."
 		warning "Do not proceed to the next step until all wash liquid has filtered through the tip (it stops dripping)."
 		}
@@ -140,7 +142,7 @@ class Protocol
 	show{
 		title "Elute DNA into 50 mL tube"
 		check "Place the cap off the 50 mL tube labeled #{x.id}. Take the HiSpeed tip labeled #{x.id} and tip stand and move them so they are over the 50ml tube."
-		check "Add 15ml Buffer QF to the HiSpeed tip to elute DNA into the 50ml tube."
+		check "Add 5 mL Buffer QF to the HiSpeed tip to elute DNA into the 50ml tube."
 		warning "Do not elute DNA into the waste container, or DNA will be lost!"
 		}
 	end
@@ -152,14 +154,14 @@ class Protocol
 	
 	show{
 		title "Precipitate DNA in 50ml tube"
-		check "Precipitate DNA by adding 10.5 ml ispropanol to the #{num} 50 mL falcon tube(s). Put the lids back on the 50 ml tubes and mix gently by inverting. Let stand for 5 min."
+		check "Precipitate DNA by adding 3.5 ml isopropanol to the #{num} 50 mL falcon tube(s). Put the lids back on the 50 ml tubes and mix gently by inverting. Let stand for 5 min."
 		check "While waiting, click ok" 
 		}
 	
 	show{
 		title "Prepare equipment"
 		check "Label #{num} QIAprecipitator modules(s) with #{overnight_ids} respectively"
-		check "Remove the plunger from #{num} new 30 ml syringe and attach the labeled QIAprecipitator Module(s) to the outlet nozzle."
+		check "Remove the plunger from #{num} new 20 mL syringe and attach the labeled QIAprecipitator Module(s) to the outlet nozzle."
 		}
 	
     overnights.each do |x| 
