@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       #Enter the plate ids as a list
       plate_ids: [55418,63226,63225],
-      num_colonies: [1,2,3],
+      num_colonies: [1,1,1],
       debug_mode: "Yes",
       group: "cloning"
     }
@@ -26,7 +26,7 @@ class Protocol
       end
     end
     # making sure have the following hash indexes.
-    io_hash = { plate_ids: [], num_colonies: [] }.merge io_hash
+    io_hash = { plate_ids: [], num_colonies: Array.new(io_hash[:plate_ids].length) { 1 } }.merge io_hash
 
     # raise errors if inputs are not valid
     raise "Incorrect inputs, plate_ids and num_colonies must have the same length." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
