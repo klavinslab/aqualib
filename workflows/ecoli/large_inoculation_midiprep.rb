@@ -31,7 +31,7 @@ class Protocol
     show {
       title "Media preparation in media bay"
 
-      check "Label new tubes, and add 100 mL of media and marker(s) to them according to the following table."
+      check "Label new tubes, and add 62.5 mL of media and marker(s) to them according to the following table."
 
       table [["Large Overnight ID", "Marker"]]
             .concat(large_overnights.map { |o| o.id }
@@ -43,7 +43,7 @@ class Protocol
     show {
       title "Inoculation from small overnight"
 
-      note "Inoculate 200 µL from each of the following small overnights into the large tubes according to the following table."
+      note "Inoculate 125 µL from each of the following small overnights into the large tubes according to the following table."
 
       table [["Small Overnight ID", "Large Overnight ID"]]
             .concat(small_overnights.map { |o| o.id }
