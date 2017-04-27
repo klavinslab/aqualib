@@ -107,7 +107,6 @@ class Protocol
     end
     actual_plates = all_plates - deleted_plates
 
-    delete all_glycerol_stocks
     if actual_plates.length > 0
       show {
         title "Incubate"
