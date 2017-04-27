@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      small_overnight_ids: [55418,63226,63225],
+      small_overnight_ids: [71418,71419,71420],
       debug_mode: "no",
     }
   end #arguments
@@ -25,7 +25,7 @@ class Protocol
     # making sure have the following hash indexes.
     io_hash = { small_overnight_ids: [] }.merge io_hash
 
-    small_overnights = io_hash[:small_overnight_ids].map { |oid| find(:item, id: pid)[0] }
+    small_overnights = io_hash[:small_overnight_ids].map { |oid| find(:item, id: oid)[0] }
     large_overnights = small_overnights { |o| produce new_sample o.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid (100 mL)" }
 
     show {
