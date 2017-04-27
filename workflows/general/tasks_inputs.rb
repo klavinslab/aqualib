@@ -208,6 +208,14 @@ class Protocol
       io_hash[:task_ids].concat io_hash[:plasmid_extraction_task_ids]
       io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n } || 0 + io_hash[:glycerol_stock_ids].length
 
+    when "Midiprep"
+      io_hash = { glycerol_stock_ids: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        io_hash[:glycerol_stock_ids].push task.simple_spec[:glycerol_stock_id]
+      end
+      io_hash[:size] = io_hash[:glycerol_stock_ids].length
+
     when "Maxiprep"
       io_hash = { glycerol_stock_ids: [] }.merge io_hash
       io_hash[:task_ids].each do |tid|

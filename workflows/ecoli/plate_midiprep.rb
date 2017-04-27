@@ -16,7 +16,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      glycerol_stocks_ids: [9191,9190,8418],
+      glycerol_stock_ids: [9191,9190,8418],
     }
   end
 
@@ -32,7 +32,7 @@ class Protocol
       end
     end
 
-    all_glycerol_stocks = io_hash[:glycerol_stocks_ids].collect { |tid| find(:item, id: tid)[0] }
+    all_glycerol_stocks = io_hash[:glycerol_stock_ids].collect { |tid| find(:item, id: tid)[0] }
     if all_glycerol_stocks.length == 0
       show {
         title "No plating required"
@@ -89,7 +89,7 @@ class Protocol
         }
         show {
           title "Plating"
-          check "Use sterile beads to plate THE ENTIRE VOLUME (300 uL) from glycerol stocks (1.5 mL tubes) on to the plates following the table below."
+          check "Use sterile beads to plate THE ENTIRE VOLUME (300 µL) from glycerol stocks (1.5 mL tubes) on to the plates following the table below."
           warning "Note the change in plating volume!"
           check "Discard used glycerol stocks after plating."
           table [["1.5 mL tube", "#{plate_type} Plate"]].concat((glycerol_stocks.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
@@ -107,7 +107,6 @@ class Protocol
     end
     actual_plates = all_plates - deleted_plates
 
-    delete all_glycerol_stocks
     if actual_plates.length > 0
       show {
         title "Incubate"

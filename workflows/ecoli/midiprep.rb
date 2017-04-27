@@ -62,7 +62,7 @@ class Protocol
  
     overnights.each do |x|
         show{ title "Transfer culture into centrifuge tubes"
-        	check "Label 4 50 mL falcon tubes with overnight id #{x.id}" 
+        	check "Label 1 50 mL falcon tube with overnight id #{x.id}" 
         	check "Transfer 50 ml of overnight culture #{x.id} into each labeled tube."
         	}
     end
@@ -70,7 +70,7 @@ class Protocol
     overnights.each do |x|  
     show{
       title "Spin down the cells labeled as #{x.id}"
-      check "Spin at 6,000Xg for 15 min at 4 C"
+      check "Spin at 4,696 xg for 15 min at 4 C"
       check "Once you've started the centrifuge, click ok" 
       }
     end
@@ -93,11 +93,6 @@ class Protocol
     show{
       title "Resuspend cells in P1"
       check "Add 6 mL of P1 into each centrifuge tube using the serological pipet and vortex strongly to resuspend."
-    	}
-    
-    show{
-      title "Consolidate samples"
-      check "Pour all samples with same overnight id into one 250 mL centrifuge tube. Discard the empty tubes."
     	}
     
     show{
@@ -186,7 +181,7 @@ class Protocol
 		}
 	end
 	
-	midipreps = overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "midiprep Stock"}
+	midipreps = overnights.collect { |x| produce new_sample x.sample.name, of: "Plasmid", as: "Midiprep Stock"}
     
     show{
       title "Prepare 1.5 mL tubes"

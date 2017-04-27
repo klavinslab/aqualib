@@ -178,7 +178,7 @@ module Tasking
       size = task.simple_spec[:plasmid_item_ids].length
     when "Golden Gate Assembly"
       size = 1
-    when "Verification Digest", "Maxiprep"
+    when "Verification Digest", "Midiprep", "Maxiprep"
       size = 1
     when "Warming Agar"
       size = task.simple_spec[:media_type].length
