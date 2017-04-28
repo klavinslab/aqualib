@@ -63,14 +63,14 @@ class Protocol
     overnights.each do |x|
         show{ title "Transfer culture into centrifuge tubes"
         	check "Label 1 50 mL falcon tube with overnight id #{x.id}" 
-        	check "Transfer 50 ml of overnight culture #{x.id} into each labeled tube."
+        	check "Transfer 50 mL of overnight culture #{x.id} into each labeled tube."
         	}
     end
       
     overnights.each do |x|  
     show{
       title "Spin down the cells labeled as #{x.id}"
-      check "Spin at 4,696 xg for 15 min at 4 C"
+      check "Spin at 4,696 xg for 10 min at 4 C"
       check "Once you've started the centrifuge, click ok" 
       }
     end
@@ -82,7 +82,7 @@ class Protocol
     show{
 		title "Prepare equipment during spin"
 		check "During the spin, take out #{num} QIAfilter Cartridge(s). Label them with #{overnight_ids}. Screw the cap onto the outlet nozzle of the QIAfilter Cartridge(s). Place the QIAfilter Cartridge(s) into a convenient tube or test tube rack."
-		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 ml beaker. Add 4 mL of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
+		check "Label #{num} HiSpeed Tip(s). Place the HiSpeed Tip(s) onto a tip holder, resting on a 250 mL beaker. Add 4 mL of QBT buffer to the HiSpeed Tip(s), allowing it to enter the resin."
    		 }
 
 	show{
@@ -110,7 +110,7 @@ class Protocol
     	}
     
     show{
-      title "Centrifuge tubes at 20,000 X g for 15 mins at 4 C "
+      title "Centrifuge tubes at 4,696 xg for 15 mins at 4 C "
       check "Once you've started the centrifuge, click ok"
     	}
     
@@ -129,15 +129,15 @@ class Protocol
 	show{
 		title "Wash HiSpeed tips with QC buffer"
 		check "After all the lysate has entered, add 20 mL Buffer QC to each HiSpeed tip #{overnight_ids}. Allow the wash to fiter through the tip by gravity flow."
-		check "While you are waiting for the buffer to filter through the tip, get #{num} 50 mL falcon tubes. Label them #{overnight_ids} respectively and put them in a tube stand."
+		check "While you are waiting for the buffer to filter through the tip, get #{num} 15 mL Conical Tube(s). Label them #{overnight_ids} respectively and put them in a tube stand."
 		warning "Do not proceed to the next step until all wash liquid has filtered through the tip (it stops dripping)."
 		}
 
     overnights.each do |x| 
 	show{
-		title "Elute DNA into 50 mL tube"
-		check "Place the cap off the 50 mL tube labeled #{x.id}. Take the HiSpeed tip labeled #{x.id} and tip stand and move them so they are over the 50ml tube."
-		check "Add 5 mL Buffer QF to the HiSpeed tip to elute DNA into the 50ml tube."
+		title "Elute DNA into 15 mL tube"
+		check "Place the cap off the 15 mL tube labeled #{x.id}. Take the HiSpeed tip labeled #{x.id} and tip stand and move them so they are over the 15 mL tube."
+		check "Add 5 mL Buffer QF to the HiSpeed tip to elute DNA into the 15 mL tube."
 		warning "Do not elute DNA into the waste container, or DNA will be lost!"
 		}
 	end
@@ -148,8 +148,8 @@ class Protocol
 		}
 	
 	show{
-		title "Precipitate DNA in 50ml tube"
-		check "Precipitate DNA by adding 3.5 ml isopropanol to the #{num} 50 mL falcon tube(s). Put the lids back on the 50 ml tubes and mix gently by inverting. Let stand for 5 min."
+		title "Precipitate DNA in 15 mL tube"
+		check "Precipitate DNA by adding 3.5 mL isopropanol to the #{num} 15 mL Conical Tube(s). Put the lids back on the 15 mL tubes and mix gently by inverting. Let stand for 5 min."
 		check "While waiting, click ok" 
 		}
 	
@@ -162,14 +162,14 @@ class Protocol
     overnights.each do |x| 
 	show{
 		title "Filter DNA through QIAprecipitator"
-		check "Place the QIAprecipitator labeled #{x.id} over a waste bottle, transfer the eluate-isopropanol mixture from the #{x.id} 50 ml tube into the syringe, and insert the plunger. Depress the plunger and filter the mixture through the QIAprecipitator."
+		check "Place the QIAprecipitator labeled #{x.id} over a waste bottle, transfer the eluate-isopropanol mixture from the #{x.id} 15 mL tube into the syringe, and insert the plunger. Depress the plunger and filter the mixture through the QIAprecipitator."
 		}
 	end
 
 	overnights.each do |x|
 	show{
 		title "Wash DNA with 70 percent ethanol"
-		check "Remove the QIAprecipitator labeled #{x.id} from the syringe and pull out the plunger. Re-attach the QIAprecipitator and add 2ml 70 percent ethanol to the syringe. Wash the DNA by the inserting the plunger and pressing the ethanol through the QIAprecipitator."
+		check "Remove the QIAprecipitator labeled #{x.id} from the syringe and pull out the plunger. Re-attach the QIAprecipitator and add 2mL 70 percent ethanol to the syringe. Wash the DNA by the inserting the plunger and pressing the ethanol through the QIAprecipitator."
 		}
 	end
 
@@ -193,9 +193,9 @@ class Protocol
 	
 	overnights_midipreps_pairs.each do |pair|
 	show{
-		title "Elute DNA into the 1.5 ml collection tubes"
-		check "Remove the plunger from a new 5 ml syringe, attach the QIAprecipitator labeled #{pair[0]} and hold the outlet over the 1.5 ml collection tube labeled #{pair[1]}." 
-		check "Add 1 ml Buffer TE to the 5 ml syringe."
+		title "Elute DNA into the 1.5 mL collection tubes"
+		check "Remove the plunger from a new 5 mL syringe, attach the QIAprecipitator labeled #{pair[0]} and hold the outlet over the 1.5 mL collection tube labeled #{pair[1]}." 
+		check "Add 1 mL Buffer TE to the 5 mL syringe."
 		check "Insert the plunger and elute the DNA by depressing the plunger."
 		}
 	end
@@ -203,8 +203,8 @@ class Protocol
 	overnights_midipreps_pairs.each do |pair|
 	show{
 		title "Final filtering"
-		check "Remove the QIAprecipitator labeled #{pair[0]} from the 5 ml syringe, pull out the plunger and re-attach the QIAprecipitator to the 5 ml syringe." 
-		check "Transfer the eluate from the 1.5 ml tube labeled #{pair[1]} into the 5 ml syringe and elute QIAprecipitator #{pair[0]} for a second time into the same 1.5 ml tube (labeled #{pair[1]})."
+		check "Remove the QIAprecipitator labeled #{pair[0]} from the 5 mL syringe, pull out the plunger and re-attach the QIAprecipitator to the 5 mL syringe." 
+		check "Transfer the eluate from the 1.5 mL tube labeled #{pair[1]} into the 5 mL syringe and elute QIAprecipitator #{pair[0]} for a second time into the same 1.5 mL tube (labeled #{pair[1]})."
 		}
 	end
     
