@@ -26,7 +26,7 @@ class Protocol
     io_hash = { small_overnight_ids: [] }.merge io_hash
 
     small_overnights = io_hash[:small_overnight_ids].map { |oid| find(:item, id: oid)[0] }
-    large_overnights = small_overnights.map { |o| produce new_sample o.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid (100 mL)" }
+    large_overnights = small_overnights.map { |o| produce new_sample o.sample.name, of: "Plasmid", as: "TB Overnight of Plasmid (large)" }
 
     show {
       title "Media preparation in media bay"
