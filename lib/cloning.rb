@@ -67,8 +67,8 @@ module Cloning
 
     show { note template.sample_type.name; note template.id; note template.in("Midiprep Stock").any? }
     if template.sample_type.name == "Plasmid"
-      template_items = template.in "1 ng/µL Plasmid Stock"
-      show { note template_items.class }
+      template_items = template.in("1 ng/µL Plasmid Stock")
+      show { note template_items.class; note template_items.empty? }
       if template_items.empty? && template.in("Plasmid Stock").empty?
         template_items = template.in "Gibson Reaction Result"
       elsif template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
