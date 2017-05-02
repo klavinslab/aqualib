@@ -105,6 +105,7 @@ module Cloning
   def dilute_samples ids
     ids = [ids] unless ids.is_a? Array
     ids.uniq!
+    show { note ids }
     dilute_stocks = ids.collect do |id|
       dilute_sample = find(:sample, id: id)[0]
       dilute_stock = dilute_sample.in(dilute_sample.sample_type.name + " Stock")[0]
