@@ -65,7 +65,7 @@ module Cloning
     dilute_sample_ids.push fwd.id if fwd_items.empty?
     dilute_sample_ids.push rev.id if rev_items.empty?
 
-    show { note template.sample_type.name }
+    show { note template.sample_type.name; note template.id; note template.in("Midiprep Stock").any? }
     if template.sample_type.name == "Plasmid"
       template_items = template.in "1 ng/µL Plasmid Stock"
       if template_items.empty? && template.in("Plasmid Stock").empty?
