@@ -69,7 +69,7 @@ module Cloning
       template_items = template.in "1 ng/µL Plasmid Stock"
       if template_items.empty? && template.in("Plasmid Stock").empty?
         template_items = template.in "Gibson Reaction Result"
-      elsif template_items.empty? && template.in("Plasmid Stock").any?
+      elsif template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
       end
     elsif template.sample_type.name == "Fragment"
