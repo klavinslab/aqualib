@@ -65,6 +65,7 @@ module Cloning
     dilute_sample_ids.push fwd.id if fwd_items.empty?
     dilute_sample_ids.push rev.id if rev_items.empty?
 
+    show { note template.sample_type.name }
     if template.sample_type.name == "Plasmid"
       template_items = template.in "1 ng/µL Plasmid Stock"
       if template_items.empty? && template.in("Plasmid Stock").empty?
@@ -72,6 +73,7 @@ module Cloning
       elsif template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
       end
+      show { note dilute_sample_ids }
     elsif template.sample_type.name == "Fragment"
       template_items = template.in "1 ng/µL Fragment Stock"
       dilute_sample_ids.push template.id if template_items.empty?
