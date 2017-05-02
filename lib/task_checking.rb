@@ -160,7 +160,7 @@ def sample_check ids, p={}
           warnings.push "#{sample_field_name} requires number greater than 40" unless property > 40
         when "Template"
           template_stock_hash = {
-            "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result"],
+            "Plasmid" => ["1 ng/µL Plasmid Stock", "Plasmid Stock", "Gibson Reaction Result", "Midiprep Stock", "Maxiprep Stock"],
             "Fragment" => ["1 ng/µL Fragment Stock", "Fragment Stock" ],
             "E coli strain" => ["E coli Lysate", "Genome Prep"],
             "Yeast Strain" => ["Lysate", "Yeast cDNA"]
