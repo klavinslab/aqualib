@@ -73,7 +73,7 @@ module Cloning
       elsif template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
       end
-      show { note "dilute_sample_ids: " + dilute_sample_ids; note "template_items" + template_items }
+      show { note "dilute_sample_ids: #{dilute_sample_ids}"; note "template_items #{template_items}" }
     elsif template.sample_type.name == "Fragment"
       template_items = template.in "1 ng/µL Fragment Stock"
       dilute_sample_ids.push template.id if template_items.empty?
