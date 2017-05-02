@@ -66,10 +66,11 @@ module Cloning
     dilute_sample_ids.push rev.id if rev_items.empty?
 
     if template.sample_type.name == "Plasmid"
-      template_items = template.in "1 ng/µL Plasmid Stock"
+      template_items = template.in("1 ng/µL Plasmid Stock")
       if template_items.empty? && template.in("Plasmid Stock").empty?
         template_items = template.in "Gibson Reaction Result"
-      elsif template_items.empty? && template.in("Plasmid Stock").any?
+      end
+      if template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
       end
     elsif template.sample_type.name == "Fragment"
@@ -108,10 +109,13 @@ module Cloning
     dilute_stocks = ids.collect do |id|
       dilute_sample = find(:sample, id: id)[0]
       dilute_stock = dilute_sample.in(dilute_sample.sample_type.name + " Stock")[0]
+      dilute_stock ||= dilute_sample.in("Midiprep Stock")[0]
+      dilute_stock ||= dilute_sample.in("Maxiprep Stock")[0]
+      dilute_stock
     end.compact
     template_stocks, primer_stocks = [], []
     dilute_stocks.each do |stock|
-      if ["Plasmid Stock", "Fragment Stock"].include? stock.object_type.name
+      if ["Plasmid Stock", "Fragment Stock", "Midiprep Stock", "Maxiprep Stock"].include? stock.object_type.name
         template_stocks.push stock
       elsif ["Primer Stock"].include? stock.object_type.name
         primer_stocks.push stock
