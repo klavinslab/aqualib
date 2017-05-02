@@ -119,6 +119,7 @@ module Cloning
       show { note dilute_stock }
       dilute_stock |= dilute_sample.in("Maxiprep Stock")[0]
       show { note dilute_stock }
+      dilute_stock
     end.compact
     template_stocks, primer_stocks = [], []
     dilute_stocks.each do |stock|
