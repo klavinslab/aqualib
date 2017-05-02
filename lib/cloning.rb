@@ -71,8 +71,9 @@ module Cloning
       show { note template_items.class; note template_items.empty? }
       if template_items.empty? && template.in("Plasmid Stock").empty?
         template_items = template.in "Gibson Reaction Result"
-      elsif template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
+      if template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
+        show { title "THE THING" }
       end
       show { note "dilute_sample_ids: #{dilute_sample_ids}"; note "template_items #{template_items}" }
     elsif template.sample_type.name == "Fragment"
