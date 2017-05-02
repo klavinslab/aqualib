@@ -65,18 +65,14 @@ module Cloning
     dilute_sample_ids.push fwd.id if fwd_items.empty?
     dilute_sample_ids.push rev.id if rev_items.empty?
 
-    show { note template.sample_type.name; note template.id; note template.in("Midiprep Stock").any? }
     if template.sample_type.name == "Plasmid"
       template_items = template.in("1 ng/µL Plasmid Stock")
-      show { note template_items.class; note template_items.empty? }
       if template_items.empty? && template.in("Plasmid Stock").empty?
         template_items = template.in "Gibson Reaction Result"
       end
       if template_items.empty? && ["Plasmid Stock", "Midiprep Stock", "Maxiprep Stock"].any? { |ot| template.in(ot).any? }
         dilute_sample_ids.push template.id
-        show { title "THE THING" }
       end
-      show { note "dilute_sample_ids: #{dilute_sample_ids}"; note "template_items #{template_items}" }
     elsif template.sample_type.name == "Fragment"
       template_items = template.in "1 ng/µL Fragment Stock"
       dilute_sample_ids.push template.id if template_items.empty?
@@ -110,15 +106,11 @@ module Cloning
   def dilute_samples ids
     ids = [ids] unless ids.is_a? Array
     ids.uniq!
-    show { note ids }
     dilute_stocks = ids.collect do |id|
       dilute_sample = find(:sample, id: id)[0]
       dilute_stock = dilute_sample.in(dilute_sample.sample_type.name + " Stock")[0]
-      show { note dilute_stock }
       dilute_stock ||= dilute_sample.in("Midiprep Stock")[0]
-      show { note dilute_stock }
       dilute_stock ||= dilute_sample.in("Maxiprep Stock")[0]
-      show { note dilute_stock }
       dilute_stock
     end.compact
     template_stocks, primer_stocks = [], []
