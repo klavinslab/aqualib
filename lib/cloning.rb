@@ -108,8 +108,11 @@ module Cloning
     dilute_stocks = ids.collect do |id|
       dilute_sample = find(:sample, id: id)[0]
       dilute_stock = dilute_sample.in(dilute_sample.sample_type.name + " Stock")[0]
+      show { note dilute_stock }
       dilute_stock |= dilute_sample.in("Midiprep Stock")[0]
+      show { note dilute_stock }
       dilute_stock |= dilute_sample.in("Maxiprep Stock")[0]
+      show { note dilute_stock }
     end.compact
     template_stocks, primer_stocks = [], []
     dilute_stocks.each do |stock|
