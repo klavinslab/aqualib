@@ -29,7 +29,7 @@ class Protocol
 
 			# marker
 			yeast_sample = yeast_plates.first.sample
-			markers = yeast_sample.properties("Integrated Marker(s)")
+			markers = yeast_sample.properties["Integrated Marker(s)"]
 			puts "	markers: #{markers}"
 
 			{ task: task, yeast_plates: yeast_plates, QC_results: qc_results, markers: markers }
