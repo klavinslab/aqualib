@@ -12,12 +12,12 @@ class Protocol
 		yeast_QC_prot_id = TaskPrototype.where(name: "Yeast Strain QC").first.id
 		tasks = Task.where({task_prototype_id: yeast_QC_prot_id, id: input[:id_bounds].first..input[:id_bounds].last})
 		
-		puts "TASKS FETCHED\n-------------"
+		puts "\nTASKS FETCHED\n-------------"
 		puts "#{tasks.length} Yeast Strain QC tasks"
 
 		# Build hash for each task
 		task_hashes = tasks.map do |task|
-			puts "task #{task.id}"
+			puts "\ntask #{task.id}"
 			# yeast_plates
 			yeast_plate_ids = task.simple_spec[:yeast_plate_ids]
 			yeast_plates = Item.where(id: yeast_plate_ids)
@@ -35,35 +35,8 @@ class Protocol
 			{ task: task, yeast_plates: yeast_plates, QC_results: qc_results, markers: markers }
 		end
 
-		# task_hashes.select.each do |task_hash|
-		# 	task = task_hash[:task]
-		# 	puts "Task #{task[:id]}: #{task[:name]}"
-		# 	puts "  date: #{task[:updated_at]}"
-		# 	puts "  yeast plate ids: #{task_hash[:yeast_plates].map { |yp| yp[:id] }}"
-		# 	puts "  QC_results: #{task_hash[:QC_results]}"
-		# 	puts "  marker: #{task_hash[:markers]}"
-		# end
-
-
-		# # Calculate average Primer cost
-		# short_primer_cost = Parameter.get_float('short primer cost')
-		# medium_primer_cost = Parameter.get_float('medium primer cost')
-		# long_primer_cost = Parameter.get_float('long primer cost')
-
-		# primer_costs = primer_lengths.map { |length|
-		#   if length <= 60
-		#     length * short_primer_cost
-		#   elsif length <= 90
-		#     length * medium_primer_cost
-		#   else
-		#     length * long_primer_cost
-		#   end
-		# }
-
-		# average_cost = primer_costs.inject { |sum, cost| sum + cost }.to_f / primer_costs.length
-
-		# puts "There are #{tasks.length} Primer Orders"
-		# puts "There are #{primers_response[:rows].length} Primers"
-		# puts "The average Primer cost is $#{average_cost.round(2)}"
+		task_hashes_trp = task_hashes.select { |th| th[:markers].downcase.include? "trp" }
+		puts task_hashes.length
+		puts task_hashes_trp.length
 	end
 end
