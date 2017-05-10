@@ -36,9 +36,12 @@ class Protocol
 		end
 
 		# Build QC success frequency CSV for TRP plates
-		task_hashes_trp = task_hashes.select { |th| th[:markers].downcase.include? "trp" }
+		task_hashes_trp = task_hashes.select { |th| th[:markers].downcase.include? "trp"}
+		puts task_hashes_trp.length
+		task_hashes_trp.reject! { |th| th[:QC_results].nil? || th[:QC_results].include? "N/A" }
+		puts task_hashes_trp.length
 		trp_success = task_hashes_trp.map { |th| { date: th[:task].created_at, success: th[:QC_results].count { |r| r == "Yes" }.to_f / th[:QC_results].length } }
-		puts task_hashes_trp
+		# puts task_hashes_trp
 		puts trp_success
 	end
 end
