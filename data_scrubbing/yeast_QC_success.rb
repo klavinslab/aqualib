@@ -24,7 +24,7 @@ class Protocol
 		# })
 		# tasks = tasks_response[:rows]
 		puts "TASKS FETCHED..."
-		tasks = Task.where({task_prototype_id: yeast_QC_prot_id, id: io_hash[:id_bounds]})
+		tasks = Task.where({task_prototype_id: yeast_QC_prot_id, id: input[:id_bounds]})
 		puts tasks.length
 		puts tasks.map { |t| t.id }
 		# puts tasks
