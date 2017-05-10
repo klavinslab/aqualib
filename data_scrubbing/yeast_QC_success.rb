@@ -1,7 +1,7 @@
 class Protocol
 	def arguments
 		{
-			id_bounds: [20000, 20125]
+			id_bounds: [20000, 21000]
 			# 22640
 			# 40125
 		}
@@ -24,7 +24,7 @@ class Protocol
 		# })
 		# tasks = tasks_response[:rows]
 		puts "TASKS FETCHED..."
-		tasks = Task.where({task_prototype_id: yeast_QC_prot_id, id: input[:id_bounds]})
+		tasks = Task.where({task_prototype_id: yeast_QC_prot_id, id: input[:id_bounds].first..input[:id_bounds].last})
 		puts tasks.length
 		puts tasks.map { |t| t.id }
 		# puts tasks
