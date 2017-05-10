@@ -26,7 +26,7 @@ class Protocol
 		puts "TASKS FETCHED..."
 		tasks = find(:task, task_prototype_id: yeast_QC_prot_id)
 		puts Task
-		puts tasks
+		# puts tasks
 
 		# # Build hash for each task
 		# task_hashes = tasks.map do |task|
