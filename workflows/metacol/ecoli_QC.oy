@@ -1,0 +1,68 @@
+argument
+  debug_mode: string, "Yes or No"
+  group: group, "choose the group to assign this metacol"
+end
+
+place tasks_inputs
+  protocol: "aqualib:workflows/general/tasks_inputs.rb"
+  group: group
+  argument
+    debug_mode: debug_mode
+    group: group
+    task_name: "E coli QC"
+  end
+  marked: true
+  start: now()
+  window: hours(1)
+end
+
+place lysate
+  protocol: "aqualib:workflows/ecoli/make_ecoli_lysate.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place move_analyzer_cartridge
+  protocol: "aqualib:workflows/general/move_analyzer_cartridge.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place pcr
+  protocol: "aqualib:workflows/ecoli/ecoli_colony_PCR.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+place image_gel
+  protocol: "aqualib:workflows/general/fragment_analyzing.rb"
+  group: group
+  marked: false
+  start: now()
+  window: hours(1)
+end
+
+wire tasks_inputs => lysate
+wire lysate => pcr
+wire lysate => move_analyzer_cartridge
+wire pcr => image_gel
+
+transition [ tasks_inputs ] => [ lysate ] when !error(0) && completed(0) end
+transition [ lysate ] => [ move_analyzer_cartridge ] when !error(0) && completed(0) && (return_value(0,"cartridge_in_analyzer") == false) end
+transition [ lysate ] => [ pcr ] when !error(0) && completed(0) && (return_value(0,"cartridge_in_analyzer") == true) end
+transition [ move_analyzer_cartridge ] => [ pcr ] when !error(0) && completed(0) end
+transition [ pcr ] => [ image_gel ] when !error(0) && completed(0) end
+transition [ image_gel ] => [] when !error(0) && completed(0) end
+
+# restart if errored out
+transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
+transition [ lysate ] => [ lysate ] when error(0) end
+transition [ move_analyzer_cartridge ] => [ move_analyzer_cartridge ] when error(0) end
+transition [ pcr ] => [ pcr ] when error(0) end
+transition [ image_gel ] => [ image_gel ] when error(0) end
