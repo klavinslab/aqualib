@@ -35,13 +35,26 @@ class Protocol
 			{ task: task, yeast_plates: yeast_plates, QC_results: qc_results, markers: markers };
 		end
 
-		# Build QC success frequency CSV for TRP plates
+		# Build QC success frequency for TRP plates
 		task_hashes_trp = task_hashes.select { |th| th[:markers].downcase.include? "trp" }
-		puts task_hashes_trp.length
 		task_hashes_trp.reject! { |th| th[:QC_results].include?(nil) || th[:QC_results].include?("N/A") }
-		puts task_hashes_trp.length
 		trp_success = task_hashes_trp.map { |th| { date: th[:task].created_at, success: th[:QC_results].count { |r| r == "Yes" }.to_f / th[:QC_results].length } }
-		# puts task_hashes_trp
-		puts trp_success
+		
+		# Print to show blocks
+		show do
+			title "Copy this into excel (col 1) :)"
+
+			trp_success.each do |hash|
+				note hash[:date]
+			end
+		end
+
+		show do
+			title "Copy this into excel as well (col 2) :)"
+
+			trp_success.each do |hash|
+				note hash[:success]
+			end
+		end
 	end
 end
