@@ -45,7 +45,9 @@ class Protocol
 			title "Copy this into excel (col 1) :)"
 
 			trp_success.each do |hash|
-				note hash[:date]
+				time = hash[:date]
+				excel_time = Time.at(time.to_f + time.utc_offset)
+				note excel_time
 			end
 		end
 
