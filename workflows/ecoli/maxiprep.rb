@@ -24,7 +24,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
     overnight_ids = io_hash[:overnight_ids]
-    elution_volume = io_hash[:elution_volume] || 50
+    elution_volume = io_hash[:elution_volume] || 1000
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
