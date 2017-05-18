@@ -35,7 +35,7 @@ class Protocol
     comb_1[0] = comb_1[0].to_i
     comb_2[0] = comb_2[0].to_i
     raise "Incorrect inputs, comb_1 and comb_2 should be the same size, both 6 or 10. You can choose thin or thick for each one though" if comb_2[0] != 0 && comb_1[0] != comb_2[0]
-    percentage = io_hash[:percentage] || 1
+    percentage = io_hash[:percentage] || 0.7
     stripwells = io_hash[:stripwell_ids].collect { |sid| collection_from sid }
 
     take stripwells
