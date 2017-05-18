@@ -112,13 +112,6 @@ class Protocol
           stripwell.mark_as_deleted
         end
       }
-      
-       show {
-        title "Set a timer"
-        check "When you get back to your bench, set a 40 minute timer." 
-        check "When the 40 minute timer is up, grab a lab manager to check on the gel. The lab manager may have you set another timer after checking the gel."
-         end
-         }
 
       release gels
       release [ ladder, dye ], interactive: true
