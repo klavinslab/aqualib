@@ -33,7 +33,7 @@ class Protocol
 
     show {
       title "Prepare to order primer"
-      check "Go to the <a href='https://www.idtdna.com/site/account' target='_blank'>IDT website</a>, log in with the lab account. (Username: klavins_lab, password is the lab general password)."
+      check "Go to the <a href='https://www.idtdna.com/site/account' target='_blank'>IDT website</a>, log in with the lab account. (Username: UW_BIOFAB, password is the lab general password)."
       warning "Ensure that you are logged in to this exact username and password!"
     }
 
