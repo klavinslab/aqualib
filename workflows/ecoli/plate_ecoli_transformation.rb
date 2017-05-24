@@ -90,7 +90,8 @@ class Protocol
           
           show {
           title "Spin down the tubes and resuspend"
-          check "Move the transformed aliquots in 1.5 mL tubes an spin for 4,000 x g for 1 minute."
+          check "Remove the transformed cells in 1.5 mL tubes from the 250 mL flask."
+          check "Centrifuge for 4,000 x g for 1 minute."
           check "Carefully remove most of the supernatant using a P1000 pipette. Leave 100-200uL of supernatant in each tube."
           check "Resuspend the cells in the remaining supernatant by vortexing."
         }
