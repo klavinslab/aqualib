@@ -154,8 +154,10 @@ class Protocol
 
     show {
       title "Incubate tubes"
-      check "Put the tubes with the following ids into 37 C shaker/incubator using the small green tube holder."
-      note "Retrieve all the tubes 30 minutes later by doing the following plate_ecoli_transformation protocol. You can finish this protocol now by perfoming the next return steps."
+      check   "Find an empty, sterile (autoclaved) 250 mL flask."
+      check   "Remove the foil and carefully drop all transformed aliquots in 1.5 mL tubes into the flask."
+      warning "Make sure the caps are closed tightly on the 1.5 mL tubes!"
+      check "Move the 250 mL flask to an empty 250 mL flask holder in the 37 shaker/incubator."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
       image "37_c_shaker_incubator"
@@ -169,14 +171,6 @@ class Protocol
       image "dump_dirty_cuvettes"
     }
     
-      show {
-      title "Put 1.5 mL tubes in an empty, sterile 250 mL flask"
-      check   "Find an empty, sterile (autoclaved) 250 mL flask."
-      check   "Remove the foil and carefully drop all transformed aliquots in 1.5 mL tubes into the flask."
-      warning "Make sure the caps are closed tightly on the 1.5 mL tubes!"
-      check "Move the 250 mL flask to an empty 250 mL flask holder in the 37 shaker/incubator."
-    }
-
     move transformed_aliquots, "37 C shaker/incubator"
     release transformed_aliquots
 
