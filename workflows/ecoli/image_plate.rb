@@ -159,16 +159,47 @@ class Protocol
               # notify the user about plate stored in fridge
               plate = find(:item, id: plate_id)[0]
               task.notify "[Data] #{item_link plate} with num_colony: #{plate.datum[:num_colony]} is produced."
-              # automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
+
+              # automatically submit E. coli QC task if QC Primer 1, QC Primer 2, and QC Fragment Length are filled in
+              # OR automatically submit plasmid verification tasks if sequencing_primer_ids are defined in plasmid sample
+              qc_primer1 = plate.sample.properties["QC Primer1"]
+              qc_primer2 = plate.sample.properties["QC Primer2"]
+              qc_length = plate.sample.properties["QC_length"]
               primers = plate.sample.properties["Sequencing Primers"]
-              if primers && primers.length > 0
-                # if primer is nil, don't return
+
+              if !([qc_primer1, qc_primer2, qc_length].any? { |prop| prop.nil? })
+                num_colony = [colony_number[:"c#{plate_id}".to_sym], 12].min
+                tp = TaskPrototype.where("name = 'E coli QC'")[0]
+                t = Task.new(
+                  name: "#{p.sample.name}_plate_#{p.id}", 
+                  specification: { 
+                    "plate_ids E coli Plate of Plasmid" => [p.id],
+                    "num_colonies" => [num_colony] 
+                    }.to_json, 
+                  task_prototype_id: tp.id, 
+                  status: "waiting", 
+                  user_id: p.sample.user.id, 
+                  budget_id: task.budget_id)
+                t.save
+                task.notify "Automatically created a #{task_prototype_html_link 'E coli QC'} #{task_html_link t}.", job_id: jid
+                t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
+              elsif primers && primers.length > 0
                 primer_ids = primers.collect { |p| p.id if p }
                 primer_ids.compact!
-                # num_colony = colony_number[:"c#{plates[idx].id}".to_sym]
-                # num_colony = num_colony > 2 ? 2 : num_colony
+                
                 tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
-                t = Task.new(name: "#{plate.sample.name}_plate_#{plate_id}", specification: { "plate_ids E coli Plate of Plasmid" => [plate_id], "num_colonies" => [1], "primer_ids Primer" => [primer_ids], "initials" => "" }.to_json, task_prototype_id: tp.id, status: "waiting", user_id: plate.sample.user.id, budget_id: task.budget_id)
+                t = Task.new(
+                  name: "#{plate.sample.name}_plate_#{plate_id}",
+                  specification: { 
+                    "plate_ids E coli Plate of Plasmid" => [plate_id], 
+                    "num_colonies" => [1], 
+                    "primer_ids Primer" => [primer_ids], 
+                    "initials" => "" 
+                    }.to_json, 
+                  task_prototype_id: tp.id, 
+                  status: "waiting", 
+                  user_id: plate.sample.user.id, 
+                  budget_id: task.budget_id)
                 t.save
                 task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
                 t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
