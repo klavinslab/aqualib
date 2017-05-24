@@ -41,7 +41,7 @@ place pcr
 end
 
 place image_gel
-  protocol: "aqualib:workflows/general/fragment_analyzing.rb"
+  protocol: "aqualib:workflows/ecoli/fragment_analyzing_ecoli.rb"
   group: group
   marked: false
   start: now()
