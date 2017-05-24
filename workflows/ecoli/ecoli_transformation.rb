@@ -157,7 +157,7 @@ class Protocol
       check   "Find an empty, sterile (autoclaved) 250 mL flask."
       check   "Remove the foil and carefully drop all transformed aliquots in 1.5 mL tubes into the flask."
       warning "Make sure the caps are closed tightly on the 1.5 mL tubes!"
-      check "Move the 250 mL flask to an empty 250 mL flask holder in the 37 shaker/incubator."
+      check "Move the 250 mL flask containing the transformed aliquots to an empty 250 mL flask holder in the 37 shaker/incubator."
       note "#{transformed_aliquots.collect {|t| t.id}}"
       note "Place #{amp} Amp plates and #{kan} Kan plates into the incubator"
       image "37_c_shaker_incubator"
