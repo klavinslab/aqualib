@@ -87,10 +87,17 @@ class Protocol
           check "Label the top of the plates with your intials, the date, and the following ids #{plates_with_initials}"
           check "Label the side of the plates with the same id number as on top"
         }
+          
+          show {
+          title "Spin down the tubes and resuspend"
+          check "Move the transformed aliquots in 1.5 mL tubes an spin for 4,000 x g for 1 minute."
+          check "Carefully remove most of the supernatant using a P1000 pipette. Leave 100-200uL of supernatant in each tube."
+          check "Resuspend the cells in the remaining supernatant by vortexing."
+        }
+        
         show {
           title "Plating"
-          check "Use sterile beads to plate THE ENTIRE VOLUME (300 uL) from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
-          warning "Note the change in plating volume!"
+          check "Use sterile beads to plate THE ENTIRE VOLUME (~200 uL) from transformed aliquots (1.5 mL tubes) on to the plates following the table below."
           check "Discard used transformed aliquots after plating."
           table [["1.5 mL tube", "#{plate_type} Plate"]].concat((transformed_aliquots.collect { |t| t.id }).zip plates.collect{ |p| { content: p.id, check: true } })
         }
