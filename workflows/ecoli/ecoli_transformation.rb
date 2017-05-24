@@ -103,9 +103,9 @@ class Protocol
       note " Click the time constant button to show 0.0."
       image "initialize_electroporator"
       check "Retrieve and label #{num} 1.5 mL tubes with the following ids #{ids}."
-      check "Set your 3 pipettors to be 2 µL, 42 µL, and 300 µL."
+      check "Set your 3 pipettors to be 2 µL, 42 µL, and 900 µL."
       check "Prepare 10 µL, 100 µL, and 1000 µL pipette tips."      
-      check "Grab a Bench LB liquid aliquot (sterile) and loosen the cap."
+      check "Grab a Bench  liquid aliquot (sterile) and loosen the cap."
     }
 
     show {
@@ -131,13 +131,13 @@ class Protocol
       note "Repeat for each row in the table:"
       check "Pipette 2 uL plasmid/gibson result into labeled electrocompetent aliquot, swirl the tip to mix and place back on the aluminum rack after mixing."
       check "Transfer 42 uL of e-comp cells to electrocuvette with P100"
-      check "Slide into electroporator, press PULSE button twice, and QUICKLY add 300 uL of LB"
-      check "pipette cells up and down 3 times, then transfer 300 uL to appropriate 1.5 mL tube with P1000"
+      check "Slide into electroporator, press PULSE button twice, and QUICKLY add 900 uL of SOC"
+      check "pipette cells up and down 3 times, then transfer 900 uL to appropriate 1.5 mL tube with P1000"
       #table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip num_arr)
       table [["Plasmid/Gibson Result, 2 µL", "Electrocompetent aliquot", "1.5 mL tube label"]].concat(items_to_transform.collect {|g| { content: g.id, check: true }}.zip(num_arr, ids.collect {|i| { content: i, check: true}}))
       image "pipette_plasmid_into_electrocompotent_cells"
       #check "Take a labeled electrocompetent aliquot. Using the set 100uL pipette, transfer the mixture into the center of an electrocuvette, slide into electroporator and press the PULSE button twice quickly."
-      #check "Remove the cuvette from the electroporator and QUICKLY add 300 µL of LB."
+      #check "Remove the cuvette from the electroporator and QUICKLY add 300 µL of SOC."
       #check "Pipette up and down 3 times to extract the cells from the gap in the cuvette, then, using the set 1000uL pipette, transfer to a labeled 1.5 mL tube according to the following table. Repeat for the rest electrocompetent aliquots."
       #table [["Electrocompetent aliquot", "1.5 mL tube label"]].concat(num_arr.zip ids.collect {|i| { content: i, check: true }}) 
     } 
@@ -167,6 +167,14 @@ class Protocol
       check "Discard empty electrocompetent aliquot tubes into waste bin."
       check "Return the styrofoam ice block and the aluminum tube rack."
       image "dump_dirty_cuvettes"
+    }
+    
+      show {
+      title "Put 1.5 mL tubes in an empty, sterile 250 mL flask"
+      check   "Find an empty, sterile (autoclaved) 250 mL flask."
+      check   "Remove the foil and carefully drop all transformed aliquots in 1.5 mL tubes into the flask."
+      warning "Make sure the caps are closed tightly on the 1.5 mL tubes!"
+      check "Move the 250 mL flask to an empty 250 mL flask holder in the 37 shaker/incubator."
     }
 
     move transformed_aliquots, "37 C shaker/incubator"
