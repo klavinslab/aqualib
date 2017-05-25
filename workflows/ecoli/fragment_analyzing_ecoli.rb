@@ -388,7 +388,7 @@ class Protocol
       plates.each do |p|
         if p.datum[:correct_colony]
           if p.datum[:correct_colony].length > 0
-            primers = plate.sample.properties["Sequencing Primers"]
+            primers = p.sample.properties["Sequencing Primers"]
             primer_ids = primers.collect { |p| p.id if p }
             primer_ids.compact!
             
@@ -396,16 +396,16 @@ class Protocol
             task_id = io_hash[:task_ids][io_hash[:plate_ids].index(p.id)]
             task = find(:task, id: task_id)[0]
             t = Task.new(
-              name: "#{plate.sample.name}_plate_#{plate_id}",
+              name: "#{p.sample.name}_plate_#{p.id}",
               specification: { 
-                "plate_ids E coli Plate of Plasmid" => [plate_id], 
+                "plate_ids E coli Plate of Plasmid" => [p.id], 
                 "num_colonies" => [1], 
                 "primer_ids Primer" => [primer_ids], 
                 "initials" => "" 
                 }.to_json, 
               task_prototype_id: tp.id, 
               status: "waiting", 
-              user_id: plate.sample.user.id, 
+              user_id: p.sample.user.id, 
               budget_id: task.budget_id)
             t.save
             task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
