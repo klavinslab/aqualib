@@ -388,6 +388,7 @@ class Protocol
       plates.each do |p|
         if p.datum[:correct_colony]
           if p.datum[:correct_colony].length > 0
+            primers = plate.sample.properties["Sequencing Primers"]
             primer_ids = primers.collect { |p| p.id if p }
             primer_ids.compact!
             
