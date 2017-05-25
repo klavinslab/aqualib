@@ -103,11 +103,12 @@ class Protocol
     {
       io_hash: {},
       gel_band_verify: "Yes",
-      stripwell_ids: [51355,15503,37245],
-      #stripwell_ids: [10632],
+      # stripwell_ids: [51355,15503,37245],
+      stripwell_ids: [71459],
       #plate_ids: [62825,61775,57979],
-      plate_ids: [],
-      #task_ids: [19139,18662,16234],
+      plate_ids: [71453, 71454],
+      # task_ids: [19139,18662,16234],
+      task_ids: [23570, 23571],
       debug_mode: "Yes"
     }
   end
