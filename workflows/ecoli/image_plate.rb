@@ -171,14 +171,14 @@ class Protocol
                 num_colony = [colony_number[:"c#{plate_id}".to_sym], 12].min
                 tp = TaskPrototype.where("name = 'E coli QC'")[0]
                 t = Task.new(
-                  name: "#{p.sample.name}_plate_#{p.id}", 
+                  name: "#{plate.sample.name}_plate_#{plate.id}", 
                   specification: { 
-                    "plate_ids E coli Plate of Plasmid" => [p.id],
+                    "plate_ids E coli Plate of Plasmid" => [plate.id],
                     "num_colonies" => [num_colony] 
                     }.to_json, 
                   task_prototype_id: tp.id, 
                   status: "waiting", 
-                  user_id: p.sample.user.id, 
+                  user_id: plate.sample.user.id, 
                   budget_id: task.budget_id)
                 t.save
                 task.notify "Automatically created a #{task_prototype_html_link 'E coli QC'} #{task_html_link t}.", job_id: jid

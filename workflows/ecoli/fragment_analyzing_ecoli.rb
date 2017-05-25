@@ -388,19 +388,27 @@ class Protocol
       plates.each do |p|
         if p.datum[:correct_colony]
           if p.datum[:correct_colony].length > 0
-            tp = TaskPrototype.where("name = 'Glycerol Stock'")[0]
+            primer_ids = primers.collect { |p| p.id if p }
+            primer_ids.compact!
+            
+            tp = TaskPrototype.where("name = 'Plasmid Verification'")[0]
             task_id = io_hash[:task_ids][io_hash[:plate_ids].index(p.id)]
             task = find(:task, id: task_id)[0]
             t = Task.new(
-                name: "#{p.sample.name}_plate_#{p.id}",
-                specification: { "item_ids Yeast Plate|Yeast Overnight Suspension|E coli Plate of Plasmid|TB Overnight of Plasmid|Overnight suspension" => [p.id] }.to_json,
-                task_prototype_id: tp.id,
-                status: "waiting",
-                user_id: p.sample.user.id,
-                budget_id: task.budget_id)
+              name: "#{plate.sample.name}_plate_#{plate_id}",
+              specification: { 
+                "plate_ids E coli Plate of Plasmid" => [plate_id], 
+                "num_colonies" => [1], 
+                "primer_ids Primer" => [primer_ids], 
+                "initials" => "" 
+                }.to_json, 
+              task_prototype_id: tp.id, 
+              status: "waiting", 
+              user_id: plate.sample.user.id, 
+              budget_id: task.budget_id)
             t.save
-            task.notify "Automatically created a #{task_prototype_html_link 'Glycerol Stock'} #{task_html_link t}.", job_id: jid
-            t.notify "Automatically created from #{task_prototype_html_link 'E coli QC'} #{task_html_link task}.", job_id: jid
+            task.notify "Automatically created a #{task_prototype_html_link 'Plasmid Verification'} #{task_html_link t}.", job_id: jid
+            t.notify "Automatically created from #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
           end
         end
       end
