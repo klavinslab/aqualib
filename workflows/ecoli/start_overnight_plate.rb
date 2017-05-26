@@ -131,9 +131,9 @@ class Protocol
       end
 
       if named_colonies
-        inoc_tab.push { id, colony_name, o_id }
+        inoc_tab.push [id, colony_name, o_id]
       else
-        inoc_tab.push { id, o_id }
+        inoc_tab.push [id, o_id]
       end
     end
 
