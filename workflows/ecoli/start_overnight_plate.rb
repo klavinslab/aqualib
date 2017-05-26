@@ -118,7 +118,7 @@ class Protocol
     inoc_tab = [["Plate id", "Colony name", "Overnight id"]] if named_colonies
     colony_plates.each_with_index do |p, idx|
       id = p.id
-      o_id = { overnights[idx].id, check: true }
+      o_id = { content: overnights[idx].id, check: true }
 
       colony_name = ""
       qc = p.datum[:QC_result]
