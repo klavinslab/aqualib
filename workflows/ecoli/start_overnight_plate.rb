@@ -143,6 +143,7 @@ class Protocol
       title "Inoculation from plate"
       note "Use 10 µL sterile tips to inoculate colonies from plate into 14 mL tubes according to the following table."
       check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated colonies on that plate."
+      warning "Only use specified (named) colony for a given plate if applicable."
       table inoc_tab
     }
 
