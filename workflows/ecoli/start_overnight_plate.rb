@@ -13,7 +13,7 @@ class Protocol
       plate_ids: [55418,63226,63225],
       num_colonies: [1,2,3],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
-      glycerol_stock_ids: [8763,8759,8752],
+      # glycerol_stock_ids: [8763,8759,8752],
       debug_mode: "Yes",
       group: "cloning"
     }
@@ -113,11 +113,35 @@ class Protocol
 
     take plates, interactive: true
 
+    named_colonies = colony_plates.any? { |p| p.datum[:QC_result] }
+    inoc_tab = [["Plate id", "Overnight id"]]
+    inoc_tab = [["Plate id", "Colony name", "Overnight id"]] if named_colonies
+    colony_plates.each_with_index do |p, idx|
+      id = p.id
+      o_id = { overnights[idx].id, check: true }
+
+      colony_name = ""
+      qc = p.datum[:QC_result]
+      if qc
+        num_sequenced = p.datum[:num_of_overnights_started] - 1
+        colony_id = qc.each_index.select { |i| qc[i] == "Yes" }[num_sequenced]
+        colony_name = "#{id}.c#{colony_id + 1}"
+      else
+        colony_name = "N/A"
+      end
+
+      if named_colonies
+        inoc_tab.push { id, colony_name, o_id }
+      else
+        inoc_tab.push { id, o_id }
+      end
+    end
+
     show {
       title "Inoculation from plate"
       note "Use 10 µL sterile tips to inoculate colonies from plate into 14 mL tubes according to the following table."
       check "Mark each colony on the plate with corresponding overnight id. If the same plate id appears more than once in the table, inoculate different isolated colonies on that plate."
-      table [["Plate id", "Overnight id"]].concat(colony_plates.collect { |p| p.id }.zip overnights.collect { |o| { content: o.id, check: true } })
+      table inoc_tab
     }
 
     if io_hash[:glycerol_stock_ids].length > 0
