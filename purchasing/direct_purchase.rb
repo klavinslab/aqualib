@@ -4,7 +4,7 @@
 
 class Protocol
 
-  def labor_rate
+  def 
     Parameter.get_float('labor rate')
   end
   
@@ -86,7 +86,7 @@ class Protocol
     vol = {}
   
     m = ot.data_object[:materials]
-    l = ot.data_object[:labor] *labor_rate
+    l = ot.data_object[:labor]
     u = ot.data_object[:unit] 
     vol[:n] = 1
  
@@ -117,7 +117,7 @@ class Protocol
     
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor] * labor_rate
+    l = descriptor[:labor] 
     u = descriptor[:unit]
     s = descriptor[:name] 
     vol = {}
@@ -167,7 +167,7 @@ class Protocol
   
     descriptor = ot.data_object[:samples].find { |d| d[:name] == result[:choice] }
     m = descriptor[:materials]
-    l = descriptor[:labor] * labor_rate
+    l = descriptor[:labor] 
     cost = currency((1+@overhead)*(m+l))
   
     s = Sample.find_by_name(descriptor[:name])
