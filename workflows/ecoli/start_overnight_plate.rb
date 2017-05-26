@@ -125,7 +125,9 @@ class Protocol
       if qc
         num_sequenced = p.datum[:num_of_overnights_started] - 1
         colony_id = qc.each_index.select { |i| qc[i] == "Yes" }[num_sequenced]
-        colony_name = "#{id}.c#{colony_id + 1}"
+
+        colony_name = "N/A"
+        colony_name = "#{id}.c#{colony_id + 1}" if colony_id
       else
         colony_name = "N/A"
       end
