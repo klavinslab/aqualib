@@ -4,7 +4,7 @@
 
 class Protocol
 
-  def 
+  def labor_rate
     Parameter.get_float('labor rate')
   end
   
