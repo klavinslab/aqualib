@@ -127,7 +127,7 @@ class Protocol
         colony_id = qc.each_index.select { |i| qc[i] == "Yes" }[num_sequenced]
 
         colony_name = "N/A"
-        colony_name = "#{id}.c#{colony_id + 1}" if colony_id
+        colony_name = "c#{colony_id + 1}" if colony_id
       else
         colony_name = "N/A"
       end
