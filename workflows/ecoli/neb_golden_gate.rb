@@ -86,9 +86,9 @@ class Protocol
     end
 
     # take all items needed from inventory
-    ligase = find(:sample, name: "T4 DNA Ligase")[0].in("Enzyme Stock")[0]
-    ligase_buffer = find(:sample, name: "T4 DNA Ligase Buffer")[0].in("Enzyme Buffer Aliquot")[0]
-    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
+    enzyme = find(:sample, name: "NEB Golden Gate Assembly Mix (BsaI)")[0].in("Enzyme Stock")[0]
+    enzyme_buffer = find(:sample, name: "NEB Golden Gate Buffer")[0].in("Enzyme Stock")[0]
+    take task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact }.flatten.uniq + [enzyme, enzyme_buffer], interactive: true, method: "boxes"
 
     # save stocks_to_dilute concentrations
     ensure_stock_concentration task_hashes.map { |th| th[:stocks_to_dilute].compact }.flatten.uniq
@@ -209,6 +209,7 @@ class Protocol
     show do
       title "Dispense NEB Golden Gate Buffer"
       buffer_table = [["Well", "NEB GG Buffer, #{buffer_volume} μL"]]
+      note "Item ID: #{enzyme_buffer.id}"
       task_hashes.each_with_index do |task_hash, idx|
         buffer_table.push [idx + 1, { content: buffer_volume, check: true }]
       end
@@ -219,6 +220,7 @@ class Protocol
     show do
       title "Dispense NEB Golden Gate Mix"
       enzyme_table = [["Well", "NEB GG Mix, #{enzyme_volume} µL"]]
+      note "Item ID: #{enzyme.id}"
       task_hashes.each_with_index do |task_hash, idx|
         enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
       end
@@ -247,7 +249,11 @@ class Protocol
       title "Start thermocycler"
 
       check "Place the stripwell into an available thermocycler and close the lid."
-      check "Run the <b>MAIN/GGATE</b> protocol in the thermocycler. Choose 20uL as the volume and click OK"
+      check "Run the following thermocycler protocol. Choose 10ul as the volume and click OK"
+      note "  Step 1: 37C, 1 min"
+      note "  Step 2: 16C, 1 min"
+      note "  Step 3: GOTO 1 X 30"
+      note "  Step 4: 55C 5 min"
       get "text", var: "name", label: "Enter the name of the thermocycler used", default: "TC3"
       
       # TODO populate show block with proper instructions
