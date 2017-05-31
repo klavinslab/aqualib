@@ -199,6 +199,12 @@ class Protocol
       table water_table
     end
 
+    show do
+      title "Prepare stripwells"
+
+      note "Label a #{task_hashes.length <= 6 ? 6 : 12}-well stripwell #{stripwell}."
+    end
+
     # dispense buffer
     show do
       title "Dispense NEB Golden Gate Buffer"
