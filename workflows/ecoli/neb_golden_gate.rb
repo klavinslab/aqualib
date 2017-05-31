@@ -201,18 +201,24 @@ class Protocol
 
     # dispense buffer
     show do
-      title "Prepare stripwell"
+      title "Dispense NEB Golden Gate Buffer"
       buffer_table = [["Well", "NEB GG Buffer, #{buffer_volume} μL"]]
       task_hashes.each_with_index do |task_hash, idx|
         buffer_table.push [idx + 1, { content: buffer_volume, check: true }]
       end
+      table buffer_table
     end
 
     # dispense 1 uL enzyme into stripwell
-    enzyme_table = [["Well", "NEB GG Mix, #{enzyme_volume} µL"]]
-    task_hashes.each_with_index do |task_hash, idx|
-      enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
+    show do
+      title "Dispense NEB Golden Gate Mix"
+      enzyme_table = [["Well", "NEB GG Mix, #{enzyme_volume} µL"]]
+      task_hashes.each_with_index do |task_hash, idx|
+        enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
+      end
+      table enzyme_table
     end
+
 
     # dispense DNA
     task_hashes.each_with_index do |task_hash, sw_idx|
