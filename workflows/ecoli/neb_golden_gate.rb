@@ -211,7 +211,7 @@ class Protocol
       buffer_table = [["Well", "NEB GG Buffer, #{buffer_volume} μL"]]
       note "Item ID: #{enzyme_buffer.id}"
       task_hashes.each_with_index do |task_hash, idx|
-        buffer_table.push [idx + 1, { content: buffer_volume, check: true }]
+        buffer_table.push [{ content: idx+1, check: true }, enzyme_buffer.id]
       end
       table buffer_table
     end
@@ -222,7 +222,7 @@ class Protocol
       enzyme_table = [["Well", "NEB GG Mix, #{enzyme_volume} µL"]]
       note "Item ID: #{enzyme.id}"
       task_hashes.each_with_index do |task_hash, idx|
-        enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
+        enzyme_table.push [{content: idx + 1, check: true}, enzyme.id]
       end
       table enzyme_table
     end
@@ -266,7 +266,7 @@ class Protocol
     stripwell.location = therm[:name]
     stripwell.save
 
-    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact + [th[:enzyme]] }.flatten.uniq + [ligase, ligase_buffer], interactive: true, method: "boxes"
+    release task_hashes.map { |th| th[:stocks].compact + th[:stocks_to_dilute].compact }.flatten.uniq + [enzyme, enzyme_buffer], interactive: true, method: "boxes"
     release [stripwell]
 
     io_hash[:task_ids].each do |tid|
