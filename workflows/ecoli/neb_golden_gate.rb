@@ -13,7 +13,7 @@ class Protocol
       backbone_ids: [13832, 13887],
       inserts_ids: [[13832, 13911],[13792, 13918, 13919]],
       restriction_enzyme_ids: [13938, 13938],
-      task_ids: [23552, 23553],
+      task_ids: [40213],
       debug_mode: "No",
     }
   end
@@ -164,7 +164,7 @@ class Protocol
         if stock.object_type.name.include? "40 fmole/µL"
           v = enzyme_volume
         else
-          v = (80.0 / conc).round(1)
+          v = (40.0 / conc).round(1)
         end
         
         # Use half as much if its the backbone
