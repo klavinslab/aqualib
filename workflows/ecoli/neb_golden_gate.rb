@@ -204,7 +204,7 @@ class Protocol
       title "Prepare stripwell"
       buffer_table = [["Well", "NEB GG Buffer, #{buffer_volume} μL"]]
       task_hashes.each_with_index do |task_hash, idx|
-        enzyme_table.push [idx + 1, { content: buffer_volume, check: true }]
+        buffer_table.push [idx + 1, { content: buffer_volume, check: true }]
       end
     end
 
