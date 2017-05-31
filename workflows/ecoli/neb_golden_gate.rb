@@ -5,7 +5,7 @@ class Protocol
 
   include Cloning
   include Standard
-
+  
   def arguments
     {
       io_hash: {},
@@ -19,6 +19,10 @@ class Protocol
   end
 
   def main
+    total_volume = 10.0
+    enzyme_volume = 0.5
+    buffer_volume = total_volume * 0.1
+    
     io_hash = input[:io_hash]
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
 
@@ -154,17 +158,24 @@ class Protocol
 
     # If any stocks too dilute, calculate volume needed to achieve 40 fmole/uL
     task_hashes.each do |task_hash|
-      task_hash[:volumes] = task_hash[:stocks].map do |stock|
+      task_hash[:volumes] = task_hash[:stocks].map.with_index do |stock, index|
         conc = stock.datum[:fmole_ul]
+        v = 0
         if stock.object_type.name.include? "40 fmole/µL"
-          1.0
+          v = enzyme_volume
         else
-          (40.0 / conc).round(1)
+          v = (80.0 / conc).round(1)
         end
+        
+        # Use half as much if its the backbone
+        if index == 0
+          v = v * 0.5
+        end
+        v
       end
 
       total_stock_vol = task_hash[:volumes].inject(0) { |sum, v| sum + v }
-      task_hash[:water_vol] = [20 - 10 - 1 - total_stock_vol, 0].max
+      task_hash[:water_vol] = [total_volume - enzyme_volume - total_stock_vol, 0].max
     end
 
     # TODO volume checks. Ensure there is enough volume in each stock
@@ -173,22 +184,8 @@ class Protocol
     puts task_hashes.map { |th| find(:sample, id: th[:plasmid_id])[0] }
     stripwell = (produce spread task_hashes.map { |th| find(:sample, id: th[:plasmid_id])[0] }, "Stripwell", 1, 12)[0]
 
-    # make mastermix (1 uL ligase, 2 uL 10x "T4 DNA Ligase", 6 uL H2O)
-    vol_scale = task_hashes.length + 1
-    show do
-      title "Make master mix"
-
-      check "Label a new eppendorf tube MM."
-      check "Add #{6.0 * vol_scale} µL of water to the tube."
-      check "Add #{1.0 * vol_scale} µL of T4 DNA Ligase (#{ligase}) to the tube."
-      check "Add #{2.0 * vol_scale} µL of T4 DNA Ligase Buffer (#{ligase_buffer}) buffer to the tube."
-
-      check "Vortex for 20-30 seconds"
-      
-      warning "Keep the master mix on an ice block while doing the next steps"
-    end
     
-    # dispense H20 to 20 uL
+    # dispense H20 to total_volume uL
     water_table = [["Well", "Water (µL)"]]
     task_hashes.each_with_index do |task_hash, idx|
       water_table.push [idx + 1, { content: task_hash[:water_vol], check: true }]
@@ -202,26 +199,19 @@ class Protocol
       table water_table
     end
 
-    # dispense 10 uL Mastermix into stripwell
+    # dispense buffer
     show do
       title "Prepare stripwell"
-
-      note "Label a #{task_hashes.length <= 6 ? 6 : 12}-well stripwell #{stripwell}."
-      note "Pipette 10 µL of master mix into each of the first #{stripwell.num_samples} wells of the stripwell."
+      buffer_table = [["Well", "NEB GG Buffer, #{buffer_volume} μL"]]
+      task_hashes.each_with_index do |task_hash, idx|
+        enzyme_table.push [idx + 1, { content: buffer_volume, check: true }]
+      end
     end
 
     # dispense 1 uL enzyme into stripwell
-    enzyme_table = [["Well", "Enzyme, 1 µL"]]
+    enzyme_table = [["Well", "NEB GG Mix, #{enzyme_volume} µL"]]
     task_hashes.each_with_index do |task_hash, idx|
       enzyme_table.push [idx + 1, { content: task_hash[:enzyme].id, check: true }]
-    end
-    
-    show do
-      title "Dispense enzymes"
-
-      note "Pipette 1 µL of the specified enzyme into each well of the stripwell based on the following table:"
-      
-      table enzyme_table
     end
 
     # dispense DNA
