@@ -160,7 +160,7 @@ module Tasking
       size = task.simple_spec[:fragments].length
     when "Sequencing", "Primer Order"
       size = task.simple_spec[:primer_ids].flatten.length
-    when "Plasmid Verification", "Yeast Strain QC"
+    when "Plasmid Verification", "Yeast Strain QC", "E coli QC"
       size = task.simple_spec[:num_colonies].inject { |sum, i| sum + i }
     when "Cytometer Reading", "Glycerol Stock", "Discard Item", "Streak Plate"
       size = task.simple_spec[:item_ids].length

@@ -9,7 +9,7 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      yeast_plate_ids: [32170,32171],
+      plate_ids: [32170,32171],
       num_colonies: [3,3],
       debug_mode: "No",
       group: "cloning"
@@ -21,7 +21,7 @@ class Protocol
     io_hash = input if !input[:io_hash] || input[:io_hash].empty?
 
     # set default values
-    io_hash = { yeast_plate_ids: [], num_colonies: [], debug_mode: "No", comb_1: "10 thin", comb_2: "10 thin", volume: 10 }.merge io_hash
+    io_hash = { plate_ids: [], num_colonies: [], debug_mode: "No", comb_1: "10 thin", comb_2: "10 thin", volume: 10 }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
@@ -29,53 +29,53 @@ class Protocol
       end
     end
 
-    raise "Incorrect inputs, yeast_plate_ids size does not match num_colonies size. They need to be one to one correspondence." if io_hash[:yeast_plate_ids].length != io_hash[:num_colonies].length
+    raise "Incorrect inputs, plate_ids size does not match num_colonies size. They need to be one to one correspondence." if io_hash[:plate_ids].length != io_hash[:num_colonies].length
 
-    yeast_items = io_hash[:yeast_plate_ids].collect {|yid| find(:item, id: yid )[0]}
+    plates = io_hash[:plate_ids].collect {|yid| find(:item, id: yid )[0]}
 
     show {
       title "Protocol information"
-      note "This protocol makes yeast lysates in stripwell tubes for the following plates:"
-      note yeast_items.join(", ")
+      note "This protocol makes E. coli lysates in stripwell tubes for the following plates:"
+      note plates.join(", ")
     }
 
-    take yeast_items, interactive: true
+    take plates, interactive: true
 
-    yeast_samples = []
-    yeast_colonies = []
-    yeast_items.each_with_index do |y,idx|
+    samples = []
+    colonies = []
+    plates.each_with_index do |y,idx|
       start_colony = (y.datum[:QC_result] || []).length
       (1..io_hash[:num_colonies][idx]).each do |x|
-        yeast_samples.push y.sample
-        yeast_colonies.push "#{y.id}.c#{start_colony+x}"
+        samples.push y.sample
+        colonies.push "#{y.id}.c#{start_colony+x}"
       end
     end
     
 
     # build a pcrs hash that group fragment pcr by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], yeast_colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
+    pcrs = Hash.new { |h, k| h[k] = { samples: [], colonies: [], forward_primers: [], reverse_primers: [], stripwells: [] } }
 
-    forward_primers = yeast_samples.collect { |y| y.properties["QC Primer1"] }
-    reverse_primers = yeast_samples.collect { |y| y.properties["QC Primer2"] }
+    forward_primers = samples.collect { |y| y.properties["QC Primer1"] }
+    reverse_primers = samples.collect { |y| y.properties["QC Primer2"] }
 
-    yeast_samples.each_with_index do |y, idx|
+    samples.each_with_index do |y, idx|
       tanneal = (forward_primers[idx].properties["T Anneal"] + reverse_primers[idx].properties["T Anneal"])/2
       if tanneal >= 70
-        pcrs[70][:yeast_samples].push y
-        pcrs[70][:yeast_colonies].push yeast_colonies[idx]
+        pcrs[70][:samples].push y
+        pcrs[70][:colonies].push colonies[idx]
       elsif tanneal >= 67
-        pcrs[67][:yeast_samples].push y
-        pcrs[67][:yeast_colonies].push yeast_colonies[idx]
+        pcrs[67][:samples].push y
+        pcrs[67][:colonies].push colonies[idx]
       else
-        pcrs[64][:yeast_samples].push y
-        pcrs[64][:yeast_colonies].push yeast_colonies[idx]
+        pcrs[64][:samples].push y
+        pcrs[64][:colonies].push colonies[idx]
       end
     end
 
     pcrs.each do |t, pcr|
-      pcr[:stripwells] = produce spread pcr[:yeast_samples], "Stripwell", 1, 12
-      pcr[:forward_primers] = pcr[:yeast_samples].collect { |y| y.properties["QC Primer1"] }
-      pcr[:reverse_primers] = pcr[:yeast_samples].collect { |y| y.properties["QC Primer1"] }
+      pcr[:stripwells] = produce spread pcr[:samples], "Stripwell", 1, 12
+      pcr[:forward_primers] = pcr[:samples].collect { |y| y.properties["QC Primer1"] }
+      pcr[:reverse_primers] = pcr[:samples].collect { |y| y.properties["QC Primer1"] }
     end
 
     stripwells = pcrs.collect { |t, pcr| pcr[:stripwells] }
@@ -98,7 +98,7 @@ class Protocol
     # add colonies to stripwells
     pcrs.each do |t, pcr|
       load_samples_variable_vol( [ "Colony cx from plate, 1/3 size" ], [
-          pcr[:yeast_colonies],
+          pcr[:colonies],
         ], pcr[:stripwells] ) {
         note "For each plate id.cx (x = 1,2,3,...), if a colony cx is not marked on the plate, mark it with a circle and write done cx (x = 1,2,3,...) nearby. If a colony cx is alread marked on the plate, scrape that colony."
         note "Use a sterile 10 µL tip to scrape about 1/3 of the marked colony, swirl tip inside the well until mixed."
@@ -124,7 +124,7 @@ class Protocol
     end
 
     release stripwells
-    release yeast_items, interactive: true
+    release plates, interactive: true
 
     show {
       title "Wait for 10 minutes"

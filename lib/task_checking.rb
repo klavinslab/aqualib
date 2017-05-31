@@ -302,7 +302,7 @@ def task_status_check t
           argument_lengths.push 1 if variable_name == "glycerol_stock_id"
         when "num_colonies"
           ids.each do |id|
-            errors.push "A number between 0,10 is required for num_colonies" unless id.between?(0, 10)
+            errors.push "A number between 0,12 is required for num_colonies" unless id.between?(0, 12)
           end
         when "plasmid"
           errors.concat sample_check(ids, assert_property: "Bacterial Marker")[:errors]

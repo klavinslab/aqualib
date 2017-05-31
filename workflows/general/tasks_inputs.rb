@@ -183,6 +183,20 @@ class Protocol
       end
       io_hash[:size] = io_hash[:plasmid_item_ids].length
 
+    when "E coli QC"
+      io_hash = { plate_ids: [], num_colonies: [] }.merge io_hash
+      io_hash[:task_ids].each do |tid|
+        task = find(:task, id: tid)[0]
+        task.simple_spec[:plate_ids].each_with_index do |id, idx|
+          if !(io_hash[:plate_ids].include? id)
+            io_hash[:plate_ids].push id
+            io_hash[:num_colonies].push task.simple_spec[:num_colonies][idx]
+          end
+        end
+      end
+      io_hash[:gel_band_verify] = "Yes"
+      io_hash[:size] = io_hash[:num_colonies].inject { |sum, n| sum + n }
+
     when "Plasmid Verification"
       io_hash = { num_colonies: [], plate_ids: [], primer_ids: [], initials: [], glycerol_stock_ids: [], task_hash: [] }.merge io_hash
 

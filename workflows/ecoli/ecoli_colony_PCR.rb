@@ -29,20 +29,20 @@ class Protocol
     lysate_stripwells = io_hash[:lysate_stripwell_ids].collect { |i| collection_from i }
     take lysate_stripwells, interactive: true
 
-    # find yeast_samples, primer_aliquots, T Anneals
-    yeast_sample_ids = lysate_stripwells.collect { |i| i.matrix }
-    yeast_samples = yeast_sample_ids.collect do |y|
+    # find samples, primer_aliquots, T Anneals
+    sample_ids = lysate_stripwells.collect { |i| i.matrix }
+    samples = sample_ids.collect do |y|
       y.flatten!.delete(-1)
       y.collect { |y| find(:sample, id: y)[0] }
     end
 
     # dilute primer stocks if needed
-    forward_primer_ids = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].id } }.flatten
-    reverse_primer_ids = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].id } }.flatten
+    forward_primer_ids = samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].id } }.flatten
+    reverse_primer_ids = samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].id } }.flatten
     diluted_primer_aliquots = dilute_samples primers_need_to_dilute(forward_primer_ids + reverse_primer_ids)
 
-    forward_primers = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].in("Primer Aliquot")[0]} }
-    reverse_primers = yeast_samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].in("Primer Aliquot")[0]} }
+    forward_primers = samples.collect { |y| y.collect { |x| x.properties["QC Primer1"].in("Primer Aliquot")[0]} }
+    reverse_primers = samples.collect { |y| y.collect { |x| x.properties["QC Primer2"].in("Primer Aliquot")[0]} }
     tanneals = forward_primers.map.with_index { |pr, idx1| pr.map.with_index { |p, idx2| ( p.sample.properties["T Anneal"] + reverse_primers[idx1][idx2].sample.properties["T Anneal"] ) / 2 } }
 
     primers = (forward_primers.flatten + reverse_primers.flatten).uniq
@@ -55,7 +55,7 @@ class Protocol
     take [kapa_stock_item], interactive: true, method: "boxes"
 
     # build a pcrs hash that pcrs by T Anneal
-    pcrs = Hash.new { |h, k| h[k] = { yeast_samples: [], forward_primers: [], reverse_primers: [], lysate_stripwells: [], pcr_stripwells: [], tanneals: [] } }
+    pcrs = Hash.new { |h, k| h[k] = { samples: [], forward_primers: [], reverse_primers: [], lysate_stripwells: [], pcr_stripwells: [], tanneals: [] } }
 
     lysate_stripwells.each_with_index do |sw, idx|
       if tanneals[idx].min >= 70
@@ -65,7 +65,7 @@ class Protocol
       else
         key = :t64
       end
-      pcrs[key][:yeast_samples].push yeast_samples[idx]
+      pcrs[key][:samples].push samples[idx]
       pcrs[key][:lysate_stripwells].push sw
       pcrs[key][:forward_primers].push forward_primers[idx]
       pcrs[key][:reverse_primers].push reverse_primers[idx]
