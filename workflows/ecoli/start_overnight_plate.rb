@@ -11,7 +11,7 @@ class Protocol
       io_hash: {},
       #Enter the plate ids as a list
       plate_ids: [55418,63226,63225],
-      num_colonies: [1,1,1],
+      num_colonies: [1,1,2],
       primer_ids: [[2575,2569,2038],[2054,2038],[2575,2569]],
       # glycerol_stock_ids: [8763,8759,8752],
       debug_mode: "Yes",
@@ -46,14 +46,6 @@ class Protocol
         plate_ids.push pid
         num_colonies.push io_hash[:num_colonies][idx]
         primer_ids.push io_hash[:primer_ids][idx]
-
-        # record how many times this plate has been started overnight from
-        plate = find(:item, id: pid)[0]
-        num_of_overnights_started = plate.datum[:num_of_overnights_started] || 0
-        num_of_overnights_started += io_hash[:num_colonies][idx]
-        plate.datum = (plate.datum).merge({ num_of_overnights_started: num_of_overnights_started } )
-        plate.save
-
       end
     end
 
@@ -117,13 +109,14 @@ class Protocol
     inoc_tab = [["Plate id", "Overnight id"]]
     inoc_tab = [["Plate id", "Colony name", "Overnight id"]] if named_colonies
     colony_plates.each_with_index do |p, idx|
+      # determine plate/colony/overnight info
       id = p.id
       o_id = { content: overnights[idx].id, check: true }
 
       colony_name = ""
       qc = p.datum[:QC_result]
       if qc
-        num_sequenced = p.datum[:num_of_overnights_started] - 1
+        num_sequenced = p.datum[:num_of_overnights_started]
         colony_id = qc.each_index.select { |i| qc[i] == "Yes" }[num_sequenced]
 
         colony_name = "N/A"
@@ -132,11 +125,17 @@ class Protocol
         colony_name = "N/A"
       end
 
+      # build inoculation table
       if named_colonies
         inoc_tab.push [id, colony_name, o_id]
       else
         inoc_tab.push [id, o_id]
       end
+
+      # increment number of overnights started for plate
+      num_of_overnights_started = (p.datum[:num_of_overnights_started] || 0) + 1
+      p.datum = p.datum.merge({ num_of_overnights_started: num_of_overnights_started } )
+      p.save
     end
 
     show {
