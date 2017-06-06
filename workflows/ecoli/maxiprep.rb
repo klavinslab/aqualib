@@ -61,8 +61,19 @@ class Protocol
     num_arr = *(1..num)
  
     overnights.each do |x|
+      show {
+        title "Grow #{x.id} to an OD of 0.12"
+
+        check "Make a 1:10 dilution in TB + Antibiotic (90 µL media, 10 µL cells)."
+        check "Open nanodrop in cell cultures mode."
+        check "Blank with TB + antibiotic"
+        check "Record OD 600 of #{x.id}"
+      }
+    end
+
+    overnights.each do |x|
         show{ title "Transfer culture into centrifuge tubes"
-        	check "Label 4 250 mL centrifuge tubes with overnight id #{x.id}" 
+        	check "Label 1 225 mL centrifuge tubes with overnight id #{x.id}" 
         	check "Transfer 200 ml of overnight culture #{x.id} into each labeled tube."
         	}
     end
@@ -70,7 +81,7 @@ class Protocol
     overnights.each do |x|  
     show{
       title "Spin down the cells labeled as #{x.id}"
-      check "Spin at 6,000Xg for 15 min at 4 C"
+      check "Spin at 4,696 xg for 15 min at 4 C"
       check "Once you've started the centrifuge, click ok" 
       }
     end
@@ -102,18 +113,18 @@ class Protocol
     
     show{
       title "Add P2"
-      check "Add 80 mL of P2 into each centrifuge tube using the serological pipet and gently invert to mix."
+      check "Add 20 mL of P2 into each centrifuge tube using the serological pipet and gently invert to mix."
 		warning "Cells should not be exposed to active P2 for more than 5 minutes."
     	}
     
 
     show{
         title "Add prechilled P3 and gently invert to mix"
-		check "Pipette 80 ml of prechilled P3 into each tube with serological pipette and gently invert 4-6 times to mix."
+		check "Pipette 20 ml of prechilled P3 into each tube with serological pipette and gently invert 4-6 times to mix."
     	}
     
     show{
-      title "Centrifuge tubes at 20,000 X g for 30 mins at 4 C "
+      title "Centrifuge tubes at 4,696 xg for 30 mins at 4 C "
       check "Once you've started the centrifuge, click ok"
     	}
     
@@ -121,6 +132,7 @@ class Protocol
     show{
     	title "Filter lysate #{x.id} through QIAfilter Cartridge into HiSpeed tip"
 		check "Pour #{x.id} lysate from the centrifuge tube into the capped QIAfilter Cartridge labeled #{x.id}."
+    check "Incubate in QIAfilter cartridge for 10 minutes."
 		check "Remove the plunger from a 30 mL syringe."
 		check " Take the cap off the QIAfilter Cartridge outlet nozzle. Gently insert the plunger 
 			into the QIAfilter Cartridge, and depress slowly so the cell lysate enters the HiSpeed Tip labeled #{x.id} ."
@@ -162,6 +174,13 @@ class Protocol
 		check "Remove the plunger from #{num} new 30 ml syringe and attach the labeled QIAprecipitator Module(s) to the outlet nozzle."
 		}
 	
+  show {
+    title "Make fresh 70% ethanol"
+
+    check "Measure out #{7 * overnights.length} mL 100% ethanol (NOT 95%, in the flammables cabinet) using a serological pipette."
+    check "Add #{3 * overnights.length} mL MG water." 
+  }
+
     overnights.each do |x| 
 	show{
 		title "Filter DNA through QIAprecipitator"

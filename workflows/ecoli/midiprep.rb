@@ -61,6 +61,17 @@ class Protocol
     num_arr = *(1..num)
  
     overnights.each do |x|
+      show {
+        title "Grow #{x.id} to an OD of 0.12"
+
+        check "Make a 1:10 dilution in TB + Antibiotic (90 µL media, 10 µL cells)."
+        check "Open nanodrop in cell cultures mode."
+        check "Blank with TB + antibiotic"
+        check "Record OD 600 of #{x.id}"
+      }
+    end
+
+    overnights.each do |x|
         show{ title "Transfer culture into centrifuge tubes"
         	check "Label 1 50 mL falcon tube with overnight id #{x.id}" 
         	check "Transfer 50 mL of overnight culture #{x.id} into each labeled tube."
@@ -70,7 +81,7 @@ class Protocol
     overnights.each do |x|  
     show{
       title "Spin down the cells labeled as #{x.id}"
-      check "Spin at 4,696 xg for 10 min at 4 C"
+      check "Spin at 4,696 xg for 15 min at 4 C"
       check "Once you've started the centrifuge, click ok" 
       }
     end
@@ -110,7 +121,7 @@ class Protocol
     	}
     
     show{
-      title "Centrifuge tubes at 4,696 xg for 15 mins at 4 C "
+      title "Centrifuge tubes at 4,696 xg for 30 mins at 4 C "
       check "Once you've started the centrifuge, click ok"
     	}
     
@@ -118,6 +129,7 @@ class Protocol
     show{
     	title "Filter lysate #{x.id} through QIAfilter Cartridge into HiSpeed tip"
 		check "Pour #{x.id} lysate from the centrifuge tube into the capped QIAfilter Cartridge labeled #{x.id}."
+    check "Incubate in QIAfilter cartridge for 10 minutes."
 		check "Remove the plunger from a 30 mL syringe."
 		check " Take the cap off the QIAfilter Cartridge outlet nozzle. Gently insert the plunger 
 			into the QIAfilter Cartridge, and depress slowly so the cell lysate enters the HiSpeed Tip labeled #{x.id} ."
@@ -158,6 +170,13 @@ class Protocol
 		check "Label #{num} QIAprecipitator modules(s) with #{overnight_ids} respectively"
 		check "Remove the plunger from #{num} new 20 mL syringe and attach the labeled QIAprecipitator Module(s) to the outlet nozzle."
 		}
+
+  show {
+    title "Make fresh 70% ethanol"
+
+    check "Measure out #{7 * overnights.length} mL 100% ethanol (NOT 95%, in the flammables cabinet) using a serological pipette."
+    check "Add #{3 * overnights.length} mL MG water." 
+  }
 	
     overnights.each do |x| 
 	show{
@@ -195,7 +214,7 @@ class Protocol
 	show{
 		title "Elute DNA into the 1.5 mL collection tubes"
 		check "Remove the plunger from a new 5 mL syringe, attach the QIAprecipitator labeled #{pair[0]} and hold the outlet over the 1.5 mL collection tube labeled #{pair[1]}." 
-		check "Add 1 mL Buffer TE to the 5 mL syringe."
+		check "Add 500 µL Buffer TE to the 5 mL syringe."
 		check "Insert the plunger and elute the DNA by depressing the plunger."
 		}
 	end
