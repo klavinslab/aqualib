@@ -57,6 +57,7 @@ class Protocol
     end
 
     deleted_plates = []
+    tasks_to_cancel = []
     plates_marker_hash.each do |marker, plates|
       glycerol_stocks = plates.collect { |p| all_glycerol_stocks[all_plates.index(p)] }
       unless marker == "LB"
@@ -103,6 +104,10 @@ class Protocol
           # note "#{plates.collect { |p| p.id }}"
         }
         deleted_plates.concat plates
+
+        tasks_to_cancel.concat(io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }.select do |t| 
+          glycerol_stocks.map { |gs| gs.id }.include? t.simple_spec[:glycerol_stock_id]
+        end
       end
     end
     actual_plates = all_plates - deleted_plates
@@ -121,9 +126,15 @@ class Protocol
 
     # Set tasks in the io_hash to be on plate
     if io_hash[:task_ids]
+      io_hash[:task_ids] -= tasks_to_cancel.map { |t| t.id }
+
       io_hash[:task_ids].each do |tid|
         task = find(:task, id: tid)[0]
         set_task_status(task,"plated")
+      end
+
+      tasks_to_cancel.each do |t|
+        set_task_status(t,"canceled")
       end
     end
 
