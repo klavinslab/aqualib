@@ -107,7 +107,7 @@ class Protocol
 
         tasks_to_cancel.concat(io_hash[:task_ids].map { |tid| find(:task, id: tid)[0] }.select do |t| 
           glycerol_stocks.map { |gs| gs.id }.include? t.simple_spec[:glycerol_stock_id]
-        end
+        end)
       end
     end
     actual_plates = all_plates - deleted_plates
