@@ -74,7 +74,7 @@ class Protocol
       x.save
     end
 
-    on_volumes = overnights.map { |o| [50, (28 / o.datum[:od]).round(1)].min }
+    on_volumes = overnights.map { |o| [200, (28 / o.datum[:od]).round(1)].min }
 
     overnights.each_with_index do |x, idx|
         show{ title "Transfer culture into centrifuge tubes"
