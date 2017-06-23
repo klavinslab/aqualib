@@ -11,10 +11,10 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [52320,52321,52326],
+      plate_ids: [71427,71428,71429],
       debug_mode: "Yes",
       image_option: "No",
-      task_ids: []
+      task_ids: [23567,23568,23569]
     }
   end #arguments
 
@@ -134,9 +134,11 @@ class Protocol
       p.reload
     end
 
-    release plates, interactive: true
+    release stored_plates, interactive: true
+    release discarded_plates, interactive: false
 
     # Set tasks in the io_hash to be plate imaged.
+    tasks_to_cancel = []
     if io_hash[:task_ids]
       io_hash[:task_ids].each_with_index do |tid,idx|
         task = find(:task, id: tid)[0]
@@ -235,11 +237,27 @@ class Protocol
             set_task_status(task,"no colonies")
           end
 
+        elsif ["Midiprep", "Maxiprep"].include? task.task_prototype.name
+          plate_id = io_hash[:plate_ids][io_hash[:task_ids].index(task.id)]
+          plate = find(:item, id: plate_id)[0]
+
+          if plate && colony_number[:"c#{plate.id}".to_sym] > 0
+            set_task_status(task,"imaged and stored in fridge")
+          else
+            task.notify "No colonies for #{task_prototype_html_link task.task_prototype.name} #{task_html_link task}.", job_id: jid
+            set_task_status(task,"canceled")
+
+            tasks_to_cancel += [task]
+          end
         else
           set_task_status(task,"imaged and stored in fridge")
         end
 
       end # end io_hash[:task_ids].each_with_index do |tid,idx|
+
+      # remove plates and tasks from io_hash (only for Midiprep and Maxiprep if no colonies)
+      io_hash[:plate_ids] -= discarded_plates.map { |p| p.id }
+      io_hash[:task_ids] -= tasks_to_cancel.map { |t| t.id }
 
     end  # end if io_hash[:task_ids]
 

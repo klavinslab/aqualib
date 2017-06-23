@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       elution_volume: 1000,
-      overnight_ids: [33195,33196],
+      overnight_ids: [71433,71434],
       debug_mode: "no"
     }
   end
@@ -61,20 +61,25 @@ class Protocol
     num_arr = *(1..num)
  
     overnights.each do |x|
-      show {
-        title "Grow #{x.id} to an OD of 0.12"
+      od_data = show {
+        title "Grow #{x.id} to an OD between 0.12 and 0.16"
 
         check "Make a 1:10 dilution in TB + Antibiotic (90 µL media, 10 µL cells)."
         check "Open nanodrop in cell cultures mode."
         check "Blank with TB + antibiotic"
-        check "Record OD 600 of #{x.id}"
+        get "number", var: "od", label: "Record OD 600 of #{x.id}", default: 0.12
       }
+
+      x.datum = x.datum.merge({ od: od_data[:od] })
+      x.save
     end
 
-    overnights.each do |x|
+    on_volumes = overnights.map { |o| [200, (28 / o.datum[:od]).round(1)].min }
+
+    overnights.each_with_index do |x, idx|
         show{ title "Transfer culture into centrifuge tubes"
         	check "Label 1 225 mL centrifuge tubes with overnight id #{x.id}" 
-        	check "Transfer 200 ml of overnight culture #{x.id} into each labeled tube."
+        	check "Transfer #{on_volumes[idx]} mL of overnight culture #{x.id} into each labeled tube."
         	}
     end
       

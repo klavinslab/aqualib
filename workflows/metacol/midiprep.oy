@@ -26,6 +26,14 @@ place streak_plate
   window: hours(1)
 end
 
+place image_plate
+  protocol: "aqualib:workflows/ecoli/image_plate.rb"
+  group: group
+  marked: false
+  start: hours(12)
+  window: hours(1)
+end
+
 place small_inoculation
   protocol: "aqualib:workflows/ecoli/small_inoculation_midiprep.rb"
   group: group
@@ -51,18 +59,21 @@ place midiprep
 end
 
 wire tasks_inputs => streak_plate
-wire streak_plate => small_inoculation
+wire streak_plate => image_plate
+wire image_plate => small_inoculation
 wire small_inoculation => large_inoculation
 wire large_inoculation => midiprep
 
 transition [ tasks_inputs ] => [ streak_plate ]  when !error(0) && completed(0) end
-transition [ streak_plate ] => [ small_inoculation ]  when !error(0) && completed(0) end
+transition [ streak_plate ] => [ image_plate ]  when !error(0) && completed(0) end
+transition [ image_plate ] => [ small_inoculation ]  when !error(0) && completed(0) end
 transition [ small_inoculation ] => [ large_inoculation ] when !error(0) && completed(0) end
 transition [ large_inoculation ] => [ midiprep ]  when !error(0) && completed(0) end
 transition [ midiprep ] => [] when !error(0) && completed(0) end
 
 transition [ tasks_inputs ] => [ tasks_inputs ] when error(0) end
 transition [ streak_plate ] => [ streak_plate ] when error(0) end
+transition [ image_plate ] => [ image_plate ] when error(0) end
 transition [ small_inoculation ] => [ small_inoculation ] when error(0) end
 transition [ large_inoculation ] => [ large_inoculation ] when error(0) end
 transition [ midiprep ] => [ midiprep ] when error(0) end
