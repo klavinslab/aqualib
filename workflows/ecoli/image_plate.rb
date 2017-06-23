@@ -135,6 +135,7 @@ class Protocol
     end
 
     release stored_plates, interactive: true
+    release discarded_plates, interactive: false
 
     # Set tasks in the io_hash to be plate imaged.
     tasks_to_cancel = []
