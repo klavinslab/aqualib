@@ -16,7 +16,8 @@ class Protocol
   def arguments
     {
       io_hash: {},
-      glycerol_stock_ids: [9191,9190,8418],
+      glycerol_stock_ids: [71424,71425,71426],
+      task_ids: [23567,23568,23569]
     }
   end
 
@@ -24,7 +25,7 @@ class Protocol
     io_hash = input[:io_hash]
     io_hash = input if input[:io_hash].empty?
 
-    io_hash = { plate_ids: [], debug_mode: "no" }.merge io_hash
+    io_hash = { plate_ids: [], task_ids: [], debug_mode: "no" }.merge io_hash
 
     if io_hash[:debug_mode].downcase == "yes"
       def debug
