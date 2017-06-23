@@ -10,7 +10,7 @@ class Protocol
     {
       io_hash: {},
       elution_volume: 1000,
-      overnight_ids: [33195,33196],
+      overnight_ids: [71433,71434],
       debug_mode: "no"
     }
   end
