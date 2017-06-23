@@ -76,7 +76,7 @@ class Protocol
 
     on_volumes = overnights.map { |o| [50, (28 / o.datum[:od]).round(1)].min }
 
-    overnights.each_with_index do |x|
+    overnights.each_with_index do |x, idx|
         show{ title "Transfer culture into centrifuge tubes"
         	check "Label 1 225 mL centrifuge tubes with overnight id #{x.id}" 
         	check "Transfer #{on_volumes[idx]} mL of overnight culture #{x.id} into each labeled tube."
