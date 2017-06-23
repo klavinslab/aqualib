@@ -11,10 +11,10 @@ class Protocol
     {
       io_hash: {},
       #Enter the plate ids as a list
-      plate_ids: [52320,52321,52326],
+      plate_ids: [71427,71428,71429],
       debug_mode: "Yes",
       image_option: "No",
-      task_ids: []
+      task_ids: [23567,23568,23569]
     }
   end #arguments
 

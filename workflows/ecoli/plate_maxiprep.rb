@@ -123,6 +123,8 @@ class Protocol
       release actual_plates
     end
 
+    release all_glycerol_stocks, interactive: true
+
     io_hash[:plate_ids].concat actual_plates.collect { |p| p.id }
 
     # Set tasks in the io_hash to be on plate
